@@ -16,7 +16,3 @@ dependencies {
 task wrapper(type: Wrapper, description: 'Gradle Wrapper task') {
     gradleVersion = '1.4'
 }
-
-asciidoctor {
-    // outputDir = project.file("${buildDir}/foo/sample.html")
-}
