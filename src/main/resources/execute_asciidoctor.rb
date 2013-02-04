@@ -50,7 +50,7 @@ def document_render(input, options = {}, &block)
       to_file = File.join(to_file, "#{doc.attributes['docname']}#{doc.attributes['outfilesuffix']}")
     end
   end
-puts to_file
+
   if !to_file.nil?
     File.open(to_file, 'w') { |file| file.write doc.render }
     nil

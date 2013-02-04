@@ -27,11 +27,9 @@ repositories {
 }
 
 dependencies {
-    println gradleApi()
     deployerJars 'org.apache.maven.wagon:wagon-webdav:1.0-beta-2',
         'org.apache.maven:maven-ant-tasks:2.1.0'
     compile gradleApi()
-    groovy "org.codehaus.groovy:groovy-all:1.8.8"
     compile 'org.jruby:jruby-complete:1.7.2'
     testCompile 'org.spockframework:spock-core:0.6-groovy-1.8'
 }
