@@ -1,3 +1,22 @@
+apply plugin: 'groovy'
+apply plugin: 'idea'
+apply plugin: org.asciidoctor.gradle.AsciidoctorPlugin
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile gradleApi()
+    compile 'org.codehaus.groovy:groovy-all:2.1.0',
+        'org.jruby:jruby-complete:1.7.2'
+    testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
+}
+
 task wrapper(type: Wrapper, description: 'Gradle Wrapper task') {
     gradleVersion = '1.4'
+}
+
+asciidoctor {
+    // outputDir = project.file("${buildDir}/foo/sample.html")
 }
