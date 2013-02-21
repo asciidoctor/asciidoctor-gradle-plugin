@@ -17,10 +17,11 @@
 package org.asciidoctor.gradle
 
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
+import org.gradle.api.InvalidUserDataException
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
-import org.gradle.tooling.BuildException
 
 /**
  * @author Noam Tenne
@@ -30,26 +31,34 @@ class AsciidoctorTask extends DefaultTask {
     @Input File sourceDir
     @OutputDirectory File outputDir
     @Input String backend
+    @Input AsciidoctorWorker worker
 
     AsciidoctorTask() {
         sourceDir = project.file('src/asciidoc')
-        outputDir = new File("${project.buildDir}/asciidoc")
-        backend = 'html5'
+        outputDir = new File(project.buildDir, 'asciidoc')
+        backend = AsciidoctorBackend.HTML5.id
+        worker = new JRubyAsciidoctorWorker()
+    }
+
+    /**
+     * Validates input values. If an input value is not valid an exception is thrown.
+     */
+    private void validateInputs() {
+        if(!AsciidoctorBackend.isSupported(backend)) {
+            throw new InvalidUserDataException("Unsupported backend: $backend")
+        }
     }
 
     @TaskAction
     void gititdone() {
-        AsciidoctorWorker worker = new AsciidoctorWorker(
-            sourceDir: sourceDir,
-            outputDir: outputDir,
-            backend: backend
-        )
+        validateInputs()
 
         try {
-            worker.execute()
-        } catch (Exception e) {
-            project.getLogger().error('Error running ruby script', e)
-            throw new BuildException('Error running ruby script', e)
+            worker.execute(sourceDir, outputDir, backend)
+        }
+        catch (Exception e) {
+            logger.error('Error running ruby script', e)
+            throw new GradleException('Error running ruby script', e)
         }
     }
 }
