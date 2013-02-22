@@ -11,11 +11,11 @@ Use the following snippet
 
     buildscript {
         repositories {
-            mavenLocal()
             mavenRepo name: 'Bintray', url: 'http://dl.bintray.com/content/aalmiray/asciidoctor'
+            mavenCentral()
         }
         dependencies {
-            classpath 'org.asciidoctor:asciidoctor-gradle-plugin:0.1'
+            classpath 'org.asciidoctor:asciidoctor-gradle-plugin:0.2'
         }
     }
     apply plugin: 'asciidoctor'
