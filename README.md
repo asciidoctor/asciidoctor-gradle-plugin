@@ -8,7 +8,6 @@ This is a port of the [asciidoctor-maven-plugin][1] project by [@LightGuard][2].
 Installation
 ------------
 
-
 Use the following snippet
 
     buildscript {
