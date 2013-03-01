@@ -1,7 +1,7 @@
 Asciidoctor Gradle Plugin
 -------------------------
 
-![Travis Build Status](https://travis-ci.org/asciidoctor/asciidoctor-gradle-plugin.png?branch=master["Build Status", link="https://travis-ci.org/asciidoctor/asciidoctor-gradle-plugin"])
+[![Travis Build Status](https://travis-ci.org/asciidoctor/asciidoctor-gradle-plugin.png?branch=master)](https://travis-ci.org/asciidoctor/asciidoctor-gradle-plugin)
 
 This is a port of the [asciidoctor-maven-plugin][1] project by [@LightGuard][2]. Currently supports **html5** backend only.
 
