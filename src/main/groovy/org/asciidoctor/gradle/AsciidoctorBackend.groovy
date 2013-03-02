@@ -6,7 +6,7 @@ package org.asciidoctor.gradle
  * @author Benjamin Muschko
  */
 enum AsciidoctorBackend {
-    HTML5('html5')
+    HTML5('html5'), DOCBOOK('docbook')
 
     private final static Map<String, AsciidoctorBackend> ALL_BACKENDS
     private final String id
