@@ -31,8 +31,7 @@ class JRubyAsciidoctorWorkerSpec extends Specification {
         }
     }
 
-    /*
-    def "Renders docbook"() {
+    def "Renders sample docbook"() {
         when:
             AsciidoctorWorker worker = new JRubyAsciidoctorWorker()
             worker.execute(srcDir, outputDir, AsciidoctorBackend.DOCBOOK.id)
@@ -43,7 +42,7 @@ class JRubyAsciidoctorWorkerSpec extends Specification {
             File sampleOutput = new File(outputDir, 'sample.xml')
             sampleOutput.exists()
             sampleOutput.length() > 0
-    }*/
+    }
 
     def "Renders sample HTML"() {
         when:
