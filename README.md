@@ -38,6 +38,19 @@ Sources may have any of the following extensions in order to be discovered
  * .asc
  * .ad
 
+History
+-------
+
+### 0.2
+
+ * Support Asciidoctor 0.1.1
+ * Backends: html5, docbook
+
+### 0.1
+
+ * First release.
+ * Supports Asciidoctor 0.0.9
+ * Backends: html5
 
 [1]: https://github.com/asciidoctor/asciidoctor-maven-plugin
 [2]: https://github.com/LightGuard
