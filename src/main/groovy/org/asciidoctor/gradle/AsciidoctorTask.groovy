@@ -31,7 +31,7 @@ class AsciidoctorTask extends DefaultTask {
     @Input File sourceDir
     @OutputDirectory File outputDir
     @Input String backend
-    @Input AsciidoctorWorker worker
+    AsciidoctorWorker worker
 
     AsciidoctorTask() {
         sourceDir = project.file('src/asciidoc')
