@@ -71,7 +71,7 @@ uploadArchives {
                 }
             }
             scm {
-                url "https://github.com/aalmiray/asciidoctor-gradle-plugin"
+                url "https://github.com/asciidcotor/asciidoctor-gradle-plugin"
             }
             developers {
                 [aalmiray: 'Andres Almiray',
