@@ -74,8 +74,11 @@ uploadArchives {
                 url "https://github.com/asciidcotor/asciidoctor-gradle-plugin"
             }
             developers {
-                [aalmiray: 'Andres Almiray',
-                        noamt: 'Noam Tenne'].each { devId, devName ->
+                [
+                     aalmiray: 'Andres Almiray',
+                     noamt: 'Noam Tenne',
+                     bmuschko: 'Benjamin Muschko'
+                ].each { devId, devName ->
                     developer {
                         id devId
                         name devName

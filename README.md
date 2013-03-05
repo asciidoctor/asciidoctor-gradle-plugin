@@ -41,6 +41,10 @@ Sources may have any of the following extensions in order to be discovered
 History
 -------
 
+### 0.2.1
+
+ * Fixes [#6][issue_6]. Can't run plugin if Gradle daemon is active.
+
 ### 0.2
 
  * Support Asciidoctor 0.1.1
@@ -54,3 +58,4 @@ History
 
 [1]: https://github.com/asciidoctor/asciidoctor-maven-plugin
 [2]: https://github.com/LightGuard
+[issue_6]: https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/6
