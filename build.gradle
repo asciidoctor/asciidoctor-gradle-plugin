@@ -71,7 +71,7 @@ uploadArchives {
                 }
             }
             scm {
-                url "https://github.com/asciidcotor/asciidoctor-gradle-plugin"
+                url "https://github.com/asciidoctor/asciidoctor-gradle-plugin"
             }
             developers {
                 [
