@@ -20,6 +20,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
@@ -28,7 +29,7 @@ import org.gradle.api.tasks.TaskAction
  * @author Andres Almiray
  */
 class AsciidoctorTask extends DefaultTask {
-    @Input File sourceDir
+    @InputDirectory File sourceDir
     @OutputDirectory File outputDir
     @Input String backend
     AsciidoctorWorker worker
