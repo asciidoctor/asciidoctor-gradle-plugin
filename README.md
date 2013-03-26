@@ -17,7 +17,7 @@ Use the following snippet
         }
 
         dependencies {
-            classpath 'org.asciidoctor:asciidoctor-gradle-plugin:0.2.1'
+            classpath 'org.asciidoctor:asciidoctor-gradle-plugin:0.2.2'
         }
     }
 
@@ -43,6 +43,10 @@ Sources may have any of the following extensions in order to be discovered
 History
 -------
 
+### 0.2.2
+
+ * Fixes [#7][issue_7]. Make up-to-date directory detection work for AsciidoctorTask.
+
 ### 0.2.1
 
  * Fixes [#6][issue_6]. Can't run plugin if Gradle daemon is active.
@@ -61,3 +65,4 @@ History
 [1]: https://github.com/asciidoctor/asciidoctor-maven-plugin
 [2]: https://github.com/LightGuard
 [issue_6]: https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/6
+[issue_7]: https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/7
