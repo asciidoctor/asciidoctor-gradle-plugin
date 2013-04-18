@@ -1,5 +1,6 @@
 package org.asciidoctor.gradle
 
+import org.asciidoctor.Asciidoctor
 import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.Project
@@ -14,11 +15,13 @@ import spock.lang.Specification
  */
 class AsciidoctorTaskSpec extends Specification {
     Project project
-    AsciidoctorWorker mockWorker
+    Asciidoctor mockAsciidoctor
+    File rootDir
 
     def setup() {
         project = ProjectBuilder.builder().build()
-        mockWorker = Mock(AsciidoctorWorker)
+        mockAsciidoctor = Mock(Asciidoctor)
+        rootDir = new File('.')
     }
 
     def "Adds asciidoctor task with unsupported backend"() {
@@ -38,13 +41,16 @@ class AsciidoctorTaskSpec extends Specification {
         expect:
             project.tasks.findByName('asciidoctor') == null
         when:
+                println new File('.').absolutePath
             Task task = project.tasks.add(name: 'asciidoctor', type: AsciidoctorTask) {
-                worker = mockWorker
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(rootDir, 'build/resources/test/src/asciidoc')
+                outputDir = new File(rootDir, 'build/asciidoc')
             }
 
             task.gititdone()
         then:
-            1 * mockWorker.execute(project.file('src/asciidoc'), new File(project.buildDir, 'asciidoc'), AsciidoctorBackend.HTML5.id)
+            1 * mockAsciidoctor.renderFile(_, _) //project.file('src/asciidoc'), new File(project.buildDir, 'asciidoc'), AsciidoctorBackend.HTML5.id)
     }
 
     def "Adds asciidoctor task throws exception"() {
@@ -52,12 +58,14 @@ class AsciidoctorTaskSpec extends Specification {
             project.tasks.findByName('asciidoctor') == null
         when:
             Task task = project.tasks.add(name: 'asciidoctor', type: AsciidoctorTask) {
-                worker = mockWorker
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(rootDir, 'build/resources/test/src/asciidoc')
+                outputDir = new File(rootDir, 'build/asciidoc')
             }
 
             task.gititdone()
         then:
-            mockWorker.execute(project.file('src/asciidoc'), new File(project.buildDir, 'asciidoc'), AsciidoctorBackend.HTML5.id) >> { throw new RuntimeException() }
-            thrown(GradleException)
+           mockAsciidoctor.renderFile(_, _) >> { throw new RuntimeException() }
+           thrown(GradleException)
     }
 }

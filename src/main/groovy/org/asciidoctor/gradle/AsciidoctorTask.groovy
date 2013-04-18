@@ -16,6 +16,7 @@
 
 package org.asciidoctor.gradle
 
+import org.asciidoctor.Asciidoctor
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
@@ -27,39 +28,71 @@ import org.gradle.api.tasks.TaskAction
 /**
  * @author Noam Tenne
  * @author Andres Almiray
+ * @author Tom Bujok
+ * @author Lukasz Pielak
+ * @author Dmmitri Vyazelenko
  */
 class AsciidoctorTask extends DefaultTask {
     @InputDirectory File sourceDir
     @OutputDirectory File outputDir
     @Input String backend
-    AsciidoctorWorker worker
+    @Input Map options = [:]
+
+    Asciidoctor asciidoctor
 
     AsciidoctorTask() {
         sourceDir = project.file('src/asciidoc')
         outputDir = new File(project.buildDir, 'asciidoc')
         backend = AsciidoctorBackend.HTML5.id
-        worker = new JRubyAsciidoctorWorker()
+        asciidoctor = Asciidoctor.Factory.create();
     }
 
     /**
      * Validates input values. If an input value is not valid an exception is thrown.
      */
     private void validateInputs() {
-        if(!AsciidoctorBackend.isSupported(backend)) {
+        if (!AsciidoctorBackend.isSupported(backend)) {
             throw new InvalidUserDataException("Unsupported backend: $backend")
         }
+    }
+
+    private static File outputDirFor(File source, String basePath, File outputDir) {
+        String filePath = source.directory ? source.absolutePath : source.parentFile.absolutePath
+        String relativeFilePath = filePath - basePath
+        File destinationParentDir = new File("${outputDir}/${relativeFilePath}")
+        if (!destinationParentDir.exists()) destinationParentDir.mkdirs()
+        destinationParentDir
     }
 
     @TaskAction
     void gititdone() {
         validateInputs()
 
+        outputDir.mkdirs()
+
         try {
-            worker.execute(sourceDir, outputDir, backend)
-        }
-        catch (Exception e) {
-            logger.error('Error running ruby script', e)
-            throw new GradleException('Error running ruby script', e)
+            sourceDir.eachFileRecurse { File file ->
+                if (file.directory) {
+                    outputDirFor(file, sourceDir.absolutePath, outputDir)
+                } else {
+                    File destinationParentDir = outputDirFor(file, sourceDir.absolutePath, outputDir)
+                    if (file.name =~ /.*\.a((sc(iidoc)?)|d(oc)?)$/) {
+                        Map mergedOptions = [:]
+                        mergedOptions.putAll(options)
+                        mergedOptions.in_place = false
+                        mergedOptions.safe = 0i
+                        mergedOptions.to_dir = outputDir.absolutePath
+                        Map attributes = mergedOptions.get("attributes", [:])
+                        attributes.backend = backend
+                        asciidoctor.renderFile(file.absolutePath, mergedOptions)
+                    } else {
+                        File target = new File("${destinationParentDir}/${file.name}")
+                        target.withOutputStream { it << file.newInputStream() }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new GradleException('Error running Asciidoctor', e)
         }
     }
 }

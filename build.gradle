@@ -31,11 +31,12 @@ dependencies {
             'org.apache.maven:maven-ant-tasks:2.1.0'
     compile gradleApi()
     compile 'org.jruby:jruby-complete:1.7.2'
+    compile('org.asciidoctor:asciidoctor-java-integration:0.1.1') { transitive = false }
     testCompile 'org.spockframework:spock-core:0.6-groovy-1.8'
 }
 
 task wrapper(type: Wrapper, description: 'Gradle Wrapper task') {
-    gradleVersion = '1.4'
+    gradleVersion = '1.5'
 }
 
 def installer = install.repositories.mavenInstaller
