@@ -50,7 +50,7 @@ class AsciidoctorTaskSpec extends Specification {
 
             task.gititdone()
         then:
-            1 * mockAsciidoctor.renderFile(_, _) //project.file('src/asciidoc'), new File(project.buildDir, 'asciidoc'), AsciidoctorBackend.HTML5.id)
+            1 * mockAsciidoctor.renderFile(_, _)
     }
 
     def "Adds asciidoctor task throws exception"() {

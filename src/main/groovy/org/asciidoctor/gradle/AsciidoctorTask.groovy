@@ -30,7 +30,7 @@ import org.gradle.api.tasks.TaskAction
  * @author Andres Almiray
  * @author Tom Bujok
  * @author Lukasz Pielak
- * @author Dmmitri Vyazelenko
+ * @author Dmitri Vyazelenko
  */
 class AsciidoctorTask extends DefaultTask {
     @InputDirectory File sourceDir
@@ -84,7 +84,7 @@ class AsciidoctorTask extends DefaultTask {
                         mergedOptions.to_dir = outputDir.absolutePath
                         Map attributes = mergedOptions.get("attributes", [:])
                         attributes.backend = backend
-                        asciidoctor.renderFile(file.absolutePath, mergedOptions)
+                        asciidoctor.renderFile(file, mergedOptions)
                     } else {
                         File target = new File("${destinationParentDir}/${file.name}")
                         target.withOutputStream { it << file.newInputStream() }
