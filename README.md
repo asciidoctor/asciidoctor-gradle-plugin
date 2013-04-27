@@ -12,8 +12,8 @@ Use the following snippet
 
     buildscript {
         repositories {
-            mavenRepo name: 'Bintray', url: 'http://dl.bintray.com/content/aalmiray/asciidoctor'
-            mavenCentral()
+            mavenRepo name: 'Bintray Asciidoctor repo', url: 'http://dl.bintray.com/content/aalmiray/asciidoctor'
+            mavenRepo name: 'Bintray JCenter', url: 'http://jcenter.bintray.com'
         }
 
         dependencies {
