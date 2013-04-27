@@ -46,7 +46,7 @@ class AsciidoctorTask extends DefaultTask {
         sourceDir = project.file('src/asciidoc')
         outputDir = new File(project.buildDir, 'asciidoc')
         backend = AsciidoctorBackend.HTML5.id
-        asciidoctor = Asciidoctor.Factory.create();
+        asciidoctor = Asciidoctor.Factory.create()
     }
 
     /**
