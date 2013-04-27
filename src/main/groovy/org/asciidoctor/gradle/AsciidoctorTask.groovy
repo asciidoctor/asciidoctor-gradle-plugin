@@ -33,6 +33,8 @@ import org.gradle.api.tasks.TaskAction
  * @author Dmitri Vyazelenko
  */
 class AsciidoctorTask extends DefaultTask {
+    private static final boolean isWindows = System.getProperty('os.name').contains('Windows')
+
     @InputDirectory File sourceDir
     @OutputDirectory File outputDir
     @Input String backend
@@ -58,10 +60,18 @@ class AsciidoctorTask extends DefaultTask {
 
     private static File outputDirFor(File source, String basePath, File outputDir) {
         String filePath = source.directory ? source.absolutePath : source.parentFile.absolutePath
-        String relativeFilePath = filePath - basePath
+        String relativeFilePath = normalizePath(filePath) - normalizePath(basePath)
         File destinationParentDir = new File("${outputDir}/${relativeFilePath}")
         if (!destinationParentDir.exists()) destinationParentDir.mkdirs()
         destinationParentDir
+    }
+
+    private static String normalizePath (String path) {
+        if (isWindows) {
+            path = path.replace('\\\\', '\\')
+            path = path.replace('\\', '\\\\')
+        }
+        path
     }
 
     @TaskAction
