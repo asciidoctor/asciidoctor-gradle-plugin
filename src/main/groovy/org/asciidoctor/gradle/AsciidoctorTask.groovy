@@ -94,6 +94,20 @@ class AsciidoctorTask extends DefaultTask {
                         mergedOptions.to_dir = outputDir.absolutePath
                         Map attributes = mergedOptions.get("attributes", [:])
                         attributes.backend = backend
+
+                        // Issue #14 force GString -> String as jruby will fail
+                        // to find an exact match when invoking Asciidoctor
+                        for (entry in mergedOptions) {
+                            if (entry.value instanceof CharSequence) {
+                                mergedOptions[entry.key] = entry.value.toString()
+                            }
+                        }
+                        for (entry in attributes) {
+                            if (entry.value instanceof CharSequence) {
+                                attributes[entry.key] = entry.value.toString()
+                            }
+                        }
+
                         asciidoctor.renderFile(file, mergedOptions)
                     } else {
                         File target = new File("${destinationParentDir}/${file.name}")
