@@ -20,10 +20,7 @@ import org.asciidoctor.Asciidoctor
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.*
 
 /**
  * @author Noam Tenne
@@ -35,7 +32,7 @@ import org.gradle.api.tasks.TaskAction
 class AsciidoctorTask extends DefaultTask {
     private static final boolean isWindows = System.getProperty('os.name').contains('Windows')
 
-    @Input File sourceDocumentName
+    @Optional @InputFile File sourceDocumentName
     @InputDirectory File sourceDir
     @OutputDirectory File outputDir
     @Input String backend
@@ -67,7 +64,7 @@ class AsciidoctorTask extends DefaultTask {
         destinationParentDir
     }
 
-    private static String normalizePath (String path) {
+    private static String normalizePath(String path) {
         if (isWindows) {
             path = path.replace('\\\\', '\\')
             path = path.replace('\\', '\\\\')

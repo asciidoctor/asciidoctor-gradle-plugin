@@ -27,10 +27,10 @@ Use the following snippet
 Usage
 -----
 
-The plugin adds a new task named `asciidoctor`. This task exposes 4 properties as part of its configuration
+The plugin adds a new task named `asciidoctor`. This task exposes 5 properties as part of its configuration
 
  * sourceDir - where the asciidoc sources are. Type: File. Default: `src/asciidoc`.
- * sourceDocumentName - an override to process a single source file; defaults to all files in `${sourceDir}`
+ * sourceDocumentName - an override to process a single source file. Type: File. Defaults to all files in `${sourceDir}`
  * outputDir - where generated docs go. Type: File. Default: `$buildDir/asciidoc`.
  * backend - the backend to use. Type: String. Default: `html5`.
  * options - a Map specifying different options that can be sent to Asciidoctor.
@@ -60,6 +60,10 @@ Refer to the [Ascidoctor documentation][asciidoctor_docs] to learn more about th
 History
 -------
 
+### 0.4.1
+
+ * Fixes [#16][issue_16]. Property `sourceDocumentName` is mandatory.
+
 ### 0.4.0
 
  * Supports Asciidoctor 0.1.3
@@ -70,7 +74,7 @@ History
 ### 0.3.0
 
  * Supports Asciidoctor 0.1.2
- * Rely on asciidoctor-java.integration
+ * Rely on asciidoctor-java-integration
 
 ### 0.2.2
 
@@ -100,4 +104,5 @@ History
 [issue_13]: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/13
 [issue_14]: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/14
 [issue_15]: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/15
+[issue_16]: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/16
 [asciidoctor_docs]: http://asciidoctor.org/docs/

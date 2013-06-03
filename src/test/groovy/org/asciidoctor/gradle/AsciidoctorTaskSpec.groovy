@@ -41,7 +41,7 @@ class AsciidoctorTaskSpec extends Specification {
         expect:
             project.tasks.findByName('asciidoctor') == null
         when:
-            Task task = project.tasks.add(name: 'asciidoctor', type: AsciidoctorTask) {
+            Task task = project.tasks.create(name: 'asciidoctor', type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
                 sourceDir = new File(rootDir, 'build/resources/test/src/asciidoc')
                 outputDir = new File(rootDir, 'build/asciidoc')
@@ -56,7 +56,7 @@ class AsciidoctorTaskSpec extends Specification {
         expect:
             project.tasks.findByName('asciidoctor') == null
         when:
-            Task task = project.tasks.add(name: 'asciidoctor', type: AsciidoctorTask) {
+            Task task = project.tasks.create(name: 'asciidoctor', type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
                 sourceDir = new File(rootDir, 'build/resources/test/src/asciidoc')
                 outputDir = new File(rootDir, 'build/asciidoc')
@@ -72,7 +72,7 @@ class AsciidoctorTaskSpec extends Specification {
         expect:
             project.tasks.findByName('asciidoctor') == null
         when:
-            Task task = project.tasks.add(name: 'asciidoctor', type: AsciidoctorTask) {
+            Task task = project.tasks.create(name: 'asciidoctor', type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
                 sourceDir = new File(rootDir, 'build/resources/test/src/asciidoc')
                 outputDir = new File(rootDir, 'build/asciidoc')
