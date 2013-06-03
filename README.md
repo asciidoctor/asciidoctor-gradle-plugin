@@ -64,8 +64,8 @@ History
 
  * Supports Asciidoctor 0.1.3
  * Fixes [#13][issue_13]. Rendering under Windows fails.
- * Fixes [#14][issue_14]. Rendering under Windows fails.
- * Fixes [#15][issue_15]. Rendering under Windows fails.
+ * Fixes [#14][issue_14]. Stylesheet attributes cannot take a GString for a value.
+ * Fixes [#15][issue_15]. Provide `sourceDocumentName` as a property.
 
 ### 0.3.0
 
