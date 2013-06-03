@@ -27,6 +27,7 @@ configurations {
 }
 
 repositories {
+    mavenCentral()
     bintray.jcenter()
 }
 
@@ -34,7 +35,7 @@ dependencies {
     deployerJars 'org.apache.maven.wagon:wagon-webdav:1.0-beta-2',
             'org.apache.maven:maven-ant-tasks:2.1.0'
     compile gradleApi()
-    compile('org.asciidoctor:asciidoctor-java-integration:0.1.2') {
+    compile('org.asciidoctor:asciidoctor-java-integration:0.1.3') {
         exclude group: 'rubygems', module :'haml'
         exclude group: 'rubygems', module :'asciidoctor'
         exclude group: 'rubygems', module :'coderay'
@@ -46,7 +47,7 @@ dependencies {
 }
 
 task wrapper(type: Wrapper, description: 'Gradle Wrapper task') {
-    gradleVersion = '1.5'
+    gradleVersion = '1.6'
 }
 
 def installer = install.repositories.mavenInstaller

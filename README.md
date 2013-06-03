@@ -59,6 +59,11 @@ Refer to the [Ascidoctor documentation][asciidoctor_docs] to learn more about th
 History
 -------
 
+### 0.4.0
+
+ * Supports Asciidoctor 0.1.3
+ * Fixes [#13][issue_13]. Rendering under Windows fails.
+
 ### 0.3.0
 
  * Supports Asciidoctor 0.1.2
@@ -89,4 +94,5 @@ History
 [4]: https://github.com/lordofthejars
 [issue_6]: https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/6
 [issue_7]: https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/7
+[issue_13]: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/13
 [asciidoctor_docs]: http://asciidoctor.org/docs/
