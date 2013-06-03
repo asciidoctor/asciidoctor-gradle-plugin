@@ -35,6 +35,7 @@ import org.gradle.api.tasks.TaskAction
 class AsciidoctorTask extends DefaultTask {
     private static final boolean isWindows = System.getProperty('os.name').contains('Windows')
 
+    @Input File sourceDocumentName
     @InputDirectory File sourceDir
     @OutputDirectory File outputDir
     @Input String backend
@@ -80,6 +81,24 @@ class AsciidoctorTask extends DefaultTask {
 
         outputDir.mkdirs()
 
+        if (sourceDocumentName) {
+            processSingleDocument()
+        } else {
+            processAllDocuments()
+        }
+    }
+
+    private void processSingleDocument() {
+        try {
+            if (sourceDocumentName.name =~ /.*\.a((sc(iidoc)?)|d(oc)?)$/) {
+                asciidoctor.renderFile(sourceDocumentName, mergedOptions(options, outputDir, backend))
+            }
+        } catch (Exception e) {
+            throw new GradleException('Error running Asciidoctor', e)
+        }
+    }
+
+    private void processAllDocuments() {
         try {
             sourceDir.eachFileRecurse { File file ->
                 if (file.directory) {
@@ -87,28 +106,7 @@ class AsciidoctorTask extends DefaultTask {
                 } else {
                     File destinationParentDir = outputDirFor(file, sourceDir.absolutePath, outputDir)
                     if (file.name =~ /.*\.a((sc(iidoc)?)|d(oc)?)$/) {
-                        Map mergedOptions = [:]
-                        mergedOptions.putAll(options)
-                        mergedOptions.in_place = false
-                        mergedOptions.safe = 0i
-                        mergedOptions.to_dir = outputDir.absolutePath
-                        Map attributes = mergedOptions.get("attributes", [:])
-                        attributes.backend = backend
-
-                        // Issue #14 force GString -> String as jruby will fail
-                        // to find an exact match when invoking Asciidoctor
-                        for (entry in mergedOptions) {
-                            if (entry.value instanceof CharSequence) {
-                                mergedOptions[entry.key] = entry.value.toString()
-                            }
-                        }
-                        for (entry in attributes) {
-                            if (entry.value instanceof CharSequence) {
-                                attributes[entry.key] = entry.value.toString()
-                            }
-                        }
-
-                        asciidoctor.renderFile(file, mergedOptions)
+                        asciidoctor.renderFile(file, mergedOptions(options, outputDir, backend))
                     } else {
                         File target = new File("${destinationParentDir}/${file.name}")
                         target.withOutputStream { it << file.newInputStream() }
@@ -118,5 +116,29 @@ class AsciidoctorTask extends DefaultTask {
         } catch (Exception e) {
             throw new GradleException('Error running Asciidoctor', e)
         }
+    }
+
+    private static Map<String, Object> mergedOptions(Map options, File outputDir, String backend) {
+        Map<String, Object> mergedOptions = [:]
+        mergedOptions.putAll(options)
+        mergedOptions.in_place = false
+        mergedOptions.safe = 0i
+        mergedOptions.to_dir = outputDir.absolutePath
+        Map attributes = mergedOptions.get("attributes", [:])
+        attributes.backend = backend
+
+        // Issue #14 force GString -> String as jruby will fail
+        // to find an exact match when invoking Asciidoctor
+        for (entry in mergedOptions) {
+            if (entry.value instanceof CharSequence) {
+                mergedOptions[entry.key] = entry.value.toString()
+            }
+        }
+        for (entry in attributes) {
+            if (entry.value instanceof CharSequence) {
+                attributes[entry.key] = entry.value.toString()
+            }
+        }
+        mergedOptions
     }
 }

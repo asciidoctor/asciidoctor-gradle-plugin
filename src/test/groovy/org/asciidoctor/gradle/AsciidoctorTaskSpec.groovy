@@ -41,7 +41,6 @@ class AsciidoctorTaskSpec extends Specification {
         expect:
             project.tasks.findByName('asciidoctor') == null
         when:
-                println new File('.').absolutePath
             Task task = project.tasks.add(name: 'asciidoctor', type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
                 sourceDir = new File(rootDir, 'build/resources/test/src/asciidoc')
@@ -67,5 +66,21 @@ class AsciidoctorTaskSpec extends Specification {
         then:
            mockAsciidoctor.renderFile(_, _) >> { throw new RuntimeException() }
            thrown(GradleException)
+    }
+
+    def "Processes a single document given a value for sourceDocumentName"() {
+        expect:
+            project.tasks.findByName('asciidoctor') == null
+        when:
+            Task task = project.tasks.add(name: 'asciidoctor', type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(rootDir, 'build/resources/test/src/asciidoc')
+                outputDir = new File(rootDir, 'build/asciidoc')
+                sourceDocumentName = new File(rootDir, 'sample.asciidoc')
+            }
+
+            task.gititdone()
+        then:
+            1 * mockAsciidoctor.renderFile(_, _)
     }
 }
