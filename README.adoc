@@ -4,12 +4,17 @@ Asciidoctor Gradle Plugin
 :asciidoctor-url: http://asciidoctor.org
 :issues: https://github.com/asciidoctor/asciidoctor-maven-plugin/issues
 :gradle-url: http://gradle.org/
+:asciidoctor-maven-plugin: https://github.com/asciidoctor/asciidoctor-maven-plugin
+:lightguard: https://github.com/LightGuard
+:asciidoctor-java-integration: https://github.com/asciidoctor/asciidoctor-java-integration
+:lordofthejars: https://github.com/lordofthejars
+:asciidoctor-docs: http://asciidoctor.org/docs/
 
 image:https://travis-ci.org/asciidoctor/asciidoctor-gradle-plugin.png?branch=master["Build Status", link="https://travis-ci.org/asciidoctor/asciidoctor-gradle-plugin"]
 
 The asciidoctor-gradle-plugin is the official means of using {asciidoctor-url}[Asciidoctor] to render all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
 
-This is a port of the {asciidoctor-maven-plugin}[asciidoctor-maven-plugin} project by {lightguard}[@LightGuard]. Relies on {asciidoctor-java-integration}[asciidoctor-java-integration] by {lordofthejars}[@lordofthejars].
+This is a port of the {asciidoctor-maven-plugin}[asciidoctor-maven-plugin] project by {lightguard}[@LightGuard]. Relies on {asciidoctor-java-integration}[asciidoctor-java-integration] by {lordofthejars}[@lordofthejars].
 
 == Installation
 
@@ -64,17 +69,23 @@ Any key/values set on `attributes` are sent as is to Asciidoctor. You may use th
 Refer to the {asciidoctor-docs}[Ascidoctor documentation] to learn more about these options and attributes.
 
 == History
+:issue-06: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/6
+:issue-07: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/7
+:issue-13: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/13
+:issue-14: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/14
+:issue-15: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/15
+:issue-16: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/16
 
 === 0.4.1
 
- * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/16. Property `sourceDocumentName` is mandatory.
+ * Fixes {issue-16}[#16]. Property `sourceDocumentName` is mandatory.
 
 === 0.4.0
 
  * Supports Asciidoctor 0.1.3
- * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/13. Rendering under Windows fails.
- * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/14. Stylesheet attributes cannot take a GString for a value.
- * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/15. Provide `sourceDocumentName` as a property.
+ * Fixes {issue-13}[#13]. Rendering under Windows fails.
+ * Fixes {issue-14}[#14]. Stylesheet attributes cannot take a GString for a value.
+ * Fixes {issue-15}[#15]. Provide `sourceDocumentName` as a property.
 
 === 0.3.0
 
@@ -83,11 +94,11 @@ Refer to the {asciidoctor-docs}[Ascidoctor documentation] to learn more about th
 
 === 0.2.2
 
- * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/7. Make up-to-date directory detection work for AsciidoctorTask.
+ * Fixes {issue-07}[#7]. Make up-to-date directory detection work for AsciidoctorTask.
 
 === 0.2.1
 
- * Fixeshttps://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/6. Can't run plugin if Gradle daemon is active.
+ * Fixes {issue-06}[#6]. Can't run plugin if Gradle daemon is active.
 
 === 0.2
 
@@ -99,9 +110,3 @@ Refer to the {asciidoctor-docs}[Ascidoctor documentation] to learn more about th
  * First release.
  * Supports Asciidoctor 0.0.9
  * Backends: html5
-
-:asciidoc-maven-plugin: https://github.com/asciidoctor/asciidoctor-maven-plugin
-:lightguard: https://github.com/LightGuard
-:asciidoc-java-integration: https://github.com/asciidoctor/asciidoctor-java-integration
-:lordofthejars: https://github.com/lordofthejars
-:asciidoctor-docs: http://asciidoctor.org/docs/
