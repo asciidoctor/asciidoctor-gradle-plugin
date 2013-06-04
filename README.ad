@@ -1,0 +1,107 @@
+Asciidoctor Gradle Plugin
+=========================
+:asciidoc-url: http://asciidoc.org
+:asciidoctor-url: http://asciidoctor.org
+:issues: https://github.com/asciidoctor/asciidoctor-maven-plugin/issues
+:gradle-url: http://gradle.org/
+
+image:https://travis-ci.org/asciidoctor/asciidoctor-gradle-plugin.png?branch=master["Build Status", link="https://travis-ci.org/asciidoctor/asciidoctor-gradle-plugin"]
+
+The asciidoctor-gradle-plugin is the official means of using {asciidoctor-url}[Asciidoctor] to render all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
+
+This is a port of the {asciidoctor-maven-plugin}[asciidoctor-maven-plugin} project by {lightguard}[@LightGuard]. Relies on {asciidoctor-java-integration}[asciidoctor-java-integration] by {lordofthejars}[@lordofthejars].
+
+== Installation
+
+Use the following snippet inside a Gradle build file
+
+[source,groovy]
+----
+buildscript {
+    repositories {
+        mavenRepo name: 'Bintray Asciidoctor repo', url: 'http://dl.bintray.com/content/aalmiray/asciidoctor'
+        mavenRepo name: 'Bintray JCenter', url: 'http://jcenter.bintray.com'
+    }
+
+    dependencies {
+        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:0.4.1'
+    }
+}
+
+apply plugin: 'asciidoctor'
+----
+
+== Usage
+
+The plugin adds a new task named `asciidoctor`. This task exposes 5 properties as part of its configuration
+
+[horizontal]
+sourceDir:: where the asciidoc sources are. Type: File. Default: `src/asciidoc`.
+sourceDocumentName:: an override to process a single source file. Type: File. Defaults to all files in `${sourceDir}`
+outputDir:: where generated docs go. Type: File. Default: `$buildDir/asciidoc`.
+backend:: the backend to use. Type: String. Default: `html5`.
+options:: a Map specifying different options that can be sent to Asciidoctor.
+ 
+Sources may have any of the following extensions in order to be discovered
+
+ * .asciidoc
+ * .adoc
+ * .asc
+ * .ad
+
+== Configuration
+
+The following options may be set using the task's `options` property
+
+ * header_footer - boolean
+ * template_dir - String
+ * template_engine - String
+ * compact - boolean
+ * doctype - String
+ * attributes - Map
+
+Any key/values set on `attributes` are sent as is to Asciidoctor. You may use this Map to specify an stylesheet for example.
+Refer to the {asciidoctor-docs}[Ascidoctor documentation] to learn more about these options and attributes.
+
+== History
+
+=== 0.4.1
+
+ * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/16. Property `sourceDocumentName` is mandatory.
+
+=== 0.4.0
+
+ * Supports Asciidoctor 0.1.3
+ * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/13. Rendering under Windows fails.
+ * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/14. Stylesheet attributes cannot take a GString for a value.
+ * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/15. Provide `sourceDocumentName` as a property.
+
+=== 0.3.0
+
+ * Supports Asciidoctor 0.1.2
+ * Rely on asciidoctor-java-integration
+
+=== 0.2.2
+
+ * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/7. Make up-to-date directory detection work for AsciidoctorTask.
+
+=== 0.2.1
+
+ * Fixeshttps://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/6. Can't run plugin if Gradle daemon is active.
+
+=== 0.2
+
+ * Support Asciidoctor 0.1.1
+ * Backends: html5, docbook
+
+=== 0.1
+
+ * First release.
+ * Supports Asciidoctor 0.0.9
+ * Backends: html5
+
+:asciidoc-maven-plugin: https://github.com/asciidoctor/asciidoctor-maven-plugin
+:lightguard: https://github.com/LightGuard
+:asciidoc-java-integration: https://github.com/asciidoctor/asciidoctor-java-integration
+:lordofthejars: https://github.com/lordofthejars
+:asciidoctor-docs: http://asciidoctor.org/docs/
