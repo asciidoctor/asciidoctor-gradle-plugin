@@ -33,6 +33,8 @@ apply plugin: 'maven'
 apply plugin: 'javadocHotfix'
 apply plugin: 'codenarc'
 apply plugin: 'jacoco'
+apply plugin: 'build-dashboard'
+apply plugin: 'maven-publish'
 
 configurations {
     deployerJars
@@ -66,69 +68,53 @@ codenarc {
     configFile = file('config/codenarc/codenarc.groovy')
 }
 
-def installer = install.repositories.mavenInstaller
-def deployer = null
+publishing {
+    publications {
+        mavenCustom(MavenPublication) {
+            from components.java
+            pom.withXml {
+                asNode().with {
+                    appendNode('description',
+                        'A Gradle plugin that uses Asciidoctor via JRuby to process AsciiDoc source files within the project')
+                    appendNode('url', 'http://asciidoctor.org')
+                    appendNode('inceptionYear', '2013')
+                    appendNode('licenses')
+                        .appendNode('license')
+                            .appendNode('name', 'The Apache Software License, Version 2.0').parent()
+                            .appendNode('url', 'http://www.apache.org/licenses/LICENSE-2.0.txt').parent()
+                            .appendNode('distribution', 'repo')
+                    appendNode('scm')
+                       .appendNode('url', 'https://github.com/asciidoctor/asciidoctor-gradle-plugin')
+                    Node developers = appendNode('developers')
+                    [
+                         aalmiray: 'Andres Almiray',
+                         noamt: 'Noam Tenne',
+                         bmuschko: 'Benjamin Muschko'
+                    ].each { devId, devName ->
+                        developers.appendNode('developer')
+                            .appendNode('id', devId).parent()
+                            .appendNode('name', devName).parent()
+                            .appendNode('roles')
+                                .appendNode('role', 'Developer')
+                    }
+                    [
+                        tombujok: 'Tom Bujok',
+                        lpeilak: 'Lukasz Pielak',
+                        dvyazelenko: 'Dmitri Vyazelenko'
+                    ].each { devId, devName ->
+                        developers.appendNode('developer')
+                            .appendNode('id', devId).parent()
+                            .appendNode('name', devName).parent()
+                            .appendNode('roles')
+                                .appendNode('role', 'Contributor')
+                    }
+                }
+            }
+        }
+    }
+}
 
+/*
 if(!project.hasProperty('bintrayUsername')) ext.bintrayUsername = ''
 if(!project.hasProperty('bintrayPassword')) ext.bintrayPassword = ''
-
-uploadArchives {
-    repositories {
-        deployer = mavenDeployer {
-            name = 'bintrayDeployer'
-            configuration = configurations.deployerJars
-            repository(url: bintrayReleaseUrl) {
-                authentication(userName: bintrayUsername, password: bintrayPassword)
-            }
-        }
-    }
-}
-
-[installer, deployer].each { repo ->
-    configure(repo) {
-        pom.project {
-            name('asciidoctor-gradle-plugin')
-            description('A Gradle plugin that uses Asciidoctor via JRuby to process AsciiDoc source files within the project')
-            url('http://asciidoctor.org')
-            inceptionYear '2013'
-            licenses {
-                license {
-                    name 'The Apache Software License, Version 2.0'
-                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    distribution 'repo'
-                }
-            }
-            scm {
-                url "https://github.com/asciidoctor/asciidoctor-gradle-plugin"
-            }
-            developers {
-                [
-                     aalmiray: 'Andres Almiray',
-                     noamt: 'Noam Tenne',
-                     bmuschko: 'Benjamin Muschko'
-                ].each { devId, devName ->
-                    developer {
-                        id devId
-                        name devName
-                        roles {
-                            role 'Developer'
-                        }
-                    }
-                }
-                [
-                    tombujok: 'Tom Bujok',
-                    lpeilak: 'Lukasz Pielak',
-                    dvyazelenko: 'Dmitri Vyazelenko'
-                ].each { devId, devName ->
-                    developer {
-                        id devId
-                        name devName
-                        roles {
-                            role 'Contributor'
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
+*/
