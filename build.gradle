@@ -32,6 +32,7 @@ apply plugin: 'idea'
 apply plugin: 'maven'
 apply plugin: 'javadocHotfix'
 apply plugin: 'codenarc'
+apply plugin: 'jacoco'
 
 configurations {
     deployerJars
