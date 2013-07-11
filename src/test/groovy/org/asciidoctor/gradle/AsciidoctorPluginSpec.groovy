@@ -11,19 +11,22 @@ import spock.lang.Specification
  * @author Benjamin Muschko
  */
 class AsciidoctorPluginSpec extends Specification {
+    private static final String ASCIIDOCTOR = 'asciidoctor'
+
     Project project
 
     def setup() {
         project = ProjectBuilder.builder().build()
     }
 
+    @SuppressWarnings('MethodName')
     def "Applies plugin and checks default setup"() {
         expect:
-            project.tasks.findByName('asciidoctor') == null
+            project.tasks.findByName(ASCIIDOCTOR) == null
         when:
             project.apply plugin: AsciidoctorPlugin
         then:
-            Task asciidoctorTask = project.tasks.findByName('asciidoctor')
+            Task asciidoctorTask = project.tasks.findByName(ASCIIDOCTOR)
             asciidoctorTask != null
             asciidoctorTask.group == 'Documentation'
             asciidoctorTask.sourceDir == project.file('src/asciidoc')

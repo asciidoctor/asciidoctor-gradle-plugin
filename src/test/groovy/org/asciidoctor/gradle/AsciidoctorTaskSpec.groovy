@@ -14,6 +14,10 @@ import spock.lang.Specification
  * @author Benjamin Muschko
  */
 class AsciidoctorTaskSpec extends Specification {
+    private static final String ASCIIDOCTOR = 'asciidoctor'
+    private static final String ASCIIDOC_RESOURCES_DIR = 'build/resources/test/src/asciidoc'
+    private static final String ASCIIDOC_BUILD_DIR = 'build/asciidoc'
+
     Project project
     Asciidoctor mockAsciidoctor
     File rootDir
@@ -24,11 +28,12 @@ class AsciidoctorTaskSpec extends Specification {
         rootDir = new File('.')
     }
 
+    @SuppressWarnings('MethodName')
     def "Adds asciidoctor task with unsupported backend"() {
         expect:
-            project.tasks.findByName('asciidoctor') == null
+            project.tasks.findByName(ASCIIDOCTOR) == null
         when:
-            Task task = project.tasks.add(name: 'asciidoctor', type: AsciidoctorTask) {
+            Task task = project.tasks.add(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 backend = 'unknown'
             }
 
@@ -37,14 +42,15 @@ class AsciidoctorTaskSpec extends Specification {
             thrown(InvalidUserDataException)
     }
 
+    @SuppressWarnings('MethodName')
     def "Adds asciidoctor task with supported backend"() {
         expect:
-            project.tasks.findByName('asciidoctor') == null
+            project.tasks.findByName(ASCIIDOCTOR) == null
         when:
-            Task task = project.tasks.create(name: 'asciidoctor', type: AsciidoctorTask) {
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(rootDir, 'build/resources/test/src/asciidoc')
-                outputDir = new File(rootDir, 'build/asciidoc')
+                sourceDir = new File(rootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(rootDir, ASCIIDOC_BUILD_DIR)
             }
 
             task.gititdone()
@@ -52,30 +58,32 @@ class AsciidoctorTaskSpec extends Specification {
             1 * mockAsciidoctor.renderFile(_, _)
     }
 
+    @SuppressWarnings('MethodName')
     def "Adds asciidoctor task throws exception"() {
         expect:
-            project.tasks.findByName('asciidoctor') == null
+            project.tasks.findByName(ASCIIDOCTOR) == null
         when:
-            Task task = project.tasks.create(name: 'asciidoctor', type: AsciidoctorTask) {
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(rootDir, 'build/resources/test/src/asciidoc')
-                outputDir = new File(rootDir, 'build/asciidoc')
+                sourceDir = new File(rootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(rootDir, ASCIIDOC_BUILD_DIR)
             }
 
             task.gititdone()
         then:
-           mockAsciidoctor.renderFile(_, _) >> { throw new RuntimeException() }
+           mockAsciidoctor.renderFile(_, _) >> { throw new IllegalArgumentException() }
            thrown(GradleException)
     }
 
+    @SuppressWarnings('MethodName')
     def "Processes a single document given a value for sourceDocumentName"() {
         expect:
-            project.tasks.findByName('asciidoctor') == null
+            project.tasks.findByName(ASCIIDOCTOR) == null
         when:
-            Task task = project.tasks.create(name: 'asciidoctor', type: AsciidoctorTask) {
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(rootDir, 'build/resources/test/src/asciidoc')
-                outputDir = new File(rootDir, 'build/asciidoc')
+                sourceDir = new File(rootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(rootDir, ASCIIDOC_BUILD_DIR)
                 sourceDocumentName = new File(rootDir, 'sample.asciidoc')
             }
 

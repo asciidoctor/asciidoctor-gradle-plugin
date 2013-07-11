@@ -30,7 +30,10 @@ import org.gradle.api.tasks.*
  * @author Dmitri Vyazelenko
  */
 class AsciidoctorTask extends DefaultTask {
-    private static final boolean isWindows = System.getProperty('os.name').contains('Windows')
+    private static final boolean IS_WINDOWS = System.getProperty('os.name').contains('Windows')
+    private static final String DOUBLE_BACKLASH = '\\\\'
+    private static final String BACKLASH = '\\'
+    private static final ASCIIDOC_FILE_EXTENSION_PATTERN = ~/.*\.a((sc(iidoc)?)|d(oc)?)$/
 
     @Optional @InputFile File sourceDocumentName
     @InputDirectory File sourceDir
@@ -65,9 +68,9 @@ class AsciidoctorTask extends DefaultTask {
     }
 
     private static String normalizePath(String path) {
-        if (isWindows) {
-            path = path.replace('\\\\', '\\')
-            path = path.replace('\\', '\\\\')
+        if (IS_WINDOWS) {
+            path = path.replace(DOUBLE_BACKLASH, BACKLASH)
+            path = path.replace(BACKLASH, DOUBLE_BACKLASH)
         }
         path
     }
@@ -85,16 +88,18 @@ class AsciidoctorTask extends DefaultTask {
         }
     }
 
+    @SuppressWarnings('CatchException')
     private void processSingleDocument() {
         try {
-            if (sourceDocumentName.name =~ /.*\.a((sc(iidoc)?)|d(oc)?)$/) {
+            if (sourceDocumentName.name =~ ASCIIDOC_FILE_EXTENSION_PATTERN) {
                 asciidoctor.renderFile(sourceDocumentName, mergedOptions(options, outputDir, backend))
             }
         } catch (Exception e) {
-            throw new GradleException('Error running Asciidoctor', e)
+            throw new GradleException('Error running Asciidoctor on single source', e)
         }
     }
 
+    @SuppressWarnings('CatchException')
     private void processAllDocuments() {
         try {
             sourceDir.eachFileRecurse { File file ->
@@ -102,7 +107,7 @@ class AsciidoctorTask extends DefaultTask {
                     outputDirFor(file, sourceDir.absolutePath, outputDir)
                 } else {
                     File destinationParentDir = outputDirFor(file, sourceDir.absolutePath, outputDir)
-                    if (file.name =~ /.*\.a((sc(iidoc)?)|d(oc)?)$/) {
+                    if (file.name =~ ASCIIDOC_FILE_EXTENSION_PATTERN) {
                         asciidoctor.renderFile(file, mergedOptions(options, outputDir, backend))
                     } else {
                         File target = new File("${destinationParentDir}/${file.name}")
@@ -121,7 +126,7 @@ class AsciidoctorTask extends DefaultTask {
         mergedOptions.in_place = false
         mergedOptions.safe = 0i
         mergedOptions.to_dir = outputDir.absolutePath
-        Map attributes = mergedOptions.get("attributes", [:])
+        Map attributes = mergedOptions.get('attributes', [:])
         attributes.backend = backend
 
         // Issue #14 force GString -> String as jruby will fail

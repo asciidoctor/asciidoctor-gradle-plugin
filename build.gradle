@@ -31,6 +31,7 @@ apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'maven'
 apply plugin: 'javadocHotfix'
+apply plugin: 'codenarc'
 
 configurations {
     deployerJars
@@ -58,6 +59,10 @@ dependencies {
 
 task wrapper(type: Wrapper, description: 'Gradle Wrapper task') {
     gradleVersion = '1.6'
+}
+
+codenarc {
+    configFile = file('config/codenarc/codenarc.groovy')
 }
 
 def installer = install.repositories.mavenInstaller
