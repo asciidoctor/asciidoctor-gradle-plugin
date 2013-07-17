@@ -18,9 +18,10 @@ This is a port of the {asciidoctor-maven-plugin}[asciidoctor-maven-plugin] proje
 
 == Installation
 
-Use the following snippet inside a Gradle build file
+Use the following snippet inside a Gradle build file:
 
 [source,groovy]
+.build.gradle
 ----
 buildscript {
     repositories {
@@ -68,8 +69,9 @@ The following options may be set using the task's `options` property
 Any key/values set on `attributes` are sent as is to Asciidoctor. You may use this Map to specify an stylesheet for example. The following snippet shows a sample configuration defining attributes
 
 [source,groovy]
+.build.gradle
 ----
-apply plugin: 'asciidoctor'
+// append below the line: apply plugin: 'asciidoctor'
 
 asciidoctor {
     outputDir = new File("$buildDir/docs")
@@ -83,6 +85,28 @@ asciidoctor {
         ]
     ]
 }
+----
+
+You may need to include extra content into the head of the exported document.
+For example, you might want to include jQuery inside the `<head>` element of the HTML export.
+To do so, first create a docinfo file `src/asciidoc/docinfo.html` containing the content to include, in this case the `<script>` tag to load jQuery.
+
+[source,html]
+.src/asciidoc/docinfo.html
+----
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.js"></script>
+----
+
+Then, add the `docinfo1` attribute to the attributes list in the previous example:
+
+[source,groovy]
+.build.gradle
+----
+attributes: [
+    // ...
+    docinfo1: '',
+    // ...
+]
 ----
 
 Refer to the {asciidoctor-docs}[Asciidoctor documentation] to learn more about these options and attributes.
