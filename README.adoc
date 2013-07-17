@@ -65,8 +65,27 @@ The following options may be set using the task's `options` property
  * doctype - String
  * attributes - Map
 
-Any key/values set on `attributes` are sent as is to Asciidoctor. You may use this Map to specify an stylesheet for example.
-Refer to the {asciidoctor-docs}[Ascidoctor documentation] to learn more about these options and attributes.
+Any key/values set on `attributes` are sent as is to Asciidoctor. You may use this Map to specify an stylesheet for example. The following snippet shows a sample configuration defining attributes
+
+[source,groovy]
+----
+apply plugin: 'asciidoctor'
+
+asciidoctor {
+    outputDir = new File("$buildDir/docs")
+    options = [
+        eruby: 'erubis',
+        attributes: [
+            'source-highlighter': 'coderay',
+            toc: '',
+            idprefix: '',
+            idseparator: '-'
+        ]
+    ]
+}
+----
+
+Refer to the {asciidoctor-docs}[Asciidoctor documentation] to learn more about these options and attributes.
 
 == History
 :issue-06: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/6
