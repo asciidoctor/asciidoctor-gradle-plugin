@@ -47,7 +47,6 @@ class AsciidoctorTask extends DefaultTask {
         sourceDir = project.file('src/asciidoc')
         outputDir = new File(project.buildDir, 'asciidoc')
         backend = AsciidoctorBackend.HTML5.id
-        asciidoctor = Asciidoctor.Factory.create()
     }
 
     @TaskAction
@@ -55,6 +54,8 @@ class AsciidoctorTask extends DefaultTask {
         validateInputs()
 
         outputDir.mkdirs()
+
+        asciidoctor = asciidoctor ?: Asciidoctor.Factory.create()
 
         if (sourceDocumentName) {
             processSingleDocument()
