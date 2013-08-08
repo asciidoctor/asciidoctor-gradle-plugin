@@ -60,10 +60,6 @@ dependencies {
     testCompile 'org.spockframework:spock-core:0.6-groovy-1.8'
 }
 
-task wrapper(type: Wrapper, description: 'Gradle Wrapper task') {
-    gradleVersion = '1.6'
-}
-
 codenarc {
     configFile = file('config/codenarc/codenarc.groovy')
 }
