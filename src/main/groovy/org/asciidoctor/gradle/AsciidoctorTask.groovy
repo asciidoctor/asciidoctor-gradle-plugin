@@ -108,7 +108,7 @@ class AsciidoctorTask extends DefaultTask {
                 } else {
                     File destinationParentDir = outputDirFor(file, sourceDir.absolutePath, outputDir)
                     if (file.name =~ ASCIIDOC_FILE_EXTENSION_PATTERN) {
-                        asciidoctor.renderFile(file, mergedOptions(options, outputDir, backend))
+                        asciidoctor.renderFile(file, mergedOptions(options, destinationParentDir, backend))
                     } else {
                         File target = new File("${destinationParentDir}/${file.name}")
                         target.withOutputStream { it << file.newInputStream() }
