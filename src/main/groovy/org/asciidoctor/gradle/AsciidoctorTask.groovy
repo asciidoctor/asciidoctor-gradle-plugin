@@ -81,6 +81,8 @@ class AsciidoctorTask extends DefaultTask {
 
         outputDir.mkdirs()
 
+        asciidoctor = asciidoctor ?: Asciidoctor.Factory.create() 
+
         if (sourceDocumentName) {
             processSingleDocument()
         } else {
@@ -92,7 +94,7 @@ class AsciidoctorTask extends DefaultTask {
     private void processSingleDocument() {
         try {
             if (sourceDocumentName.name =~ ASCIIDOC_FILE_EXTENSION_PATTERN) {
-                if (getLogDocuments()) {
+                if (logDocuments) {
                     logger.lifecycle("Rendering $sourceDocumentName")
                 }
                 asciidoctor.renderFile(sourceDocumentName, mergedOptions(options, outputDir, backend))
@@ -111,7 +113,7 @@ class AsciidoctorTask extends DefaultTask {
                 } else {
                     File destinationParentDir = outputDirFor(file, sourceDir.absolutePath, outputDir)
                     if (file.name =~ ASCIIDOC_FILE_EXTENSION_PATTERN) {
-                        if (getLogDocuments()) {
+                        if (logDocuments) {
                             logger.lifecycle("Rendering $file")
                         }
                         asciidoctor.renderFile(file, mergedOptions(options, destinationParentDir, backend))

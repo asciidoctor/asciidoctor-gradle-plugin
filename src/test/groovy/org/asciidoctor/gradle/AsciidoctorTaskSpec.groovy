@@ -17,6 +17,7 @@ class AsciidoctorTaskSpec extends Specification {
     private static final String ASCIIDOCTOR = 'asciidoctor'
     private static final String ASCIIDOC_RESOURCES_DIR = 'build/resources/test/src/asciidoc'
     private static final String ASCIIDOC_BUILD_DIR = 'build/asciidoc'
+    private static final String ASCIIDOC_SAMPLE_FILE = 'sample.asciidoc'
 
     Project project
     Asciidoctor mockAsciidoctor
@@ -84,7 +85,7 @@ class AsciidoctorTaskSpec extends Specification {
                 asciidoctor = mockAsciidoctor
                 sourceDir = new File(rootDir, ASCIIDOC_RESOURCES_DIR)
                 outputDir = new File(rootDir, ASCIIDOC_BUILD_DIR)
-                sourceDocumentName = new File(rootDir, 'sample.asciidoc')
+                sourceDocumentName = new File(rootDir, ASCIIDOC_SAMPLE_FILE)
             }
 
             task.gititdone()
@@ -92,6 +93,7 @@ class AsciidoctorTaskSpec extends Specification {
             1 * mockAsciidoctor.renderFile(_, _)
     }
 
+    @SuppressWarnings('MethodName')
     def "Source documents in directories end up in the corresponding output directory"() {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
@@ -103,7 +105,7 @@ class AsciidoctorTaskSpec extends Specification {
             task.gititdone()
         then:
             1 * mockAsciidoctor.renderFile(new File(task.sourceDir, 'subdir/sample2.ad'), { it.to_dir == new File(task.outputDir, 'subdir').absolutePath })
-            1 * mockAsciidoctor.renderFile(new File(task.sourceDir, 'sample.asciidoc'), { it.to_dir == task.outputDir.absolutePath })
+            1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), { it.to_dir == task.outputDir.absolutePath })
             0 * mockAsciidoctor.renderFile(_, _)
     }
 }
