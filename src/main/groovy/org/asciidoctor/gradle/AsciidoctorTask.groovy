@@ -40,6 +40,7 @@ class AsciidoctorTask extends DefaultTask {
     @OutputDirectory File outputDir
     @Input String backend
     @Input Map options = [:]
+    @Optional boolean logDocuments = false
 
     Asciidoctor asciidoctor
 
@@ -77,6 +78,9 @@ class AsciidoctorTask extends DefaultTask {
     private void processSingleDocument() {
         try {
             if (sourceDocumentName.name =~ ASCIIDOC_FILE_EXTENSION_PATTERN) {
+                if (getLogDocuments()) {
+                    logger.lifecycle("Rendering $sourceDocumentName")
+                }
                 asciidoctor.renderFile(sourceDocumentName, mergedOptions(options, outputDir, backend))
             }
         } catch (Exception e) {
@@ -93,6 +97,9 @@ class AsciidoctorTask extends DefaultTask {
                 } else {
                     File destinationParentDir = outputDirFor(file, sourceDir.absolutePath, outputDir)
                     if (file.name =~ ASCIIDOC_FILE_EXTENSION_PATTERN) {
+                        if (getLogDocuments()) {
+                            logger.lifecycle("Rendering $file")
+                        }
                         asciidoctor.renderFile(file, mergedOptions(options, outputDir, backend))
                     } else {
                         File target = new File("${destinationParentDir}/${file.name}")
