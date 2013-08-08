@@ -50,27 +50,41 @@ class AsciidoctorTask extends DefaultTask {
         backend = AsciidoctorBackend.HTML5.id
     }
 
-    @TaskAction
-    void gititdone() {
-        validateInputs()
-
-        outputDir.mkdirs()
-
-        asciidoctor = asciidoctor ?: Asciidoctor.Factory.create()
-
-        if (sourceDocumentName) {
-            processSingleDocument()
-        } else {
-            processAllDocuments()
-        }
-    }
-
     /**
      * Validates input values. If an input value is not valid an exception is thrown.
      */
     private void validateInputs() {
         if (!AsciidoctorBackend.isSupported(backend)) {
             throw new InvalidUserDataException("Unsupported backend: $backend")
+        }
+    }
+
+    private static File outputDirFor(File source, String basePath, File outputDir) {
+        String filePath = source.directory ? source.absolutePath : source.parentFile.absolutePath
+        String relativeFilePath = normalizePath(filePath) - normalizePath(basePath)
+        File destinationParentDir = new File("${outputDir}/${relativeFilePath}")
+        if (!destinationParentDir.exists()) destinationParentDir.mkdirs()
+        destinationParentDir
+    }
+
+    private static String normalizePath(String path) {
+        if (IS_WINDOWS) {
+            path = path.replace(DOUBLE_BACKLASH, BACKLASH)
+            path = path.replace(BACKLASH, DOUBLE_BACKLASH)
+        }
+        path
+    }
+
+    @TaskAction
+    void gititdone() {
+        validateInputs()
+
+        outputDir.mkdirs()
+
+        if (sourceDocumentName) {
+            processSingleDocument()
+        } else {
+            processAllDocuments()
         }
     }
 
@@ -100,7 +114,7 @@ class AsciidoctorTask extends DefaultTask {
                         if (getLogDocuments()) {
                             logger.lifecycle("Rendering $file")
                         }
-                        asciidoctor.renderFile(file, mergedOptions(options, outputDir, backend))
+                        asciidoctor.renderFile(file, mergedOptions(options, destinationParentDir, backend))
                     } else {
                         File target = new File("${destinationParentDir}/${file.name}")
                         target.withOutputStream { it << file.newInputStream() }
@@ -110,22 +124,6 @@ class AsciidoctorTask extends DefaultTask {
         } catch (Exception e) {
             throw new GradleException('Error running Asciidoctor', e)
         }
-    }
-
-    private static File outputDirFor(File source, String basePath, File outputDir) {
-        String filePath = source.directory ? source.absolutePath : source.parentFile.absolutePath
-        String relativeFilePath = normalizePath(filePath) - normalizePath(basePath)
-        File destinationParentDir = new File("${outputDir}/${relativeFilePath}")
-        if (!destinationParentDir.exists()) destinationParentDir.mkdirs()
-        destinationParentDir
-    }
-
-    private static String normalizePath(String path) {
-        if (IS_WINDOWS) {
-            path = path.replace(DOUBLE_BACKLASH, BACKLASH)
-            path = path.replace(BACKLASH, DOUBLE_BACKLASH)
-        }
-        path
     }
 
     private static Map<String, Object> mergedOptions(Map options, File outputDir, String backend) {
