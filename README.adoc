@@ -119,6 +119,17 @@ Refer to the {asciidoctor-docs}[Asciidoctor documentation] to learn more about t
 :issue-14: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/14
 :issue-15: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/15
 :issue-16: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/16
+:issue-17: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/17
+:issue-21: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/21
+:pull-22: https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/22
+:pull-23: https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/23
+:pull-24: https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/24
+
+=== 0.5.0
+
+ * Fixes {issue-17}[#17]. Pass attributes to Asciidoctor
+ * Fixes {issue-21}[#21]. Log processed document filenames
+ * Applied {pull-22}[pull #22], {pull-23}[pull #23], {pull-24}[pull #24].
 
 === 0.4.1
 
