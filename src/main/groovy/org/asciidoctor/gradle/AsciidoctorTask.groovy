@@ -134,6 +134,12 @@ class AsciidoctorTask extends DefaultTask {
         mergedOptions.in_place = false
         mergedOptions.safe = 0i
         mergedOptions.to_dir = outputDir.absolutePath
+
+        if (mergedOptions.to_file) {
+            File toFile = new File(mergedOptions.to_file)
+            mergedOptions.to_file = new File(mergedOptions.remove('to_dir'), toFile.name).absolutePath
+        }
+
         Map attributes = mergedOptions.get('attributes', [:])
         attributes.backend = backend
 
@@ -149,6 +155,7 @@ class AsciidoctorTask extends DefaultTask {
                 attributes[entry.key] = entry.value.toString()
             }
         }
+
         mergedOptions
     }
 }
