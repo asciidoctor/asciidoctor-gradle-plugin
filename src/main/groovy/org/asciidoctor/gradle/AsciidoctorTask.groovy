@@ -97,7 +97,11 @@ class AsciidoctorTask extends DefaultTask {
                 if (logDocuments) {
                     logger.lifecycle("Rendering $sourceDocumentName")
                 }
-                asciidoctor.renderFile(sourceDocumentName, mergedOptions(options, outputDir, backend))
+                asciidoctor.renderFile(sourceDocumentName, mergedOptions(
+                    options: options,
+                    baseDir: project.projectDir,
+                    outputDir: outputDir,
+                    backend: backend))
             }
         } catch (Exception e) {
             throw new GradleException('Error running Asciidoctor on single source', e)
@@ -116,7 +120,11 @@ class AsciidoctorTask extends DefaultTask {
                         if (logDocuments) {
                             logger.lifecycle("Rendering $file")
                         }
-                        asciidoctor.renderFile(file, mergedOptions(options, destinationParentDir, backend))
+                        asciidoctor.renderFile(file, mergedOptions(
+                            options: options,
+                            baseDir: project.projectDir,
+                            outputDir: destinationParentDir,
+                            backend: backend))
                     } else {
                         File target = new File("${destinationParentDir}/${file.name}")
                         target.withOutputStream { it << file.newInputStream() }
@@ -128,12 +136,13 @@ class AsciidoctorTask extends DefaultTask {
         }
     }
 
-    private static Map<String, Object> mergedOptions(Map options, File outputDir, String backend) {
+    private static Map<String, Object> mergedOptions(Map params) {
         Map<String, Object> mergedOptions = [:]
-        mergedOptions.putAll(options)
+        mergedOptions.putAll(params.options)
         mergedOptions.in_place = false
         mergedOptions.safe = 0i
-        mergedOptions.to_dir = outputDir.absolutePath
+        mergedOptions.to_dir = params.outputDir.absolutePath
+        mergedOptions.base_dir = params.baseDir.absolutePath
 
         if (mergedOptions.to_file) {
             File toFile = new File(mergedOptions.to_file)
@@ -141,7 +150,7 @@ class AsciidoctorTask extends DefaultTask {
         }
 
         Map attributes = mergedOptions.get('attributes', [:])
-        attributes.backend = backend
+        attributes.backend = params.backend
 
         // Issue #14 force GString -> String as jruby will fail
         // to find an exact match when invoking Asciidoctor
