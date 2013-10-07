@@ -30,7 +30,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:0.5.0'
+        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:0.6.0'
     }
 }
 
@@ -121,9 +121,17 @@ Refer to the {asciidoctor-docs}[Asciidoctor documentation] to learn more about t
 :issue-16: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/16
 :issue-17: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/17
 :issue-21: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/21
+:issue-19: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/19
+:issue-27: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/27
 :pull-22: https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/22
 :pull-23: https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/23
 :pull-24: https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/24
+
+=== 0.6.0
+
+ * Supports Asciidoctor 0.1.4
+ * Fixes {issue-19}[#19]. Specify a default value for `base_dir` given the project's current directory.
+ * Fixes {issue-27}[#27]. Honor attribute `to_file`. This setting only makes sense when working with a single file.
 
 === 0.5.0
 
