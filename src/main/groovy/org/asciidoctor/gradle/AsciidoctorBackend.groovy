@@ -20,9 +20,10 @@ package org.asciidoctor.gradle
  * Supported backends.
  *
  * @author Benjamin Muschko
+ * @author Dan Allen
  */
 enum AsciidoctorBackend {
-    HTML5('html5'), DOCBOOK('docbook')
+    HTML('html'), DOCBOOK('docbook'), HTML5('html5'), DOCBOOK45('docbook45'), DOCBOOK5('docbook5')
 
     private final static Map<String, AsciidoctorBackend> ALL_BACKENDS
     private final String id
@@ -39,7 +40,7 @@ enum AsciidoctorBackend {
         id
     }
 
-    static boolean isSupported(String name) {
+    static boolean isBuiltIn(String name) {
         ALL_BACKENDS.containsKey(name)
     }
 }
