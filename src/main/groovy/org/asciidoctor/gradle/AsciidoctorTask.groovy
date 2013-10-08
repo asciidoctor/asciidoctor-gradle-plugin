@@ -150,11 +150,48 @@ class AsciidoctorTask extends DefaultTask {
         }
 
         Map attributes = [:]
-        // copy all attributes in order to prevent changes down
-        // the Asciidoctor chain that could cause serialization
-        // problems with Gradle -> all inputs/outputs get serialized
-        // for caching purposes; Ruby objects are non-serializable
-        attributes.putAll(mergedOptions.get('attributes', [:]))
+        def rawAttributes = mergedOptions.get('attributes', [:])
+        if (rawAttributes instanceof Map) {
+            // copy all attributes in order to prevent changes down
+            // the Asciidoctor chain that could cause serialization
+            // problems with Gradle -> all inputs/outputs get serialized
+            // for caching purposes; Ruby objects are non-serializable
+            // Issue #14 force GString -> String as jruby will fail
+            // to find an exact match when invoking Asciidoctor
+            for (entry in rawAttributes) {
+                if (entry.value == null || entry.value instanceof Boolean) {
+                  attributes[entry.key.toString()] = entry.value
+                }
+                else {
+                  attributes[entry.key.toString()] = entry.value.toString()
+                }
+            }
+        }
+        else {
+            if (rawAttributes instanceof CharSequence) {
+                // replace non-escaped spaces with null character, then replace escaped spaces with space,
+                // finally split on the null character
+                rawAttributes = rawAttributes.replaceAll('([^\\\\]) ', '$1\0').replaceAll('\\\\ ', ' ').split('\0')
+            }
+
+            if (rawAttributes.getClass().isArray() || rawAttributes instanceof Collection) {
+                rawAttributes.each() {
+                    if (it instanceof CharSequence) {
+                        def (k, v) = it.toString().split('=', 2) as List
+                        attributes.put(k, v != null ? v : '')
+                    }
+                    else {
+                        // QUESTION should we just coerce it to a String?
+                        throw new InvalidUserDataException("Unsupported type for attribute ${it}: ${it.class}")
+                    }
+                }
+            }
+            else {
+                // QUESTION should we just coerce it to a String?
+                throw new InvalidUserDataException("Unsupported type for attributes: ${rawAttributes.class}")
+            }
+        }
+
         attributes.backend = params.backend
         mergedOptions.attributes = attributes
 
@@ -163,11 +200,6 @@ class AsciidoctorTask extends DefaultTask {
         for (entry in mergedOptions) {
             if (entry.value instanceof CharSequence) {
                 mergedOptions[entry.key] = entry.value.toString()
-            }
-        }
-        for (entry in attributes) {
-            if (entry.value instanceof CharSequence) {
-                attributes[entry.key] = entry.value.toString()
             }
         }
 
