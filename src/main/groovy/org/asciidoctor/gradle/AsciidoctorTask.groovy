@@ -149,8 +149,14 @@ class AsciidoctorTask extends DefaultTask {
             mergedOptions.to_file = new File(mergedOptions.remove('to_dir'), toFile.name).absolutePath
         }
 
-        Map attributes = mergedOptions.get('attributes', [:])
+        Map attributes = [:]
+        // copy all attributes in order to prevent changes down
+        // the Asciidoctor chain that could cause serialization
+        // problems with Gradle -> all inputs/outputs get serialized
+        // for caching purposes; Ruby objects are non-serializable
+        attributes.putAll(mergedOptions.get('attributes', [:]))
         attributes.backend = params.backend
+        mergedOptions.attributes = attributes
 
         // Issue #14 force GString -> String as jruby will fail
         // to find an exact match when invoking Asciidoctor
