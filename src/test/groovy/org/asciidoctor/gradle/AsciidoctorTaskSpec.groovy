@@ -35,12 +35,16 @@ class AsciidoctorTaskSpec extends Specification {
             project.tasks.findByName(ASCIIDOCTOR) == null
         when:
             Task task = project.tasks.add(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(rootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(rootDir, ASCIIDOC_BUILD_DIR)
                 backend = 'unknown'
             }
 
             task.gititdone()
         then:
-            thrown(InvalidUserDataException)
+            org.asciidoctor.gradle.AsciidoctorBackend.isBuiltIn('unknown') == false
+            2 * mockAsciidoctor.renderFile(_, _)
     }
 
     @SuppressWarnings('MethodName')
