@@ -189,6 +189,7 @@ class AsciidoctorTask extends DefaultTask {
         }
 
         attributes.backend = params.backend
+        attributes.projectdir = params.baseDir.absolutePath
         mergedOptions.attributes = attributes
 
         // Issue #14 force GString -> String as jruby will fail
