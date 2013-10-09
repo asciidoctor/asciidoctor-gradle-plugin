@@ -112,4 +112,78 @@ class AsciidoctorTaskSpec extends Specification {
             1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), { it.to_dir == task.outputDir.absolutePath })
             0 * mockAsciidoctor.renderFile(_, _)
     }
+
+    @SuppressWarnings('MethodName')
+    def "Should support String value for attributes option"() {
+        given:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(rootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(rootDir, ASCIIDOC_BUILD_DIR)
+                sourceDocumentName = new File(rootDir, ASCIIDOC_SAMPLE_FILE)
+                options = [
+                  attributes: 'toc=right source-highlighter=coderay'
+                ]
+            }
+        when:
+            task.gititdone()
+        then:
+            1 * mockAsciidoctor.renderFile(_, _)
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Should support GString value for attributes option"() {
+        given:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(rootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(rootDir, ASCIIDOC_BUILD_DIR)
+                sourceDocumentName = new File(rootDir, ASCIIDOC_SAMPLE_FILE)
+                def attrs = "toc=right source-highlighter=coderay"
+                options = [
+                  attributes: "$attrs"
+                ]
+            }
+        when:
+            task.gititdone()
+        then:
+            1 * mockAsciidoctor.renderFile(_, _)
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Should support List value for attributes option"() {
+        given:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(rootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(rootDir, ASCIIDOC_BUILD_DIR)
+                sourceDocumentName = new File(rootDir, ASCIIDOC_SAMPLE_FILE)
+                def highlighter = 'coderay'
+                options = [
+                  attributes: ['toc=right', "source-highlighter=$highlighter"]
+                ]
+            }
+        when:
+            task.gititdone()
+        then:
+            1 * mockAsciidoctor.renderFile(_, _)
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Throws exception when attributes option value is an unsupported type"() {
+        given:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(rootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(rootDir, ASCIIDOC_BUILD_DIR)
+                sourceDocumentName = new File(rootDir, ASCIIDOC_SAMPLE_FILE)
+                options = [
+                  attributes: 23
+                ]
+            }
+        when:
+            task.gititdone()
+        then:
+            thrown(Exception)
+    }
 }
