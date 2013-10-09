@@ -54,8 +54,8 @@ class AsciidoctorTask extends DefaultTask {
      * Validates input values. If an input value is not valid an exception is thrown.
      */
     private void validateInputs() {
-        if (!AsciidoctorBackend.isSupported(backend)) {
-            throw new InvalidUserDataException("Unsupported backend: $backend")
+        if (!AsciidoctorBackend.isBuiltIn(backend)) {
+            logger.lifecycle("Passing through unknown backend: $backend")
         }
     }
 
