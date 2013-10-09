@@ -2,7 +2,6 @@ package org.asciidoctor.gradle
 
 import org.asciidoctor.Asciidoctor
 import org.gradle.api.GradleException
-import org.gradle.api.InvalidUserDataException
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.testfixtures.ProjectBuilder
@@ -139,7 +138,7 @@ class AsciidoctorTaskSpec extends Specification {
                 sourceDir = new File(rootDir, ASCIIDOC_RESOURCES_DIR)
                 outputDir = new File(rootDir, ASCIIDOC_BUILD_DIR)
                 sourceDocumentName = new File(rootDir, ASCIIDOC_SAMPLE_FILE)
-                def attrs = "toc=right source-highlighter=coderay"
+                def attrs = 'toc=right source-highlighter=coderay'
                 options = [
                   attributes: "$attrs"
                 ]

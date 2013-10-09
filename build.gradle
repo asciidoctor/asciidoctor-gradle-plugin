@@ -62,6 +62,8 @@ dependencies {
 
 codenarc {
     configFile = file('config/codenarc/codenarc.groovy')
+    // run codenarc on production sources only
+    sourceSets = [project.sourceSets.main]
 }
 
 publishing {

@@ -160,14 +160,12 @@ class AsciidoctorTask extends DefaultTask {
             // to find an exact match when invoking Asciidoctor
             for (entry in rawAttributes) {
                 if (entry.value == null || entry.value instanceof Boolean) {
-                  attributes[entry.key.toString()] = entry.value
-                }
-                else {
-                  attributes[entry.key.toString()] = entry.value.toString()
+                  attributes[entry.key] = entry.value
+                } else {
+                  attributes[entry.key] = entry.value.toString()
                 }
             }
-        }
-        else {
+        } else {
             if (rawAttributes instanceof CharSequence) {
                 // replace non-escaped spaces with null character, then replace escaped spaces with space,
                 // finally split on the null character
@@ -175,18 +173,16 @@ class AsciidoctorTask extends DefaultTask {
             }
 
             if (rawAttributes.getClass().isArray() || rawAttributes instanceof Collection) {
-                rawAttributes.each() {
+                rawAttributes.each {
                     if (it instanceof CharSequence) {
                         def (k, v) = it.toString().split('=', 2) as List
                         attributes.put(k, v != null ? v : '')
-                    }
-                    else {
+                    } else {
                         // QUESTION should we just coerce it to a String?
                         throw new InvalidUserDataException("Unsupported type for attribute ${it}: ${it.class}")
                     }
                 }
-            }
-            else {
+            } else {
                 // QUESTION should we just coerce it to a String?
                 throw new InvalidUserDataException("Unsupported type for attributes: ${rawAttributes.class}")
             }
