@@ -166,10 +166,16 @@ Refer to the {asciidoctor-docs}[Asciidoctor documentation] to learn more about t
   * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/37[#37]. Don't copy docinfo files.
   * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/38[#38]. Allow baseDir to be set explicitly.
   * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/40[#40]. Set attributes.rootdir to project root directory.
+  * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/46[#46]. Refactor file processing.
   * Applied https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/30[pull #30],
     https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/32[pull #32],
     https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/42[pull #42],
-    https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/43[pull #43]
+    https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/43[pull #43],
+    https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/44[pull #44],
+    https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/45[pull #45],
+    https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/47[pull #47],
+    https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/48[pull #48],
+    https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/49[pull #49]
 
 === 0.6.0
 
