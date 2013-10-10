@@ -203,7 +203,7 @@ class AsciidoctorTaskSpec extends Specification {
     }
 
     @SuppressWarnings('MethodName')
-    def "Omitting a value for baseDir results in no value being sent to Asciidoctor"() {
+    def "Omitting a value for baseDir results in default value being sent to Asciidoctor"() {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
@@ -213,7 +213,22 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             task.gititdone()
         then:
-            1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), { !it.base_dir })
+            1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), { it.base_dir == project.projectDir.absolutePath })
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Setting baseDir to null results in no value being sent to Asciidoctor"() {
+        given:
+        Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+            asciidoctor = mockAsciidoctor
+            sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+            outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+            baseDir = null
+        }
+        when:
+        task.gititdone()
+        then:
+        1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), { !it.base_dir })
     }
 
     @SuppressWarnings('MethodName')
