@@ -38,7 +38,7 @@ class AsciidoctorTask extends DefaultTask {
     private static final DOCINFO_FILE_PATTERN = ~/^(.+\-)?docinfo(-footer)?\.[^.]+$/
 
     @Optional @InputFile File sourceDocumentName
-    @Optional @InputFile File baseDir
+    @Optional @InputDirectory File baseDir
     @InputDirectory File sourceDir
     @OutputDirectory File outputDir
     @Input String backend
@@ -108,6 +108,13 @@ class AsciidoctorTask extends DefaultTask {
                     rootDir: project.rootDir,
                     outputDir: outputDir,
                     backend: backend))
+            }
+            sourceDir.eachFileRecurse { File file ->
+                if (file.file && !(file.name =~ ASCIIDOC_FILE_EXTENSION_PATTERN)) {
+                    File destinationParentDir = outputDirFor(file, sourceDir.absolutePath, outputDir)
+                    File target = new File("${destinationParentDir}/${file.name}")
+                    target.withOutputStream { it << file.newInputStream() }
+                }
             }
         } catch (Exception e) {
             throw new GradleException('Error running Asciidoctor on single source', e)
