@@ -167,6 +167,7 @@ Refer to the {asciidoctor-docs}[Asciidoctor documentation] to learn more about t
   * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/38[#38]. Allow baseDir to be set explicitly.
   * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/40[#40]. Set attributes.rootdir to project root directory.
   * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/46[#46]. Refactor file processing.
+  * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/50[#50]. Apply `base` plugin by default.
   * Applied https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/30[pull #30],
     https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/32[pull #32],
     https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/42[pull #42],

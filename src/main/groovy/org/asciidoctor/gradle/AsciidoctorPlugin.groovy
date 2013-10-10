@@ -25,6 +25,7 @@ import org.gradle.api.Project
  */
 class AsciidoctorPlugin implements Plugin<Project> {
     void apply(Project project) {
+        project.apply(plugin: 'base')
         project.task('asciidoctor', type: AsciidoctorTask, group: 'Documentation')
     }
 }
