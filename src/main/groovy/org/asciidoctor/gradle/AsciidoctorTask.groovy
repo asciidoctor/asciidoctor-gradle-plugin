@@ -125,9 +125,7 @@ class AsciidoctorTask extends DefaultTask {
     private void processAllDocuments() {
         try {
             sourceDir.eachFileRecurse { File file ->
-                if (file.directory) {
-                    outputDirFor(file, sourceDir.absolutePath, outputDir)
-                } else {
+                if (file.file && !file.name.startsWith('_')) {
                     File destinationParentDir = outputDirFor(file, sourceDir.absolutePath, outputDir)
                     if (file.name =~ ASCIIDOC_FILE_EXTENSION_PATTERN) {
                         if (logDocuments) {
