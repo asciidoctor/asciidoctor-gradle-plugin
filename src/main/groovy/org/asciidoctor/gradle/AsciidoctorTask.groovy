@@ -35,7 +35,7 @@ class AsciidoctorTask extends DefaultTask {
     private static final String DOUBLE_BACKLASH = '\\\\'
     private static final String BACKLASH = '\\'
     private static final ASCIIDOC_FILE_EXTENSION_PATTERN = ~/.*\.a((sc(iidoc)?)|d(oc)?)$/
-    private static final DOCINFO_FILE_PATTERN = ~/^(.+\-)?docinfo(-footer)?\.[^.]+$/
+    private static final DOCINFO_FILE_PATTERN = ~/(.+\-)?docinfo(-footer)?\.[^.]+/
 
     @Optional @InputFile File sourceDocumentName
     @Optional @InputDirectory File baseDir
@@ -110,7 +110,8 @@ class AsciidoctorTask extends DefaultTask {
                     backend: backend))
             }
             sourceDir.eachFileRecurse { File file ->
-                if (file.file && !(file.name =~ ASCIIDOC_FILE_EXTENSION_PATTERN)) {
+                if (file.file && !file.name.startsWith('_') &&
+                        !(file.name =~ ASCIIDOC_FILE_EXTENSION_PATTERN) && !(file.name ==~ DOCINFO_FILE_PATTERN)) {
                     File destinationParentDir = outputDirFor(file, sourceDir.absolutePath, outputDir)
                     File target = new File("${destinationParentDir}/${file.name}")
                     target.withOutputStream { it << file.newInputStream() }
@@ -138,7 +139,7 @@ class AsciidoctorTask extends DefaultTask {
                             rootDir: project.rootDir,
                             outputDir: destinationParentDir,
                             backend: backend))
-                    } else if (!(file.name =~ DOCINFO_FILE_PATTERN)) {
+                    } else if (!(file.name ==~ DOCINFO_FILE_PATTERN)) {
                         File target = new File("${destinationParentDir}/${file.name}")
                         target.withOutputStream { it << file.newInputStream() }
                     }
