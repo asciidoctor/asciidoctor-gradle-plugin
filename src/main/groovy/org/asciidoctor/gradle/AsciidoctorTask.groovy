@@ -36,6 +36,7 @@ class AsciidoctorTask extends DefaultTask {
     private static final ASCIIDOC_FILE_EXTENSION_PATTERN = ~/.*\.a((sc(iidoc)?)|d(oc)?)$/
 
     @Optional @InputFile File sourceDocumentName
+    @Optional File baseDir
     @InputDirectory File sourceDir
     @OutputDirectory File outputDir
     @Input String backend
@@ -48,6 +49,7 @@ class AsciidoctorTask extends DefaultTask {
         sourceDir = project.file('src/asciidoc')
         outputDir = new File(project.buildDir, 'asciidoc')
         backend = AsciidoctorBackend.HTML5.id
+        baseDir = project.projectDir
     }
 
     /**
@@ -99,7 +101,8 @@ class AsciidoctorTask extends DefaultTask {
                 }
                 asciidoctor.renderFile(sourceDocumentName, mergedOptions(
                     options: options,
-                    baseDir: project.projectDir,
+                    baseDir: baseDir,
+                    projectDir: project.projectDir,
                     outputDir: outputDir,
                     backend: backend))
             }
@@ -122,7 +125,8 @@ class AsciidoctorTask extends DefaultTask {
                         }
                         asciidoctor.renderFile(file, mergedOptions(
                             options: options,
-                            baseDir: project.projectDir,
+                            baseDir: baseDir,
+                            projectDir: project.projectDir,
                             outputDir: destinationParentDir,
                             backend: backend))
                     } else {
@@ -142,7 +146,9 @@ class AsciidoctorTask extends DefaultTask {
         mergedOptions.in_place = false
         mergedOptions.safe = 0i
         mergedOptions.to_dir = params.outputDir.absolutePath
-        mergedOptions.base_dir = params.baseDir.absolutePath
+        if (params.baseDir != null) {
+          mergedOptions.base_dir = params.baseDir.absolutePath
+        }
 
         if (mergedOptions.to_file) {
             File toFile = new File(mergedOptions.to_file)
@@ -189,7 +195,7 @@ class AsciidoctorTask extends DefaultTask {
         }
 
         attributes.backend = params.backend
-        attributes.projectdir = params.baseDir.absolutePath
+        attributes.projectdir = params.projectDir.absolutePath
         mergedOptions.attributes = attributes
 
         // Issue #14 force GString -> String as jruby will fail
