@@ -37,7 +37,7 @@ class AsciidoctorTask extends DefaultTask {
     private static final ASCIIDOC_FILE_EXTENSION_PATTERN = ~/.*\.a((sc(iidoc)?)|d(oc)?)$/
 
     @Optional @InputFile File sourceDocumentName
-    @Optional @InputFile File baseDir
+    @Optional @InputDirectory File baseDir
     @InputDirectory File sourceDir
     @OutputDirectory File outputDir
     @Input String backend
