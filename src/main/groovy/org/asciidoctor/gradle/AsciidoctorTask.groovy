@@ -50,7 +50,6 @@ class AsciidoctorTask extends DefaultTask {
         sourceDir = project.file('src/asciidoc')
         outputDir = new File(project.buildDir, 'asciidoc')
         backend = AsciidoctorBackend.HTML5.id
-        baseDir = project.projectDir
     }
 
     /**
@@ -102,7 +101,7 @@ class AsciidoctorTask extends DefaultTask {
                 }
                 asciidoctor.renderFile(sourceDocumentName, mergedOptions(
                     options: options,
-                    baseDir: project.projectDir,
+                    baseDir: baseDir,
                     projectDir: project.projectDir,
                     rootDir: project.rootDir,
                     outputDir: outputDir,
@@ -127,7 +126,7 @@ class AsciidoctorTask extends DefaultTask {
                         }
                         asciidoctor.renderFile(file, mergedOptions(
                             options: options,
-                            baseDir: project.projectDir,
+                            baseDir: baseDir,
                             projectDir: project.projectDir,
                             rootDir: project.rootDir,
                             outputDir: destinationParentDir,
@@ -149,7 +148,7 @@ class AsciidoctorTask extends DefaultTask {
         mergedOptions.in_place = false
         mergedOptions.safe = 0i
         mergedOptions.to_dir = params.outputDir.absolutePath
-        if (params.baseDir != null) {
+        if (params.baseDir) {
           mergedOptions.base_dir = params.baseDir.absolutePath
         }
 
@@ -198,7 +197,7 @@ class AsciidoctorTask extends DefaultTask {
         }
 
         attributes.backend = params.backend
-        attributes.projectdir = params.baseDir.absolutePath
+        attributes.projectdir = params.projectDir.absolutePath
         attributes.rootdir = params.rootDir.absolutePath
         mergedOptions.attributes = attributes
 

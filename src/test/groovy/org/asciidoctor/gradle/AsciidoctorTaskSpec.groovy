@@ -20,12 +20,12 @@ class AsciidoctorTaskSpec extends Specification {
 
     Project project
     Asciidoctor mockAsciidoctor
-    File rootDir
+    File testRootDir
 
     def setup() {
         project = ProjectBuilder.builder().build()
         mockAsciidoctor = Mock(Asciidoctor)
-        rootDir = new File('.')
+        testRootDir = new File('.')
     }
 
     @SuppressWarnings('MethodName')
@@ -35,8 +35,8 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             Task task = project.tasks.add(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(rootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(rootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
                 backend = 'unknown'
             }
 
@@ -53,8 +53,8 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(rootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(rootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
             }
 
             task.gititdone()
@@ -69,8 +69,8 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(rootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(rootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
             }
 
             task.gititdone()
@@ -86,9 +86,9 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(rootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(rootDir, ASCIIDOC_BUILD_DIR)
-                sourceDocumentName = new File(rootDir, ASCIIDOC_SAMPLE_FILE)
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDocumentName = new File(testRootDir, ASCIIDOC_SAMPLE_FILE)
             }
 
             task.gititdone()
@@ -101,8 +101,8 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(rootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(rootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
             }
         when:
             task.gititdone()
@@ -117,9 +117,9 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(rootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(rootDir, ASCIIDOC_BUILD_DIR)
-                sourceDocumentName = new File(rootDir, ASCIIDOC_SAMPLE_FILE)
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDocumentName = new File(testRootDir, ASCIIDOC_SAMPLE_FILE)
                 options = [
                   attributes: 'toc=right source-highlighter=coderay'
                 ]
@@ -135,9 +135,9 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(rootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(rootDir, ASCIIDOC_BUILD_DIR)
-                sourceDocumentName = new File(rootDir, ASCIIDOC_SAMPLE_FILE)
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDocumentName = new File(testRootDir, ASCIIDOC_SAMPLE_FILE)
                 def attrs = 'toc=right source-highlighter=coderay'
                 options = [
                   attributes: "$attrs"
@@ -154,9 +154,9 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(rootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(rootDir, ASCIIDOC_BUILD_DIR)
-                sourceDocumentName = new File(rootDir, ASCIIDOC_SAMPLE_FILE)
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDocumentName = new File(testRootDir, ASCIIDOC_SAMPLE_FILE)
                 def highlighter = 'coderay'
                 options = [
                   attributes: ['toc=right', "source-highlighter=$highlighter"]
@@ -173,9 +173,9 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(rootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(rootDir, ASCIIDOC_BUILD_DIR)
-                sourceDocumentName = new File(rootDir, ASCIIDOC_SAMPLE_FILE)
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDocumentName = new File(testRootDir, ASCIIDOC_SAMPLE_FILE)
                 options = [
                   attributes: 23
                 ]
@@ -184,5 +184,52 @@ class AsciidoctorTaskSpec extends Specification {
             task.gititdone()
         then:
             thrown(Exception)
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Setting baseDir results in the correct value being sent to Asciidoctor"() {
+        given:
+            File basedir = new File(testRootDir, "my_base_dir")
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                baseDir = basedir
+            }
+        when:
+            task.gititdone()
+        then:
+            1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), { it.base_dir == basedir.absolutePath })
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Omitting a value for baseDir results in no value being sent to Asciidoctor"() {
+        given:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+        }
+        when:
+            task.gititdone()
+        then:
+            1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), { !it.base_dir })
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Attributes projectdir and rootdir are always set"() {
+        given:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+        }
+        when:
+            task.gititdone()
+        then:
+        1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), {
+            it.attributes.projectdir == project.projectDir.absolutePath &&
+            it.attributes.rootdir == project.rootDir.absolutePath
+        })
     }
 }
