@@ -33,7 +33,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:0.6.1'
+        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:0.7.0'
     }
 }
 
