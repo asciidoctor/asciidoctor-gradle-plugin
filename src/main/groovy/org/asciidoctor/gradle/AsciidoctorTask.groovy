@@ -152,6 +152,7 @@ class AsciidoctorTask extends DefaultTask {
     private static Map<String, Object> mergedOptions(Map params) {
         Map<String, Object> mergedOptions = [:]
         mergedOptions.putAll(params.options)
+        mergedOptions.backend = params.backend
         mergedOptions.in_place = false
         mergedOptions.safe = 0i
         mergedOptions.to_dir = params.outputDir.absolutePath
@@ -203,7 +204,6 @@ class AsciidoctorTask extends DefaultTask {
             }
         }
 
-        attributes.backend = params.backend
         attributes.projectdir = params.projectDir.absolutePath
         attributes.rootdir = params.rootDir.absolutePath
         mergedOptions.attributes = attributes
