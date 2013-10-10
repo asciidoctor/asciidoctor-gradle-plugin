@@ -17,6 +17,7 @@ class AsciidoctorTaskSpec extends Specification {
     private static final String ASCIIDOC_RESOURCES_DIR = 'build/resources/test/src/asciidoc'
     private static final String ASCIIDOC_BUILD_DIR = 'build/asciidoc'
     private static final String ASCIIDOC_SAMPLE_FILE = 'sample.asciidoc'
+    private static final DOCINFO_FILE_PATTERN = ~/^(.+\-)?docinfo(-footer)?\.[^.]+$/
 
     Project project
     Asciidoctor mockAsciidoctor
@@ -219,16 +220,16 @@ class AsciidoctorTaskSpec extends Specification {
     @SuppressWarnings('MethodName')
     def "Setting baseDir to null results in no value being sent to Asciidoctor"() {
         given:
-        Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-            asciidoctor = mockAsciidoctor
-            sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-            outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
-            baseDir = null
-        }
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                baseDir = null
+            }
         when:
-        task.gititdone()
+            task.gititdone()
         then:
-        1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), { !it.base_dir })
+            1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), { !it.base_dir })
     }
 
     @SuppressWarnings('MethodName')
@@ -242,9 +243,25 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             task.gititdone()
         then:
-        1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), {
-            it.attributes.projectdir == project.projectDir.absolutePath &&
-            it.attributes.rootdir == project.rootDir.absolutePath
-        })
+            1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), {
+                it.attributes.projectdir == project.projectDir.absolutePath &&
+                it.attributes.rootdir == project.rootDir.absolutePath
+            })
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Docinfo files are not copied to target directory"() {
+        given:
+            File outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+        }
+        when:
+            task.gititdone()
+        then:
+            1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), _)
+            !outputDir.listFiles({ !it.directory && !(it.name =~ DOCINFO_FILE_PATTERN) } as FileFilter)
     }
 }

@@ -163,6 +163,7 @@ Refer to the {asciidoctor-docs}[Asciidoctor documentation] to learn more about t
   * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/31[#31]. Allow attributes to be specified as Map, List, Array or String.
   * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/34[#34]. Task serialization error caused by non-serializable Ruby objects.
   * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/35[#35]. Set a value for `options.attributes.projectdir` matching the current project's directory.
+  * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/37[#37]. Don't copy docinfo files.
   * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/38[#38]. Allow baseDir to be set explicitly.
   * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/40[#40]. Set attributes.rootdir to project root directory.
   * Applied https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/30[pull #30],
