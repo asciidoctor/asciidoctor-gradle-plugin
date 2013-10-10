@@ -82,41 +82,51 @@ class AsciidoctorTask extends DefaultTask {
     @TaskAction
     void gititdone() {
         validateInputs()
-
         outputDir.mkdirs()
-
         asciidoctor = asciidoctor ?: Asciidoctor.Factory.create()
-
         processDocumentsAndResources()
     }
 
     @SuppressWarnings('CatchException')
     private void processDocumentsAndResources() {
         try {
-            sourceDir.eachFileRecurse { File file ->
-                if (file.file && !file.name.startsWith('_')) {
-                    File destinationParentDir = outputDirFor(file, sourceDir.absolutePath, outputDir)
-                    if (file.name =~ ASCIIDOC_FILE_EXTENSION_PATTERN) {
-                        if (!sourceDocumentName || file.name == sourceDocumentName.name) {
-                            if (logDocuments) {
-                                logger.lifecycle("Rendering $file")
-                            }
-                            asciidoctor.renderFile(file, mergedOptions(
-                                options: options,
-                                baseDir: baseDir,
-                                projectDir: project.projectDir,
-                                rootDir: project.rootDir,
-                                outputDir: destinationParentDir,
-                                backend: backend))
+            eachFileRecurse(sourceDir, { File file ->
+                File destinationParentDir = outputDirFor(file, sourceDir.absolutePath, outputDir)
+                if (file.name =~ ASCIIDOC_FILE_EXTENSION_PATTERN) {
+                    if (!sourceDocumentName || file.name == sourceDocumentName.name) {
+                        if (logDocuments) {
+                            logger.lifecycle("Rendering $file")
                         }
-                    } else if (!(file.name ==~ DOCINFO_FILE_PATTERN)) {
-                        File target = new File("${destinationParentDir}/${file.name}")
-                        target.withOutputStream { it << file.newInputStream() }
+                        asciidoctor.renderFile(file, mergedOptions(
+                            options: options,
+                            baseDir: baseDir,
+                            projectDir: project.projectDir,
+                            rootDir: project.rootDir,
+                            outputDir: destinationParentDir,
+                            backend: backend))
                     }
+                } else {
+                    File target = new File("${destinationParentDir}/${file.name}")
+                    target.withOutputStream { it << file.newInputStream() }
                 }
-            }
+            }, { File file ->
+              // skip files & directories that begin with an underscore and docinfo files
+              !file.name.startsWith('_') && (file.directory || !(file.name ==~ DOCINFO_FILE_PATTERN))
+            })
         } catch (Exception e) {
             throw new GradleException('Error running Asciidoctor', e)
+        }
+    }
+
+    private static eachFileRecurse(File dir, Closure closure, Closure filter = { true }) {
+        dir.eachFile { File file ->
+            if (filter.call(file)) {
+                if (file.directory) {
+                    eachFileRecurse(file, closure, filter)
+                } else {
+                    closure.call(file)
+                }
+            }
         }
     }
 
