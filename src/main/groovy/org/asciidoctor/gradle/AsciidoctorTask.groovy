@@ -28,6 +28,7 @@ import org.gradle.api.tasks.*
  * @author Tom Bujok
  * @author Lukasz Pielak
  * @author Dmitri Vyazelenko
+ * @author Dan Allen
  */
 class AsciidoctorTask extends DefaultTask {
     private static final boolean IS_WINDOWS = System.getProperty('os.name').contains('Windows')
@@ -36,7 +37,7 @@ class AsciidoctorTask extends DefaultTask {
     private static final ASCIIDOC_FILE_EXTENSION_PATTERN = ~/.*\.a((sc(iidoc)?)|d(oc)?)$/
 
     @Optional @InputFile File sourceDocumentName
-    @Optional File baseDir
+    @Optional @InputFile File baseDir
     @InputDirectory File sourceDir
     @OutputDirectory File outputDir
     @Input String backend
