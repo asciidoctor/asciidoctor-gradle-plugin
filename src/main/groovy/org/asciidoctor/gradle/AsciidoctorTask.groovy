@@ -100,6 +100,7 @@ class AsciidoctorTask extends DefaultTask {
                 asciidoctor.renderFile(sourceDocumentName, mergedOptions(
                     options: options,
                     baseDir: project.projectDir,
+                    rootDir: project.rootDir,
                     outputDir: outputDir,
                     backend: backend))
             }
@@ -123,6 +124,7 @@ class AsciidoctorTask extends DefaultTask {
                         asciidoctor.renderFile(file, mergedOptions(
                             options: options,
                             baseDir: project.projectDir,
+                            rootDir: project.rootDir,
                             outputDir: destinationParentDir,
                             backend: backend))
                     } else {
@@ -190,6 +192,7 @@ class AsciidoctorTask extends DefaultTask {
 
         attributes.backend = params.backend
         attributes.projectdir = params.baseDir.absolutePath
+        attributes.rootdir = params.rootDir.absolutePath
         mergedOptions.attributes = attributes
 
         // Issue #14 force GString -> String as jruby will fail
