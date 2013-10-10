@@ -90,7 +90,11 @@ class AsciidoctorTask extends DefaultTask {
     @SuppressWarnings('CatchException')
     private void processDocumentsAndResources() {
         try {
-            eachFileRecurse(sourceDir, { File file ->
+            def fileFilter = { File file ->
+                // skip files & directories that begin with an underscore and docinfo files
+                !file.name.startsWith('_') && (file.directory || !(file.name ==~ DOCINFO_FILE_PATTERN))
+            }
+            eachFileRecurse(sourceDir, fileFilter) { File file ->
                 File destinationParentDir = outputDirFor(file, sourceDir.absolutePath, outputDir)
                 if (file.name =~ ASCIIDOC_FILE_EXTENSION_PATTERN) {
                     if (!sourceDocumentName || file.name == sourceDocumentName.name) {
@@ -106,25 +110,22 @@ class AsciidoctorTask extends DefaultTask {
                             backend: backend))
                     }
                 } else {
-                    File target = new File("${destinationParentDir}/${file.name}")
+                    File target = new File(destinationParentDir, file.name)
                     target.withOutputStream { it << file.newInputStream() }
                 }
-            }, { File file ->
-              // skip files & directories that begin with an underscore and docinfo files
-              !file.name.startsWith('_') && (file.directory || !(file.name ==~ DOCINFO_FILE_PATTERN))
-            })
+            }
         } catch (Exception e) {
             throw new GradleException('Error running Asciidoctor', e)
         }
     }
 
-    private static eachFileRecurse(File dir, Closure closure, Closure filter = { true }) {
+    private static void eachFileRecurse(File dir, Closure fileFilter, Closure fileProcessor) {
         dir.eachFile { File file ->
-            if (filter.call(file)) {
+            if (fileFilter(file)) {
                 if (file.directory) {
-                    eachFileRecurse(file, closure, filter)
+                    eachFileRecurse(file, fileFilter, fileProcessor)
                 } else {
-                    closure.call(file)
+                    fileProcessor(file)
                 }
             }
         }
