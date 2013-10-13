@@ -17,6 +17,7 @@
 package org.asciidoctor.gradle
 
 import org.asciidoctor.Asciidoctor
+import org.asciidoctor.SafeMode
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
@@ -136,10 +137,21 @@ class AsciidoctorTask extends DefaultTask {
         mergedOptions.putAll(params.options)
         mergedOptions.backend = params.backend
         mergedOptions.in_place = false
-        mergedOptions.safe = 0i
+        def safe = mergedOptions.safe
+        if (safe == null) {
+            mergedOptions.safe = 0i
+        } else if (safe instanceof SafeMode) {
+            mergedOptions.safe = safe.level
+        } else if (safe instanceof CharSequence) {
+            try {
+                mergedOptions.safe = Enum.valueOf(SafeMode.class, mergedOptions.safe.toString().toUpperCase()).level
+            } catch (IllegalArgumentException e) {
+                mergedOptions.safe = 0i
+            }
+        }
         mergedOptions.to_dir = params.outputDir.absolutePath
         if (params.baseDir) {
-          mergedOptions.base_dir = params.baseDir.absolutePath
+            mergedOptions.base_dir = params.baseDir.absolutePath
         }
 
         if (mergedOptions.to_file) {
