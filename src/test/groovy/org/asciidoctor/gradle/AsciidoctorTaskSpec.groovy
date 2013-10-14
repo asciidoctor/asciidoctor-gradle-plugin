@@ -1,6 +1,7 @@
 package org.asciidoctor.gradle
 
 import org.asciidoctor.Asciidoctor
+import org.asciidoctor.SafeMode
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -230,6 +231,79 @@ class AsciidoctorTaskSpec extends Specification {
             task.gititdone()
         then:
             1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), { !it.base_dir })
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Safe mode option is equal to level of SafeMode.UNSAFE by default"() {
+        given:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+        }
+        when:
+            task.gititdone()
+        then:
+            1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), {
+                it.safe == SafeMode.UNSAFE.level
+            })
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Safe mode configuration option as integer is honored"() {
+        given:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                options = [
+                    safe: SafeMode.SERVER.level
+                ]
+        }
+        when:
+            task.gititdone()
+        then:
+            1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), {
+                it.safe == SafeMode.SERVER.level
+            })
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Safe mode configuration option as string is honored"() {
+        given:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                options = [
+                    safe: 'server'
+                ]
+        }
+        when:
+            task.gititdone()
+        then:
+            1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), {
+                it.safe == SafeMode.SERVER.level
+            })
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Safe mode configuration option as enum is honored"() {
+        given:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                options = [
+                    safe: SafeMode.SERVER
+                ]
+        }
+        when:
+            task.gititdone()
+        then:
+            1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), {
+                it.safe == SafeMode.SERVER.level
+            })
     }
 
     @SuppressWarnings('MethodName')
