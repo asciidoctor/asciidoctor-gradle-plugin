@@ -137,18 +137,7 @@ class AsciidoctorTask extends DefaultTask {
         mergedOptions.putAll(params.options)
         mergedOptions.backend = params.backend
         mergedOptions.in_place = false
-        def safe = mergedOptions.safe
-        if (safe == null) {
-            mergedOptions.safe = 0i
-        } else if (safe instanceof SafeMode) {
-            mergedOptions.safe = safe.level
-        } else if (safe instanceof CharSequence) {
-            try {
-                mergedOptions.safe = Enum.valueOf(SafeMode.class, mergedOptions.safe.toString().toUpperCase()).level
-            } catch (IllegalArgumentException e) {
-                mergedOptions.safe = 0i
-            }
-        }
+        mergedOptions.safe = resolveSafeModeLevel(mergedOptions.safe, 0i)
         mergedOptions.to_dir = params.outputDir.absolutePath
         if (params.baseDir) {
             mergedOptions.base_dir = params.baseDir.absolutePath
@@ -211,5 +200,21 @@ class AsciidoctorTask extends DefaultTask {
         }
 
         mergedOptions
+    }
+
+    private static int resolveSafeModeLevel(Object safe, int defaultLevel) {
+        if (safe == null) {
+            defaultLevel
+        } else if (safe instanceof SafeMode) {
+            safe.level
+        } else if (safe instanceof CharSequence) {
+            try {
+                Enum.valueOf(SafeMode, safe.toString().toUpperCase()).level
+            } catch (IllegalArgumentException e) {
+                defaultLevel
+            }
+        } else {
+            safe.intValue()
+        }
     }
 }
