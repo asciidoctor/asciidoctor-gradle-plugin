@@ -31,21 +31,22 @@ class AsciidoctorTaskSpec extends Specification {
     }
 
     @SuppressWarnings('MethodName')
-    def "Adds asciidoctor task with unsupported backend"() {
-        expect:
-            project.tasks.findByName(ASCIIDOCTOR) == null
+    def "Adds asciidoctor task with fopdf backend"() {
+        setup:
+            FoPdfFacade mockFopdf = Mock(FoPdfFacade)
         when:
             Task task = project.tasks.add(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                fopdf = mockFopdf
                 sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
                 outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
-                backend = 'unknown'
+                backend = 'fopdf'
             }
 
             task.gititdone()
         then:
-            org.asciidoctor.gradle.AsciidoctorBackend.isBuiltIn('unknown') == false
-            2 * mockAsciidoctor.renderFile(_, _)
+            2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == 'docbook'})
+            2 * mockFopdf.renderFoPdf(_, _, _)
     }
 
     @SuppressWarnings('MethodName')
@@ -62,6 +63,22 @@ class AsciidoctorTaskSpec extends Specification {
             task.gititdone()
         then:
             2 * mockAsciidoctor.renderFile(_, _)
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Adds asciidoctor task with supported backend"() {
+        expect:
+        project.tasks.findByName(ASCIIDOCTOR) == null
+        when:
+        Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+            asciidoctor = mockAsciidoctor
+            sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+            outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+        }
+
+        task.gititdone()
+        then:
+        2 * mockAsciidoctor.renderFile(_, _)
     }
 
     @SuppressWarnings('MethodName')

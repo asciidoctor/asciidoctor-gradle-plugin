@@ -1,0 +1,30 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:0.7.0'
+    }
+}
+
+apply plugin: 'asciidoctor'
+
+// Gradle options
+wrapper {
+    gradleVersion '1.7'
+}
+
+asciidoctor {
+    backend = 'fopdf'
+    options = [
+            attributes: [
+                    icons: 'font',
+                    'source-highlighter': 'prettify',
+                    experimental: true,
+                    copycss: true
+            ]
+    ]
+}
