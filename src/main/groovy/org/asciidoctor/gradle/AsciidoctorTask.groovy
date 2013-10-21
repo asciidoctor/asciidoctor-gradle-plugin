@@ -30,6 +30,7 @@ import org.gradle.api.tasks.*
  * @author Lukasz Pielak
  * @author Dmitri Vyazelenko
  * @author Dan Allen
+ * @author Rob Winch
  */
 class AsciidoctorTask extends DefaultTask {
     private static final boolean IS_WINDOWS = System.getProperty('os.name').contains('Windows')
@@ -47,6 +48,7 @@ class AsciidoctorTask extends DefaultTask {
     @Optional boolean logDocuments = false
 
     Asciidoctor asciidoctor
+    FoPdfFacade fopdf = new FoPdfFacade()
 
     AsciidoctorTask() {
         sourceDir = project.file('src/asciidoc')
@@ -90,6 +92,9 @@ class AsciidoctorTask extends DefaultTask {
 
     @SuppressWarnings('CatchException')
     private void processDocumentsAndResources() {
+        boolean isFoPdf = backend == AsciidoctorBackend.FOPDF.id
+        String asciidoctorBackend = isFoPdf ? AsciidoctorBackend.DOCBOOK.id : backend
+
         try {
             def fileFilter = { File file ->
                 // skip files & directories that begin with an underscore and docinfo files
@@ -108,7 +113,12 @@ class AsciidoctorTask extends DefaultTask {
                             projectDir: project.projectDir,
                             rootDir: project.rootDir,
                             outputDir: destinationParentDir,
-                            backend: backend))
+                            backend: asciidoctorBackend))
+
+                        if(isFoPdf) {
+                            File workingDir = new File("${outputDir}/$backend/work")
+                            fopdf.renderFoPdf(file, workingDir, destinationParentDir)
+                        }
                     }
                 } else {
                     File target = new File(destinationParentDir, file.name)
@@ -217,4 +227,6 @@ class AsciidoctorTask extends DefaultTask {
             safe.intValue()
         }
     }
+
+
 }
