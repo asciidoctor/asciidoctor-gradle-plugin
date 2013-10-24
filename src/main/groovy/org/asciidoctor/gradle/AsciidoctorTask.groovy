@@ -43,7 +43,7 @@ class AsciidoctorTask extends DefaultTask {
     @Optional @InputDirectory File baseDir
     @InputDirectory File sourceDir
     @OutputDirectory File outputDir
-    @Input String backend
+    @Input Set<String> backends
     @Input Map options = [:]
     @Optional boolean logDocuments = false
 
@@ -57,12 +57,18 @@ class AsciidoctorTask extends DefaultTask {
         baseDir = project.projectDir
     }
 
+    void setBackend(String backend) {
+        this.backends = [backend]
+    }
+
     /**
      * Validates input values. If an input value is not valid an exception is thrown.
      */
     private void validateInputs() {
-        if (!AsciidoctorBackend.isBuiltIn(backend)) {
-            logger.lifecycle("Passing through unknown backend: $backend")
+        for(backend in backends) {
+            if (!AsciidoctorBackend.isBuiltIn(backend)) {
+                logger.lifecycle("Passing through unknown backend: $backend")
+            }
         }
     }
 
@@ -87,11 +93,13 @@ class AsciidoctorTask extends DefaultTask {
         validateInputs()
         outputDir.mkdirs()
         asciidoctor = asciidoctor ?: Asciidoctor.Factory.create()
-        processDocumentsAndResources()
+        for(backend in backends) {
+            processDocumentsAndResources(backend)
+        }
     }
 
     @SuppressWarnings('CatchException')
-    private void processDocumentsAndResources() {
+    private void processDocumentsAndResources(String backend) {
         boolean isFoPdf = backend == AsciidoctorBackend.FOPDF.id
         String asciidoctorBackend = isFoPdf ? AsciidoctorBackend.DOCBOOK.id : backend
 

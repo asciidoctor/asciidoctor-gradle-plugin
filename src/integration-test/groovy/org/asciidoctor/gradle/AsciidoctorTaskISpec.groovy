@@ -25,7 +25,7 @@ class AsciidoctorTaskISpec extends Specification {
             project.buildDir = new File(project.buildDir, 'fopdf-' + System.currentTimeMillis())
         when:
             Task task = project.tasks.add(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                backend = 'fopdf'
+                backends = ['fopdf','html5']
                 options = [
                         attributes: [
                                 icons: 'font',

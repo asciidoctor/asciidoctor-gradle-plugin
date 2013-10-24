@@ -48,7 +48,8 @@ The plugin adds a new task named `asciidoctor`. This task exposes 6 properties a
 sourceDir:: where the asciidoc sources are. Type: File. Default: `src/asciidoc`.
 sourceDocumentName:: an override to process a single source file. Type: File. Defaults to all files in `${sourceDir}`
 outputDir:: where generated docs go. Type: File. Default: `$buildDir/asciidoc`.
-backend:: the backend to use. Type: String. Default: `html5`.
+backend:: the backend to use. Type: String. Default: `html5`. This option is a convenience for using backends property.
+backends:: the backends to use. Type: Set<String>. Default: [`html5`].
 options:: a Map specifying different options that can be sent to Asciidoctor.
 logDocuments:: a boolean specifying if documents being processed should be logged on console. Type: boolean. Default: `false`
 
