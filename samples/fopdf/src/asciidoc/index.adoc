@@ -1,0 +1,39 @@
+= Example Asciidoctor file
+
+A small demo for converting to pdf
+
+== To render this document
+
+From asciidoctor-gradle-plugin execute
+
+  ./gradlew install
+
+From asciidoctor-gradle-plugin/samples/fopdf execute
+
+  ../../gradlew asciidoctor
+
+== To create a PDF
+
+[source,groovy]
+----
+asciidoctor {
+    backend = 'fopdf'
+    outputDir = new File("$buildDir/asciidoc/html")
+    options = [
+            logDocuments: true,
+            attributes: [
+                    icons: 'font',
+                    'source-highlighter': 'prettify',
+                    experimental: true,
+                    copycss: true
+            ]
+    ]
+}
+----
+
+NOTE: We use tooling from https://github.com/mojavelinux/asciidoctor-fopdf[mojavelinux/asciidoctor-fopdf]
+
+
+== Additional information
+
+If you look at the code, you can tell it needs cleaned up but this is a start in the right direction.
