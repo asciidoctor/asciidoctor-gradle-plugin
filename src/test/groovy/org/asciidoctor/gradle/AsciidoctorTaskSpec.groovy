@@ -33,11 +33,11 @@ class AsciidoctorTaskSpec extends Specification {
     @SuppressWarnings('MethodName')
     def "Adds asciidoctor task with fopdf backend"() {
         setup:
-            FoPdfFacade mockFopdf = Mock(FoPdfFacade)
+            FopubFacade mockFopub = Mock(FopubFacade)
         when:
             Task task = project.tasks.add(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                fopdf = mockFopdf
+                fopub = mockFopub
                 sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
                 outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
                 backend = 'fopdf'
@@ -46,7 +46,7 @@ class AsciidoctorTaskSpec extends Specification {
             task.gititdone()
         then:
             2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == 'docbook'})
-            2 * mockFopdf.renderFoPdf(_, _, _)
+            2 * mockFopub.renderPdf(_, _, _)
     }
 
     @SuppressWarnings('MethodName')
