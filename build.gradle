@@ -50,21 +50,13 @@ dependencies {
     deployerJars 'org.apache.maven.wagon:wagon-webdav:1.0-beta-2',
             'org.apache.maven:maven-ant-tasks:2.1.0'
     compile gradleApi()
-    compile('org.asciidoctor:asciidoctor-java-integration:0.1.4') {
-        exclude group: 'rubygems', module :'haml'
-        exclude group: 'rubygems', module :'asciidoctor'
-        exclude group: 'rubygems', module :'coderay'
-        exclude group: 'rubygems', module :'tilt'
-        exclude group: 'rubygems', module :'erubis'
-        exclude group: 'rubygems', module :'slim'
-    }
+    compile 'org.asciidoctor:asciidoctor-java-integration:0.1.4'
     compile 'org.apache.avalon.framework:avalon-framework-api:4.3.1'
     compile 'org.apache.avalon.framework:avalon-framework-impl:4.3.1'
     compile 'org.apache.xmlgraphics:fop:1.1'
     runtime 'net.sf.xslthl:xslthl:2.1.0'
     testCompile 'org.spockframework:spock-core:0.6-groovy-1.8'
     testCompile 'cglib:cglib-nodep:2.2.2'
-
 }
 
 codenarc {
