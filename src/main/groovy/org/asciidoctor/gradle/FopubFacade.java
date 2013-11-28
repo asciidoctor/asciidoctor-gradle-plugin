@@ -32,11 +32,11 @@ import java.util.Vector;
 /**
  * @author Rob Winch
  */
-public class FoPdfFacade {
+public class FopubFacade {
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     private String docbookXmlUrl = "http://maven-us.nuxeo.org/nexus/content/repositories/public/docbook/docbook-xml/4.5/docbook-xml-4.5.jar";
     private String docbookXslUrl = "http://downloads.sourceforge.net/project/docbook/docbook-xsl-ns/1.78.1/docbook-xsl-ns-1.78.1.zip";
-    private File downloadCacheDir = new File(System.getProperty("user.home"), ".fopdf/downloads");
+    private File downloadCacheDir = new File(System.getProperty("user.home"), ".fopub/downloads");
 
     private File imagesSource = new File("src/asciidoc/images");
 
@@ -47,7 +47,7 @@ public class FoPdfFacade {
      * @param distDir the directory to write the PDF to
      * @throws Exception
      */
-    public void renderFoPdf(File sourceDocument, File workingDir, File distDir) throws Exception {
+    public void renderPdf(File sourceDocument, File workingDir, File distDir) throws Exception {
         setupWorkingDir(workingDir);
 
         Vector params = createParams(workingDir);
