@@ -8,7 +8,7 @@ From asciidoctor-gradle-plugin execute
 
   ./gradlew install
 
-From asciidoctor-gradle-plugin/samples/fopdf execute
+From asciidoctor-gradle-plugin/samples/fopub execute
 
   ../../gradlew asciidoctor
 
@@ -17,7 +17,7 @@ From asciidoctor-gradle-plugin/samples/fopdf execute
 [source,groovy]
 ----
 asciidoctor {
-    backend = 'fopdf'
+    backend = 'fopub'
     outputDir = new File("$buildDir/asciidoc/html")
     options = [
             logDocuments: true,

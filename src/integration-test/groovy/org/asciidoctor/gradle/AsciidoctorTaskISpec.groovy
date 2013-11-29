@@ -19,13 +19,13 @@ class AsciidoctorTaskISpec extends Specification {
 
     Project project
 
-    def 'fopdf backend renders pdf successfully'() {
+    def 'fopub backend renders pdf successfully'() {
         setup:
-            project = ProjectBuilder.builder().withProjectDir(new File('samples/fopdf')).build()
-            project.buildDir = new File(project.buildDir, 'fopdf-' + System.currentTimeMillis())
+            project = ProjectBuilder.builder().withProjectDir(new File('samples/fopub')).build()
+            project.buildDir = new File(project.buildDir, 'fopub-' + System.currentTimeMillis())
         when:
             Task task = project.tasks.add(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                backends = ['fopdf','html5']
+                backends = ['fopub','html5']
                 options = [
                         attributes: [
                                 icons: 'font',
