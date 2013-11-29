@@ -1,6 +1,6 @@
 = Example Asciidoctor file
 
-A small demo for converting to html5 and pdf
+A small demo for converting from AsciiDoc to PDF.
 
 == To render this document
 
@@ -17,7 +17,8 @@ From asciidoctor-gradle-plugin/samples/fopdf execute
 [source,groovy]
 ----
 asciidoctor {
-    backends = ['fopdf','html5']
+    backend = 'fopdf'
+    outputDir = new File("$buildDir/asciidoc/html")
     options = [
             logDocuments: true,
             attributes: [
@@ -30,8 +31,7 @@ asciidoctor {
 }
 ----
 
-NOTE: We use tooling from https://github.com/mojavelinux/asciidoctor-fopdf[mojavelinux/asciidoctor-fopdf]
-
+NOTE: We use tooling from https://github.com/asciidoctor/asciidoctor-fopub[asciidoctor-fopub].
 
 == Additional information
 

@@ -48,7 +48,7 @@ class AsciidoctorTask extends DefaultTask {
     @Optional boolean logDocuments = false
 
     Asciidoctor asciidoctor
-    FoPdfFacade fopdf = new FoPdfFacade()
+    FopubFacade fopub = new FopubFacade()
 
     AsciidoctorTask() {
         sourceDir = project.file('src/asciidoc')
@@ -123,9 +123,9 @@ class AsciidoctorTask extends DefaultTask {
                             outputDir: destinationParentDir,
                             backend: asciidoctorBackend))
 
-                        if(isFoPdf) {
+                        if (isFoPdf) {
                             File workingDir = new File("${outputDir}/$backend/work")
-                            fopdf.renderFoPdf(file, workingDir, destinationParentDir)
+                            fopub.renderPdf(file, workingDir, destinationParentDir)
                         }
                     }
                 } else {
