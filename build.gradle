@@ -86,6 +86,12 @@ publishing {
                     appendNode('scm')
                        .appendNode('url', 'https://github.com/asciidoctor/asciidoctor-gradle-plugin')
                     Node developers = appendNode('developers')
+                    developers.appendNode('developer')
+                            .appendNode('id', 'mojavelinux').parent()
+                            .appendNode('name', 'Dan Allen').parent()
+                            .appendNode('roles')
+                                .appendNode('role', 'Asciidoctor Founder and Benevolent Dictator')
+                                .appendNode('role', 'Open Source Hero')
                     [
                          aalmiray: 'Andres Almiray',
                          noamt: 'Noam Tenne',
@@ -100,7 +106,8 @@ publishing {
                     [
                         tombujok: 'Tom Bujok',
                         lpeilak: 'Lukasz Pielak',
-                        dvyazelenko: 'Dmitri Vyazelenko'
+                        dvyazelenko: 'Dmitri Vyazelenko',
+                        rwinch: 'Rob Winch'
                     ].each { devId, devName ->
                         developers.appendNode('developer')
                             .appendNode('id', devId).parent()

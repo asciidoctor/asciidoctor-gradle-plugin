@@ -53,7 +53,7 @@ class AsciidoctorTask extends DefaultTask {
     AsciidoctorTask() {
         sourceDir = project.file('src/asciidoc')
         outputDir = new File(project.buildDir, 'asciidoc')
-        backend = AsciidoctorBackend.HTML5.id
+        setBackend(AsciidoctorBackend.HTML5.id)
         baseDir = project.projectDir
     }
 
@@ -100,8 +100,8 @@ class AsciidoctorTask extends DefaultTask {
 
     @SuppressWarnings('CatchException')
     private void processDocumentsAndResources(String backend) {
-        boolean isFoPdf = backend == AsciidoctorBackend.FOPDF.id
-        String asciidoctorBackend = isFoPdf ? AsciidoctorBackend.DOCBOOK.id : backend
+        boolean isFoPub = backend == AsciidoctorBackend.FOPUB.id
+        String asciidoctorBackend = isFoPub ? AsciidoctorBackend.DOCBOOK.id : backend
 
         try {
             def fileFilter = { File file ->
@@ -123,7 +123,7 @@ class AsciidoctorTask extends DefaultTask {
                             outputDir: destinationParentDir,
                             backend: asciidoctorBackend))
 
-                        if (isFoPdf) {
+                        if (isFoPub) {
                             File workingDir = new File("${outputDir}/$backend/work")
                             fopub.renderPdf(file, workingDir, destinationParentDir)
                         }
@@ -235,6 +235,4 @@ class AsciidoctorTask extends DefaultTask {
             safe.intValue()
         }
     }
-
-
 }

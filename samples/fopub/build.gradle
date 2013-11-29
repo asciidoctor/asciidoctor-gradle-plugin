@@ -1,0 +1,25 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:0.8.0-SNAPSHOT'
+    }
+}
+
+apply plugin: 'asciidoctor'
+
+asciidoctor {
+    backends = ['fopub','html5']
+    options = [
+        attributes: [
+            icons: 'font',
+            'source-highlighter': 'prettify',
+            experimental: true,
+            copycss: true
+        ]
+    ]
+}
