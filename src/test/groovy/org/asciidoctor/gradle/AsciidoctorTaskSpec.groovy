@@ -56,7 +56,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             Task task = project.tasks.add(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                fopdf = mockFopub
+                fopub = mockFopub
                 sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
                 outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
                 backends = ['fopub', 'html5']
@@ -66,7 +66,7 @@ class AsciidoctorTaskSpec extends Specification {
         then:
             2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == 'docbook'})
             2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == 'html5'})
-            2 * mockFopub.renderFoPdf(_, _, _)
+            2 * mockFopub.renderPdf(_, _, _)
     }
 
     @SuppressWarnings('MethodName')
