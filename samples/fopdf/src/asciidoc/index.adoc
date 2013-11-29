@@ -1,6 +1,6 @@
 = Example Asciidoctor file
 
-A small demo for converting to pdf
+A small demo for converting to html5 and pdf
 
 == To render this document
 
@@ -17,8 +17,7 @@ From asciidoctor-gradle-plugin/samples/fopdf execute
 [source,groovy]
 ----
 asciidoctor {
-    backend = 'fopdf'
-    outputDir = new File("$buildDir/asciidoc/html")
+    backends = ['fopdf','html5']
     options = [
             logDocuments: true,
             attributes: [

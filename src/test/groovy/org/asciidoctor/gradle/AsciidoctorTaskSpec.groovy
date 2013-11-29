@@ -50,6 +50,26 @@ class AsciidoctorTaskSpec extends Specification {
     }
 
     @SuppressWarnings('MethodName')
+    def "Adds asciidoctor task with multiple backends"() {
+        setup:
+            FoPdfFacade mockFopdf = Mock(FoPdfFacade)
+        when:
+            Task task = project.tasks.add(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                fopdf = mockFopdf
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                backends = ['fopdf', 'html5']
+            }
+
+            task.gititdone()
+        then:
+            2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == 'docbook'})
+            2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == 'html5'})
+            2 * mockFopdf.renderFoPdf(_, _, _)
+    }
+
+    @SuppressWarnings('MethodName')
     def "Adds asciidoctor task with supported backend"() {
         expect:
             project.tasks.findByName(ASCIIDOCTOR) == null

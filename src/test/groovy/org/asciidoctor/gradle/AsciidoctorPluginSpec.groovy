@@ -31,7 +31,7 @@ class AsciidoctorPluginSpec extends Specification {
             asciidoctorTask.group == 'Documentation'
             asciidoctorTask.sourceDir == project.file('src/asciidoc')
             asciidoctorTask.outputDir == new File(project.buildDir, 'asciidoc')
-            asciidoctorTask.backend == AsciidoctorBackend.HTML5.id
+            asciidoctorTask.backends == [AsciidoctorBackend.HTML5.id] as Set
 
             project.tasks.findByName('clean') != null
     }
