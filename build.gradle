@@ -18,8 +18,11 @@ buildscript {
     apply from: 'gradle/Bintray.gradle'
 
     repositories {
-        mavenRepo name: 'Bintray Javadoc Hotfix repo', url: 'http://dl.bintray.com/melix/gradle-javadoc-hotfix-plugin'
-        mavenRepo name: 'Bintray JCenter', url: 'http://jcenter.bintray.com'
+        maven {
+            name 'Bintray Javadoc Hotfix repo'
+            url 'http://dl.bintray.com/melix/gradle-javadoc-hotfix-plugin'
+        }
+        jcenter()
     }
 
     dependencies {
