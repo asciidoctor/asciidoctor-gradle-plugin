@@ -24,7 +24,7 @@ buildscript {
         classpath 'me.champeau.gradle:gradle-javadoc-hotfix-plugin:0.1'
         classpath 'net.saliman:gradle-cobertura-plugin:2.2.2'
         classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:0.2.4'
-        classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.7.0'
+        // classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.7.0'
     }
 }
 
@@ -37,7 +37,7 @@ apply plugin: 'cobertura'
 apply plugin: 'coveralls'
 apply plugin: 'build-dashboard'
 apply plugin: 'maven-publish'
-apply plugin: 'license'
+//apply plugin: 'license'
 //apply from: 'gradle/integration-test.gradle'
 
 configurations {
@@ -62,6 +62,7 @@ dependencies {
     testCompile 'cglib:cglib-nodep:2.2.2'
 }
 
+/*
 license {
     header = rootProject.file('config/HEADER')
     strictCheck = true
@@ -72,6 +73,7 @@ license {
     }
     ext.year = '2013-2014'
 }
+*/
 
 cobertura {
     coverageFormats = ['html', 'xml']
