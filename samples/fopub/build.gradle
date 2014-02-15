@@ -22,4 +22,12 @@ asciidoctor {
             copycss: true
         ]
     ]
+    fopub {
+        // xsltFile = new File("src/docbook/custom-fo-pdf.xsl")
+        params = [
+            // See http://docbook.sourceforge.net/release/xsl/1.78.1/doc/param.html
+            'page.orientation': 'landscape',
+            'text.color': '#004080'
+        ]
+    }
 }

@@ -61,7 +61,7 @@ class AsciidoctorTaskSpec extends Specification {
             task.gititdone()
         then:
             2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == 'docbook'})
-            2 * mockFopub.renderPdf(_, _, _)
+            2 * mockFopub.renderPdf(_, _, _, new FopubOptions())
     }
 
     @SuppressWarnings('MethodName')
@@ -81,7 +81,7 @@ class AsciidoctorTaskSpec extends Specification {
         then:
             2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == 'docbook'})
             2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == 'html5'})
-            2 * mockFopub.renderPdf(_, _, _)
+            2 * mockFopub.renderPdf(_, _, _, new FopubOptions())
     }
 
     @SuppressWarnings('MethodName')

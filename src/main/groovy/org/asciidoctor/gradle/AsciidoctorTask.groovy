@@ -21,6 +21,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.tasks.*
+import org.gradle.util.ConfigureUtil
 
 /**
  * @author Noam Tenne
@@ -30,6 +31,7 @@ import org.gradle.api.tasks.*
  * @author Dmitri Vyazelenko
  * @author Dan Allen
  * @author Rob Winch
+ * @author Stefan Schlott
  */
 class AsciidoctorTask extends DefaultTask {
     private static final boolean IS_WINDOWS = System.getProperty('os.name').contains('Windows')
@@ -45,6 +47,7 @@ class AsciidoctorTask extends DefaultTask {
     @Input Set<String> backends
     @Input Map options = [:]
     @Optional boolean logDocuments = false
+    FopubOptions fopubOptions = new FopubOptions()
 
     Asciidoctor asciidoctor
     FopubFacade fopub = new FopubFacade()
@@ -58,6 +61,11 @@ class AsciidoctorTask extends DefaultTask {
 
     void setBackend(String backend) {
         this.backends = [backend]
+    }
+
+    FopubOptions fopub(Closure closure) {
+        fopubOptions = ConfigureUtil.configure(closure, fopubOptions);
+        return fopubOptions
     }
 
     /**
@@ -124,7 +132,7 @@ class AsciidoctorTask extends DefaultTask {
 
                         if (isFoPub) {
                             File workingDir = new File("${outputDir}/$backend/work")
-                            fopub.renderPdf(file, workingDir, destinationParentDir)
+                            fopub.renderPdf(file, workingDir, destinationParentDir, fopubOptions)
                         }
                     }
                 } else {
