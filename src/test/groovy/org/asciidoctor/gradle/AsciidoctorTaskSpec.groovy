@@ -46,6 +46,7 @@ class AsciidoctorTaskSpec extends Specification {
     }
 
     @SuppressWarnings('MethodName')
+    @SuppressWarnings('DuplicateNumberLiteral')
     def "Adds asciidoctor task with fopub backend"() {
         setup:
             FopubFacade mockFopub = Mock(FopubFacade)
@@ -55,16 +56,17 @@ class AsciidoctorTaskSpec extends Specification {
                 fopub = mockFopub
                 sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
                 outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
-                backend = 'fopub'
+                backend = AsciidoctorBackend.FOPUB.id
             }
 
             task.gititdone()
         then:
-            2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == 'docbook'})
-            2 * mockFopub.renderPdf(_, _, _, new FopubOptions())
+            2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == AsciidoctorBackend.DOCBOOK.id})
+            2 * mockFopub.renderPdf(_, _, _, _)
     }
 
     @SuppressWarnings('MethodName')
+    @SuppressWarnings('DuplicateNumberLiteral')
     def "Adds asciidoctor task with multiple backends"() {
         setup:
             FopubFacade mockFopub = Mock(FopubFacade)
@@ -74,17 +76,18 @@ class AsciidoctorTaskSpec extends Specification {
                 fopub = mockFopub
                 sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
                 outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
-                backends = ['fopub', 'html5']
+                backends = [AsciidoctorBackend.FOPUB.id, AsciidoctorBackend.HTML5.id]
             }
 
             task.gititdone()
         then:
-            2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == 'docbook'})
-            2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == 'html5'})
-            2 * mockFopub.renderPdf(_, _, _, new FopubOptions())
+            2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == AsciidoctorBackend.DOCBOOK.id})
+            2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == AsciidoctorBackend.HTML5.id})
+            2 * mockFopub.renderPdf(_, _, _, _)
     }
 
     @SuppressWarnings('MethodName')
+    @SuppressWarnings('DuplicateNumberLiteral')
     def "Adds asciidoctor task with supported backend"() {
         expect:
             project.tasks.findByName(ASCIIDOCTOR) == null
@@ -169,6 +172,7 @@ class AsciidoctorTaskSpec extends Specification {
     }
 
     @SuppressWarnings('MethodName')
+    @SuppressWarnings('DuplicateStringLiteral')
     def "Should support GString value for attributes option"() {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
@@ -188,6 +192,7 @@ class AsciidoctorTaskSpec extends Specification {
     }
 
     @SuppressWarnings('MethodName')
+    @SuppressWarnings('DuplicateStringLiteral')
     def "Should support List value for attributes option"() {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
@@ -227,7 +232,7 @@ class AsciidoctorTaskSpec extends Specification {
     @SuppressWarnings('MethodName')
     def "Setting baseDir results in the correct value being sent to Asciidoctor"() {
         given:
-            File basedir = new File(testRootDir, "my_base_dir")
+            File basedir = new File(testRootDir, 'my_base_dir')
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
                 sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
