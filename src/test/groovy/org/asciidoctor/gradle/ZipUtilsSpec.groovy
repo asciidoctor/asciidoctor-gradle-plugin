@@ -23,9 +23,12 @@ import spock.lang.Specification
  * @author Rob Winch
  */
 class ZipUtilsSpec extends Specification {
+    @SuppressWarnings('MethodName')
+    @SuppressWarnings('DuplicateNumberLiteral')
+    @SuppressWarnings('DuplicateStringLiteral')
     def "extract zip works"() {
         setup:
-            InputStream zip = ZipUtils.class.classLoader.getResourceAsStream('testzip.zip')
+            InputStream zip = ZipUtils.classLoader.getResourceAsStream('testzip.zip')
             File outputDir = createTempDir('extract-zip-works')
         when:
             ZipUtils.unzip(zip, outputDir)
@@ -48,9 +51,12 @@ class ZipUtilsSpec extends Specification {
             FileUtils.deleteDirectory(outputDir)
     }
 
+    @SuppressWarnings('MethodName')
+    @SuppressWarnings('DuplicateNumberLiteral')
+    @SuppressWarnings('DuplicateStringLiteral')
     def "extract zip strip root dir works"() {
         setup:
-            InputStream zip = ZipUtils.class.classLoader.getResourceAsStream('testzip.zip')
+            InputStream zip = ZipUtils.classLoader.getResourceAsStream('testzip.zip')
             File outputDir = createTempDir('extract-zip-works')
         when:
             ZipUtils.unzip(zip, new ZipUtils.StripRootDirectoryZipFileFactory(outputDir))
@@ -84,6 +90,7 @@ class ZipUtilsSpec extends Specification {
         result
     }
 
+    @SuppressWarnings('FactoryMethodName')
     def createTempDir(String name) {
         String tempDirLocation = System.getProperty('java.io.tmpdir')
         File temp = new File(tempDirLocation, "asciidoctor/tests/ZipUtilsSpec/${name}-${System.currentTimeMillis()}")
