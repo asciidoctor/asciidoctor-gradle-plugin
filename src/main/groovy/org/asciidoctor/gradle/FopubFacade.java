@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URL;
+import java.util.Map;
 import java.util.Vector;
 
 /**
@@ -47,16 +48,21 @@ public class FopubFacade {
      * @param distDir the directory to write the PDF to
      * @throws Exception
      */
-    public void renderPdf(File sourceDocument, File workingDir, File distDir) throws Exception {
+    public void renderPdf(File sourceDocument, File workingDir, File distDir, FopubOptions options) throws Exception {
         setupWorkingDir(workingDir);
 
-        Vector params = createParams(workingDir);
+        Vector params = createParams(workingDir, options.getParams());
 
         String fileNamePattern = "\\..*";
         String documentName = sourceDocument.getName();
         File outputFile = new File(distDir, documentName.replaceAll(fileNamePattern, ".pdf"));
         File docbookFile = new File(distDir,documentName.replaceAll(fileNamePattern,".xml"));
-        File xsltFile = new File(workingDir, "docbook-xsl/fo-pdf.xsl");
+        File xsltFile;
+        if (options.getXsltFile()!=null) {
+            xsltFile = options.getXsltFile();
+        } else {
+            xsltFile = new File(workingDir, "docbook-xsl/fo-pdf.xsl");
+        }
 
         FopFactory fopFactory = FopFactory.newInstance(); // Reuse the FopFactory if possible!
         fopFactory.setUserConfig(new File(workingDir, "docbook-xsl/fop-config.xml"));
@@ -108,7 +114,7 @@ public class FopubFacade {
         unzipDockbookXsl(workingDir);
     }
 
-    private Vector createParams(File workingDir) {
+    private Vector createParams(File workingDir, Map<Object, Object> options) {
         String outputUri = workingDir.toURI().toASCIIString();
 
         Vector params = new Vector();
@@ -124,6 +130,12 @@ public class FopubFacade {
         params.add("application/pdf");
         params.add("fop-version");
         params.add("1.1");
+        if (options!=null) {
+            for (Object key: options.keySet()) {
+                params.add(key.toString());
+                params.add(options.get(key).toString());
+            }
+        }
         return params;
     }
 
