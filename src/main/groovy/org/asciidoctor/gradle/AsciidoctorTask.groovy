@@ -63,9 +63,9 @@ class AsciidoctorTask extends DefaultTask {
         this.backends = [backend]
     }
 
+    @SuppressWarnings('ConfusingMethodName')
     FopubOptions fopub(Closure closure) {
-        fopubOptions = ConfigureUtil.configure(closure, fopubOptions);
-        return fopubOptions
+        fopubOptions = ConfigureUtil.configure(closure, fopubOptions)
     }
 
     /**
