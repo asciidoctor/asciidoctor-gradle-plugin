@@ -1,17 +1,17 @@
 /*
- * Copyright 2002-2013 the original author or authors.
+ * Copyright 2013-2014 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.asciidoctor.gradle;
 
@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URL;
+import java.util.Map;
 import java.util.Vector;
 
 /**
@@ -47,16 +48,21 @@ public class FopubFacade {
      * @param distDir the directory to write the PDF to
      * @throws Exception
      */
-    public void renderPdf(File sourceDocument, File workingDir, File distDir) throws Exception {
+    public void renderPdf(File sourceDocument, File workingDir, File distDir, FopubOptions options) throws Exception {
         setupWorkingDir(workingDir);
 
-        Vector params = createParams(workingDir);
+        Vector params = createParams(workingDir, options.getParams());
 
         String fileNamePattern = "\\..*";
         String documentName = sourceDocument.getName();
         File outputFile = new File(distDir, documentName.replaceAll(fileNamePattern, ".pdf"));
         File docbookFile = new File(distDir,documentName.replaceAll(fileNamePattern,".xml"));
-        File xsltFile = new File(workingDir, "docbook-xsl/fo-pdf.xsl");
+        File xsltFile;
+        if (options.getXsltFile()!=null) {
+            xsltFile = options.getXsltFile();
+        } else {
+            xsltFile = new File(workingDir, "docbook-xsl/fo-pdf.xsl");
+        }
 
         FopFactory fopFactory = FopFactory.newInstance(); // Reuse the FopFactory if possible!
         fopFactory.setUserConfig(new File(workingDir, "docbook-xsl/fop-config.xml"));
@@ -108,7 +114,7 @@ public class FopubFacade {
         unzipDockbookXsl(workingDir);
     }
 
-    private Vector createParams(File workingDir) {
+    private Vector createParams(File workingDir, Map<Object, Object> options) {
         String outputUri = workingDir.toURI().toASCIIString();
 
         Vector params = new Vector();
@@ -124,6 +130,12 @@ public class FopubFacade {
         params.add("application/pdf");
         params.add("fop-version");
         params.add("1.1");
+        if (options!=null) {
+            for (Object key: options.keySet()) {
+                params.add(key.toString());
+                params.add(options.get(key).toString());
+            }
+        }
         return params;
     }
 

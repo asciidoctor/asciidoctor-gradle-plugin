@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2013-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.asciidoctor.gradle
 
 import org.asciidoctor.Asciidoctor
@@ -22,6 +21,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.tasks.*
+import org.gradle.util.ConfigureUtil
 
 /**
  * @author Noam Tenne
@@ -31,6 +31,7 @@ import org.gradle.api.tasks.*
  * @author Dmitri Vyazelenko
  * @author Dan Allen
  * @author Rob Winch
+ * @author Stefan Schlott
  */
 class AsciidoctorTask extends DefaultTask {
     private static final boolean IS_WINDOWS = System.getProperty('os.name').contains('Windows')
@@ -46,6 +47,7 @@ class AsciidoctorTask extends DefaultTask {
     @Input Set<String> backends
     @Input Map options = [:]
     @Optional boolean logDocuments = false
+    FopubOptions fopubOptions = new FopubOptions()
 
     Asciidoctor asciidoctor
     FopubFacade fopub = new FopubFacade()
@@ -59,6 +61,11 @@ class AsciidoctorTask extends DefaultTask {
 
     void setBackend(String backend) {
         this.backends = [backend]
+    }
+
+    @SuppressWarnings('ConfusingMethodName')
+    FopubOptions fopub(Closure closure) {
+        fopubOptions = ConfigureUtil.configure(closure, fopubOptions)
     }
 
     /**
@@ -125,7 +132,7 @@ class AsciidoctorTask extends DefaultTask {
 
                         if (isFoPub) {
                             File workingDir = new File("${outputDir}/$backend/work")
-                            fopub.renderPdf(file, workingDir, destinationParentDir)
+                            fopub.renderPdf(file, workingDir, destinationParentDir, fopubOptions)
                         }
                     }
                 } else {

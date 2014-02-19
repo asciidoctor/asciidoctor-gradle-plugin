@@ -15,31 +15,15 @@
  */
 package org.asciidoctor.gradle
 
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Optional
+
 /**
- * Supported backends.
- *
- * @author Benjamin Muschko
- * @author Dan Allen
+ * @author Stefan Schlott
  */
-enum AsciidoctorBackend {
-    HTML('html'), DOCBOOK('docbook'), HTML5('html5'), DOCBOOK45('docbook45'), DOCBOOK5('docbook5'), FOPUB('fopub')
-
-    private final static Map<String, AsciidoctorBackend> ALL_BACKENDS
-    private final String id
-
-    static {
-        ALL_BACKENDS = values().collectEntries{ [it.id, it] }.asImmutable()
-    }
-
-    private AsciidoctorBackend(String id) {
-        this.id = id
-    }
-
-    String getId() {
-        id
-    }
-
-    static boolean isBuiltIn(String name) {
-        ALL_BACKENDS.containsKey(name)
-    }
+@groovy.transform.ToString
+class FopubOptions {
+    @Optional @InputFile File xsltFile
+    @Input Map params = [:]
 }

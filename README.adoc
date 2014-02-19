@@ -11,6 +11,7 @@ Asciidoctor Gradle Plugin
 :asciidoctor-docs: http://asciidoctor.org/docs/
 
 image:https://travis-ci.org/asciidoctor/asciidoctor-gradle-plugin.png?branch=master["Build Status", link="https://travis-ci.org/asciidoctor/asciidoctor-gradle-plugin"]
+image:https://coveralls.io/repos/asciidoctor/asciidoctor-gradle-plugin/badge.png["Coverage Status", link="https://coveralls.io/r/asciidoctor/asciidoctor-gradle-plugin"]
 image:https://d2weczhvl823v0.cloudfront.net/asciidoctor/asciidoctor-gradle-plugin/trend.png["Trend", link="https://bitdeli.com/free"]
 
 The asciidoctor-gradle-plugin is the official means of using {asciidoctor-url}[Asciidoctor] to render all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
