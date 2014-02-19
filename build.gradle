@@ -70,6 +70,15 @@ codenarc {
 
 publishing {
     publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+/*
+publishing {
+    publications {
         mavenCustom(MavenPublication) {
             from components.java
             pom.withXml {
@@ -120,6 +129,7 @@ publishing {
         }
     }
 }
+*/
 
 /*
 if(!project.hasProperty('bintrayUsername')) ext.bintrayUsername = ''
