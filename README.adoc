@@ -68,7 +68,7 @@ Sources may have any of the following extensions in order to be discovered
 The following attributes are automatically set by the `Asciidoctor` task
 
  * project-name : matches $project.name
- * project-version: matches $project.version
+ * project-version: matches $project.version (if defined). Empty String value if undefined
  * project-group: matches $project.group (if defined). Empty String value if undefined
 
 These attributes may be overriden by explicit user input.

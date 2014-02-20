@@ -218,7 +218,7 @@ class AsciidoctorTask extends DefaultTask {
         // resolve these properties here as we want to catch both Map and String definitions parsed above
         attributes.'project-name' = attributes.'project-name' ?: params.project.name
         attributes.'project-group' = attributes.'project-group' ?: (params.project.group ?: '')
-        attributes.'project-version' = attributes.'project-version' ?: params.project.version
+        attributes.'project-version' = attributes.'project-version' ?: (params.project.version ?: '')
         mergedOptions.attributes = attributes
 
         // Issue #14 force GString -> String as jruby will fail
