@@ -20,6 +20,7 @@ import org.asciidoctor.SafeMode
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
+import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.*
 import org.gradle.util.ConfigureUtil
 
@@ -41,6 +42,7 @@ class AsciidoctorTask extends DefaultTask {
     private static final DOCINFO_FILE_PATTERN = ~/(.+\-)?docinfo(-footer)?\.[^.]+/
 
     @Optional @InputFile File sourceDocumentName
+    @Optional @InputFiles FileCollection sourceDocumentNames
     @Optional @InputDirectory File baseDir
     @InputDirectory File sourceDir
     @OutputDirectory File outputDir
@@ -107,42 +109,59 @@ class AsciidoctorTask extends DefaultTask {
 
     @SuppressWarnings('CatchException')
     private void processDocumentsAndResources(String backend) {
-        boolean isFoPub = backend == AsciidoctorBackend.FOPUB.id
-        String asciidoctorBackend = isFoPub ? AsciidoctorBackend.DOCBOOK.id : backend
-
         try {
             def fileFilter = { File file ->
                 // skip files & directories that begin with an underscore and docinfo files
                 !file.name.startsWith('_') && (file.directory || !(file.name ==~ DOCINFO_FILE_PATTERN))
             }
             eachFileRecurse(sourceDir, fileFilter) { File file ->
-                File destinationParentDir = outputDirFor(file, sourceDir.absolutePath, outputDir)
-                if (file.name =~ ASCIIDOC_FILE_EXTENSION_PATTERN) {
-                    if (!sourceDocumentName || file.name == sourceDocumentName.name) {
-                        if (logDocuments) {
-                            logger.lifecycle("Rendering $file")
-                        }
-                        asciidoctor.renderFile(file, mergedOptions(
-                            project: project,
-                            options: options,
-                            baseDir: baseDir,
-                            projectDir: project.projectDir,
-                            rootDir: project.rootDir,
-                            outputDir: destinationParentDir,
-                            backend: asciidoctorBackend))
-
-                        if (isFoPub) {
-                            File workingDir = new File("${outputDir}/$backend/work")
-                            fopub.renderPdf(file, workingDir, destinationParentDir, fopubOptions)
-                        }
-                    }
-                } else {
-                    File target = new File(destinationParentDir, file.name)
-                    target.withOutputStream { it << file.newInputStream() }
-                }
+                processSourceDir(backend, file)
             }
         } catch (Exception e) {
             throw new GradleException('Error running Asciidoctor', e)
+        }
+    }
+
+    protected void processSourceDir(String backend, File file) {
+        // FIXME: assuming files have unique names
+        File destinationParentDir = outputDirFor(file, sourceDir.absolutePath, outputDir)
+        if (file.name =~ ASCIIDOC_FILE_EXTENSION_PATTERN) {
+            if (sourceDocumentNames) {
+                // sourceDocumentNames is defined and there's no match we stop
+                // iow, we don't process sourceDocumentName if both are defined
+                // as sourceDocumentNames takes precedence
+                if (sourceDocumentNames.files.find { it.name == file.name }) {
+                    processSingleFile(backend, destinationParentDir, file)
+                }
+                // check if single file was given
+            } else if (!sourceDocumentName || file.name == sourceDocumentName.name) {
+                processSingleFile(backend, destinationParentDir, file)
+            }
+        } else {
+            File target = new File(destinationParentDir, file.name)
+            target.withOutputStream { it << file.newInputStream() }
+        }
+    }
+
+    protected void processSingleFile(String backend, File destinationParentDir, File file) {
+        boolean isFoPub = backend == AsciidoctorBackend.FOPUB.id
+        String asciidoctorBackend = isFoPub ? AsciidoctorBackend.DOCBOOK.id : backend
+
+        if (logDocuments) {
+            logger.lifecycle("Rendering $file")
+        }
+        asciidoctor.renderFile(file, mergedOptions(
+            project: project,
+            options: options,
+            baseDir: baseDir,
+            projectDir: project.projectDir,
+            rootDir: project.rootDir,
+            outputDir: destinationParentDir,
+            backend: asciidoctorBackend))
+
+        if (isFoPub) {
+            File workingDir = new File("${outputDir}/$backend/work")
+            fopub.renderPdf(file, workingDir, destinationParentDir, fopubOptions)
         }
     }
 

@@ -20,6 +20,7 @@ import org.asciidoctor.SafeMode
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.internal.file.collections.SimpleFileCollection
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
@@ -33,6 +34,7 @@ class AsciidoctorTaskSpec extends Specification {
     private static final String ASCIIDOC_RESOURCES_DIR = 'build/resources/test/src/asciidoc'
     private static final String ASCIIDOC_BUILD_DIR = 'build/asciidoc'
     private static final String ASCIIDOC_SAMPLE_FILE = 'sample.asciidoc'
+    private static final String ASCIIDOC_SAMPLE2_FILE = 'subdir/sample2.ad'
     private static final DOCINFO_FILE_PATTERN = ~/^(.+\-)?docinfo(-footer)?\.[^.]+$/
 
     Project project
@@ -40,7 +42,7 @@ class AsciidoctorTaskSpec extends Specification {
     File testRootDir
 
     def setup() {
-        project = ProjectBuilder.builder().withName('asciidoctor-test').build()
+        project = ProjectBuilder.builder().withName('test').build()
         mockAsciidoctor = Mock(Asciidoctor)
         testRootDir = new File('.')
     }
@@ -148,7 +150,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             task.gititdone()
         then:
-            1 * mockAsciidoctor.renderFile(new File(task.sourceDir, 'subdir/sample2.ad'), { it.to_dir == new File(task.outputDir, 'subdir').absolutePath })
+            1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE2_FILE), { it.to_dir == new File(task.outputDir, 'subdir').absolutePath })
             1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), { it.to_dir == task.outputDir.absolutePath })
             0 * mockAsciidoctor.renderFile(_, _)
     }
@@ -394,7 +396,7 @@ class AsciidoctorTaskSpec extends Specification {
             task.gititdone()
         then:
         1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), {
-            it.attributes.'project-name' == 'asciidoctor-test' &&
+            it.attributes.'project-name' == 'test' &&
             it.attributes.'project-group' == 'com.acme' &&
             it.attributes.'project-version' == '1.0.0-SNAPSHOT'
         })
@@ -425,5 +427,43 @@ class AsciidoctorTaskSpec extends Specification {
                 it.attributes.'project-group' == 'unicorns' &&
                 it.attributes.'project-version' == '1.0.0.Final'
         })
+    }
+
+
+    @SuppressWarnings('MethodName')
+    def "Should support a single source document if a name is given"() {
+        given:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDocumentName = new File(ASCIIDOC_RESOURCES_DIR, ASCIIDOC_SAMPLE_FILE)
+            }
+
+        when:
+            task.gititdone()
+
+        then:
+            1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE),_ )
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Should support multiple source documents if names are given"() {
+        given:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDocumentNames = project.files(
+                    "${testRootDir}/${ASCIIDOC_SAMPLE_FILE}",
+                    "${testRootDir}/${ASCIIDOC_SAMPLE2_FILE}",)
+            }
+
+        when:
+            task.gititdone()
+
+        then:
+            1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE),_ )
+            1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE2_FILE),_ )
     }
 }
