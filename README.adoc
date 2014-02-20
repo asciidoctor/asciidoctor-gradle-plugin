@@ -159,7 +159,7 @@ Notice how spaces are escaped in the last key/value pair.
 
 Refer to the {asciidoctor-docs}[Asciidoctor documentation] to learn more about these options and attributes.
 
-You can also pass options http://docbook.sourceforge.net/release/xsl/1.78.1/doc/param.html[Docbook XSL parameters] directly when creating PDFs.
+You can also pass http://docbook.sourceforge.net/release/xsl/1.78.1/doc/param.html[Docbook XSL parameters] directly when creating PDFs.
 
 [source,groovy]
 .build.gradle
