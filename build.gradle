@@ -56,9 +56,15 @@ dependencies {
     compile 'org.asciidoctor:asciidoctor-java-integration:0.1.4'
     compile 'org.apache.avalon.framework:avalon-framework-api:4.3.1'
     compile 'org.apache.avalon.framework:avalon-framework-impl:4.3.1'
-    compile 'org.apache.xmlgraphics:fop:1.1'
+    compile('org.apache.xmlgraphics:fop:1.1') {
+        exclude group: 'commons-io', module: 'commons-io'
+        exclude group: 'commons-logging', module: 'commons-logging'
+    }
     runtime 'net.sf.xslthl:xslthl:2.1.0'
-    testCompile 'org.spockframework:spock-core:0.6-groovy-1.8'
+    testCompile('org.spockframework:spock-core:0.6-groovy-1.8') {
+        exclude group: 'org.codehaus.groovy', module: 'groovy-all'
+        exclude group: 'org.hamcrest', module: 'hamcrest-core'
+    }
     testCompile 'cglib:cglib-nodep:2.2.2'
 }
 
@@ -127,7 +133,7 @@ publishing {
                             .appendNode('id', 'mojavelinux').parent()
                             .appendNode('name', 'Dan Allen').parent()
                             .appendNode('roles')
-                                .appendNode('role', 'Asciidoctor Founder and Benevolent Dictator')
+                                .appendNode('role', 'Asciidoctor Founder and Benevolent Dictator').parent()
                                 .appendNode('role', 'Open Source Hero')
                     [
                          aalmiray: 'Andres Almiray',

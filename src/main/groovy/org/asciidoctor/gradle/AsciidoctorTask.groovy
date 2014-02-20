@@ -20,6 +20,7 @@ import org.asciidoctor.SafeMode
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
+import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.*
 import org.gradle.util.ConfigureUtil
 
@@ -41,6 +42,7 @@ class AsciidoctorTask extends DefaultTask {
     private static final DOCINFO_FILE_PATTERN = ~/(.+\-)?docinfo(-footer)?\.[^.]+/
 
     @Optional @InputFile File sourceDocumentName
+    @Optional @InputFiles FileCollection sourceDocumentNames
     @Optional @InputDirectory File baseDir
     @InputDirectory File sourceDir
     @OutputDirectory File outputDir
@@ -107,41 +109,59 @@ class AsciidoctorTask extends DefaultTask {
 
     @SuppressWarnings('CatchException')
     private void processDocumentsAndResources(String backend) {
-        boolean isFoPub = backend == AsciidoctorBackend.FOPUB.id
-        String asciidoctorBackend = isFoPub ? AsciidoctorBackend.DOCBOOK.id : backend
-
         try {
             def fileFilter = { File file ->
                 // skip files & directories that begin with an underscore and docinfo files
                 !file.name.startsWith('_') && (file.directory || !(file.name ==~ DOCINFO_FILE_PATTERN))
             }
             eachFileRecurse(sourceDir, fileFilter) { File file ->
-                File destinationParentDir = outputDirFor(file, sourceDir.absolutePath, outputDir)
-                if (file.name =~ ASCIIDOC_FILE_EXTENSION_PATTERN) {
-                    if (!sourceDocumentName || file.name == sourceDocumentName.name) {
-                        if (logDocuments) {
-                            logger.lifecycle("Rendering $file")
-                        }
-                        asciidoctor.renderFile(file, mergedOptions(
-                            options: options,
-                            baseDir: baseDir,
-                            projectDir: project.projectDir,
-                            rootDir: project.rootDir,
-                            outputDir: destinationParentDir,
-                            backend: asciidoctorBackend))
-
-                        if (isFoPub) {
-                            File workingDir = new File("${outputDir}/$backend/work")
-                            fopub.renderPdf(file, workingDir, destinationParentDir, fopubOptions)
-                        }
-                    }
-                } else {
-                    File target = new File(destinationParentDir, file.name)
-                    target.withOutputStream { it << file.newInputStream() }
-                }
+                processSourceDir(backend, file)
             }
         } catch (Exception e) {
             throw new GradleException('Error running Asciidoctor', e)
+        }
+    }
+
+    protected void processSourceDir(String backend, File file) {
+        // FIXME: assuming files have unique names
+        File destinationParentDir = outputDirFor(file, sourceDir.absolutePath, outputDir)
+        if (file.name =~ ASCIIDOC_FILE_EXTENSION_PATTERN) {
+            if (sourceDocumentNames) {
+                // sourceDocumentNames is defined and there's no match we stop
+                // iow, we don't process sourceDocumentName if both are defined
+                // as sourceDocumentNames takes precedence
+                if (sourceDocumentNames.files.find { it.name == file.name }) {
+                    processSingleFile(backend, destinationParentDir, file)
+                }
+                // check if single file was given
+            } else if (!sourceDocumentName || file.name == sourceDocumentName.name) {
+                processSingleFile(backend, destinationParentDir, file)
+            }
+        } else {
+            File target = new File(destinationParentDir, file.name)
+            target.withOutputStream { it << file.newInputStream() }
+        }
+    }
+
+    protected void processSingleFile(String backend, File destinationParentDir, File file) {
+        boolean isFoPub = backend == AsciidoctorBackend.FOPUB.id
+        String asciidoctorBackend = isFoPub ? AsciidoctorBackend.DOCBOOK.id : backend
+
+        if (logDocuments) {
+            logger.lifecycle("Rendering $file")
+        }
+        asciidoctor.renderFile(file, mergedOptions(
+            project: project,
+            options: options,
+            baseDir: baseDir,
+            projectDir: project.projectDir,
+            rootDir: project.rootDir,
+            outputDir: destinationParentDir,
+            backend: asciidoctorBackend))
+
+        if (isFoPub) {
+            File workingDir = new File("${outputDir}/$backend/work")
+            fopub.renderPdf(file, workingDir, destinationParentDir, fopubOptions)
         }
     }
 
@@ -157,6 +177,7 @@ class AsciidoctorTask extends DefaultTask {
         }
     }
 
+    @SuppressWarnings('AbcMetric')
     private static Map<String, Object> mergedOptions(Map params) {
         Map<String, Object> mergedOptions = [:]
         mergedOptions.putAll(params.options)
@@ -176,19 +197,7 @@ class AsciidoctorTask extends DefaultTask {
         Map attributes = [:]
         def rawAttributes = mergedOptions.get('attributes', [:])
         if (rawAttributes instanceof Map) {
-            // copy all attributes in order to prevent changes down
-            // the Asciidoctor chain that could cause serialization
-            // problems with Gradle -> all inputs/outputs get serialized
-            // for caching purposes; Ruby objects are non-serializable
-            // Issue #14 force GString -> String as jruby will fail
-            // to find an exact match when invoking Asciidoctor
-            for (entry in rawAttributes) {
-                if (entry.value == null || entry.value instanceof Boolean) {
-                  attributes[entry.key] = entry.value
-                } else {
-                  attributes[entry.key] = entry.value.toString()
-                }
-            }
+            processMapAttributes(attributes, rawAttributes)
         } else {
             if (rawAttributes instanceof CharSequence) {
                 // replace non-escaped spaces with null character, then replace escaped spaces with space,
@@ -197,15 +206,7 @@ class AsciidoctorTask extends DefaultTask {
             }
 
             if (rawAttributes.getClass().isArray() || rawAttributes instanceof Collection) {
-                rawAttributes.each {
-                    if (it instanceof CharSequence) {
-                        def (k, v) = it.toString().split('=', 2) as List
-                        attributes.put(k, v != null ? v : '')
-                    } else {
-                        // QUESTION should we just coerce it to a String?
-                        throw new InvalidUserDataException("Unsupported type for attribute ${it}: ${it.class}")
-                    }
-                }
+                processCollectionAttributes(attributes, rawAttributes)
             } else {
                 // QUESTION should we just coerce it to a String?
                 throw new InvalidUserDataException("Unsupported type for attributes: ${rawAttributes.class}")
@@ -214,6 +215,10 @@ class AsciidoctorTask extends DefaultTask {
 
         attributes.projectdir = params.projectDir.absolutePath
         attributes.rootdir = params.rootDir.absolutePath
+        // resolve these properties here as we want to catch both Map and String definitions parsed above
+        attributes.'project-name' = attributes.'project-name' ?: params.project.name
+        attributes.'project-group' = attributes.'project-group' ?: (params.project.group ?: '')
+        attributes.'project-version' = attributes.'project-version' ?: (params.project.version ?: '')
         mergedOptions.attributes = attributes
 
         // Issue #14 force GString -> String as jruby will fail
@@ -225,6 +230,34 @@ class AsciidoctorTask extends DefaultTask {
         }
 
         mergedOptions
+    }
+
+    protected static void processMapAttributes(Map attributes, Map rawAttributes) {
+        // copy all attributes in order to prevent changes down
+        // the Asciidoctor chain that could cause serialization
+        // problems with Gradle -> all inputs/outputs get serialized
+        // for caching purposes; Ruby objects are non-serializable
+        // Issue #14 force GString -> String as jruby will fail
+        // to find an exact match when invoking Asciidoctor
+        for (entry in rawAttributes) {
+            if (entry.value == null || entry.value instanceof Boolean) {
+                attributes[entry.key] = entry.value
+            } else {
+                attributes[entry.key] = entry.value.toString()
+            }
+        }
+    }
+
+    protected static void processCollectionAttributes(Map attributes, rawAttributes) {
+        for(attr in rawAttributes) {
+            if (attr instanceof CharSequence) {
+                def (k, v) = attr.toString().split('=', 2) as List
+                attributes.put(k, v != null ? v : '')
+            } else {
+                // QUESTION should we just coerce it to a String?
+                throw new InvalidUserDataException("Unsupported type for attribute ${attr}: ${attr.getClass()}")
+            }
+        }
     }
 
     private static int resolveSafeModeLevel(Object safe, int defaultLevel) {
