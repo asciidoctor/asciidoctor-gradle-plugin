@@ -40,7 +40,7 @@ class AsciidoctorTaskSpec extends Specification {
     File testRootDir
 
     def setup() {
-        project = ProjectBuilder.builder().build()
+        project = ProjectBuilder.builder().withName('asciidoctor-test').build()
         mockAsciidoctor = Mock(Asciidoctor)
         testRootDir = new File('.')
     }
@@ -378,5 +378,52 @@ class AsciidoctorTaskSpec extends Specification {
         then:
             1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), _)
             !outputDir.listFiles({ !it.directory && !(it.name =~ DOCINFO_FILE_PATTERN) } as FileFilter)
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Project coordinates are set automatically as attributes"() {
+        given:
+        project.version = '1.0.0-SNAPSHOT'
+        project.group = 'com.acme'
+        Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+            asciidoctor = mockAsciidoctor
+            sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+            outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+        }
+        when:
+            task.gititdone()
+        then:
+        1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), {
+            it.attributes.'project-name' == 'asciidoctor-test' &&
+            it.attributes.'project-group' == 'com.acme' &&
+            it.attributes.'project-version' == '1.0.0-SNAPSHOT'
+        })
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Override project coordinates with explicit attributes"() {
+        given:
+        project.version = '1.0.0-SNAPSHOT'
+        project.group = 'com.acme'
+        Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+            asciidoctor = mockAsciidoctor
+            sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+            outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+            options = [
+                attributes: [
+                    'project-name': 'awesome',
+                    'project-group': 'unicorns',
+                    'project-version': '1.0.0.Final'
+                ]
+            ]
+        }
+        when:
+        task.gititdone()
+        then:
+        1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), {
+            it.attributes.'project-name' == 'awesome' &&
+                it.attributes.'project-group' == 'unicorns' &&
+                it.attributes.'project-version' == '1.0.0.Final'
+        })
     }
 }
