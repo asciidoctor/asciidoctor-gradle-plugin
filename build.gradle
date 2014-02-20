@@ -96,6 +96,7 @@ artifacts {
     archives jar, sourceJar
 }
 
+/*
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -103,8 +104,7 @@ publishing {
         }
     }
 }
-
-/*
+*/
 publishing {
     publications {
         mavenCustom(MavenPublication) {
@@ -157,7 +157,6 @@ publishing {
         }
     }
 }
-*/
 
 /*
 if(!project.hasProperty('bintrayUsername')) ext.bintrayUsername = ''

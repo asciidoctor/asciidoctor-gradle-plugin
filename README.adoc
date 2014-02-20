@@ -54,6 +54,7 @@ backend:: the backend to use. Type: String. Default: `html5`. This option is a c
 backends:: the backends to use. Type: Set<String>. Default: [`html5`].
 options:: a Map specifying different options that can be sent to Asciidoctor.
 logDocuments:: a boolean specifying if documents being processed should be logged on console. Type: boolean. Default: `false`
+fopub:: a closure for setting Docbook XSL parameters.
 
 Sources may have any of the following extensions in order to be discovered
 
@@ -157,3 +158,23 @@ options = [
 Notice how spaces are escaped in the last key/value pair.
 
 Refer to the {asciidoctor-docs}[Asciidoctor documentation] to learn more about these options and attributes.
+
+You can also pass options {http://docbook.sourceforge.net/release/xsl/1.78.1/doc/param.html}[Docbook XSL parameters] directly when creating PDFs.
+
+[source,groovy]
+.build.gradle
+----
+// append below the line: apply plugin: 'asciidoctor'
+
+asciidoctor {
+    outputDir = new File("$buildDir/docs")
+    backend = 'fopub'
+    fopub {
+       params = {
+         'generate.toc' : 0
+       }
+    }
+}
+----
+
+
