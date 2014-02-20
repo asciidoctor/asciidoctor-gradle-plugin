@@ -118,7 +118,7 @@ publishing {
                             .appendNode('id', 'mojavelinux').parent()
                             .appendNode('name', 'Dan Allen').parent()
                             .appendNode('roles')
-                                .appendNode('role', 'Asciidoctor Founder and Benevolent Dictator')
+                                .appendNode('role', 'Asciidoctor Founder and Benevolent Dictator').parent()
                                 .appendNode('role', 'Open Source Hero')
                     [
                          aalmiray: 'Andres Almiray',
