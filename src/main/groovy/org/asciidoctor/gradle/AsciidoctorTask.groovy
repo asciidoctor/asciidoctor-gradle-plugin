@@ -158,6 +158,7 @@ class AsciidoctorTask extends DefaultTask {
         }
     }
 
+    @SuppressWarnings('AbcMetric')
     private static Map<String, Object> mergedOptions(Map params) {
         Map<String, Object> mergedOptions = [:]
         mergedOptions.putAll(params.options)
@@ -177,19 +178,7 @@ class AsciidoctorTask extends DefaultTask {
         Map attributes = [:]
         def rawAttributes = mergedOptions.get('attributes', [:])
         if (rawAttributes instanceof Map) {
-            // copy all attributes in order to prevent changes down
-            // the Asciidoctor chain that could cause serialization
-            // problems with Gradle -> all inputs/outputs get serialized
-            // for caching purposes; Ruby objects are non-serializable
-            // Issue #14 force GString -> String as jruby will fail
-            // to find an exact match when invoking Asciidoctor
-            for (entry in rawAttributes) {
-                if (entry.value == null || entry.value instanceof Boolean) {
-                  attributes[entry.key] = entry.value
-                } else {
-                  attributes[entry.key] = entry.value.toString()
-                }
-            }
+            processMapAttributes(attributes, rawAttributes)
         } else {
             if (rawAttributes instanceof CharSequence) {
                 // replace non-escaped spaces with null character, then replace escaped spaces with space,
@@ -198,15 +187,7 @@ class AsciidoctorTask extends DefaultTask {
             }
 
             if (rawAttributes.getClass().isArray() || rawAttributes instanceof Collection) {
-                rawAttributes.each {
-                    if (it instanceof CharSequence) {
-                        def (k, v) = it.toString().split('=', 2) as List
-                        attributes.put(k, v != null ? v : '')
-                    } else {
-                        // QUESTION should we just coerce it to a String?
-                        throw new InvalidUserDataException("Unsupported type for attribute ${it}: ${it.class}")
-                    }
-                }
+                processCollectionAttributes(attributes, rawAttributes)
             } else {
                 // QUESTION should we just coerce it to a String?
                 throw new InvalidUserDataException("Unsupported type for attributes: ${rawAttributes.class}")
@@ -230,6 +211,34 @@ class AsciidoctorTask extends DefaultTask {
         }
 
         mergedOptions
+    }
+
+    protected static void processMapAttributes(Map attributes, Map rawAttributes) {
+        // copy all attributes in order to prevent changes down
+        // the Asciidoctor chain that could cause serialization
+        // problems with Gradle -> all inputs/outputs get serialized
+        // for caching purposes; Ruby objects are non-serializable
+        // Issue #14 force GString -> String as jruby will fail
+        // to find an exact match when invoking Asciidoctor
+        for (entry in rawAttributes) {
+            if (entry.value == null || entry.value instanceof Boolean) {
+                attributes[entry.key] = entry.value
+            } else {
+                attributes[entry.key] = entry.value.toString()
+            }
+        }
+    }
+
+    protected static void processCollectionAttributes(Map attributes, rawAttributes) {
+        for(attr in rawAttributes) {
+            if (attr instanceof CharSequence) {
+                def (k, v) = attr.toString().split('=', 2) as List
+                attributes.put(k, v != null ? v : '')
+            } else {
+                // QUESTION should we just coerce it to a String?
+                throw new InvalidUserDataException("Unsupported type for attribute ${attr}: ${attr.getClass()}")
+            }
+        }
     }
 
     private static int resolveSafeModeLevel(Object safe, int defaultLevel) {
