@@ -1,5 +1,6 @@
 Asciidoctor Gradle Plugin
 =========================
+:version: 0.8.0.SNAPSHOT
 :asciidoc-url: http://asciidoc.org
 :asciidoctor-url: http://asciidoctor.org
 :issues: https://github.com/asciidoctor/asciidoctor-maven-plugin/issues
@@ -12,7 +13,9 @@ Asciidoctor Gradle Plugin
 
 image:https://travis-ci.org/asciidoctor/asciidoctor-gradle-plugin.png?branch=master["Build Status", link="https://travis-ci.org/asciidoctor/asciidoctor-gradle-plugin"]
 image:https://coveralls.io/repos/asciidoctor/asciidoctor-gradle-plugin/badge.png["Coverage Status", link="https://coveralls.io/r/asciidoctor/asciidoctor-gradle-plugin"]
-image:https://d2weczhvl823v0.cloudfront.net/asciidoctor/asciidoctor-gradle-plugin/trend.png["Trend", link="https://bitdeli.com/free"]
+image:http://img.shields.io/:semver-{version}-blue.svg["Semantic Versioning", link="http://semver.org"]
+
+image::https://api.bintray.com/packages/aalmiray/asciidoctor/asciidoctor-gradle-plugin/images/download.png["Bintray", link="https://bintray.com/aalmiray/asciidoctor/asciidoctor-gradle-plugin"]
 
 The asciidoctor-gradle-plugin is the official means of using {asciidoctor-url}[Asciidoctor] to render all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
 
@@ -22,20 +25,17 @@ This is a port of the {asciidoctor-maven-plugin}[asciidoctor-maven-plugin] proje
 
 Use the following snippet inside a Gradle build file:
 
-[source,groovy]
 .build.gradle
+[source,groovy]
+[subs="attributes"]
 ----
 buildscript {
     repositories {
-        maven {
-            name 'Bintray Asciidoctor repo' 
-            url  'http://dl.bintray.com/content/aalmiray/asciidoctor'
-        }
         jcenter()
     }
 
     dependencies {
-        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:0.7.0'
+        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:{version}'
     }
 }
 
@@ -71,7 +71,7 @@ The following attributes are automatically set by the `Asciidoctor` task
  * project-version: matches $project.version (if defined). Empty String value if undefined
  * project-group: matches $project.group (if defined). Empty String value if undefined
 
-These attributes may be overriden by explicit user input.
+These attributes may be overridden by explicit user input.
 
 == Configuration
 
@@ -86,8 +86,8 @@ The following options may be set using the task's `options` property
 
 Any key/values set on `attributes` are sent as is to Asciidoctor. You may use this Map to specify an stylesheet for example. The following snippet shows a sample configuration defining attributes
 
-[source,groovy]
 .build.gradle
+[source,groovy]
 ----
 // append below the line: apply plugin: 'asciidoctor'
 
@@ -109,16 +109,16 @@ You may need to include extra content into the head of the exported document.
 For example, you might want to include jQuery inside the `<head>` element of the HTML export.
 To do so, first create a docinfo file `src/asciidoc/docinfo.html` containing the content to include, in this case the `<script>` tag to load jQuery.
 
-[source,html]
 .src/asciidoc/docinfo.html
+[source,html]
 ----
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.js"></script>
 ----
 
 Then, add the `docinfo1` attribute to the attributes list in the previous example:
 
-[source,groovy]
 .build.gradle
+[source,groovy]
 ----
 attributes: [
     // ...
@@ -129,8 +129,8 @@ attributes: [
 
 The value of `attributes` my be specified as a Map, List, Array or String, for example the following Map definition
 
-[source,groovy]
 .build.gradle
+[source,groovy]
 ----
 options = [
     attributes: [
@@ -143,8 +143,8 @@ options = [
 
 may be rewritten in List/Array form as follows
 
-[source,groovy]
 .build.gradle
+[source,groovy]
 ----
 options = [
     attributes: [
@@ -157,8 +157,8 @@ options = [
 
 or in String form like so
 
-[source,groovy]
 .build.gradle
+[source,groovy]
 ----
 options = [
     attributes: 'toc=right source-highlighter=coderay toc-title=Table\\ of\\ Contents'
@@ -168,3 +168,5 @@ options = [
 Notice how spaces are escaped in the last key/value pair.
 
 Refer to the {asciidoctor-docs}[Asciidoctor documentation] to learn more about these options and attributes.
+
+image::https://d2weczhvl823v0.cloudfront.net/asciidoctor/asciidoctor-gradle-plugin/trend.png["Bitdeli Badge", link="https://bitdeli.com/free"]
