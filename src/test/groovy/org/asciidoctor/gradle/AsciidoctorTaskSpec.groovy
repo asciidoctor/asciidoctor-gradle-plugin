@@ -429,7 +429,6 @@ class AsciidoctorTaskSpec extends Specification {
         })
     }
 
-
     @SuppressWarnings('MethodName')
     def "Should support a single source document if a name is given"() {
         given:
