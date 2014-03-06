@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,42 +16,32 @@
 
 buildscript {
     repositories {
-        maven { url 'http://dl.bintray.com/melix/gradle-javadoc-hotfix-plugin' }
         jcenter()
     }
 
     dependencies {
-        classpath 'me.champeau.gradle:gradle-javadoc-hotfix-plugin:0.1'
         classpath 'net.saliman:gradle-cobertura-plugin:2.2.2'
         classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:0.2.4'
-        // classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.7.0'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.3'
     }
 }
 
 apply plugin: 'groovy'
 apply plugin: 'idea'
-apply plugin: 'maven'
-apply plugin: 'javadocHotfix'
 apply plugin: 'codenarc'
 apply plugin: 'cobertura'
 apply plugin: 'coveralls'
 apply plugin: 'build-dashboard'
-apply plugin: 'maven-publish'
-//apply plugin: 'license'
+apply from: 'gradle/publish.gradle'
 //apply from: 'gradle/integration-test.gradle'
 
-configurations {
-    deployerJars
-}
+ext.isReleaseVersion = !version.endsWith('SNAPSHOT')
 
 repositories {
-    mavenCentral()
     jcenter()
 }
 
 dependencies {
-    deployerJars 'org.apache.maven.wagon:wagon-webdav:1.0-beta-2',
-                 'org.apache.maven:maven-ant-tasks:2.1.0'
     compile gradleApi()
     compile 'org.asciidoctor:asciidoctor-java-integration:0.1.4'
     compile 'org.apache.avalon.framework:avalon-framework-api:4.3.1'
@@ -68,19 +58,6 @@ dependencies {
     testCompile 'cglib:cglib-nodep:2.2.2'
 }
 
-/*
-license {
-    header = rootProject.file('config/HEADER')
-    strictCheck = true
-    ignoreFailures = false
-    mapping {
-        java ='SLASHSTAR_STYLE'
-        groovy ='SLASHSTAR_STYLE'
-    }
-    ext.year = '2013-2014'
-}
-*/
-
 cobertura {
     coverageFormats = ['html', 'xml']
     coverageSourceDirs = sourceSets.main.groovy.srcDirs
@@ -93,78 +70,12 @@ codenarc {
 }
 
 task sourceJar(type: Jar) {
-    description "An archive of the source code"
-    classifier "sources"
+    group 'Build'
+    description 'An archive of the source code'
+    classifier 'sources'
     from sourceSets.main.allSource
 }
 
 artifacts {
-    archives jar, sourceJar
+    sourceJar
 }
-
-/*
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
-    }
-}
-*/
-publishing {
-    publications {
-        mavenCustom(MavenPublication) {
-            from components.java
-            pom.withXml {
-                asNode().with {
-                    appendNode('description',
-                        'A Gradle plugin that uses Asciidoctor via JRuby to process AsciiDoc source files within the project')
-                    appendNode('url', 'http://asciidoctor.org')
-                    appendNode('inceptionYear', '2013')
-                    appendNode('licenses')
-                        .appendNode('license')
-                            .appendNode('name', 'The Apache Software License, Version 2.0').parent()
-                            .appendNode('url', 'http://www.apache.org/licenses/LICENSE-2.0.txt').parent()
-                            .appendNode('distribution', 'repo')
-                    appendNode('scm')
-                       .appendNode('url', 'https://github.com/asciidoctor/asciidoctor-gradle-plugin')
-                    Node developers = appendNode('developers')
-                    developers.appendNode('developer')
-                            .appendNode('id', 'mojavelinux').parent()
-                            .appendNode('name', 'Dan Allen').parent()
-                            .appendNode('roles')
-                                .appendNode('role', 'Asciidoctor Founder and Benevolent Dictator').parent()
-                                .appendNode('role', 'Open Source Hero')
-                    [
-                         aalmiray: 'Andres Almiray',
-                         noamt: 'Noam Tenne',
-                         bmuschko: 'Benjamin Muschko'
-                    ].each { devId, devName ->
-                        developers.appendNode('developer')
-                            .appendNode('id', devId).parent()
-                            .appendNode('name', devName).parent()
-                            .appendNode('roles')
-                                .appendNode('role', 'Developer')
-                    }
-                    [
-                        tombujok: 'Tom Bujok',
-                        lpeilak: 'Lukasz Pielak',
-                        dvyazelenko: 'Dmitri Vyazelenko',
-                        rwinch: 'Rob Winch'
-                    ].each { devId, devName ->
-                        developers.appendNode('developer')
-                            .appendNode('id', devId).parent()
-                            .appendNode('name', devName).parent()
-                            .appendNode('roles')
-                                .appendNode('role', 'Contributor')
-                    }
-                }
-            }
-        }
-    }
-}
-
-/*
-if(!project.hasProperty('bintrayUsername')) ext.bintrayUsername = ''
-if(!project.hasProperty('bintrayPassword')) ext.bintrayPassword = ''
-*/
