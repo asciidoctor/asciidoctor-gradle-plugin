@@ -23,6 +23,7 @@ buildscript {
         classpath 'net.saliman:gradle-cobertura-plugin:2.2.2'
         classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:0.2.4'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.3'
+        classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.7.0'
     }
 }
 
@@ -31,6 +32,7 @@ apply plugin: 'idea'
 apply plugin: 'codenarc'
 apply plugin: 'cobertura'
 apply plugin: 'coveralls'
+apply plugin: 'license'
 apply plugin: 'build-dashboard'
 apply from: 'gradle/publish.gradle'
 //apply from: 'gradle/integration-test.gradle'
@@ -56,6 +58,17 @@ dependencies {
         exclude group: 'org.hamcrest', module: 'hamcrest-core'
     }
     testCompile 'cglib:cglib-nodep:2.2.2'
+}
+
+license {
+    header = rootProject.file('config/HEADER')
+    strictCheck = true
+    ignoreFailures = false
+    mapping {
+        java ='SLASHSTAR_STYLE'
+        groovy ='SLASHSTAR_STYLE'
+    }
+    ext.year = '2013-2014'
 }
 
 cobertura {
