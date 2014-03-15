@@ -88,7 +88,6 @@ def pomConfig = {
             rwinch: 'Rob Winch'
         ].each { devId, devName ->
             contributor {
-                id devId
                 name devName
                 roles {
                     role 'contributor'
