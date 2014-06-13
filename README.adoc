@@ -1,6 +1,6 @@
 Asciidoctor Gradle Plugin
 =========================
-:version: 0.8.0.SNAPSHOT
+:version: 0.7.1
 :asciidoc-url: http://asciidoc.org
 :asciidoctor-url: http://asciidoctor.org
 :issues: https://github.com/asciidoctor/asciidoctor-maven-plugin/issues
@@ -39,7 +39,7 @@ buildscript {
     }
 }
 
-apply plugin: 'asciidoctor'
+apply plugin: 'org.asciidoctor.gradle.asciidoctor'
 ----
 
 == Usage
@@ -89,7 +89,7 @@ Any key/values set on `attributes` are sent as is to Asciidoctor. You may use th
 .build.gradle
 [source,groovy]
 ----
-// append below the line: apply plugin: 'asciidoctor'
+// append below the line: apply plugin: 'org.asciidoctor.gradle.asciidoctor'
 
 asciidoctor {
     outputDir = new File("$buildDir/docs")

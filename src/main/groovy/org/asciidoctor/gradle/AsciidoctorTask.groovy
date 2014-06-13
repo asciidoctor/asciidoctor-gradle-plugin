@@ -49,10 +49,8 @@ class AsciidoctorTask extends DefaultTask {
     @Input Set<String> backends
     @Input Map options = [:]
     @Optional boolean logDocuments = false
-    FopubOptions fopubOptions = new FopubOptions()
 
     Asciidoctor asciidoctor
-    FopubFacade fopub = new FopubFacade()
 
     AsciidoctorTask() {
         sourceDir = project.file('src/asciidoc')
@@ -63,11 +61,6 @@ class AsciidoctorTask extends DefaultTask {
 
     void setBackend(String backend) {
         this.backends = [backend]
-    }
-
-    @SuppressWarnings('ConfusingMethodName')
-    FopubOptions fopub(Closure closure) {
-        fopubOptions = ConfigureUtil.configure(closure, fopubOptions)
     }
 
     /**
@@ -144,9 +137,6 @@ class AsciidoctorTask extends DefaultTask {
     }
 
     protected void processSingleFile(String backend, File destinationParentDir, File file) {
-        boolean isFoPub = backend == AsciidoctorBackend.FOPUB.id
-        String asciidoctorBackend = isFoPub ? AsciidoctorBackend.DOCBOOK.id : backend
-
         if (logDocuments) {
             logger.lifecycle("Rendering $file")
         }
@@ -157,12 +147,7 @@ class AsciidoctorTask extends DefaultTask {
             projectDir: project.projectDir,
             rootDir: project.rootDir,
             outputDir: destinationParentDir,
-            backend: asciidoctorBackend))
-
-        if (isFoPub) {
-            File workingDir = new File("${outputDir}/$backend/work")
-            fopub.renderPdf(file, workingDir, destinationParentDir, fopubOptions)
-        }
+            backend: backend))
     }
 
     private static void eachFileRecurse(File dir, Closure fileFilter, Closure fileProcessor) {

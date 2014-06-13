@@ -35,7 +35,6 @@ apply plugin: 'coveralls'
 apply plugin: 'license'
 apply plugin: 'build-dashboard'
 apply from: 'gradle/publish.gradle'
-//apply from: 'gradle/integration-test.gradle'
 
 ext.isReleaseVersion = !version.endsWith('SNAPSHOT')
 
@@ -46,13 +45,6 @@ repositories {
 dependencies {
     compile gradleApi()
     compile 'org.asciidoctor:asciidoctor-java-integration:0.1.4'
-    compile 'org.apache.avalon.framework:avalon-framework-api:4.3.1'
-    compile 'org.apache.avalon.framework:avalon-framework-impl:4.3.1'
-    compile('org.apache.xmlgraphics:fop:1.1') {
-        exclude group: 'commons-io', module: 'commons-io'
-        exclude group: 'commons-logging', module: 'commons-logging'
-    }
-    runtime 'net.sf.xslthl:xslthl:2.1.0'
     testCompile('org.spockframework:spock-core:0.6-groovy-1.8') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
         exclude group: 'org.hamcrest', module: 'hamcrest-core'
