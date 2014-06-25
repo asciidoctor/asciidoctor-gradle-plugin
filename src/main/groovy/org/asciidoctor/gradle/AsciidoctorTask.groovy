@@ -48,6 +48,7 @@ class AsciidoctorTask extends DefaultTask {
     @Input Set<String> backends
     @Input Map options = [:]
     @Optional boolean logDocuments = false
+    private boolean baseDirSetToNull
 
     Asciidoctor asciidoctor
 
@@ -55,7 +56,11 @@ class AsciidoctorTask extends DefaultTask {
         sourceDir = project.file('src/asciidoc')
         outputDir = new File(project.buildDir, 'asciidoc')
         setBackend(AsciidoctorBackend.HTML5.id)
-        baseDir = project.projectDir
+    }
+
+    void setBaseDir(File baseDir) {
+        this.baseDir = baseDir
+        baseDirSetToNull = baseDir == null
     }
 
     void setBackend(String backend) {
@@ -142,7 +147,7 @@ class AsciidoctorTask extends DefaultTask {
         asciidoctor.renderFile(file, mergedOptions(
             project: project,
             options: options,
-            baseDir: baseDir,
+            baseDir: !baseDir && !baseDirSetToNull ? project.projectDir : baseDir,
             projectDir: project.projectDir,
             rootDir: project.rootDir,
             outputDir: destinationParentDir,
