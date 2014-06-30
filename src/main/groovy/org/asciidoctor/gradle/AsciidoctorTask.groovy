@@ -15,11 +15,10 @@
  */
 package org.asciidoctor.gradle
 
-import org.asciidoctor.Asciidoctor
-import org.asciidoctor.SafeMode
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.*
 
@@ -39,6 +38,7 @@ class AsciidoctorTask extends DefaultTask {
     private static final String BACKLASH = '\\'
     private static final ASCIIDOC_FILE_EXTENSION_PATTERN = ~/.*\.a((sc(iidoc)?)|d(oc)?)$/
     private static final DOCINFO_FILE_PATTERN = ~/(.+\-)?docinfo(-footer)?\.[^.]+/
+    private static final String SAFE_MODE_CLASSNAME = 'org.asciidoctor.SafeMode'
 
     @Optional @InputFile File sourceDocumentName
     @Optional @InputFiles FileCollection sourceDocumentNames
@@ -50,7 +50,9 @@ class AsciidoctorTask extends DefaultTask {
     @Optional boolean logDocuments = false
     private boolean baseDirSetToNull
 
-    Asciidoctor asciidoctor
+    AsciidoctorProxy asciidoctor
+    Configuration classpath
+    private static ClassLoader cl
 
     AsciidoctorTask() {
         sourceDir = project.file('src/asciidoc')
@@ -71,6 +73,7 @@ class AsciidoctorTask extends DefaultTask {
      * Validates input values. If an input value is not valid an exception is thrown.
      */
     private void validateInputs() {
+        setupClassLoader()
         for(backend in backends) {
             if (!AsciidoctorBackend.isBuiltIn(backend)) {
                 logger.lifecycle("Passing through unknown backend: $backend")
@@ -95,10 +98,12 @@ class AsciidoctorTask extends DefaultTask {
     }
 
     @TaskAction
-    void gititdone() {
+    void processAsciidocSources() {
         validateInputs()
         outputDir.mkdirs()
-        asciidoctor = asciidoctor ?: Asciidoctor.Factory.create()
+        if( !asciidoctor) {
+            asciidoctor = (loadClass('org.asciidoctor.Asciidoctor$Factory').create() as AsciidoctorProxy)
+        }
         for(backend in backends) {
             processDocumentsAndResources(backend)
         }
@@ -252,16 +257,30 @@ class AsciidoctorTask extends DefaultTask {
     private static int resolveSafeModeLevel(Object safe, int defaultLevel) {
         if (safe == null) {
             defaultLevel
-        } else if (safe instanceof SafeMode) {
+        } else if (safe.class.name == SAFE_MODE_CLASSNAME) {
             safe.level
         } else if (safe instanceof CharSequence) {
             try {
-                Enum.valueOf(SafeMode, safe.toString().toUpperCase()).level
+                Enum.valueOf(loadClass(SAFE_MODE_CLASSNAME), safe.toString().toUpperCase()).level
             } catch (IllegalArgumentException e) {
                 defaultLevel
             }
         } else {
             safe.intValue()
+        }
+    }
+
+    private static Class loadClass(String className) {
+        cl.loadClass(className)
+    }
+
+    private void setupClassLoader() {
+        if (classpath?.files) {
+            def urls = classpath.files.collect { it.toURI().toURL() }
+            cl = new URLClassLoader(urls as URL[], Thread.currentThread().contextClassLoader)
+            Thread.currentThread().contextClassLoader = cl
+        } else {
+            cl = Thread.currentThread().contextClassLoader
         }
     }
 }

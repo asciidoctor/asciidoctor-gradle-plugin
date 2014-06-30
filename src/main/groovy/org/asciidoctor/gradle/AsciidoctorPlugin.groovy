@@ -23,8 +23,28 @@ import org.gradle.api.Project
  * @author Andres Almiray
  */
 class AsciidoctorPlugin implements Plugin<Project> {
+    static final String ASCIIDOCTOR = 'asciidoctor'
+    static final String ASCIIDOCTORJ = 'asciidoctorj'
+
     void apply(Project project) {
         project.apply(plugin: 'base')
-        project.task('asciidoctor', type: AsciidoctorTask, group: 'Documentation')
+
+        AsciidoctorExtension extension = project.extensions.create(ASCIIDOCTORJ, AsciidoctorExtension, project)
+
+        project.repositories {
+            jcenter()
+            maven { url 'http://dl.bintray.com/lordofthejars/maven'}
+        }
+
+        project.configurations.maybeCreate(ASCIIDOCTOR)
+        project.afterEvaluate {
+            project.dependencies {
+                asciidoctor("org.asciidoctor:asciidoctorj:${extension.version}")
+            }
+        }
+
+        project.task(ASCIIDOCTOR, type: AsciidoctorTask, group: 'Documentation', {
+            classpath = project.configurations.asciidoctor
+        })
     }
 }

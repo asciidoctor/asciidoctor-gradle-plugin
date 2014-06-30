@@ -23,7 +23,7 @@ ext {
 }
 
 apply plugin: 'maven-publish'
-apply plugin: 'bintray'
+apply plugin: 'com.jfrog.bintray'
 
 jar {
     manifest {

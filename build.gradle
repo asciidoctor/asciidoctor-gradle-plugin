@@ -20,10 +20,10 @@ buildscript {
     }
 
     dependencies {
-        classpath 'net.saliman:gradle-cobertura-plugin:2.2.2'
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:0.2.4'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.3'
-        classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.7.0'
+        classpath 'net.saliman:gradle-cobertura-plugin:2.2.4'
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:0.4.1'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.4.1'
+        classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.9.0'
     }
 }
 
@@ -36,15 +36,14 @@ apply plugin: 'license'
 apply plugin: 'build-dashboard'
 apply from: 'gradle/publish.gradle'
 
-ext.isReleaseVersion = !version.endsWith('SNAPSHOT')
-
 repositories {
     jcenter()
+    maven { url 'http://dl.bintray.com/lordofthejars/maven'}
 }
 
 dependencies {
     compile gradleApi()
-    compile 'org.asciidoctor:asciidoctor-java-integration:0.1.4'
+    testCompile 'org.asciidoctor:asciidoctorj:1.5.0.preview.7'
     testCompile('org.spockframework:spock-core:0.7-groovy-1.8') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
         exclude group: 'org.hamcrest', module: 'hamcrest-core'
