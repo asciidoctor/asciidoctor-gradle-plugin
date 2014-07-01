@@ -3,6 +3,13 @@ Asciidoctor Gradle Plugin
 
 == History
 
+=== 0.7.2
+
+ * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/60[#60]. Setting `baseDir` to project root
+   causes trouble on Windows.
+ * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/80[#80]. Allow the AsciidoctorJ version to
+   be configurable.
+
 === 0.7.0
 
   * Fixes https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/29[#29]. Recognize all built-in backends.

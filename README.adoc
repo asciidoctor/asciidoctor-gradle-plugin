@@ -1,6 +1,6 @@
 Asciidoctor Gradle Plugin
 =========================
-:version: 0.7.1
+:version: 0.7.2
 :asciidoc-url: http://asciidoc.org
 :asciidoctor-url: http://asciidoctor.org
 :issues: https://github.com/asciidoctor/asciidoctor-maven-plugin/issues
@@ -75,7 +75,7 @@ These attributes may be overridden by explicit user input.
 
 == Configuration
 
-This plugin uses +asciidoctorj-1.5.0.preview.7+ by default, however you can change this by
+This plugin uses `asciidoctorj-1.5.0.preview.7` by default, however you can change this by
 defining a value on the +asciidoctorj+ extension, like so
 
 .build.gradle
