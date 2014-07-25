@@ -19,6 +19,7 @@ import org.asciidoctor.SafeMode
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.internal.file.collections.SimpleFileCollection
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
@@ -26,6 +27,8 @@ import spock.lang.Specification
  * Asciidoctor task specification
  *
  * @author Benjamin Muschko
+ * @author Stephan Classen
+ * @author Marcus Fihlon
  */
 class AsciidoctorTaskSpec extends Specification {
     private static final String ASCIIDOCTOR = 'asciidoctor'
@@ -38,11 +41,14 @@ class AsciidoctorTaskSpec extends Specification {
     Project project
     AsciidoctorProxy mockAsciidoctor
     File testRootDir
+    ByteArrayOutputStream systemOut
 
     def setup() {
         project = ProjectBuilder.builder().withName('test').build()
         mockAsciidoctor = Mock(AsciidoctorProxy)
         testRootDir = new File('.')
+        systemOut = new ByteArrayOutputStream()
+        System.out = new PrintStream(systemOut)
     }
 
     @SuppressWarnings('MethodName')
@@ -111,6 +117,37 @@ class AsciidoctorTaskSpec extends Specification {
             task.processAsciidocSources()
         then:
             1 * mockAsciidoctor.renderFile(_, _)
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Output warning when a sourceDocumentName was given"() {
+        given:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDocumentName = new File(testRootDir, ASCIIDOC_SAMPLE_FILE)
+            }
+        when:
+            task.processAsciidocSources()
+        then:
+            systemOut.toString().contains("sourceDocumentName is deprecated and may not be supported in future versions. Please use sourceDocumentNames instead.")
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Output error when sourceDocumentName and sourceDocumentNames are given"() {
+        given:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDocumentName = new File(testRootDir, ASCIIDOC_SAMPLE_FILE)
+                sourceDocumentNames = new SimpleFileCollection(new File(testRootDir, ASCIIDOC_SAMPLE_FILE))
+            }
+        when:
+            task.processAsciidocSources()
+        then:
+            systemOut.toString().contains("Both sourceDocumentName and sourceDocumentNames were specified. sourceDocumentName will be ignored.")
     }
 
     @SuppressWarnings('MethodName')
