@@ -75,7 +75,7 @@ class AsciidoctorTask extends DefaultTask {
 
     void setBackend(String backend) {
         this.backends = [backend]
-        logger.warn("backend is deprecated and may not be supported in future versions. Please use backends instead.")
+        logger.warn('backend is deprecated and may not be supported in future versions. Please use backends instead.')
     }
 
     /**
@@ -89,9 +89,9 @@ class AsciidoctorTask extends DefaultTask {
             }
         }
         if(sourceDocumentName) {
-            logger.warn("sourceDocumentName is deprecated and may not be supported in future versions. Please use sourceDocumentNames instead.")
+            logger.warn('sourceDocumentName is deprecated and may not be supported in future versions. Please use sourceDocumentNames instead.')
             if(sourceDocumentNames) {
-                logger.error("Both sourceDocumentName and sourceDocumentNames were specified. sourceDocumentName will be ignored.")
+                logger.error('Both sourceDocumentName and sourceDocumentNames were specified. sourceDocumentName will be ignored.')
             }
         }
     }
