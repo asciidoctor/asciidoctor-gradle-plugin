@@ -159,7 +159,7 @@ class AsciidoctorTask extends DefaultTask {
                 [
                         project: project,
                         options: options,
-                        baseDir: !baseDir && !baseDirSetToNull ? file.getParentFile() : baseDir,
+                        baseDir: !baseDir && !baseDirSetToNull ? file.parentFile : baseDir,
                         projectDir: project.projectDir,
                         rootDir: project.rootDir,
                         outputDir: destinationParentDir,
@@ -216,8 +216,8 @@ class AsciidoctorTask extends DefaultTask {
 
         // Note: Directories passed as relative to work around issue #83
         // Asciidoctor cannot handle absolute paths in Windows properly
-        attributes.projectdir = AsciidoctorUtils.getRelativePath(params.projectDir, file.getParentFile())
-        attributes.rootdir = AsciidoctorUtils.getRelativePath(params.rootDir, file.getParentFile())
+        attributes.projectdir = AsciidoctorUtils.getRelativePath(params.projectDir, file.parentFile)
+        attributes.rootdir = AsciidoctorUtils.getRelativePath(params.rootDir, file.parentFile)
 
 
         // resolve these properties here as we want to catch both Map and String definitions parsed above
