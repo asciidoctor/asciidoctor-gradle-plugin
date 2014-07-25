@@ -325,7 +325,7 @@ class AsciidoctorTaskSpec extends Specification {
     }
 
     @SuppressWarnings('MethodName')
-    def "Attributes projectdir and rootdir are always set"() {
+    def "Attributes projectdir and rootdir are always set to relative dirs of the processed file"() {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
@@ -336,8 +336,8 @@ class AsciidoctorTaskSpec extends Specification {
             task.processAsciidocSources()
         then:
             1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), {
-                it.attributes.projectdir == project.projectDir.absolutePath &&
-                it.attributes.rootdir == project.rootDir.absolutePath
+                it.attributes.projectdir == AsciidoctorUtils.getRelativePath(project.projectDir, new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE).getParentFile())
+                it.attributes.rootdir == AsciidoctorUtils.getRelativePath(project.rootDir, new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE).getParentFile())
             })
     }
 
