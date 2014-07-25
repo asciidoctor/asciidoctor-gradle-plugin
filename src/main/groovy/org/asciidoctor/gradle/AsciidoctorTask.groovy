@@ -158,7 +158,7 @@ class AsciidoctorTask extends DefaultTask {
         asciidoctor.renderFile(file, mergedOptions(
             project: project,
             options: options,
-            baseDir: !baseDir && !baseDirSetToNull ? project.projectDir : baseDir,
+            baseDir: !baseDir && !baseDirSetToNull ? file.getParentFile() : baseDir,
             projectDir: project.projectDir,
             rootDir: project.rootDir,
             outputDir: destinationParentDir,
