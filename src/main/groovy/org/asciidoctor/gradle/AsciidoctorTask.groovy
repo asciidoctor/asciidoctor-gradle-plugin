@@ -164,14 +164,15 @@ class AsciidoctorTask extends DefaultTask {
         if (logDocuments) {
             logger.lifecycle("Rendering $file")
         }
-        asciidoctor.renderFile(file, mergedOptions(
-            project: project,
-            options: options,
-            baseDir: !baseDir && !baseDirSetToNull ? project.projectDir : baseDir,
-            projectDir: project.projectDir,
-            rootDir: project.rootDir,
-            outputDir: destinationParentDir,
-            backend: backend))
+        asciidoctor.renderFile(file, mergedOptions(file,
+                [
+                        project: project,
+                        options: options,
+                        baseDir: !baseDir && !baseDirSetToNull ? file.parentFile : baseDir,
+                        projectDir: project.projectDir,
+                        rootDir: project.rootDir,
+                        outputDir: destinationParentDir,
+                        backend: backend ]))
     }
 
     private static void eachFileRecurse(File dir, Closure fileFilter, Closure fileProcessor) {
@@ -187,7 +188,7 @@ class AsciidoctorTask extends DefaultTask {
     }
 
     @SuppressWarnings('AbcMetric')
-    private static Map<String, Object> mergedOptions(Map params) {
+    private static Map<String, Object> mergedOptions(File file, Map params) {
         Map<String, Object> mergedOptions = [:]
         mergedOptions.putAll(params.options)
         mergedOptions.backend = params.backend
@@ -222,8 +223,12 @@ class AsciidoctorTask extends DefaultTask {
             }
         }
 
-        attributes.projectdir = params.projectDir.absolutePath
-        attributes.rootdir = params.rootDir.absolutePath
+        // Note: Directories passed as relative to work around issue #83
+        // Asciidoctor cannot handle absolute paths in Windows properly
+        attributes.projectdir = AsciidoctorUtils.getRelativePath(params.projectDir, file.parentFile)
+        attributes.rootdir = AsciidoctorUtils.getRelativePath(params.rootDir, file.parentFile)
+
+
         // resolve these properties here as we want to catch both Map and String definitions parsed above
         attributes.'project-name' = attributes.'project-name' ?: params.project.name
         attributes.'project-group' = attributes.'project-group' ?: (params.project.group ?: '')
