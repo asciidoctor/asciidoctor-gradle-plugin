@@ -37,6 +37,8 @@ import org.gradle.api.tasks.TaskAction
  * @author Dan Allen
  * @author Rob Winch
  * @author Stefan Schlott
+ * @author Stephan Classen
+ * @author Marcus Fihlon
  */
 class AsciidoctorTask extends DefaultTask {
     private static final boolean IS_WINDOWS = System.getProperty('os.name').contains('Windows')
@@ -73,6 +75,7 @@ class AsciidoctorTask extends DefaultTask {
 
     void setBackend(String backend) {
         this.backends = [backend]
+        logger.warn("backend is deprecated and may not be supported in future versions. Please use backends instead.")
     }
 
     /**
@@ -83,6 +86,12 @@ class AsciidoctorTask extends DefaultTask {
         for(backend in backends) {
             if (!AsciidoctorBackend.isBuiltIn(backend)) {
                 logger.lifecycle("Passing through unknown backend: $backend")
+            }
+        }
+        if(sourceDocumentName) {
+            logger.warn("sourceDocumentName is deprecated and may not be supported in future versions. Please use sourceDocumentNames instead.")
+            if(sourceDocumentNames) {
+                logger.error("Both sourceDocumentName and sourceDocumentNames were specified. sourceDocumentName will be ignored.")
             }
         }
     }
