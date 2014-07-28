@@ -82,7 +82,27 @@ class AsciidoctorTaskSpec extends Specification {
 
             task.processAsciidocSources()
         then:
-            2 * mockAsciidoctor.renderFile(_, _)
+            2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == AsciidoctorBackend.HTML5.id})
+            ! systemOut.toString().contains('deprecated')
+    }
+
+    @SuppressWarnings('MethodName')
+    @SuppressWarnings('DuplicateNumberLiteral')
+    def "Using setBackend should output a warning"() {
+        expect:
+            project.tasks.findByName(ASCIIDOCTOR) == null
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                backend = AsciidoctorBackend.DOCBOOK.id
+            }
+
+            task.processAsciidocSources()
+        then:
+            2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == AsciidoctorBackend.DOCBOOK.id})
+            systemOut.toString().contains('backend is deprecated and may not be supported in future versions. Please use backends instead.')
     }
 
     @SuppressWarnings('MethodName')
