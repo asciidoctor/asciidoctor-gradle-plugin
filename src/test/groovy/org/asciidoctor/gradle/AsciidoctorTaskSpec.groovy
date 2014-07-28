@@ -170,7 +170,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             task.processAsciidocSources()
         then:
-            systemOut.toString().contains("sourceDocumentName is deprecated and may not be supported in future versions. Please use sourceDocumentNames instead.")
+            systemOut.toString().contains('sourceDocumentName is deprecated and may not be supported in future versions. Please use sourceDocumentNames instead.')
     }
 
     @SuppressWarnings('MethodName')
@@ -186,7 +186,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             task.processAsciidocSources()
         then:
-            systemOut.toString().contains("Both sourceDocumentName and sourceDocumentNames were specified. sourceDocumentName will be ignored.")
+            systemOut.toString().contains('Both sourceDocumentName and sourceDocumentNames were specified. sourceDocumentName will be ignored.')
     }
 
     @SuppressWarnings('MethodName')
