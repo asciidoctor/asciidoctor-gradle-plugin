@@ -48,12 +48,15 @@ class AsciidoctorTask extends DefaultTask {
     private static final DOCINFO_FILE_PATTERN = ~/(.+\-)?docinfo(-footer)?\.[^.]+/
     private static final String SAFE_MODE_CLASSNAME = 'org.asciidoctor.SafeMode'
 
+    private static final String DEFAULT_BACKEND = AsciidoctorBackend.HTML5.id
+
     @Optional @InputFile File sourceDocumentName
     @Optional @InputFiles FileCollection sourceDocumentNames
     @Optional @InputDirectory File baseDir
     @InputDirectory File sourceDir
     @OutputDirectory File outputDir
-    @Input Set<String> backends
+    @Optional @Input String backend
+    @Optional @Input Set<String> backends
     @Input Map options = [:]
     @Optional boolean logDocuments = false
     private boolean baseDirSetToNull
@@ -65,17 +68,11 @@ class AsciidoctorTask extends DefaultTask {
     AsciidoctorTask() {
         sourceDir = project.file('src/asciidoc')
         outputDir = new File(project.buildDir, 'asciidoc')
-        backends = [AsciidoctorBackend.HTML5.id]
     }
 
     void setBaseDir(File baseDir) {
         this.baseDir = baseDir
         baseDirSetToNull = baseDir == null
-    }
-
-    void setBackend(String backend) {
-        this.backends = [backend]
-        logger.warn('backend is deprecated and may not be supported in future versions. Please use backends instead.')
     }
 
     /**
@@ -85,6 +82,15 @@ class AsciidoctorTask extends DefaultTask {
         setupClassLoader()
         for(backend in backends) {
             if (!AsciidoctorBackend.isBuiltIn(backend)) {
+                logger.lifecycle("Passing through unknown backend: $backend")
+            }
+        }
+        if (backend) {
+            logger.warn('backend is deprecated and may not be supported in future versions. Please use backends instead.')
+            if (backends) {
+                logger.error('Both backend and backends were specified. backend will be ignored.')
+            }
+            else if (!AsciidoctorBackend.isBuiltIn(backend)) {
                 logger.lifecycle("Passing through unknown backend: $backend")
             }
         }
@@ -119,9 +125,19 @@ class AsciidoctorTask extends DefaultTask {
         if( !asciidoctor) {
             asciidoctor = (loadClass('org.asciidoctor.Asciidoctor$Factory').create() as AsciidoctorProxy)
         }
-        for(backend in backends) {
-            processDocumentsAndResources(backend)
+        for (activeBackend in activeBackends()) {
+            processDocumentsAndResources(activeBackend)
         }
+    }
+
+    private Set<String> activeBackends() {
+        if (backends) {
+            return backends
+        }
+        else if (backend) {
+            return [backend]
+        }
+        [DEFAULT_BACKEND]
     }
 
     @SuppressWarnings('CatchException')

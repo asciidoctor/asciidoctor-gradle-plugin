@@ -70,6 +70,25 @@ class AsciidoctorTaskSpec extends Specification {
 
     @SuppressWarnings('MethodName')
     @SuppressWarnings('DuplicateNumberLiteral')
+    def "Adds asciidoctor task with multiple backends and single backend"() {
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                backends = [AsciidoctorBackend.DOCBOOK.id, AsciidoctorBackend.HTML5.id]
+                backend = AsciidoctorBackend.DOCBOOK5.id
+            }
+
+            task.processAsciidocSources()
+        then:
+            2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == AsciidoctorBackend.DOCBOOK.id})
+            2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == AsciidoctorBackend.HTML5.id})
+            systemOut.toString().contains('Both backend and backends were specified. backend will be ignored.')
+    }
+
+    @SuppressWarnings('MethodName')
+    @SuppressWarnings('DuplicateNumberLiteral')
     def "Adds asciidoctor task with supported backend"() {
         expect:
             project.tasks.findByName(ASCIIDOCTOR) == null
