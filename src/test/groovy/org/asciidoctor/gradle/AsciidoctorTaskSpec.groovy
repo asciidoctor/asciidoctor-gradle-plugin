@@ -137,8 +137,8 @@ class AsciidoctorTaskSpec extends Specification {
 
             task.processAsciidocSources()
         then:
-           mockAsciidoctor.renderFile(_, _) >> { throw new IllegalArgumentException() }
-           thrown(GradleException)
+            mockAsciidoctor.renderFile(_, _) >> { throw new IllegalArgumentException() }
+            thrown(GradleException)
     }
 
     @SuppressWarnings('MethodName')
@@ -304,7 +304,7 @@ class AsciidoctorTaskSpec extends Specification {
                 asciidoctor = mockAsciidoctor
                 sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
                 outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
-        }
+            }
         when:
             task.processAsciidocSources()
         then:
@@ -334,7 +334,7 @@ class AsciidoctorTaskSpec extends Specification {
                 asciidoctor = mockAsciidoctor
                 sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
                 outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
-        }
+            }
         when:
             task.processAsciidocSources()
         then:
@@ -353,7 +353,7 @@ class AsciidoctorTaskSpec extends Specification {
                 options = [
                     safe: SafeMode.SERVER.level
                 ]
-        }
+            }
         when:
             task.processAsciidocSources()
         then:
@@ -372,7 +372,7 @@ class AsciidoctorTaskSpec extends Specification {
                 options = [
                     safe: 'server'
                 ]
-        }
+            }
         when:
             task.processAsciidocSources()
         then:
@@ -391,7 +391,7 @@ class AsciidoctorTaskSpec extends Specification {
                 options = [
                     safe: SafeMode.SERVER
                 ]
-        }
+            }
         when:
             task.processAsciidocSources()
         then:
@@ -407,7 +407,7 @@ class AsciidoctorTaskSpec extends Specification {
                 asciidoctor = mockAsciidoctor
                 sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
                 outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
-        }
+            }
         when:
             task.processAsciidocSources()
         then:
@@ -425,7 +425,7 @@ class AsciidoctorTaskSpec extends Specification {
                 asciidoctor = mockAsciidoctor
                 sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
                 outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
-        }
+            }
         when:
             task.processAsciidocSources()
         then:
@@ -469,7 +469,7 @@ class AsciidoctorTaskSpec extends Specification {
                         'project-version': '1.0.0.Final'
                     ]
                 ]
-        }
+            }
         when:
             task.processAsciidocSources()
         then:
