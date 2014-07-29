@@ -70,6 +70,25 @@ class AsciidoctorTaskSpec extends Specification {
 
     @SuppressWarnings('MethodName')
     @SuppressWarnings('DuplicateNumberLiteral')
+    def "Adds asciidoctor task with multiple backends and single backend"() {
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                backends = [AsciidoctorBackend.DOCBOOK.id, AsciidoctorBackend.HTML5.id]
+                backend = AsciidoctorBackend.DOCBOOK5.id
+            }
+
+            task.processAsciidocSources()
+        then:
+            2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == AsciidoctorBackend.DOCBOOK.id})
+            2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == AsciidoctorBackend.HTML5.id})
+            systemOut.toString().contains('Both backend and backends were specified. backend will be ignored.')
+    }
+
+    @SuppressWarnings('MethodName')
+    @SuppressWarnings('DuplicateNumberLiteral')
     def "Adds asciidoctor task with supported backend"() {
         expect:
             project.tasks.findByName(ASCIIDOCTOR) == null
@@ -82,7 +101,27 @@ class AsciidoctorTaskSpec extends Specification {
 
             task.processAsciidocSources()
         then:
-            2 * mockAsciidoctor.renderFile(_, _)
+            2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == AsciidoctorBackend.HTML5.id})
+            ! systemOut.toString().contains('deprecated')
+    }
+
+    @SuppressWarnings('MethodName')
+    @SuppressWarnings('DuplicateNumberLiteral')
+    def "Using setBackend should output a warning"() {
+        expect:
+            project.tasks.findByName(ASCIIDOCTOR) == null
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                backend = AsciidoctorBackend.DOCBOOK.id
+            }
+
+            task.processAsciidocSources()
+        then:
+            2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == AsciidoctorBackend.DOCBOOK.id})
+            systemOut.toString().contains('backend is deprecated and may not be supported in future versions. Please use backends instead.')
     }
 
     @SuppressWarnings('MethodName')
@@ -98,8 +137,8 @@ class AsciidoctorTaskSpec extends Specification {
 
             task.processAsciidocSources()
         then:
-           mockAsciidoctor.renderFile(_, _) >> { throw new IllegalArgumentException() }
-           thrown(GradleException)
+            mockAsciidoctor.renderFile(_, _) >> { throw new IllegalArgumentException() }
+            thrown(GradleException)
     }
 
     @SuppressWarnings('MethodName')
@@ -131,7 +170,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             task.processAsciidocSources()
         then:
-            systemOut.toString().contains("sourceDocumentName is deprecated and may not be supported in future versions. Please use sourceDocumentNames instead.")
+            systemOut.toString().contains('sourceDocumentName is deprecated and may not be supported in future versions. Please use sourceDocumentNames instead.')
     }
 
     @SuppressWarnings('MethodName')
@@ -147,7 +186,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             task.processAsciidocSources()
         then:
-            systemOut.toString().contains("Both sourceDocumentName and sourceDocumentNames were specified. sourceDocumentName will be ignored.")
+            systemOut.toString().contains('Both sourceDocumentName and sourceDocumentNames were specified. sourceDocumentName will be ignored.')
     }
 
     @SuppressWarnings('MethodName')
@@ -265,7 +304,7 @@ class AsciidoctorTaskSpec extends Specification {
                 asciidoctor = mockAsciidoctor
                 sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
                 outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
-        }
+            }
         when:
             task.processAsciidocSources()
         then:
@@ -295,7 +334,7 @@ class AsciidoctorTaskSpec extends Specification {
                 asciidoctor = mockAsciidoctor
                 sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
                 outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
-        }
+            }
         when:
             task.processAsciidocSources()
         then:
@@ -314,7 +353,7 @@ class AsciidoctorTaskSpec extends Specification {
                 options = [
                     safe: SafeMode.SERVER.level
                 ]
-        }
+            }
         when:
             task.processAsciidocSources()
         then:
@@ -333,7 +372,7 @@ class AsciidoctorTaskSpec extends Specification {
                 options = [
                     safe: 'server'
                 ]
-        }
+            }
         when:
             task.processAsciidocSources()
         then:
@@ -352,7 +391,7 @@ class AsciidoctorTaskSpec extends Specification {
                 options = [
                     safe: SafeMode.SERVER
                 ]
-        }
+            }
         when:
             task.processAsciidocSources()
         then:
@@ -368,7 +407,7 @@ class AsciidoctorTaskSpec extends Specification {
                 asciidoctor = mockAsciidoctor
                 sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
                 outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
-        }
+            }
         when:
             task.processAsciidocSources()
         then:
@@ -386,7 +425,7 @@ class AsciidoctorTaskSpec extends Specification {
                 asciidoctor = mockAsciidoctor
                 sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
                 outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
-        }
+            }
         when:
             task.processAsciidocSources()
         then:
@@ -430,7 +469,7 @@ class AsciidoctorTaskSpec extends Specification {
                         'project-version': '1.0.0.Final'
                     ]
                 ]
-        }
+            }
         when:
             task.processAsciidocSources()
         then:
