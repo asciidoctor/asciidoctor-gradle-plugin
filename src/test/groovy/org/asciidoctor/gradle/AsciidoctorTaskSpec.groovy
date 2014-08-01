@@ -19,6 +19,7 @@ import org.asciidoctor.SafeMode
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.file.FileCollection
 import org.gradle.api.internal.file.collections.SimpleFileCollection
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
@@ -33,9 +34,11 @@ import spock.lang.Specification
 class AsciidoctorTaskSpec extends Specification {
     private static final String ASCIIDOCTOR = 'asciidoctor'
     private static final String ASCIIDOC_RESOURCES_DIR = 'build/resources/test/src/asciidoc'
+    private static final String ASCIIDOC_RESOURCES_SUB_DIR = 'build/resources/test/src/asciidoc/subdir'
     private static final String ASCIIDOC_BUILD_DIR = 'build/asciidoc'
     private static final String ASCIIDOC_SAMPLE_FILE = 'sample.asciidoc'
     private static final String ASCIIDOC_SAMPLE2_FILE = 'subdir/sample2.ad'
+    private static final String ASCIIDOC_INVALID_FILE = 'subdir/_include.adoc'
     private static final DOCINFO_FILE_PATTERN = ~/^(.+\-)?docinfo(-footer)?\.[^.]+$/
 
     Project project
@@ -514,5 +517,87 @@ class AsciidoctorTaskSpec extends Specification {
         then:
             1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE),_ )
             1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE2_FILE),_ )
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Should throw exception if the file sourceDocumentName is not reachable from sourceDir"() {
+        given:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_SUB_DIR)
+                outputDir = outDir
+                sourceDocumentName = new File(srcDir, ASCIIDOC_SAMPLE_FILE)
+            }
+        when:
+            task.processAsciidocSources()
+        then:
+            0 * mockAsciidoctor.renderFile(_, _)
+            thrown(GradleException)
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Should throw exception if a file in sourceDocumentNames is not reachable from sourceDir"() {
+        given:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_SUB_DIR)
+                outputDir = outDir
+                sourceDocumentNames = new SimpleFileCollection(new File(srcDir, ASCIIDOC_SAMPLE_FILE))
+            }
+        when:
+            task.processAsciidocSources()
+        then:
+            0 * mockAsciidoctor.renderFile(_, _)
+            thrown(GradleException)
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Should throw exception if the file sourceDocumentName starts with underscore"() {
+        given:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = srcDir
+                outputDir = outDir
+                sourceDocumentName = new File(srcDir, ASCIIDOC_INVALID_FILE)
+            }
+        when:
+            task.processAsciidocSources()
+        then:
+            0 * mockAsciidoctor.renderFile(_, _)
+            thrown(GradleException)
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Should throw exception if a file in sourceDocumentNames starts with underscore"() {
+        given:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = srcDir
+                outputDir = outDir
+                sourceDocumentNames = new SimpleFileCollection(new File(srcDir, ASCIIDOC_INVALID_FILE))
+            }
+        when:
+            task.processAsciidocSources()
+        then:
+            0 * mockAsciidoctor.renderFile(_, _)
+            thrown(GradleException)
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Should emmit warning about absolute path in sourceDocumentNames"() {
+        expect:
+            project.tasks.findByName(ASCIIDOCTOR) == null
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                sourceDir = srcDir
+                outputDir = outDir
+                sourceDocumentNames = new SimpleFileCollection(new File(srcDir, ASCIIDOC_SAMPLE_FILE).absoluteFile)
+            }
+
+            task.processAsciidocSources()
+        then:
+            1 * mockAsciidoctor.renderFile(_, _)
+            systemOut.toString().contains('sourceDocumentNames should be specified relative to sourceDir')
     }
 }
