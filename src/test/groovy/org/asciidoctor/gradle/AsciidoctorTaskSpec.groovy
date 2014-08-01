@@ -41,12 +41,16 @@ class AsciidoctorTaskSpec extends Specification {
     Project project
     AsciidoctorProxy mockAsciidoctor
     File testRootDir
+    File srcDir
+    File outDir
     ByteArrayOutputStream systemOut
 
     def setup() {
         project = ProjectBuilder.builder().withName('test').build()
         mockAsciidoctor = Mock(AsciidoctorProxy)
         testRootDir = new File('.')
+        srcDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+        outDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
         systemOut = new ByteArrayOutputStream()
         System.out = new PrintStream(systemOut)
     }
@@ -57,8 +61,8 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = srcDir
+                outputDir = outDir
                 backends = [AsciidoctorBackend.DOCBOOK.id, AsciidoctorBackend.HTML5.id]
             }
 
@@ -74,8 +78,8 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = srcDir
+                outputDir = outDir
                 backends = [AsciidoctorBackend.DOCBOOK.id, AsciidoctorBackend.HTML5.id]
                 backend = AsciidoctorBackend.DOCBOOK5.id
             }
@@ -95,8 +99,8 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = srcDir
+                outputDir = outDir
             }
 
             task.processAsciidocSources()
@@ -113,8 +117,8 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = srcDir
+                outputDir = outDir
                 backend = AsciidoctorBackend.DOCBOOK.id
             }
 
@@ -131,8 +135,8 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = srcDir
+                outputDir = outDir
             }
 
             task.processAsciidocSources()
@@ -148,8 +152,8 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = srcDir
+                outputDir = outDir
                 sourceDocumentName = new File(testRootDir, ASCIIDOC_SAMPLE_FILE)
             }
 
@@ -163,8 +167,8 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = srcDir
+                outputDir = outDir
                 sourceDocumentName = new File(testRootDir, ASCIIDOC_SAMPLE_FILE)
             }
         when:
@@ -178,8 +182,8 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = srcDir
+                outputDir = outDir
                 sourceDocumentName = new File(testRootDir, ASCIIDOC_SAMPLE_FILE)
                 sourceDocumentNames = new SimpleFileCollection(new File(testRootDir, ASCIIDOC_SAMPLE_FILE))
             }
@@ -194,8 +198,8 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = srcDir
+                outputDir = outDir
             }
         when:
             task.processAsciidocSources()
@@ -210,8 +214,8 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = srcDir
+                outputDir = outDir
                 sourceDocumentName = new File(testRootDir, ASCIIDOC_SAMPLE_FILE)
                 options = [
                   attributes: 'toc=right source-highlighter=coderay'
@@ -229,8 +233,8 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = srcDir
+                outputDir = outDir
                 sourceDocumentName = new File(testRootDir, ASCIIDOC_SAMPLE_FILE)
                 def attrs = 'toc=right source-highlighter=coderay'
                 options = [
@@ -249,8 +253,8 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = srcDir
+                outputDir = outDir
                 sourceDocumentName = new File(testRootDir, ASCIIDOC_SAMPLE_FILE)
                 def highlighter = 'coderay'
                 options = [
@@ -268,8 +272,8 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = srcDir
+                outputDir = outDir
                 sourceDocumentName = new File(testRootDir, ASCIIDOC_SAMPLE_FILE)
                 options = [
                   attributes: 23
@@ -287,8 +291,8 @@ class AsciidoctorTaskSpec extends Specification {
             File basedir = new File(testRootDir, 'my_base_dir')
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = srcDir
+                outputDir = outDir
                 baseDir = basedir
             }
         when:
@@ -302,8 +306,8 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = srcDir
+                outputDir = outDir
             }
         when:
             task.processAsciidocSources()
@@ -317,8 +321,8 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = srcDir
+                outputDir = outDir
                 baseDir = null
             }
         when:
@@ -332,8 +336,8 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = srcDir
+                outputDir = outDir
             }
         when:
             task.processAsciidocSources()
@@ -348,8 +352,8 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = srcDir
+                outputDir = outDir
                 options = [
                     safe: SafeMode.SERVER.level
                 ]
@@ -367,8 +371,8 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = srcDir
+                outputDir = outDir
                 options = [
                     safe: 'server'
                 ]
@@ -386,8 +390,8 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = srcDir
+                outputDir = outDir
                 options = [
                     safe: SafeMode.SERVER
                 ]
@@ -405,8 +409,8 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = srcDir
+                outputDir = outDir
             }
         when:
             task.processAsciidocSources()
@@ -420,17 +424,16 @@ class AsciidoctorTaskSpec extends Specification {
     @SuppressWarnings('MethodName')
     def "Docinfo files are not copied to target directory"() {
         given:
-            File outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = srcDir
+                outputDir = outDir
             }
         when:
             task.processAsciidocSources()
         then:
             1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), _)
-            !outputDir.listFiles({ !it.directory && !(it.name =~ DOCINFO_FILE_PATTERN) } as FileFilter)
+            !outDir.listFiles({ !it.directory && !(it.name =~ DOCINFO_FILE_PATTERN) } as FileFilter)
     }
 
     @SuppressWarnings('MethodName')
@@ -440,8 +443,8 @@ class AsciidoctorTaskSpec extends Specification {
             project.group = 'com.acme'
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = srcDir
+                outputDir = outDir
             }
         when:
             task.processAsciidocSources()
@@ -460,8 +463,8 @@ class AsciidoctorTaskSpec extends Specification {
             project.group = 'com.acme'
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = srcDir
+                outputDir = outDir
                 options = [
                    attributes: [
                         'project-name': 'awesome',
@@ -485,8 +488,8 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = srcDir
+                outputDir = outDir
                 sourceDocumentName = new File(ASCIIDOC_RESOURCES_DIR, ASCIIDOC_SAMPLE_FILE)
             }
         when:
@@ -500,8 +503,8 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
-                outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+                sourceDir = srcDir
+                outputDir = outDir
                 sourceDocumentNames = project.files(
                     "${testRootDir}/${ASCIIDOC_SAMPLE_FILE}",
                     "${testRootDir}/${ASCIIDOC_SAMPLE2_FILE}",)
