@@ -157,7 +157,7 @@ class AsciidoctorTaskSpec extends Specification {
                 asciidoctor = mockAsciidoctor
                 sourceDir = srcDir
                 outputDir = outDir
-                sourceDocumentName = new File(testRootDir, ASCIIDOC_SAMPLE_FILE)
+                sourceDocumentName = new File(srcDir, ASCIIDOC_SAMPLE_FILE)
             }
 
             task.processAsciidocSources()
@@ -172,7 +172,7 @@ class AsciidoctorTaskSpec extends Specification {
                 asciidoctor = mockAsciidoctor
                 sourceDir = srcDir
                 outputDir = outDir
-                sourceDocumentName = new File(testRootDir, ASCIIDOC_SAMPLE_FILE)
+                sourceDocumentName = new File(srcDir, ASCIIDOC_SAMPLE_FILE)
             }
         when:
             task.processAsciidocSources()
@@ -187,8 +187,8 @@ class AsciidoctorTaskSpec extends Specification {
                 asciidoctor = mockAsciidoctor
                 sourceDir = srcDir
                 outputDir = outDir
-                sourceDocumentName = new File(testRootDir, ASCIIDOC_SAMPLE_FILE)
-                sourceDocumentNames = new SimpleFileCollection(new File(testRootDir, ASCIIDOC_SAMPLE_FILE))
+                sourceDocumentName = new File(srcDir, ASCIIDOC_SAMPLE_FILE)
+                sourceDocumentNames = new SimpleFileCollection(new File(srcDir, ASCIIDOC_SAMPLE_FILE))
             }
         when:
             task.processAsciidocSources()
@@ -219,7 +219,7 @@ class AsciidoctorTaskSpec extends Specification {
                 asciidoctor = mockAsciidoctor
                 sourceDir = srcDir
                 outputDir = outDir
-                sourceDocumentName = new File(testRootDir, ASCIIDOC_SAMPLE_FILE)
+                sourceDocumentName = new File(srcDir, ASCIIDOC_SAMPLE_FILE)
                 options = [
                   attributes: 'toc=right source-highlighter=coderay'
                 ]
@@ -238,7 +238,7 @@ class AsciidoctorTaskSpec extends Specification {
                 asciidoctor = mockAsciidoctor
                 sourceDir = srcDir
                 outputDir = outDir
-                sourceDocumentName = new File(testRootDir, ASCIIDOC_SAMPLE_FILE)
+                sourceDocumentName = new File(srcDir, ASCIIDOC_SAMPLE_FILE)
                 def attrs = 'toc=right source-highlighter=coderay'
                 options = [
                   attributes: "$attrs"
@@ -258,7 +258,7 @@ class AsciidoctorTaskSpec extends Specification {
                 asciidoctor = mockAsciidoctor
                 sourceDir = srcDir
                 outputDir = outDir
-                sourceDocumentName = new File(testRootDir, ASCIIDOC_SAMPLE_FILE)
+                sourceDocumentName = new File(srcDir, ASCIIDOC_SAMPLE_FILE)
                 def highlighter = 'coderay'
                 options = [
                   attributes: ['toc=right', "source-highlighter=$highlighter"]
@@ -277,7 +277,7 @@ class AsciidoctorTaskSpec extends Specification {
                 asciidoctor = mockAsciidoctor
                 sourceDir = srcDir
                 outputDir = outDir
-                sourceDocumentName = new File(testRootDir, ASCIIDOC_SAMPLE_FILE)
+                sourceDocumentName = new File(srcDir, ASCIIDOC_SAMPLE_FILE)
                 options = [
                   attributes: 23
                 ]
@@ -508,9 +508,10 @@ class AsciidoctorTaskSpec extends Specification {
                 asciidoctor = mockAsciidoctor
                 sourceDir = srcDir
                 outputDir = outDir
-                sourceDocumentNames = project.files(
-                    "${testRootDir}/${ASCIIDOC_SAMPLE_FILE}",
-                    "${testRootDir}/${ASCIIDOC_SAMPLE2_FILE}",)
+                sourceDocumentNames = new SimpleFileCollection(
+                        new File(srcDir, ASCIIDOC_SAMPLE_FILE),
+                        new File(srcDir, ASCIIDOC_SAMPLE2_FILE)
+                )
             }
         when:
             task.processAsciidocSources()
