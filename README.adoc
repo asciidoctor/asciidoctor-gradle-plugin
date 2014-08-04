@@ -89,7 +89,7 @@ asciidoctorj {
 The following options may be set using the task's `options` property
 
  * header_footer - boolean
- * template_dir - String
+ * template_dirs - List<String>
  * template_engine - String
  * compact - boolean
  * doctype - String
