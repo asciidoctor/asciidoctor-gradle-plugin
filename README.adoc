@@ -10,14 +10,14 @@ Asciidoctor Gradle Plugin
 :asciidoctor-java-integration: https://github.com/asciidoctor/asciidoctor-java-integration
 :lordofthejars: https://github.com/lordofthejars
 :asciidoctor-docs: http://asciidoctor.org/docs/
+:project-name: asciidoctor-gradle-plugin
 
-image:https://travis-ci.org/asciidoctor/asciidoctor-gradle-plugin.png?branch=master["Build Status", link="https://travis-ci.org/asciidoctor/asciidoctor-gradle-plugin"]
-image:https://coveralls.io/repos/asciidoctor/asciidoctor-gradle-plugin/badge.png["Coverage Status", link="https://coveralls.io/r/asciidoctor/asciidoctor-gradle-plugin"]
+image:http://img.shields.io/travis/asciidoctor/{project-name}/master.svg["Build Status", link="https://travis-ci.org/asciidoctor/{project-name}"]
+image:http://img.shields.io/coveralls/asciidoctor/{project-name}/master.svg["Coverage Status", link="https://coveralls.io/r/asciidoctor/{project-name}"]
 image:http://img.shields.io/:semver-{version}-blue.svg["Semantic Versioning", link="http://semver.org"]
+image:http://img.shields.io/badge/download-latest-bb00bb.svg[link="https://bintray.com/aalmiray/asciidoctor/{project-name}/_latestVersion"]
 
-image::https://api.bintray.com/packages/aalmiray/asciidoctor/asciidoctor-gradle-plugin/images/download.png["Bintray", link="https://bintray.com/aalmiray/asciidoctor/asciidoctor-gradle-plugin"]
-
-The asciidoctor-gradle-plugin is the official means of using {asciidoctor-url}[Asciidoctor] to render all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
+The {project-name} is the official means of using {asciidoctor-url}[Asciidoctor] to render all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
 
 This is a port of the {asciidoctor-maven-plugin}[asciidoctor-maven-plugin] project by {lightguard}[@LightGuard]. Relies on {asciidoctor-java-integration}[asciidoctor-java-integration] by {lordofthejars}[@lordofthejars].
 
@@ -35,7 +35,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:{version}'
+        classpath 'org.asciidoctor:{project-name}:{version}'
     }
 }
 
@@ -181,4 +181,3 @@ Notice how spaces are escaped in the last key/value pair.
 
 Refer to the {asciidoctor-docs}[Asciidoctor documentation] to learn more about these options and attributes.
 
-image::https://d2weczhvl823v0.cloudfront.net/asciidoctor/asciidoctor-gradle-plugin/trend.png["Bitdeli Badge", link="https://bitdeli.com/free"]
