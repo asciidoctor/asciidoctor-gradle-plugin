@@ -181,3 +181,10 @@ Notice how spaces are escaped in the last key/value pair.
 
 Refer to the {asciidoctor-docs}[Asciidoctor documentation] to learn more about these options and attributes.
 
+[cols="2*"]
+|===
+
+| pass:[<script type="text/javascript" src="http://www.openhub.net/p/660439/widgets/project_factoids_stats.js"></script>]
+| pass:[<script type="text/javascript" src="http://www.openhub.net/p/660439/widgets/project_languages.js"></script>]
+
+|===
