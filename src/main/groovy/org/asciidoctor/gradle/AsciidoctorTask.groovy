@@ -20,6 +20,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.FileCollection
+import org.gradle.api.internal.file.collections.SimpleFileCollection
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
@@ -49,6 +50,10 @@ class AsciidoctorTask extends DefaultTask {
     private static final String SAFE_MODE_CLASSNAME = 'org.asciidoctor.SafeMode'
 
     private static final String DEFAULT_BACKEND = AsciidoctorBackend.HTML5.id
+    private static final Closure<Boolean> EXCLUDE_DOCINFO_AND_FILES_STARTING_WITH_UNDERSCORE = { File file ->
+        // skip files & directories that begin with an underscore and docinfo files
+        !file.name.startsWith('_') && (file.directory || !(file.name ==~ DOCINFO_FILE_PATTERN))
+    }
 
     @Optional @InputFile File sourceDocumentName
     @Optional @InputFiles FileCollection sourceDocumentNames
@@ -99,6 +104,29 @@ class AsciidoctorTask extends DefaultTask {
             if(sourceDocumentNames) {
                 logger.error('Both sourceDocumentName and sourceDocumentNames were specified. sourceDocumentName will be ignored.')
             }
+            else {
+                validateSourceDocuments(new SimpleFileCollection(sourceDocumentName))
+            }
+        }
+        if (sourceDocumentNames) {
+            validateSourceDocuments(sourceDocumentNames)
+        }
+    }
+
+    private void validateSourceDocuments(FileCollection srcDocs) {
+        srcDocs.files.findAll({it.isAbsolute()}).each {
+            logger.warn("sourceDocumentNames should be specified relative to sourceDir ($it)")
+        }
+        Collection<File> allReachableFiles = []
+        eachFileRecurse(sourceDir, EXCLUDE_DOCINFO_AND_FILES_STARTING_WITH_UNDERSCORE) { File file ->
+            allReachableFiles.add(file)
+        }
+        srcDocs.files.each { File file ->
+            if (! allReachableFiles.find {it.canonicalPath == file.canonicalPath}) {
+                throw new GradleException("'$file' is not reachable from sourceDir ($sourceDir). " +
+                        'all files given ins sourceDocumentNames must be located in the sourceDir ' +
+                        'or a subfolder of sourceDir')
+            }
         }
     }
 
@@ -143,11 +171,7 @@ class AsciidoctorTask extends DefaultTask {
     @SuppressWarnings('CatchException')
     private void processDocumentsAndResources(String backend) {
         try {
-            def fileFilter = { File file ->
-                // skip files & directories that begin with an underscore and docinfo files
-                !file.name.startsWith('_') && (file.directory || !(file.name ==~ DOCINFO_FILE_PATTERN))
-            }
-            eachFileRecurse(sourceDir, fileFilter) { File file ->
+            eachFileRecurse(sourceDir, EXCLUDE_DOCINFO_AND_FILES_STARTING_WITH_UNDERSCORE) { File file ->
                 processSourceDir(backend, file)
             }
         } catch (Exception e) {
@@ -156,18 +180,17 @@ class AsciidoctorTask extends DefaultTask {
     }
 
     protected void processSourceDir(String backend, File file) {
-        // FIXME: assuming files have unique names
         File destinationParentDir = outputDirFor(file, sourceDir.absolutePath, outputDir)
         if (file.name =~ ASCIIDOC_FILE_EXTENSION_PATTERN) {
             if (sourceDocumentNames) {
                 // sourceDocumentNames is defined and there's no match we stop
                 // iow, we don't process sourceDocumentName if both are defined
                 // as sourceDocumentNames takes precedence
-                if (sourceDocumentNames.files.find { it.name == file.name }) {
+                if (sourceDocumentNames.files.find { it.canonicalPath == file.canonicalPath }) {
                     processSingleFile(backend, destinationParentDir, file)
                 }
                 // check if single file was given
-            } else if (!sourceDocumentName || file.name == sourceDocumentName.name) {
+            } else if (!sourceDocumentName || file.canonicalPath == sourceDocumentName.canonicalPath) {
                 processSingleFile(backend, destinationParentDir, file)
             }
         } else {
