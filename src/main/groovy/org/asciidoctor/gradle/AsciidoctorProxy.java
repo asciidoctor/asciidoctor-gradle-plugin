@@ -23,4 +23,6 @@ import java.util.Map;
  */
 public interface AsciidoctorProxy {
     String renderFile(File filename, Map<String, Object> options);
+    
+    Object javaExtensionRegistry();
 }

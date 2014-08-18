@@ -1,0 +1,9 @@
+= BlockProcessor Test document
+
+[BIG]
+Write this in uppercase
+
+[small]
+AND WRITE THIS IN LOWERCASE
+
+
