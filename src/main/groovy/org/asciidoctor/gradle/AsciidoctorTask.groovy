@@ -91,18 +91,18 @@ class AsciidoctorTask extends DefaultTask {
             }
         }
         if (backend) {
-            logger.warn('backend is deprecated and may not be supported in future versions. Please use backends instead.')
+            logger.warn('The `backend` property is deprecated and may not be supported in future versions. Please use the `backends` property instead.')
             if (backends) {
-                logger.error('Both backend and backends were specified. backend will be ignored.')
+                logger.error('Both the `backend` and `backends` properties were specified. The `backend` property will be ignored.')
             }
             else if (!AsciidoctorBackend.isBuiltIn(backend)) {
                 logger.lifecycle("Passing through unknown backend: $backend")
             }
         }
         if(sourceDocumentName) {
-            logger.warn('sourceDocumentName is deprecated and may not be supported in future versions. Please use sourceDocumentNames instead.')
+            logger.warn('The `sourceDocumentName` property is deprecated and may not be supported in future versions. Please use the `sourceDocumentNames` property instead.')
             if(sourceDocumentNames) {
-                logger.error('Both sourceDocumentName and sourceDocumentNames were specified. sourceDocumentName will be ignored.')
+                logger.error('Both the `sourceDocumentName` and `sourceDocumentNames` properties were specified. The `sourceDocumentName` property will be ignored.')
             }
             else {
                 validateSourceDocuments(new SimpleFileCollection(sourceDocumentName))
@@ -201,7 +201,7 @@ class AsciidoctorTask extends DefaultTask {
 
     protected void processSingleFile(String backend, File destinationParentDir, File file) {
         if (logDocuments) {
-            logger.lifecycle("Rendering $file")
+            logger.lifecycle("Converting $file")
         }
         asciidoctor.renderFile(file, mergedOptions(file,
                 [

@@ -91,7 +91,7 @@ class AsciidoctorTaskSpec extends Specification {
         then:
             2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == AsciidoctorBackend.DOCBOOK.id})
             2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == AsciidoctorBackend.HTML5.id})
-            systemOut.toString().contains('Both backend and backends were specified. backend will be ignored.')
+            systemOut.toString().contains('Both the `backend` and `backends` properties were specified. The `backend` property will be ignored.')
     }
 
     @SuppressWarnings('MethodName')
@@ -128,7 +128,7 @@ class AsciidoctorTaskSpec extends Specification {
             task.processAsciidocSources()
         then:
             2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == AsciidoctorBackend.DOCBOOK.id})
-            systemOut.toString().contains('backend is deprecated and may not be supported in future versions. Please use backends instead.')
+            systemOut.toString().contains('The `backend` property is deprecated and may not be supported in future versions. Please use the `backends` property instead.')
     }
 
     @SuppressWarnings('MethodName')
@@ -177,7 +177,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             task.processAsciidocSources()
         then:
-            systemOut.toString().contains('sourceDocumentName is deprecated and may not be supported in future versions. Please use sourceDocumentNames instead.')
+            systemOut.toString().contains('The `sourceDocumentName` property is deprecated and may not be supported in future versions. Please use the `sourceDocumentNames` property instead.')
     }
 
     @SuppressWarnings('MethodName')
@@ -193,7 +193,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             task.processAsciidocSources()
         then:
-            systemOut.toString().contains('Both sourceDocumentName and sourceDocumentNames were specified. sourceDocumentName will be ignored.')
+            systemOut.toString().contains('Both the `sourceDocumentName` and `sourceDocumentNames` properties were specified. The `sourceDocumentName` property will be ignored.')
     }
 
     @SuppressWarnings('MethodName')
