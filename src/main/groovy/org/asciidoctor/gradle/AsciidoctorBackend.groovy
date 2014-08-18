@@ -22,7 +22,7 @@ package org.asciidoctor.gradle
  * @author Dan Allen
  */
 enum AsciidoctorBackend {
-    HTML('html'), DOCBOOK('docbook'), HTML5('html5'), DOCBOOK45('docbook45'), DOCBOOK5('docbook5')
+    HTML('html'), DOCBOOK('docbook'), HTML5('html5'), DOCBOOK45('docbook45'), DOCBOOK5('docbook5'), EPUB3('epub3')
 
     private final static Map<String, AsciidoctorBackend> ALL_BACKENDS
     private final String id
