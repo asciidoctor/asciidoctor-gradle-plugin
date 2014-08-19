@@ -372,9 +372,8 @@ class AsciidoctorTask extends DefaultTask {
     private void setupClassLoader() {
         if (classpath?.files) {
             def urls = classpath.files.collect { it.toURI().toURL() }
-			cl = new GroovyClassLoader(Thread.currentThread().contextClassLoader)
-			urls.each {AsciidoctorTask.cl.addURL(it)}
-            //cl = new URLClassLoader(urls as URL[], Thread.currentThread().contextClassLoader)
+            cl = new GroovyClassLoader(Thread.currentThread().contextClassLoader)
+            urls.each {AsciidoctorTask.cl.addURL(it)}
             Thread.currentThread().contextClassLoader = cl
         } else {
             cl = new GroovyClassLoader(Thread.currentThread().contextClassLoader)

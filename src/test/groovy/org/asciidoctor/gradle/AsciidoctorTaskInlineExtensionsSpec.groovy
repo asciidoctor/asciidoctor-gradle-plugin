@@ -306,6 +306,30 @@ class AsciidoctorTaskInlineExtensionsSpec extends Specification {
 			
 	}
 
+	def "Should fail if inline Postprocessor fails"() {
+		given:
+			String copyright = "Copyright Acme, Inc." + System.currentTimeMillis()
+			Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+				sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+				outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+				sourceDocumentNames = project.files(
+					"${testRootDir}/${ASCIIDOC_INLINE_EXTENSIONS_FILE}")
+				extensions {
+					postprocessor {
+						document, output ->
+							if (output.contains("blacklisted")) {
+								throw new IllegalArgumentException("Document contains a blacklisted word")
+							} 
+					}		
+				}
+			}
+			File resultFile = new File(testRootDir, ASCIIDOC_BUILD_DIR + File.separator + ASCIIDOC_INLINE_EXTENSIONS_RESULT_FILE)
+		when:
+			task.processAsciidocSources()
+		then:
+			thrown(GradleException)
+	}
+
 	def "Should apply inline Preprocessor"() {
 		given:
 			Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
