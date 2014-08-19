@@ -43,7 +43,7 @@ repositories {
 
 dependencies {
     compile gradleApi()
-    testCompile 'org.asciidoctor:asciidoctorj:1.5.0.preview.7'
+    testCompile 'org.asciidoctor:asciidoctorj:1.5.0'
     testCompile('org.spockframework:spock-core:0.7-groovy-1.8') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
         exclude group: 'org.hamcrest', module: 'hamcrest-core'

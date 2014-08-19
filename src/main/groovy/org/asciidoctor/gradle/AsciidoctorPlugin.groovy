@@ -33,7 +33,6 @@ class AsciidoctorPlugin implements Plugin<Project> {
 
         project.repositories {
             jcenter()
-            maven { url 'http://dl.bintray.com/lordofthejars/maven'}
         }
 
         project.configurations.maybeCreate(ASCIIDOCTOR)
