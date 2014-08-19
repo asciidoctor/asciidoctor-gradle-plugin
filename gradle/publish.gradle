@@ -25,6 +25,8 @@ ext {
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
+def projectArtifactId = 'asciidoctor-gradle-plugin'
+
 jar {
     manifest {
         attributes(
@@ -32,10 +34,10 @@ jar {
             'Created-By': System.properties['java.version'] + " (" + System.properties['java.vendor'] + " " + System.getProperty("java.vm.version") + ")",
             'Build-Date': project.buildTime,
             'Build-Time': project.buildDate,
-            'Specification-Title': project.name,
+            'Specification-Title': projectArtifactId,
             'Specification-Version': project.version,
             'Specification-Vendor': 'asciidoctor.org',
-            'Implementation-Title': project.name,
+            'Implementation-Title': projectArtifactId,
             'Implementation-Version': project.version,
             'Implementation-Vendor': 'asciidoctor.org'
         )
@@ -43,7 +45,7 @@ jar {
 }
 
 def pomConfig = {
-    name project.name
+    name projectArtifactId
     description 'A Gradle plugin that uses Asciidoctor via JRuby to process AsciiDoc source files within the project'
     url 'http://asciidoctor.org'
     inceptionYear '2013'
@@ -103,6 +105,7 @@ publishing {
             from components.java
             artifact sourceJar
 
+            setArtifactId(projectArtifactId)
             pom.withXml {
                 asNode().children().last() + pomConfig
             }
@@ -122,7 +125,7 @@ bintray {
     pkg {
         repo = 'asciidoctor'
         userOrg = 'aalmiray'
-        name = 'asciidoctor-gradle-plugin'
+        name = projectArtifactId
         desc = 'A Gradle plugin that uses Asciidoctor via JRuby to process AsciiDoc source files within the project'
         licenses = ['Apache-2.0']
         labels = ['gradle', 'plugin', 'asciidoctor']
