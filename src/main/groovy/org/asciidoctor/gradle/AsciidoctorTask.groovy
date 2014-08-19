@@ -54,6 +54,7 @@ class AsciidoctorTask extends DefaultTask {
         // skip files & directories that begin with an underscore and docinfo files
         !file.name.startsWith('_') && (file.directory || !(file.name ==~ DOCINFO_FILE_PATTERN))
     }
+    public static final String ASCIIDOCTOR_FACTORY_CLASSNAME = 'org.asciidoctor.Asciidoctor$Factory'
 
     @Optional @InputFile File sourceDocumentName
     @Optional @InputFiles FileCollection sourceDocumentNames
@@ -96,8 +97,7 @@ class AsciidoctorTask extends DefaultTask {
             logger.warn('The `backend` property is deprecated and may not be supported in future versions. Please use the `backends` property instead.')
             if (backends) {
                 logger.error('Both the `backend` and `backends` properties were specified. The `backend` property will be ignored.')
-            }
-            else if (!AsciidoctorBackend.isBuiltIn(backend)) {
+            } else if (!AsciidoctorBackend.isBuiltIn(backend)) {
                 logger.lifecycle("Passing through unknown backend: $backend")
             }
         }
@@ -105,8 +105,7 @@ class AsciidoctorTask extends DefaultTask {
             logger.warn('The `sourceDocumentName` property is deprecated and may not be supported in future versions. Please use the `sourceDocumentNames` property instead.')
             if(sourceDocumentNames) {
                 logger.error('Both the `sourceDocumentName` and `sourceDocumentNames` properties were specified. The `sourceDocumentName` property will be ignored.')
-            }
-            else {
+            } else {
                 validateSourceDocuments(new SimpleFileCollection(sourceDocumentName))
             }
         }
@@ -152,12 +151,12 @@ class AsciidoctorTask extends DefaultTask {
     void processAsciidocSources() {
         validateInputs()
         outputDir.mkdirs()
+
         if (!asciidoctor) {
             if (gemPath) {
-                asciidoctor = (loadClass('org.asciidoctor.Asciidoctor$Factory').create(gemPath) as AsciidoctorProxy)
-            }
-            else {
-                asciidoctor = (loadClass('org.asciidoctor.Asciidoctor$Factory').create() as AsciidoctorProxy)
+                asciidoctor = (loadClass(ASCIIDOCTOR_FACTORY_CLASSNAME).create(gemPath) as AsciidoctorProxy)
+            } else {
+                asciidoctor = (loadClass(ASCIIDOCTOR_FACTORY_CLASSNAME).create() as AsciidoctorProxy)
             }
         }
 
@@ -177,8 +176,7 @@ class AsciidoctorTask extends DefaultTask {
     private Set<String> activeBackends() {
         if (backends) {
             return backends
-        }
-        else if (backend) {
+        } else if (backend) {
             return [backend]
         }
         [DEFAULT_BACKEND]

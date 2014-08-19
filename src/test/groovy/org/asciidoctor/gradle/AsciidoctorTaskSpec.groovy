@@ -599,6 +599,6 @@ class AsciidoctorTaskSpec extends Specification {
             task.processAsciidocSources()
         then:
             1 * mockAsciidoctor.renderFile(_, _)
-            systemOut.toString().contains('sourceDocumentNames should be specified relative to sourceDir')
+            systemOut.toString().contains('`sourceDocumentNames` should be specified relative to sourceDir')
     }
 }
