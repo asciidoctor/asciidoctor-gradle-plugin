@@ -157,7 +157,13 @@ class AsciidoctorTask extends DefaultTask {
                 asciidoctor = (loadClass('org.asciidoctor.Asciidoctor$Factory').create(gemPath) as AsciidoctorProxy)
             }
             else {
-                asciidoctor = (loadClass('org.asciidoctor.Asciidoctor$Factory').create() as AsciidoctorProxy)
+                try {
+                    asciidoctor = (loadClass('org.asciidoctor.Asciidoctor$Factory').create(null as String) as AsciidoctorProxy)
+                }
+                // Asciidoctor < 1.5.1 can't handle a null gemPath, so fallback to default create() method
+                catch (Exception e) {
+                    asciidoctor = (loadClass('org.asciidoctor.Asciidoctor$Factory').create() as AsciidoctorProxy)
+                }
             }
         }
 
