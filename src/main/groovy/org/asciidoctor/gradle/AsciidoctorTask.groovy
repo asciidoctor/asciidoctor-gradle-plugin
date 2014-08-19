@@ -115,7 +115,7 @@ class AsciidoctorTask extends DefaultTask {
 
     private void validateSourceDocuments(FileCollection srcDocs) {
         srcDocs.files.findAll({it.isAbsolute()}).each {
-            logger.warn("sourceDocumentNames should be specified relative to sourceDir ($it)")
+            logger.warn("Entry '$it' of `sourceDocumentNames` should be specified relative to sourceDir ($sourceDir)")
         }
         Collection<File> allReachableFiles = []
         eachFileRecurse(sourceDir, EXCLUDE_DOCINFO_AND_FILES_STARTING_WITH_UNDERSCORE) { File file ->
