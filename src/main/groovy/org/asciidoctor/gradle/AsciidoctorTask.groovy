@@ -115,8 +115,10 @@ class AsciidoctorTask extends DefaultTask {
     }
 
     private void validateSourceDocuments(FileCollection srcDocs) {
-        srcDocs.files.findAll({it.isAbsolute()}).each {
-            logger.warn("Entry '$it' of `sourceDocumentNames` should be specified relative to sourceDir ($sourceDir)")
+        srcDocs.files.findAll {
+            it.isAbsolute() && !it.canonicalPath.startsWith(sourceDir.canonicalPath)
+        }.each {
+            logger.warn("Entry '$it' of `sourceDocumentNames` should be specified relative to `sourceDir` ($sourceDir)")
         }
         Collection<File> allReachableFiles = []
         eachFileRecurse(sourceDir, EXCLUDE_DOCINFO_AND_FILES_STARTING_WITH_UNDERSCORE) { File file ->
@@ -125,8 +127,8 @@ class AsciidoctorTask extends DefaultTask {
         srcDocs.files.each { File file ->
             if (! allReachableFiles.find {it.canonicalPath == file.canonicalPath}) {
                 throw new GradleException("'$file' is not reachable from sourceDir ($sourceDir). " +
-                        'all files given ins sourceDocumentNames must be located in the sourceDir ' +
-                        'or a subfolder of sourceDir')
+                        'All files given in `sourceDocumentNames` must be located in `sourceDir` ' +
+                        'or a subfolder of `sourceDir`.')
             }
         }
     }

@@ -585,7 +585,7 @@ class AsciidoctorTaskSpec extends Specification {
     }
 
     @SuppressWarnings('MethodName')
-    def "Should emmit warning about absolute path in sourceDocumentNames"() {
+    def "Should not emmit warning about absolute path in sourceDocumentNames"() {
         expect:
             project.tasks.findByName(ASCIIDOCTOR) == null
         when:
@@ -599,6 +599,5 @@ class AsciidoctorTaskSpec extends Specification {
             task.processAsciidocSources()
         then:
             1 * mockAsciidoctor.renderFile(_, _)
-            systemOut.toString().contains('`sourceDocumentNames` should be specified relative to sourceDir')
     }
 }
