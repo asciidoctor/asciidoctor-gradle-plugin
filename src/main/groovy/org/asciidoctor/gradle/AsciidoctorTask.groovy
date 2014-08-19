@@ -153,16 +153,7 @@ class AsciidoctorTask extends DefaultTask {
         outputDir.mkdirs()
 
         if (!asciidoctor) {
-            if (gemPath) {
-                asciidoctor = (loadClass(ASCIIDOCTOR_FACTORY_CLASSNAME).create(gemPath) as AsciidoctorProxy)
-            } else {
-                try {
-                    asciidoctor = (loadClass(ASCIIDOCTOR_FACTORY_CLASSNAME).create(null as String) as AsciidoctorProxy)
-                } catch (Exception e) {
-                    // Asciidoctor < 1.5.1 can't handle a null gemPath, so fallback to default create() method
-                    asciidoctor = (loadClass(ASCIIDOCTOR_FACTORY_CLASSNAME).create() as AsciidoctorProxy)
-                }
-            }
+            instantiateAsciidoctor()
         }
 
         if (requires) {
@@ -175,6 +166,20 @@ class AsciidoctorTask extends DefaultTask {
 
         for (activeBackend in activeBackends()) {
             processDocumentsAndResources(activeBackend)
+        }
+    }
+
+    @SuppressWarnings('CatchException')
+    private void instantiateAsciidoctor() {
+        if (gemPath) {
+            asciidoctor = (loadClass(ASCIIDOCTOR_FACTORY_CLASSNAME).create(gemPath) as AsciidoctorProxy)
+        } else {
+            try {
+                asciidoctor = (loadClass(ASCIIDOCTOR_FACTORY_CLASSNAME).create(null as String) as AsciidoctorProxy)
+            } catch (Exception e) {
+                // Asciidoctor < 1.5.1 can't handle a null gemPath, so fallback to default create() method
+                asciidoctor = (loadClass(ASCIIDOCTOR_FACTORY_CLASSNAME).create() as AsciidoctorProxy)
+            }
         }
     }
 
