@@ -43,8 +43,11 @@ class AsciidoctorPlugin implements Plugin<Project> {
             }
         }
 
-        project.task(ASCIIDOCTOR, type: AsciidoctorTask, group: 'Documentation', {
+        project.task(ASCIIDOCTOR,
+            type: AsciidoctorTask,
+            group: 'Documentation',
+            description: 'Converts AsciiDoc files and copies the output files and related resources to the build directory.') {
             classpath = project.configurations.asciidoctor
-        })
+        }
     }
 }
