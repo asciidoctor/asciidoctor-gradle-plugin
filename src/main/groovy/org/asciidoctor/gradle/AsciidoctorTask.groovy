@@ -58,11 +58,13 @@ class AsciidoctorTask extends DefaultTask {
     @Optional @InputFile File sourceDocumentName
     @Optional @InputFiles FileCollection sourceDocumentNames
     @Optional @InputDirectory File baseDir
+    @Optional @Input String gemPath
     @InputDirectory File sourceDir
     @OutputDirectory File outputDir
     @Optional @Input String backend
     @Optional @Input Set<String> backends
     @Input Map options = [:]
+    @Optional @Input Set<String> requires
     @Optional boolean logDocuments = false
     private boolean baseDirSetToNull
 
@@ -150,9 +152,23 @@ class AsciidoctorTask extends DefaultTask {
     void processAsciidocSources() {
         validateInputs()
         outputDir.mkdirs()
-        if( !asciidoctor) {
-            asciidoctor = (loadClass('org.asciidoctor.Asciidoctor$Factory').create() as AsciidoctorProxy)
+        if (!asciidoctor) {
+            if (gemPath) {
+                asciidoctor = (loadClass('org.asciidoctor.Asciidoctor$Factory').create(gemPath) as AsciidoctorProxy)
+            }
+            else {
+                asciidoctor = (loadClass('org.asciidoctor.Asciidoctor$Factory').create() as AsciidoctorProxy)
+            }
         }
+
+        if (requires) {
+            for (require in requires) {
+               // FIXME AsciidoctorJ should provide a public API for requiring paths in the Ruby runtime
+               asciidoctor.proxyTarget.rubyRuntime.evalScriptlet(
+                   'require \'' + require.replaceAll('[^A-Za-z0-9/\\\\.\\-]', '') + '\'')
+            }
+        }
+
         for (activeBackend in activeBackends()) {
             processDocumentsAndResources(activeBackend)
         }
@@ -266,7 +282,6 @@ class AsciidoctorTask extends DefaultTask {
         // Asciidoctor cannot handle absolute paths in Windows properly
         attributes.projectdir = AsciidoctorUtils.getRelativePath(params.projectDir, file.parentFile)
         attributes.rootdir = AsciidoctorUtils.getRelativePath(params.rootDir, file.parentFile)
-
 
         // resolve these properties here as we want to catch both Map and String definitions parsed above
         attributes.'project-name' = attributes.'project-name' ?: params.project.name
