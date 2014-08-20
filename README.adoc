@@ -210,3 +210,88 @@ options = [
 Notice how spaces are escaped in the last key/value pair.
 
 Refer to the {asciidoctor-docs}[Asciidoctor documentation] to learn more about these options and attributes.
+
+== Custom Extensions
+
+Starting with version 1.5.0 you'll be able to write your own Asciidoctor extensions in Groovy, or any other JVM language
+for that matter. There are several options for you to make it happen
+
+=== External Library
+
+This is the most versatile option, as it allows you to reuse the same extension in different projects. An external library
+is just like any other Java/Groovy project. You simply define a dependency using the `asciidoctor` configuration.
+
+.build.gradle
+[source,groovy]
+----
+dependencies {
+    asciidoctor 'com.acme:asciidoctor-extensions:x.y.z'
+}
+----
+
+=== Project Dependency
+
+The next option is to host the extension project in a multi-project build. This allows for a much quicker development cycle
+as you don't have to publish the jar to a repository every time you make adjustments to the code. Take for example the
+following setup
+
+[source]
+----
+.
+├── build.gradle
+├── core
+│   ├── build.gradle
+│   └── src
+│       ├── asciidoc
+│       │   └── index.adoc
+│       └── main
+│           └── java
+├── extension
+│   ├── build.gradle
+│   └── src
+│       └── main
+│           ├── groovy
+│           │   └── org
+│           │       └── asciidoctor
+│           │           └── example
+│           │               ├── ExampleExtensionRegistry.groovy
+│           │               └── YellBlock.groovy
+│           └── resources
+│               └── META-INF
+│                   └── services
+│                       └── org.asciidoctor.extension.spi.ExtensionRegistry
+└── settings.gradle
+----
+
+The `extension` project is a sibling for `core`. The build file for the latter looks like this
+
+.build.gradle
+[source,groovy]
+[subs="attributes"]
+----
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:{version}'
+    }
+}
+
+apply plugin: 'org.asciidoctor.gradle.asciidoctor'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    asciidoctor project(':extension')
+}
+----
+
+=== Build Dependency
+
+The last option is to move the `extension` project into Gradle's `buildSrc` directory. There are no additional dependencies
+that must defined on the consuming projects, as the extension will be automatically picked up by the `asciidoctor` task,
+as the compiled extension is already in the task's classpath.

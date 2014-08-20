@@ -174,13 +174,13 @@ class AsciidoctorTask extends DefaultTask {
     @SuppressWarnings('CatchException')
     private void instantiateAsciidoctor() {
         if (gemPath) {
-            asciidoctor = (loadClass(ASCIIDOCTOR_FACTORY_CLASSNAME).create(gemPath) as AsciidoctorProxy)
+            asciidoctor = new AsciidoctorProxyImpl(delegate: loadClass(ASCIIDOCTOR_FACTORY_CLASSNAME).create(gemPath))
         } else {
             try {
-                asciidoctor = (loadClass(ASCIIDOCTOR_FACTORY_CLASSNAME).create(null as String) as AsciidoctorProxy)
+                asciidoctor = new AsciidoctorProxyImpl(delegate: loadClass(ASCIIDOCTOR_FACTORY_CLASSNAME).create(null as String))
             } catch (Exception e) {
                 // Asciidoctor < 1.5.1 can't handle a null gemPath, so fallback to default create() method
-                asciidoctor = (loadClass(ASCIIDOCTOR_FACTORY_CLASSNAME).create() as AsciidoctorProxy)
+                asciidoctor = new AsciidoctorProxyImpl(delegate: loadClass(ASCIIDOCTOR_FACTORY_CLASSNAME).create())
             }
         }
     }
