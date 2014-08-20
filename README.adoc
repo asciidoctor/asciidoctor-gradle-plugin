@@ -44,19 +44,17 @@ apply plugin: 'org.asciidoctor.gradle.asciidoctor'
 
 == Usage
 
-The plugin adds a new task named `asciidoctor`. This task exposes 6 properties as part of its configuration
+The plugin adds a new task named `asciidoctor`. This task exposes a few properties as part of its configuration
 
 [horizontal]
 sourceDir:: where the asciidoc sources are. Type: File. Default: `src/asciidoc`.
-sourceDocumentName:: an override to process a single source file. Type: File. Defaults to all files in `${sourceDir}`
 sourceDocumentNames:: an override to process multiple source files, which may be a subset of all
-files available in `${sourceDir}`. This property has precedence over `sourceDocumentName` which means the
-latter will be discarded if the former is defined. Type: FileCollection. Defaults to all files in `${sourceDir}`
+files available in `${sourceDir}`. Type: FileCollection. Defaults to all files in `${sourceDir}`.
 outputDir:: where generated docs go. Type: File. Default: `$buildDir/asciidoc`.
-backend:: the backend to use. Type: String. Default: `html5`. This option is a convenience for using backends property.
 backends:: the backends to use. Type: Set<String>. Default: [`html5`].
 options:: a Map specifying different options that can be sent to Asciidoctor.
-logDocuments:: a boolean specifying if documents being processed should be logged on console. Type: boolean. Default: `false`
+logDocuments:: a boolean specifying if documents being processed should be logged on console. Type: boolean. Default: `false`.
+requires:: a set of Ruby modules to be included. Type: Set<String>. Default: empty.
 
 Sources may have any of the following extensions in order to be discovered
 
@@ -67,22 +65,54 @@ Sources may have any of the following extensions in order to be discovered
 
 The following attributes are automatically set by the `Asciidoctor` task
 
- * project-name : matches $project.name
- * project-version: matches $project.version (if defined). Empty String value if undefined
- * project-group: matches $project.group (if defined). Empty String value if undefined
+ * project-name : matches `$project.name`
+ * project-version: matches `$project.version` (if defined). Empty String value if undefined
+ * project-group: matches `$project.group` (if defined). Empty String value if undefined
 
 These attributes may be overridden by explicit user input.
 
+== Compatibility With Previous Releases
+
+=== Task Properties
+
+The following properties have been marked as deprecated. Developers are encouraged to migrate ASAP to the alternate
+properties.
+
+[horizontal]
+sourceDocumentName:: an override to process a single source file. Use `sourceDocumentNames` instead.
+backend:: the backend to use. Use `backends` instead.
+
+=== Behavior
+
+Files specified in `sourceDocumentNames` must be relative to `sourceDir` and fully contained in `sourceDir`, in other words,
+it's no longer possible to process documents placed outside of the project's sources.
+
 == Configuration
 
-This plugin uses `asciidoctorj-1.5.0.preview.7` by default, however you can change this by
+This plugin uses `asciidoctorj-1.5.0` by default, however you can change this by
 defining a value on the +asciidoctorj+ extension, like so
 
 .build.gradle
 [source,groovy]
 ----
 asciidoctorj {
-    version = '1.5.0.Final'
+    version = '1.6.0.SNAPSHOT'
+}
+----
+
+Do not forgte to add an entry to the `repositories` block pointint to Maven local if you'd like to run a local version
+of Asciidoctor (such as an snapshot build for testing bleeding edge features). The following snippet is all you need
+
+.build.gradle
+[source,groovy]
+----
+repositories {
+    mavenLocal() // for resolving the snapshot
+    jcenter()    // for resolving all other dependencies
+}
+
+asciidoctorj {
+    version = '1.6.0.MY_SNAPSHOT'
 }
 ----
 
@@ -180,4 +210,3 @@ options = [
 Notice how spaces are escaped in the last key/value pair.
 
 Refer to the {asciidoctor-docs}[Asciidoctor documentation] to learn more about these options and attributes.
-

@@ -17,6 +17,7 @@ package org.asciidoctor.gradle
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
 
 /**
  * @author Noam Tenne
@@ -35,7 +36,7 @@ class AsciidoctorPlugin implements Plugin<Project> {
             jcenter()
         }
 
-        project.configurations.maybeCreate(ASCIIDOCTOR)
+        Configuration configuration = project.configurations.maybeCreate(ASCIIDOCTOR)
         project.afterEvaluate {
             project.dependencies {
                 asciidoctor("org.asciidoctor:asciidoctorj:${extension.version}")
@@ -46,7 +47,7 @@ class AsciidoctorPlugin implements Plugin<Project> {
             type: AsciidoctorTask,
             group: 'Documentation',
             description: 'Converts AsciiDoc files and copies the output files and related resources to the build directory.') {
-            classpath = project.configurations.asciidoctor
+            classpath = configuration
         }
     }
 }
