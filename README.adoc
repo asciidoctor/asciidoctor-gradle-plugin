@@ -1,5 +1,10 @@
+<<<<<<< Updated upstream
 = Asciidoctor Gradle Plugin
 Andres Almiray
+=======
+Asciidoctor Gradle Plugin
+=========================
+>>>>>>> Stashed changes
 :version: 1.5.0
 :asciidoc-url: http://asciidoc.org
 :asciidoctor-url: http://asciidoctor.org

@@ -69,7 +69,7 @@ def pomConfig = {
         }
         [
             aalmiray: 'Andres Almiray',
-            noamt: 'Noam Tenne',
+            noamt   : 'Noam Tenne',
             bmuschko: 'Benjamin Muschko'
         ].each { devId, devName ->
             developer {
@@ -83,10 +83,16 @@ def pomConfig = {
     }
     contributors {
         [
-            tombujok: 'Tom Bujok',
-            lpeilak: 'Lukasz Pielak',
+            tombujok   : 'Tom Bujok',
+            jlupi      : 'Lukasz Pielak',
             dvyazelenko: 'Dmitri Vyazelenko',
-            rwinch: 'Rob Winch'
+            rwinch     : 'Rob Winch',
+            Skyr       : 'Stefan Schlott',
+            sclassen   : 'Stephan Classen',
+            McPringle  : 'Marcus Fihlon',
+            msgilligan : 'Sean Gilligan',
+            afolmert   : 'Adam Folmert',
+            mrhaki     : 'Hubert Klein Ikkink'
         ].each { devId, devName ->
             contributor {
                 name devName
