@@ -161,8 +161,8 @@ class AsciidoctorTask extends DefaultTask {
         if (requires) {
             for (require in requires) {
                // FIXME AsciidoctorJ should provide a public API for requiring paths in the Ruby runtime
-               asciidoctor.proxyTarget.rubyRuntime.evalScriptlet(
-                   'require \'' + require.replaceAll('[^A-Za-z0-9/\\\\.\\-]', '') + '\'')
+               asciidoctor.delegate.rubyRuntime.evalScriptlet(
+                   'require \'' + require.replaceAll('[^A-Za-z0-9/\\\\.\\-_]', '') + '\'')
             }
         }
 

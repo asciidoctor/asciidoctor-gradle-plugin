@@ -1,13 +1,13 @@
-Asciidoctor Gradle Plugin
-=========================
-:version: 0.7.3
+= Asciidoctor Gradle Plugin
+Andres Almiray
+:version: 1.5.0
 :asciidoc-url: http://asciidoc.org
 :asciidoctor-url: http://asciidoctor.org
 :issues: https://github.com/asciidoctor/asciidoctor-maven-plugin/issues
 :gradle-url: http://gradle.org/
 :asciidoctor-maven-plugin: https://github.com/asciidoctor/asciidoctor-maven-plugin
 :lightguard: https://github.com/LightGuard
-:asciidoctor-java-integration: https://github.com/asciidoctor/asciidoctor-java-integration
+:asciidoctorj: https://github.com/asciidoctor/asciidoctorj
 :lordofthejars: https://github.com/lordofthejars
 :asciidoctor-docs: http://asciidoctor.org/docs/
 :project-name: asciidoctor-gradle-plugin
@@ -17,9 +17,9 @@ image:http://img.shields.io/coveralls/asciidoctor/{project-name}/master.svg["Cov
 image:http://img.shields.io/:semver-{version}-blue.svg["Semantic Versioning", link="http://semver.org"]
 image:http://img.shields.io/badge/download-latest-bb00bb.svg[link="https://bintray.com/aalmiray/asciidoctor/{project-name}/_latestVersion"]
 
-The {project-name} is the official means of using {asciidoctor-url}[Asciidoctor] to render all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
+The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to render all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
 
-This is a port of the {asciidoctor-maven-plugin}[asciidoctor-maven-plugin] project by {lightguard}[@LightGuard]. Relies on {asciidoctor-java-integration}[asciidoctor-java-integration] by {lordofthejars}[@lordofthejars].
+This is a port of the {asciidoctor-maven-plugin}[Asciidoctor Maven Plugin] project founded by {lightguard}[@LightGuard]. Relies on {asciidoctorj}[AsciidoctorJ] founded by {lordofthejars}[@lordofthejars].
 
 == Installation
 
@@ -49,11 +49,12 @@ The plugin adds a new task named `asciidoctor`. This task exposes a few properti
 [horizontal]
 sourceDir:: where the asciidoc sources are. Type: File. Default: `src/asciidoc`.
 sourceDocumentNames:: an override to process multiple source files, which may be a subset of all
-files available in `${sourceDir}`. Type: FileCollection. Defaults to all files in `${sourceDir}`.
+files available in [x-]`${sourceDir}`. Type: FileCollection. Defaults to all files in [x-]`${sourceDir}`.
 outputDir:: where generated docs go. Type: File. Default: `$buildDir/asciidoc`.
 backends:: the backends to use. Type: Set<String>. Default: [`html5`].
 options:: a Map specifying different options that can be sent to Asciidoctor.
 logDocuments:: a boolean specifying if documents being processed should be logged on console. Type: boolean. Default: `false`.
+gemPath:: one or more gem installation directories (separated by the system path separator). Type: String. Default: `null`
 requires:: a set of Ruby modules to be included. Type: Set<String>. Default: empty.
 
 Sources may have any of the following extensions in order to be discovered
@@ -107,21 +108,22 @@ of Asciidoctor (such as an snapshot build for testing bleeding edge features). T
 [source,groovy]
 ----
 repositories {
-    mavenLocal() // for resolving the snapshot
-    jcenter()    // for resolving all other dependencies
+    mavenLocal() // <1>
+    jcenter()    // <2>
 }
 
 asciidoctorj {
     version = '1.6.0.MY_SNAPSHOT'
 }
 ----
+<1> resolves artifacts in your local Maven repository
+<2> resolves artifacts in Bintray's jcenter (where all other dependencies are found)
 
 The following options may be set using the task's `options` property
 
  * header_footer - boolean
  * template_dirs - List<String>
  * template_engine - String
- * compact - boolean
  * doctype - String
  * attributes - Map
 
@@ -131,12 +133,10 @@ an stylesheet for example. The following snippet shows a sample configuration de
 .build.gradle
 [source,groovy]
 ----
-// append below the line: apply plugin: 'org.asciidoctor.gradle.asciidoctor'
-
-asciidoctor {
+asciidoctor { <1>
     outputDir = new File("$buildDir/docs")
     options = [
-        eruby: 'erubis',
+        doctype: 'book',
         attributes: [
             'source-highlighter': 'coderay',
             toc                 : '',
@@ -146,6 +146,7 @@ asciidoctor {
     ]
 }
 ----
+<1> append below the line: `apply plugin: 'org.asciidoctor.gradle.asciidotor'`
 
 You may need to include extra content into the head of the exported document.
 For example, you might want to include jQuery inside the `<head>` element of the HTML export.
