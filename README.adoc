@@ -139,9 +139,9 @@ asciidoctor {
         eruby: 'erubis',
         attributes: [
             'source-highlighter': 'coderay',
-            toc: '',
-            idprefix: '',
-            idseparator: '-'
+            toc                 : '',
+            idprefix            : '',
+            idseparator         : '-'
         ]
     ]
 }
@@ -206,6 +206,9 @@ options = [
     attributes: 'toc=right source-highlighter=coderay toc-title=Table\\ of\\ Contents'
 ]
 ----
+
+IMPORTANT: Do not forget to transform Groovy strings into Strings (by explicitly invoking `.toString()` on them) when
+used as option values, otherwise the Ruby runtime will throw an exception.
 
 Notice how spaces are escaped in the last key/value pair.
 
