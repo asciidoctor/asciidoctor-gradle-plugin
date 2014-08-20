@@ -162,7 +162,7 @@ class AsciidoctorTask extends DefaultTask {
             for (require in requires) {
                // FIXME AsciidoctorJ should provide a public API for requiring paths in the Ruby runtime
                asciidoctor.delegate.rubyRuntime.evalScriptlet(
-                   'require \'' + require.replaceAll('[^A-Za-z0-9/\\\\.\\-]', '') + '\'')
+                   'require \'' + require.replaceAll('[^A-Za-z0-9/\\\\.\\-_]', '') + '\'')
             }
         }
 
