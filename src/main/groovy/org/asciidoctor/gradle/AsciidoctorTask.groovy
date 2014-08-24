@@ -191,7 +191,7 @@ class AsciidoctorTask extends DefaultTask {
 
 	void extensions(Closure cl) {
 		if (!extensionsDelegate) {
-			extensionsDelegate = new AsciidoctorExtensionsDelegate(this);
+			extensionsDelegate = new AsciidoctorExtensionsDelegate()
 		}
 		extensionsDelegate.configure(cl)
 	}

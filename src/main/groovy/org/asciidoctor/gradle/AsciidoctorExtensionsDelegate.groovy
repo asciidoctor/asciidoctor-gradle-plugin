@@ -1,37 +1,45 @@
-package org.asciidoctor.gradle;
+/*
+ * Copyright 2013-2014 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.asciidoctor.gradle
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger
+class AsciidoctorExtensionsDelegate {
 
-public class AsciidoctorExtensionsDelegate {
+    private final List<AsciidoctorExtensionHolder> blockProcessors = []
 
-    private class ExtensionHolder {
-        Map options
-        Closure closure
-    }
+    private final List<AsciidoctorExtensionHolder> preProcessors = []
 
-    private AsciidoctorTask task
+    private final List<AsciidoctorExtensionHolder> postProcessors = []
 
-    private List<ExtensionHolder> blockProcessors = []
+    private final List<AsciidoctorExtensionHolder> includeProcessors = []
 
-    private List<ExtensionHolder> preProcessors = []
+    private final List<AsciidoctorExtensionHolder> blockMacroProcessors = []
 
-    private List<ExtensionHolder> postProcessors = []
+    private final List<AsciidoctorExtensionHolder> inlineMacroProcessors = []
 
-    private List<ExtensionHolder> includeProcessors = []
+    private final List<AsciidoctorExtensionHolder> treeProcessors = []
 
-    private List<ExtensionHolder> blockMacroProcessors = []
+    private static int extensionClassCounter = 0
 
-    private List<ExtensionHolder> inlineMacroProcessors = []
+    private static final String PACKAGE_NAME = 'org.asciidoctor.gradle.extensions'
 
-    private List<ExtensionHolder> treeProcessors = []
+    private static final String OPTION_NAME = 'name'
 
-    private static AtomicInteger extensionClassCounter = new AtomicInteger(0)
+    private static final String OPTION_FILTER = 'filter'
 
-    AsciidoctorExtensionsDelegate(AsciidoctorTask task) {
-        this.task = task
-    }
+    private static final String OPTION_CONTEXTS = 'contexts'
 
     void configure(Closure cl) {
         cl.delegate = this
@@ -41,35 +49,34 @@ public class AsciidoctorExtensionsDelegate {
 
     void registerExtensions(Object javaExtensionRegistry, GroovyClassLoader groovyClassLoader) {
         blockProcessors.each {
-            javaExtensionRegistry.block(createBlockProcessor(it.options, it.closure, groovyClassLoader))
+            javaExtensionRegistry.block(makeBlockProcessor(it.options, it.closure, groovyClassLoader))
         }
         postProcessors.each {
-            javaExtensionRegistry.postprocessor(createPostProcessor(it.options, it.closure, groovyClassLoader))
+            javaExtensionRegistry.postprocessor(makePostProcessor(it.options, it.closure, groovyClassLoader))
         }
         preProcessors.each {
-            javaExtensionRegistry.preprocessor(createPreProcessor(it.options, it.closure, groovyClassLoader))
+            javaExtensionRegistry.preprocessor(makePreProcessor(it.options, it.closure, groovyClassLoader))
         }
         includeProcessors.each {
-            javaExtensionRegistry.includeProcessor(createIncludeProcessor(it.options, it.closure, groovyClassLoader))
+            javaExtensionRegistry.includeProcessor(makeIncludeProcessor(it.options, it.closure, groovyClassLoader))
         }
         blockMacroProcessors.each {
-            javaExtensionRegistry.blockMacro(createBlockMacroProcessor(it.options, it.closure, groovyClassLoader))
+            javaExtensionRegistry.blockMacro(makeBlockMacroProcessor(it.options, it.closure, groovyClassLoader))
         }
         inlineMacroProcessors.each {
-            javaExtensionRegistry.inlineMacro(createInlineMacroProcessor(it.options, it.closure, groovyClassLoader))
+            javaExtensionRegistry.inlineMacro(makeInlineMacroProcessor(it.options, it.closure, groovyClassLoader))
         }
         treeProcessors.each {
-            javaExtensionRegistry.treeprocessor(createTreeProcessor(it.options, it.closure, groovyClassLoader))
+            javaExtensionRegistry.treeprocessor(makeTreeProcessor(it.options, it.closure, groovyClassLoader))
         }
     }
 
     // Everything for BlockProcessors
 
-    Object createBlockProcessor(Map options, Closure cl, GroovyClassLoader groovyClassLoader) {
+    Object makeBlockProcessor(Map options, Closure cl, GroovyClassLoader groovyClassLoader) {
 
-        def simpleClassName = "Extension_" + extensionClassCounter.getAndIncrement()
-        def packageName = "org.asciidoctor.gradle.extensions"
-        def classContent = """package $packageName
+        def simpleClassName = this.simpleClassName
+        def classContent = """package $PACKAGE_NAME
 import org.asciidoctor.ast.AbstractBlock;
 import org.asciidoctor.extension.Reader;
 class $simpleClassName extends org.asciidoctor.extension.BlockProcessor {
@@ -87,33 +94,31 @@ class $simpleClassName extends org.asciidoctor.extension.BlockProcessor {
 }"""
 
         Class clazz = groovyClassLoader.parseClass(classContent)
-        Object processor = clazz.newInstance(options["name"], options, cl)
+        Object processor = clazz.newInstance(options[OPTION_NAME], options, cl)
         cl.delegate = processor
-        return processor
     }
 
     void block(Map options=[:], Closure cl) {
-        if (!options.containsKey("name")) {
-            throw new IllegalArgumentException("Block must define a name");
+        if (!options.containsKey(OPTION_NAME)) {
+            throw new IllegalArgumentException('Block must define a name!')
         }
-        if (!options.containsKey("contexts")) {
+        if (!options.containsKey(AsciidoctorExtensionsDelegate.OPTION_CONTEXTS)) {
             //TODO: What are sensible defaults?
-            options["contexts"] = [":open", ":paragraph"]
+            options[AsciidoctorExtensionsDelegate.OPTION_CONTEXTS] = [':open', ':paragraph']
         }
-        blockProcessors << new ExtensionHolder(options: options, closure: cl)
+        blockProcessors << new AsciidoctorExtensionHolder(options: options, closure: cl)
     }
 
     void block(String blockName, Closure cl) {
-        block(["name": blockName], cl)
+        block([(AsciidoctorExtensionsDelegate.OPTION_NAME): blockName], cl)
     }
 
     // Everything for PostProcessors
 
-    Object createPostProcessor(Map options, Closure cl, GroovyClassLoader groovyClassLoader) {
+    Object makePostProcessor(Map options, Closure cl, GroovyClassLoader groovyClassLoader) {
 
-        def simpleClassName = "Extension_" + extensionClassCounter.getAndIncrement()
-        def packageName = "org.asciidoctor.gradle.extensions"
-        def classContent = """package $packageName
+        def simpleClassName = this.simpleClassName
+        def classContent = """package $PACKAGE_NAME
 import org.asciidoctor.ast.Document;
 import org.asciidoctor.ast.DocumentRuby;
 class $simpleClassName extends org.asciidoctor.extension.Postprocessor {
@@ -133,20 +138,18 @@ class $simpleClassName extends org.asciidoctor.extension.Postprocessor {
         Class clazz = groovyClassLoader.parseClass(classContent)
         Object processor = clazz.newInstance(options, cl)
         cl.delegate = processor
-        return processor
     }
 
     void postprocessor(Map options=[:], Closure cl) {
-        postProcessors << new ExtensionHolder(options: options, closure: cl)
+        postProcessors << new AsciidoctorExtensionHolder(options: options, closure: cl)
     }
 
     // Everything for PreProcessors
 
-    Object createPreProcessor(Map options, Closure cl, GroovyClassLoader groovyClassLoader) {
+    Object makePreProcessor(Map options, Closure cl, GroovyClassLoader groovyClassLoader) {
 
-        def simpleClassName = "Extension_" + extensionClassCounter.getAndIncrement()
-        def packageName = "org.asciidoctor.gradle.extensions"
-        def classContent = """package $packageName
+        def simpleClassName = this.simpleClassName
+        def classContent = """package $PACKAGE_NAME
 import org.asciidoctor.ast.Document;
 import org.asciidoctor.extension.PreprocessorReader;
 class $simpleClassName extends org.asciidoctor.extension.Preprocessor {
@@ -166,20 +169,18 @@ class $simpleClassName extends org.asciidoctor.extension.Preprocessor {
         Class clazz = groovyClassLoader.parseClass(classContent)
         Object processor = clazz.newInstance(options, cl)
         cl.delegate = processor
-        return processor
     }
 
     void preprocessor(Map options=[:], Closure cl) {
-        preProcessors << new ExtensionHolder(options: options, closure: cl)
+        preProcessors << new AsciidoctorExtensionHolder(options: options, closure: cl)
     }
 
     // Everything for IncludeProcessors
 
-    Object createIncludeProcessor(Map options, Closure cl, GroovyClassLoader groovyClassLoader) {
+    Object makeIncludeProcessor(Map options, Closure cl, GroovyClassLoader groovyClassLoader) {
 
-        def simpleClassName = "Extension_" + extensionClassCounter.getAndIncrement()
-        def packageName = "org.asciidoctor.gradle.extensions"
-        def classContent = """package $packageName
+        def simpleClassName = this.simpleClassName
+        def classContent = """package $PACKAGE_NAME
 import org.asciidoctor.ast.DocumentRuby;
 import org.asciidoctor.extension.PreprocessorReader;
 class $simpleClassName extends org.asciidoctor.extension.IncludeProcessor {
@@ -201,25 +202,23 @@ class $simpleClassName extends org.asciidoctor.extension.IncludeProcessor {
 }"""
 
         Class clazz = groovyClassLoader.parseClass(classContent)
-        Closure filter = options["filter"]
-        options.remove("filter")
+        Closure filter = options[(AsciidoctorExtensionsDelegate.OPTION_FILTER)]
+        options.remove(AsciidoctorExtensionsDelegate.OPTION_FILTER)
         Object processor = clazz.newInstance(options, filter, cl)
         cl.delegate = processor
-        return processor
     }
 
     void includeprocessor(Map options=[:], Closure cl) {
-        includeProcessors << new ExtensionHolder(options: options, closure: cl)
+        includeProcessors << new AsciidoctorExtensionHolder(options: options, closure: cl)
     }
 
 
     // Everything for MacroProcessors
 
-    Object createBlockMacroProcessor(Map options, Closure cl, GroovyClassLoader groovyClassLoader) {
+    Object makeBlockMacroProcessor(Map options, Closure cl, GroovyClassLoader groovyClassLoader) {
 
-        def simpleClassName = "Extension_" + extensionClassCounter.getAndIncrement()
-        def packageName = "org.asciidoctor.gradle.extensions"
-        def classContent = """package $packageName
+        def simpleClassName = this.simpleClassName
+        def classContent = """package $PACKAGE_NAME
 import org.asciidoctor.ast.AbstractBlock;
 class $simpleClassName extends org.asciidoctor.extension.BlockMacroProcessor {
 
@@ -235,22 +234,20 @@ class $simpleClassName extends org.asciidoctor.extension.BlockMacroProcessor {
 }"""
 
         Class clazz = groovyClassLoader.parseClass(classContent)
-        Object processor = clazz.newInstance(options["name"], options, cl)
+        Object processor = clazz.newInstance(options[OPTION_NAME], options, cl)
         cl.delegate = processor
-        return processor
     }
 
     void blockMacro(Map options=[:], Closure cl) {
-        blockMacroProcessors << new ExtensionHolder(options: options, closure: cl)
+        blockMacroProcessors << new AsciidoctorExtensionHolder(options: options, closure: cl)
     }
 
     // Everything for InlineMacroProcessors (?? Configure in the same way as a MacroProcessor?)
 
-    Object createInlineMacroProcessor(Map options, Closure cl, GroovyClassLoader groovyClassLoader) {
+    Object makeInlineMacroProcessor(Map options, Closure cl, GroovyClassLoader groovyClassLoader) {
 
-        def simpleClassName = "Extension_" + extensionClassCounter.getAndIncrement()
-        def packageName = "org.asciidoctor.gradle.extensions"
-        def classContent = """package $packageName
+        def simpleClassName = this.simpleClassName
+        def classContent = """package $PACKAGE_NAME
 import org.asciidoctor.ast.AbstractBlock;
 class $simpleClassName extends org.asciidoctor.extension.InlineMacroProcessor {
 
@@ -266,26 +263,24 @@ class $simpleClassName extends org.asciidoctor.extension.InlineMacroProcessor {
 }"""
 
         Class clazz = groovyClassLoader.parseClass(classContent)
-        Object processor = clazz.newInstance(options["name"], options, cl)
+        Object processor = clazz.newInstance(options[OPTION_NAME], options, cl)
         cl.delegate = processor
-        return processor
     }
 
     void inlineMacro(Map options=[:], Closure cl) {
-        inlineMacroProcessors << new ExtensionHolder(options: options, closure: cl)
+        inlineMacroProcessors << new AsciidoctorExtensionHolder(options: options, closure: cl)
     }
 
     void inlineMacro(String macroName, Closure cl) {
-        inlineMacroProcessors << new ExtensionHolder(["name": macroName], closure: cl)
+        inlineMacroProcessors << new AsciidoctorExtensionHolder([OPTION_NAME: macroName], closure: cl)
     }
 
     // Everything for TreeProcessors
 
-    Object createTreeProcessor(Map options, Closure cl, GroovyClassLoader groovyClassLoader) {
+    Object makeTreeProcessor(Map options, Closure cl, GroovyClassLoader groovyClassLoader) {
 
-        def simpleClassName = "Extension_" + extensionClassCounter.getAndIncrement()
-        def packageName = "org.asciidoctor.gradle.extensions"
-        def classContent = """package $packageName
+        def simpleClassName = this.simpleClassName
+        def classContent = """package $PACKAGE_NAME
 import org.asciidoctor.ast.Document;
 class $simpleClassName extends org.asciidoctor.extension.Treeprocessor {
 
@@ -311,11 +306,13 @@ class $simpleClassName extends org.asciidoctor.extension.Treeprocessor {
         Class clazz = groovyClassLoader.parseClass(classContent)
         Object processor = clazz.newInstance(options, cl)
         cl.delegate = processor
-        return processor
     }
 
     void treeprocessor(Map options=[:], Closure cl) {
-        treeProcessors << new ExtensionHolder(options: options, closure: cl)
+        treeProcessors << new AsciidoctorExtensionHolder(options: options, closure: cl)
     }
 
+    private String getSimpleClassName() {
+        'Extension_' + extensionClassCounter++
+    }
 }
