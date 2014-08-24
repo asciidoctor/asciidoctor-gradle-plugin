@@ -36,7 +36,9 @@ class AsciidoctorTaskInlineExtensionsSpec extends Specification {
 	private static final String ASCIIDOC_RESOURCES_DIR = 'build/resources/test/src/asciidocextensions'
 	private static final String ASCIIDOC_BUILD_DIR = 'build/asciidocextensions'
 	private static final String ASCIIDOC_INLINE_EXTENSIONS_FILE = 'inlineextensions.asciidoc'
+	private static final String ASCIIDOC_TREEPROCESSOR_EXTENSIONS_FILE = 'sample-with-terminal-command.ad'
 	private static final String ASCIIDOC_INLINE_EXTENSIONS_RESULT_FILE = 'inlineextensions.html'
+	private static final String ASCIIDOC_TREEPROCESSOR_EXTENSIONS_RESULT_FILE = 'sample-with-terminal-command.html'
 	private static final DOCINFO_FILE_PATTERN = ~/^(.+\-)?docinfo(-footer)?\.[^.]+$/
 
 	Project project
@@ -52,6 +54,7 @@ class AsciidoctorTaskInlineExtensionsSpec extends Specification {
 		given:
 		Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
 			sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+			sourceDocumentName = new File(new File(testRootDir, ASCIIDOC_RESOURCES_DIR), ASCIIDOC_INLINE_EXTENSIONS_FILE)
 			outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
 			extensions {
 				block(name: "BIG", contexts: [":paragraph"]) {
@@ -87,11 +90,11 @@ class AsciidoctorTaskInlineExtensionsSpec extends Specification {
 		String copyright = "Copyright Acme, Inc." + System.currentTimeMillis()
 		Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
 			sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+			sourceDocumentName = new File(new File(testRootDir, ASCIIDOC_RESOURCES_DIR), ASCIIDOC_INLINE_EXTENSIONS_FILE)
 			outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
 			extensions {
 				postprocessor {
 					document, output ->
-                    document.blocks()
 					if(document.basebackend("html")) {
 						org.jsoup.nodes.Document doc = Jsoup.parse(output, "UTF-8")
 
@@ -120,6 +123,7 @@ class AsciidoctorTaskInlineExtensionsSpec extends Specification {
 		String copyright = "Copyright Acme, Inc." + System.currentTimeMillis()
 		Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
 			sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+			sourceDocumentName = new File(new File(testRootDir, ASCIIDOC_RESOURCES_DIR), ASCIIDOC_INLINE_EXTENSIONS_FILE)
 			outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
 			extensions {
 				postprocessor {
@@ -141,6 +145,7 @@ class AsciidoctorTaskInlineExtensionsSpec extends Specification {
 		given:
 		Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
 			sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+			sourceDocumentName = new File(new File(testRootDir, ASCIIDOC_RESOURCES_DIR), ASCIIDOC_INLINE_EXTENSIONS_FILE)
 			outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
 			extensions {
 				preprocessor {
@@ -163,6 +168,7 @@ class AsciidoctorTaskInlineExtensionsSpec extends Specification {
 		String content = "The content of the URL " + System.currentTimeMillis()
 		Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
 			sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+			sourceDocumentName = new File(new File(testRootDir, ASCIIDOC_RESOURCES_DIR), ASCIIDOC_INLINE_EXTENSIONS_FILE)
 			outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
 			extensions {
 				includeprocessor (filter: {it.startsWith("http")}) {
@@ -182,6 +188,7 @@ class AsciidoctorTaskInlineExtensionsSpec extends Specification {
 		given:
 		Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
 			sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+			sourceDocumentName = new File(new File(testRootDir, ASCIIDOC_RESOURCES_DIR), ASCIIDOC_INLINE_EXTENSIONS_FILE)
 			outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
 			extensions {
 				blockMacro (name: "gist") {
@@ -206,6 +213,7 @@ class AsciidoctorTaskInlineExtensionsSpec extends Specification {
 		given:
 		Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
 			sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+			sourceDocumentName = new File(new File(testRootDir, ASCIIDOC_RESOURCES_DIR), ASCIIDOC_INLINE_EXTENSIONS_FILE)
 			outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
 			extensions {
 				inlineMacro (name: "man") {
@@ -227,32 +235,30 @@ class AsciidoctorTaskInlineExtensionsSpec extends Specification {
 		given:
 		Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
 			sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+			sourceDocumentName = new File(new File(testRootDir, ASCIIDOC_RESOURCES_DIR), ASCIIDOC_TREEPROCESSOR_EXTENSIONS_FILE)
 			outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
 			extensions {
 				treeprocessor {
 					document ->
-        				List blocks = document.blocks()
-        				/*
-        				(0..<blocks.length).each {
-        					def lines = blocks[it].lines()
-        					if (lines.size() > 0 && lines[0].startsWith('$')) {
-        						Map attributes = block.attributes()
-        						attributes["role"] = "terminal";
-        						def resultLines = lines.collect {
-        							it.startsWith('$') ? "<span class=\"command\">${it.substring(2)}</span>" : it
-        						}
-        						createBlock(document, "listing", resultLines, attributes,[:])
-        					}
-        				}
-        				 */
-                        null
+					List blocks = document.blocks()
+					(0..<blocks.length).each {
+						def block = blocks[it]
+						def lines = block.lines()
+						if (lines.size() > 0 && lines[0].startsWith('$')) {
+							Map attributes = block.attributes()
+							attributes["role"] = "terminal";
+							def resultLines = lines.collect {
+								it.startsWith('$') ? "<span class=\"command\">${it.substring(2)}</span>" : it
+							}
+							blocks[it] = createBlock(document, "listing", resultLines, attributes,[:])
+						}
+					}
 				}
 			}
 		}
-
-		File resultFile = new File(testRootDir, ASCIIDOC_BUILD_DIR + File.separator + ASCIIDOC_INLINE_EXTENSIONS_RESULT_FILE)
+		File resultFile = new File(testRootDir, ASCIIDOC_BUILD_DIR + File.separator + ASCIIDOC_TREEPROCESSOR_EXTENSIONS_RESULT_FILE)
 		when:
-		task.processAsciidocSources()
+			task.processAsciidocSources()
 		then:
 			resultFile.exists()
 			resultFile.getText().contains('<span class="command">')

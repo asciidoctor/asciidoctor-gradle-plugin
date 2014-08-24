@@ -289,17 +289,23 @@ class $simpleClassName extends org.asciidoctor.extension.InlineMacroProcessor {
 import org.asciidoctor.ast.Document;
 class $simpleClassName extends org.asciidoctor.extension.Treeprocessor {
 
-		private Closure cl
+    private Closure cl
 
-		public $simpleClassName(Map options, Closure cl) {
-			super(options)
-			this.cl = cl
-		}
-		public Document process(Document document) {
-			def ret = cl.call(document)
-            println "Closure returned " + ret
-            return ret
-		}
+    public $simpleClassName(Map options, Closure cl) {
+        super(options)
+        this.cl = cl
+    }
+    public Document process(Document document) {
+        def ret = cl.call(document)
+        if (!(ret instanceof Document)) {
+            // Assume that the closure does something as last
+            // statement that was not intended to be the return value
+            // -> Return null
+            null
+        } else {
+            ret
+        }
+    }
 }"""
 
         Class clazz = groovyClassLoader.parseClass(classContent)
