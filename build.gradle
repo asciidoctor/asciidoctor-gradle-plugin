@@ -52,6 +52,7 @@ dependencies {
         exclude group: 'org.hamcrest', module: 'hamcrest-core'
     }
     testCompile 'cglib:cglib-nodep:2.2.2'
+	testCompile 'org.jsoup:jsoup:1.7.3'
 }
 
 license {

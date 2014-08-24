@@ -71,8 +71,10 @@ class AsciidoctorTask extends DefaultTask {
 
     AsciidoctorProxy asciidoctor
     Configuration classpath
-    private static ClassLoader cl
+    static ClassLoader cl
 
+	private AsciidoctorExtensionsDelegate extensionsDelegate
+	
     AsciidoctorTask() {
         sourceDir = project.file('src/asciidoc')
         outputDir = new File(project.buildDir, 'asciidoc')
@@ -166,6 +168,8 @@ class AsciidoctorTask extends DefaultTask {
             }
         }
 
+		extensionsDelegate?.registerExtensions(asciidoctor.javaExtensionRegistry(), cl)
+		
         for (activeBackend in activeBackends()) {
             processDocumentsAndResources(activeBackend)
         }
@@ -185,6 +189,13 @@ class AsciidoctorTask extends DefaultTask {
         }
     }
 
+	void extensions(Closure cl) {
+		if (!extensionsDelegate) {
+			extensionsDelegate = new AsciidoctorExtensionsDelegate(this);
+		}
+		extensionsDelegate.configure(cl)
+	}
+	
     private Set<String> activeBackends() {
         if (backends) {
             return backends
@@ -361,10 +372,12 @@ class AsciidoctorTask extends DefaultTask {
     private void setupClassLoader() {
         if (classpath?.files) {
             def urls = classpath.files.collect { it.toURI().toURL() }
-            cl = new URLClassLoader(urls as URL[], Thread.currentThread().contextClassLoader)
+            cl = new GroovyClassLoader(Thread.currentThread().contextClassLoader)
+            urls.each {AsciidoctorTask.cl.addURL(it)}
             Thread.currentThread().contextClassLoader = cl
         } else {
-            cl = Thread.currentThread().contextClassLoader
+            cl = new GroovyClassLoader(Thread.currentThread().contextClassLoader)
+            Thread.currentThread().contextClassLoader = cl
         }
     }
 }
