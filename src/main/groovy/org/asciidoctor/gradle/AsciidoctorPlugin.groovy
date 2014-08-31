@@ -38,6 +38,9 @@ class AsciidoctorPlugin implements Plugin<Project> {
 
         Configuration configuration = project.configurations.maybeCreate(ASCIIDOCTOR)
         project.afterEvaluate {
+            project.tasks.findAll {it instanceof AsciidoctorTask && !it.classpath}.each {
+                it.classpath = configuration
+            }
             project.dependencies {
                 asciidoctor("org.asciidoctor:asciidoctorj:${extension.version}")
             }
