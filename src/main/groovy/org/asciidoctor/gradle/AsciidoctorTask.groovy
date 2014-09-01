@@ -151,6 +151,9 @@ class AsciidoctorTask extends DefaultTask {
 
     @TaskAction
     void processAsciidocSources() {
+        if(classpath == null) {
+            classpath = project.configurations.getByName(AsciidoctorPlugin.ASCIIDOCTOR)
+        }
         validateInputs()
         outputDir.mkdirs()
 
