@@ -1,0 +1,23 @@
+= Inline Extension Test document
+
+[BIG]
+Write this in uppercase
+
+[small]
+AND WRITE THIS IN LOWERCASE
+
+
+.Gemfile
+[source,ruby]
+----
+include::https://raw.github.com/asciidoctor/asciidoctor/master/Gemfile[]
+----
+
+
+.My Gist
+gist::123456[]
+
+See man:gittutorial[7] to get started.
+
+blacklisted is a blacklisted word.
+ 

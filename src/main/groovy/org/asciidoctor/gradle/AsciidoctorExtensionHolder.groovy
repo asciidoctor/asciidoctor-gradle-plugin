@@ -15,18 +15,7 @@
  */
 package org.asciidoctor.gradle
 
-/**
- * @author andres Almiray
- */
-class AsciidoctorProxyImpl implements AsciidoctorProxy {
-    def delegate
-
-    @Override
-    String renderFile(File filename, Map<String, Object> options) {
-        delegate.renderFile(filename, options)
-    }
-
-    Object javaExtensionRegistry() {
-        delegate.javaExtensionRegistry()
-    }
+class AsciidoctorExtensionHolder {
+        Map options
+        Closure closure
 }
