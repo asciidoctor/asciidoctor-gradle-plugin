@@ -57,7 +57,6 @@ class AsciidoctorTask extends DefaultTask {
     public static final String ASCIIDOCTOR_FACTORY_CLASSNAME = 'org.asciidoctor.Asciidoctor$Factory'
 
     @Optional @InputFile File sourceDocumentName
-    @Optional @InputFiles FileCollection sourceDocumentNames
     @Optional @InputDirectory File baseDir
     @Optional @Input String gemPath
     @InputDirectory File sourceDir
@@ -69,6 +68,9 @@ class AsciidoctorTask extends DefaultTask {
     @Optional boolean logDocuments = false
     private boolean baseDirSetToNull
 
+    private List<Object> sourceDocumentNames = []
+    private FileCollection sourceDocuments
+
     AsciidoctorProxy asciidoctor
     Configuration classpath
     private static ClassLoader cl
@@ -77,6 +79,12 @@ class AsciidoctorTask extends DefaultTask {
         sourceDir = project.file('src/asciidoc')
         outputDir = new File(project.buildDir, 'asciidoc')
     }
+
+    @Optional
+    @InputFiles
+    FileCollection getSourceDocumentNames() { project.files(this.sourceDocumentNames) }
+
+    void setSourceDocumentNames(Object... src) { this.sourceDocumentNames.addAll(src as List) }
 
     void setBaseDir(File baseDir) {
         this.baseDir = baseDir
@@ -106,11 +114,13 @@ class AsciidoctorTask extends DefaultTask {
             if(sourceDocumentNames) {
                 logger.error('Both the `sourceDocumentName` and `sourceDocumentNames` properties were specified. The `sourceDocumentName` property will be ignored.')
             } else {
-                validateSourceDocuments(new SimpleFileCollection(sourceDocumentName))
+                sourceDocuments = new SimpleFileCollection(sourceDocumentName)
+                validateSourceDocuments(sourceDocuments)
             }
         }
         if (sourceDocumentNames) {
-            validateSourceDocuments(sourceDocumentNames)
+            sourceDocuments = getSourceDocumentNames()
+            validateSourceDocuments(sourceDocuments)
         }
     }
 
@@ -208,11 +218,8 @@ class AsciidoctorTask extends DefaultTask {
     protected void processSourceDir(String backend, File file) {
         File destinationParentDir = outputDirFor(file, sourceDir.absolutePath, outputDir)
         if (file.name =~ ASCIIDOC_FILE_EXTENSION_PATTERN) {
-            if (sourceDocumentNames) {
-                // sourceDocumentNames is defined and there's no match we stop
-                // iow, we don't process sourceDocumentName if both are defined
-                // as sourceDocumentNames takes precedence
-                if (sourceDocumentNames.files.find { it.canonicalPath == file.canonicalPath }) {
+            if (sourceDocuments) {
+                if (sourceDocuments.files.find { it.canonicalPath == file.canonicalPath }) {
                     processSingleFile(backend, destinationParentDir, file)
                 }
                 // check if single file was given
