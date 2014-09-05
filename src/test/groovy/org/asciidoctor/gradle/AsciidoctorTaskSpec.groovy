@@ -50,6 +50,7 @@ class AsciidoctorTaskSpec extends Specification {
 
     def setup() {
         project = ProjectBuilder.builder().withName('test').build()
+        project.configurations.create(ASCIIDOCTOR)
         mockAsciidoctor = Mock(AsciidoctorProxy)
         testRootDir = new File('.')
         srcDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
@@ -600,4 +601,5 @@ class AsciidoctorTaskSpec extends Specification {
         then:
             1 * mockAsciidoctor.renderFile(_, _)
     }
+
 }
