@@ -68,7 +68,7 @@ class AsciidoctorTask extends DefaultTask {
     @Optional boolean logDocuments = false
     private boolean baseDirSetToNull
 
-    private List<Object> sourceDocumentNames = []
+    private final List<Object> sourceDocumentNames = []
     private FileCollection sourceDocuments
 
     AsciidoctorProxy asciidoctor
@@ -94,6 +94,7 @@ class AsciidoctorTask extends DefaultTask {
     /**
      * Validates input values. If an input value is not valid an exception is thrown.
      */
+    @SuppressWarnings('UnnecessaryGetter')
     private void validateInputs() {
         setupClassLoader()
         for(backend in backends) {
