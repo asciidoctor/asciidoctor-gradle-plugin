@@ -84,7 +84,15 @@ class AsciidoctorTask extends DefaultTask {
     @InputFiles
     FileCollection getSourceDocumentNames() { project.files(this.sourceDocumentNames) }
 
-    void setSourceDocumentNames(Object... src) { this.sourceDocumentNames.addAll(src as List) }
+    void setSourceDocumentNames(Object... src) {
+        this.sourceDocumentNames.clear()
+        sourceDocumentNames(src)
+    }
+
+    @SuppressWarnings('ConfusingMethodName')
+    void sourceDocumentNames(Object... src) {
+        this.sourceDocumentNames.addAll(src as List)
+    }
 
     void setBaseDir(File baseDir) {
         this.baseDir = baseDir
