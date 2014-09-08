@@ -104,7 +104,7 @@ class AsciidoctorTask extends DefaultTask {
         if(m.containsKey('attributes')) {
             logger.warn 'Attributes found in options. Existing attributes qill be replaced due to assignment. ' +
                     'Please use \'attributes\' method instead as current behaviour will be removed in future'
-            attrs = coerceLegacyAttributes(m.attributes)
+            attrs = coerceLegacyAttributeFormats(m.attributes)
             m.remove('attributes')
         }
         this.opts=m
@@ -124,7 +124,7 @@ class AsciidoctorTask extends DefaultTask {
         if(m.containsKey('attributes')) {
             logger.warn 'Attributes found in options. These will be added to existing attributes. ' +
                     'Please use \'attributes\' method instead as current behaviour will be removed in future'
-            attributes coerceLegacyAttributes(m.attributes)
+            attributes coerceLegacyAttributeFormats(m.attributes)
             m.remove('attributes')
         }
         this.opts+=m
@@ -591,7 +591,7 @@ class AsciidoctorTask extends DefaultTask {
 
     @SuppressWarnings('DuplicateStringLiteral')
     @SuppressWarnings('DuplicateNumberLiteral')
-    private static Map coerceLegacyAttributes( Object attributes ) {
+    private static Map coerceLegacyAttributeFormats( Object attributes ) {
         Map transformedMap=[:]
         switch(attributes) {
             case Map:

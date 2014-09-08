@@ -161,6 +161,42 @@ class AsciidoctorTaskSpec extends Specification {
     }
 
     @SuppressWarnings('MethodName')
+    def "Mixing string legacy form of attributes with options with assignment, should produce a warning, and attributes will be replaced"() {
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                options = [ doctype: 'book', attributes : 'toc=right source-highlighter=coderay toc-title=Table\\ of\\ Contents' ]
+            }
+
+        then:
+            task.options['doctype'] == 'book'
+            !task.attributes.containsKey('attributes')
+            task.attributes['toc'] == 'right'
+            task.attributes['source-highlighter'] == 'coderay'
+            task.attributes['toc-title'] == 'Table of Contents'
+            systemOut.toString().contains('Attributes found in options.')
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Mixing list legacy form of attributes with options with assignment, should produce a warning, and attributes will be replaced"() {
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                options = [ doctype: 'book', attributes : [
+                            'toc=right',
+                            'source-highlighter=coderay',
+                            'toc-title=Table of Contents'
+                            ]]
+            }
+
+        then:
+            task.options['doctype'] == 'book'
+            !task.attributes.containsKey('attributes')
+            task.attributes['toc'] == 'right'
+            task.attributes['source-highlighter'] == 'coderay'
+            task.attributes['toc-title'] == 'Table of Contents'
+            systemOut.toString().contains('Attributes found in options.')
+    }
+
+    @SuppressWarnings('MethodName')
     def "Allow setting of backends via method"() {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
