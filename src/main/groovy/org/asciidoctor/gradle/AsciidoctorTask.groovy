@@ -28,6 +28,7 @@ import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
+import org.gradle.util.CollectionUtils
 
 /**
  * @author Noam Tenne
@@ -40,9 +41,12 @@ import org.gradle.api.tasks.TaskAction
  * @author Stefan Schlott
  * @author Stephan Classen
  * @author Marcus Fihlon
+ * @author Schalk W. Cronjé
  */
+@SuppressWarnings('MethodCount')
 class AsciidoctorTask extends DefaultTask {
     private static final boolean IS_WINDOWS = System.getProperty('os.name').contains('Windows')
+    private static final String PATH_SEPARATOR=System.getProperty('path.separator')
     private static final String DOUBLE_BACKLASH = '\\\\'
     private static final String BACKLASH = '\\'
     private static final ASCIIDOC_FILE_EXTENSION_PATTERN = ~/.*\.a((sc(iidoc)?)|d(oc)?)$/
@@ -56,39 +60,282 @@ class AsciidoctorTask extends DefaultTask {
     }
     public static final String ASCIIDOCTOR_FACTORY_CLASSNAME = 'org.asciidoctor.Asciidoctor$Factory'
 
-    @Optional @InputFile File sourceDocumentName
-    @Optional @InputDirectory File baseDir
-    @Optional @Input String gemPath
-    @InputDirectory File sourceDir
-    @OutputDirectory File outputDir
-    @Optional @Input String backend
-    @Optional @Input Set<String> backends
-    @Input Map options = [:]
-    @Optional @Input Set<String> requires
-    @Optional boolean logDocuments = false
     private boolean baseDirSetToNull
-
     private final List<Object> sourceDocumentNames = []
     private FileCollection sourceDocuments
+    private Object outDir
+    private Object srcDir
+    private final List<Object> gemPaths = []
+    private Set<String> backends
+    private Set<String> requires
+    private Map opts = [:]
+    private Map attrs = [:]
+    private static ClassLoader cl
+
+    @Optional @InputFile File sourceDocumentName
+    @Optional @InputDirectory File baseDir
+    @Optional @Input String backend
+    @Optional boolean logDocuments = false
 
     AsciidoctorProxy asciidoctor
     Configuration classpath
-    private static ClassLoader cl
 
     AsciidoctorTask() {
-        sourceDir = project.file('src/asciidoc')
+        srcDir = project.file('src/asciidoc')
         outputDir = new File(project.buildDir, 'asciidoc')
     }
 
+    /** Returns all of the Asciidoctor options
+     *
+     */
+    @Optional @Input
+    Map getOptions() {this.opts}
+
+    /** Apply a new set of Asciidoctor options, clearing any options previously set.
+     *
+     * For backwards compatibility it is still possible to replace attributes via this call. However the
+     * use of {@link #setAttributes(java.util.Map)} and {@link #attributes(java.util.Map)} are the now
+     * correct way of working with attributes
+     *
+     * @param m Map with new options
+     */
+    @SuppressWarnings('DuplicateStringLiteral')
+    void setOptions( Map m ) {
+        if(m.containsKey('attributes')) {
+            logger.warn 'Attributes found in options. Existing attributes qill be replaced due to assignment. ' +
+                    'Please use \'attributes\' method instead as current behaviour will be removed in future'
+            attrs = coerceLegacyAttributes(m.attributes)
+            m.remove('attributes')
+        }
+        this.opts=m
+    }
+
+    /** Appends a new set of Asciidoctor options, clearing any options previously set.
+     *
+     * For backwards compatibility it is still possible to append attributes via this call. However the
+     * use of {@link #setAttributes(java.util.Map)} and {@link #attributes(java.util.Map)} are the now
+     * correct way of working with attributes
+     *
+     * @param m Map with new options
+     * @since 1.5.1
+     */
+    @SuppressWarnings('DuplicateStringLiteral')
+    void options( Map m ) {
+        if(m.containsKey('attributes')) {
+            logger.warn 'Attributes found in options. These will be added to existing attributes. ' +
+                    'Please use \'attributes\' method instead as current behaviour will be removed in future'
+            attributes coerceLegacyAttributes(m.attributes)
+            m.remove('attributes')
+        }
+        this.opts+=m
+    }
+
+    /** Returns the current set of Asciidoctor attributes
+     *
+     * @since 1.5.1
+     */
+    @Optional @Input
+    Map getAttributes() {this.attrs}
+
+    /** Applies a new set of Asciidoctor attributes, clearing any previsouly set
+     *
+     * @param m New map of attributes
+     * @since 1.5.1
+     */
+    void setAttributes(Map m) {this.attrs=m}
+
+    /** Appends a set of Asciidoctor attributes, clearing any previsouly set
+     *
+     * @param m Map of additional attributes
+     * @since 1.5.1
+     */
+    void attributes(Map m) {this.attrs+=m}
+
+    /** Returns the set of  Ruby modules to be included.
+     *
+     * @since 1.5.0
+     */
+    @Optional @Input
+    Set<String> getRequires() {this.requires}
+
+    /** Applies a new set of  Ruby modules to be included, clearing any previous set.
+     *
+     * @param b One or more ruby modules to be included
+     * @since 1.5.0
+     */
+    void setRequires(Object... b) {
+        this.requires?.clear()
+        requires(b)
+    }
+
+    /** Appends new set of  Ruby modules to be included.
+     *
+     * @param b One or more ruby modules to be included
+     * @since 1.5.1
+     */
+    @SuppressWarnings('ConfusingMethodName')
+    void requires(Object... b) {
+        if(this.requires==null) {this.requires=[]}
+        this.requires.addAll(CollectionUtils.stringize(b as List))
+    }
+
+    /** Returns the current set of Asciidoctor backends that will be used for document generation
+     *
+     * @since 0.7.1
+     */
+    @Optional @Input
+    Set<String> getBackends() {this.backends}
+
+    /** Applies a new set of Asciidoctor backends that will be used for document generation clearing any
+     * previous backends
+     *
+     * @param b List of backends. Each item must be convertible to string.
+     *
+     * @since 0.7.1
+     */
+    void setBackends(Object... b) {
+        this.backends?.clear()
+        backends(b)
+    }
+
+    /** Appends additional Asciidoctor backends that will be used for document generation.
+     *
+     * @param b List of backends. Each item must be convertible to string.
+     *
+     * @since 1.5.1
+     */
+    @SuppressWarnings('ConfusingMethodName')
+    void backends(Object... b) {
+        if(this.backends==null) {this.backends=[]}
+        this.backends.addAll(CollectionUtils.stringize(b as List))
+    }
+
+    /** Sets a new gemPath to be used
+     *
+     * @param f A path object can be be converted with {@code project.file}.
+     * @since 1.5.1
+     */
+    @SuppressWarnings('ConfusingMethodName')
+    void gemPath(Object... f) {
+        this.gemPaths.addAll(f as List)
+    }
+
+    /** Sets a new list of GEM paths to be used.
+     *
+     * @param f A {@code File} object pointing to list of installed GEMs
+     * @since 1.5.0
+     */
+    void setGemPath(Object... f) {
+        this.gemPaths.clear()
+        this.gemPaths.addAll(f as List)
+    }
+
+    /** Assigns a single string to a GEM path, scanning it for concatenated GEM Paths, separated by the platform
+     * separator. This utility is only for backwards compatibility
+     *
+     * @param s
+     */
+    void setGemPath(final Object path) {
+        this.gemPaths.clear()
+        if(path instanceof CharSequence) {
+            this.gemPaths.addAll(setGemPath(path.split(PATH_SEPARATOR)))
+        } else {
+            this.gemPaths.addAll(path)
+        }
+    }
+
+    /** Returns the list of paths to be used for {@code GEM_HOME}
+     *
+     * @since 1.5.0
+     */
+    @Optional
+    @Input
+    FileCollection getGemPath() {
+        project.files(this.gemPaths)
+    }
+
+    /** Returns the list of paths to be used for GEM installations in a format that is suitable for assignment to {@code GEM_HOME}
+     *
+     * Calling this will cause gemPath to be resolved immediately.
+     * @since 1.5.1
+     */
+    @Optional
+    @InputDirectory
+    String asGemPath() {
+        gemPath.files*.toString().join(PATH_SEPARATOR)
+    }
+
+    /** Sets the new Asciidoctor parent source directory.
+     *
+     * @param f An object convertible via {@code project.file}
+     * @since 1.5.1
+     */
+    void sourceDir(Object f) {
+        this.srcDir=f
+    }
+
+    /** Sets the new Asciidoctor parent source directory.
+     *
+     * @param f A {@code File} object pointing to the parent source directory
+     */
+    void setSourceDir(File f) {
+        this.srcDir=f
+    }
+
+    /** Returns the parent directory for Asciidoctor source. Default is {@code src/asciidoc}.
+     */
+    @Optional
+    @InputDirectory
+    File getSourceDir() {
+        project.file(srcDir)
+    }
+
+    /** Sets the new Asciidoctor parent output directory.
+     *
+     * @param f An object convertible via {@code project.file}
+     * @since 1.5.1
+     */
+    void outputDir(Object f) {
+        this.outDir=f
+    }
+
+    /** Sets the new Asciidoctor parent output directory.
+     *
+     * @param f A {@code File} object pointing to the parent output directory
+     */
+    void setOutputDir(File f) {
+        this.outDir=f
+    }
+
+    /** Returns the current toplevel output directory
+     *
+     */
+    @OutputDirectory
+    File getOutputDir() {project.file(this.outDir)}
+
+    /** Returns the collection of source documents
+     *
+     * @since 1.5.0
+     */
     @Optional
     @InputFiles
     FileCollection getSourceDocumentNames() { project.files(this.sourceDocumentNames) }
 
+    /** Replaces the current set of source documents with a new set
+     *
+     * @parm src List of source documents, which must be convertible using {@code project.files}
+     * @since 1.5.0
+     */
     void setSourceDocumentNames(Object... src) {
         this.sourceDocumentNames.clear()
         sourceDocumentNames(src)
     }
 
+    /** Appends more source documents
+     *
+     * @parm src List of source documents, which must be convertible using {@code project.files}
+     * @since 1.5.1
+     */
     @SuppressWarnings('ConfusingMethodName')
     void sourceDocumentNames(Object... src) {
         this.sourceDocumentNames.addAll(src as List)
@@ -195,8 +442,8 @@ class AsciidoctorTask extends DefaultTask {
 
     @SuppressWarnings('CatchException')
     private void instantiateAsciidoctor() {
-        if (gemPath) {
-            asciidoctor = new AsciidoctorProxyImpl(delegate: loadClass(ASCIIDOCTOR_FACTORY_CLASSNAME).create(gemPath))
+        if (gemPaths.size()) {
+            asciidoctor = new AsciidoctorProxyImpl(delegate: loadClass(ASCIIDOCTOR_FACTORY_CLASSNAME).create(asGemPath()))
         } else {
             try {
                 asciidoctor = new AsciidoctorProxyImpl(delegate: loadClass(ASCIIDOCTOR_FACTORY_CLASSNAME).create(null as String))
@@ -252,6 +499,7 @@ class AsciidoctorTask extends DefaultTask {
                 [
                         project: project,
                         options: options,
+                        attributes : attrs,
                         baseDir: !baseDir && !baseDirSetToNull ? file.parentFile : baseDir,
                         projectDir: project.projectDir,
                         rootDir: project.rootDir,
@@ -289,23 +537,7 @@ class AsciidoctorTask extends DefaultTask {
         }
 
         Map attributes = [:]
-        def rawAttributes = mergedOptions.get('attributes', [:])
-        if (rawAttributes instanceof Map) {
-            processMapAttributes(attributes, rawAttributes)
-        } else {
-            if (rawAttributes instanceof CharSequence) {
-                // replace non-escaped spaces with null character, then replace escaped spaces with space,
-                // finally split on the null character
-                rawAttributes = rawAttributes.replaceAll('([^\\\\]) ', '$1\0').replaceAll('\\\\ ', ' ').split('\0')
-            }
-
-            if (rawAttributes.getClass().isArray() || rawAttributes instanceof Collection) {
-                processCollectionAttributes(attributes, rawAttributes)
-            } else {
-                // QUESTION should we just coerce it to a String?
-                throw new InvalidUserDataException("Unsupported type for attributes: ${rawAttributes.class}")
-            }
-        }
+        processMapAttributes(attributes, params.attributes)
 
         // Note: Directories passed as relative to work around issue #83
         // Asciidoctor cannot handle absolute paths in Windows properly
@@ -355,6 +587,37 @@ class AsciidoctorTask extends DefaultTask {
                 throw new InvalidUserDataException("Unsupported type for attribute ${attr}: ${attr.getClass()}")
             }
         }
+    }
+
+    @SuppressWarnings('DuplicateStringLiteral')
+    @SuppressWarnings('DuplicateNumberLiteral')
+    private static Map coerceLegacyAttributes( Object attributes ) {
+        Map transformedMap=[:]
+        switch(attributes) {
+            case Map:
+                transformedMap = attributes
+                break
+            case CharSequence:
+                attributes.replaceAll('([^\\\\]) ', '$1\0').replaceAll('\\\\ ', ' ').split('\0').collect {
+                    def split = it.split('=')
+                    if(split.size()<2) {
+                        throw new InvalidUserDataException("Unsupported format for attributes: ${attributes}")
+                    }
+                    transformedMap[split[0]] = split.drop(1).join('=')
+                }
+                break
+            case Collection:
+                processCollectionAttributes(transformedMap, attributes)
+                break
+            default:
+                if(attributes.class.isArray()) {
+                    processCollectionAttributes(transformedMap, attributes)
+                } else {
+                    throw new InvalidUserDataException("Unsupported type for attributes: ${attributes.class}")
+                }
+        }
+
+        transformedMap
     }
 
     private static int resolveSafeModeLevel(Object safe, int defaultLevel) {
