@@ -46,16 +46,44 @@ apply plugin: 'org.asciidoctor.gradle.asciidoctor'
 
 The plugin adds a new task named `asciidoctor`. This task exposes a few properties as part of its configuration.
 
+.Properties
 [horizontal]
-sourceDir:: where the asciidoc sources are. Type: File. Default: `src/asciidoc`.
-sourceDocumentNames:: an override to process multiple source files, which may be a subset of all
-files available in [x-]`${sourceDir}`. Type: FileCollection. Defaults to all files in [x-]`${sourceDir}`.
-outputDir:: where generated docs go. Type: File. Default: `$buildDir/asciidoc`.
-backends:: the backends to use. Type: Set<String>. Default: [`html5`].
-options:: a Map specifying different options that can be sent to Asciidoctor.
 logDocuments:: a boolean specifying if documents being processed should be logged on console. Type: boolean. Default: `false`.
-gemPath:: one or more gem installation directories (separated by the system path separator). Type: String. Default: `null`
-requires:: a set of Ruby modules to be included. Type: Set<String>. Default: empty.
+
+.Methods
+[horizontal]
+sourceDir:: where the asciidoc sources are.
+  Use either `sourceDir path`, `setSourceDir path` or `sourceDir=path`
+  Type: File, but any object convertible with `project.file` can be passed.
+  Default: `src/asciidoc`.
+sourceDocumentNames:: an override to process multiple source files, which may be a subset of all
+  files available in [x-]`${sourceDir}`.
+  Use `sourceDocumentNames` to append and `setSourceNames` to overwrite.
+  Type: FileCollection, but any collection of objects convertible with `project.files` can be passed
+  Default: All files in [x-]`${sourceDir}`.
+outputDir:: where generated docs go.
+  Use either `outputDir path`, `setOutputDir path` or `outputDir=path`
+  Type: File, but any object convertible with `project.file` can be passed.
+  Default: `$buildDir/asciidoc`.
+backends:: the backends to use.
+  Use `backends` to append. Use `setBackends` or `backends=[]` to overwrite
+  Type: Set<String>, but any type can be converted to String can be used.
+  Default: [`html5`].
+gemPath:: one or more gem installation directories (separated by the system path separator).
+  Use `gemPath` to append. Use `setGemPath` or `gemPath='path` to overwrite.
+  Use `asGemPath` to obtain a path string, separated by platform-specific separator.
+  For backwards-compatibility, `setGemPath` and `gePath='string'` will accept a path string containing the
+  platform-specific separator.
+  Type: FileCollection, but any collection of objects convertible with `project.files` can be passed
+  Default: empty
+requires:: a set of Ruby modules to be included.
+  Use `requires` to append. Use `setRequires` or `requires='name'` to overwrite.
+  Type: Set<String>.
+  Default: empty.
+options:: a Map specifying different options that can be sent to Asciidoctor.
+  Use `options` to append, Use `setOptions` or `options=` to overwrite.
+attributes:: a Map specifying various document attributes that can be sent to Asciidoctor
+  Use `attributes` to append, Use `setAttributes` or `attributes=` to overwrite.
 
 Sources may have any of the following extensions in order to be discovered:
 
@@ -71,6 +99,50 @@ The following attributes are automatically set by the `asciidoctor` task:
  * project-group: matches `$project.group` (if defined). Empty String value if undefined
 
 These attributes may be overridden by explicit user input.
+
+==== Options & Attributes
+The following options may be set using the task's `options` property
+
+ * header_footer - boolean
+ * template_dirs - List<String>
+ * template_engine - String
+ * doctype - String
+
+Any key/values set on `attributes` is sent as is to Asciidoctor. You may use this Map to specify
+a stylesheet for example. The following snippet shows a sample configuration defining attributes.
+
+[source,groovy]
+.build.gradle
+----
+asciidoctor { <1>
+    outputDir "${buildDir}/docs"
+    options doctype: 'book', ruby: 'erubis'
+
+    attributes 'source-highlighter': 'coderay',
+                toc                 : '',
+                idprefix            : '',
+                idseparator         : '-'
+}
+----
+<1> append below the line: `apply plugin: 'org.asciidoctor.gradle.asciidoctor'`
+
+You may need to include extra content into the head of the exported document.
+For example, you might want to include jQuery inside the `<head>` element of the HTML export.
+To do so, first create a docinfo file `src/asciidoc/docinfo.html` containing the content to include, in this case the `<script>` tag to load jQuery.
+
+[source,html]
+.src/asciidoc/docinfo.html
+----
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.js"></script>
+----
+
+Then, add the `docinfo1` attribute to the attributes list in the previous example:
+
+[source,groovy]
+.build.gradle
+----
+attributes docinfo1: ''
+----
 
 == Compatibility With Previous Releases
 
@@ -119,58 +191,9 @@ asciidoctorj {
 <1> resolves artifacts in your local Maven repository
 <2> resolves artifacts in Bintray's jcenter (where all other dependencies are found)
 
-The following options may be set using the task's `options` property
 
- * header_footer - boolean
- * template_dirs - List<String>
- * template_engine - String
- * doctype - String
- * attributes - Map
-
-Any key/values set on `attributes` is sent as is to Asciidoctor. You may use this Map to specify
-a stylesheet for example. The following snippet shows a sample configuration defining attributes.
-
-[source,groovy]
-.build.gradle
-----
-asciidoctor { <1>
-    outputDir = new File("$buildDir/docs")
-    options = [
-        doctype: 'book',
-        attributes: [
-            'source-highlighter': 'coderay',
-            toc                 : '',
-            idprefix            : '',
-            idseparator         : '-'
-        ]
-    ]
-}
-----
-<1> append below the line: `apply plugin: 'org.asciidoctor.gradle.asciidoctor'`
-
-You may need to include extra content into the head of the exported document.
-For example, you might want to include jQuery inside the `<head>` element of the HTML export.
-To do so, first create a docinfo file `src/asciidoc/docinfo.html` containing the content to include, in this case the `<script>` tag to load jQuery.
-
-[source,html]
-.src/asciidoc/docinfo.html
-----
-<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.js"></script>
-----
-
-Then, add the `docinfo1` attribute to the attributes list in the previous example:
-
-[source,groovy]
-.build.gradle
-----
-attributes: [
-    // ...
-    docinfo1: '',
-    // ...
-]
-----
-
-The value of `attributes` my be specified as a Map, List, Array or String, for example the following Map definition:
+For backwards compatibility with older version, embedding `attributes` within `options` are still allowed, including
+legacy forms.
 
 [source,groovy]
 .build.gradle
@@ -182,13 +205,7 @@ options = [
         'toc-title': 'Table of Contents'
     ]
 ]
-----
 
-may be rewritten in List/Array form as follows
-
-[source,groovy]
-.build.gradle
-----
 options = [
     attributes: [
         'toc=right',
@@ -196,13 +213,7 @@ options = [
         'toc-title=Table of Contents'
     ]
 ]
-----
 
-or in String form like so
-
-[source,groovy]
-.build.gradle
-----
 options = [
     attributes: 'toc=right source-highlighter=coderay toc-title=Table\\ of\\ Contents'
 ]
