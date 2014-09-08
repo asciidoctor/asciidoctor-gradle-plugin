@@ -144,6 +144,8 @@ Then, add the `docinfo1` attribute to the attributes list in the previous exampl
 attributes docinfo1: ''
 ----
 
+Refer to the {asciidoctor-docs}[Asciidoctor documentation] to learn more about these options and attributes.
+
 == Compatibility With Previous Releases
 
 === Task Properties
@@ -159,6 +161,41 @@ backend:: the backend to use. Use `backends` instead.
 
 Files specified in `sourceDocumentNames` must be relative to `sourceDir` and fully contained in `sourceDir`, in other words,
 it's no longer possible to process documents placed outside of the project's sources.
+
+For backwards compatibility with older version, embedding `attributes` within `options` are still allowed, including
+legacy forms.
+
+=== Options & Attributes
+
+[source,groovy]
+.build.gradle
+----
+options = [
+    attributes: [
+        toc: 'right',
+        'source-highlighter': 'coderay',
+        'toc-title': 'Table of Contents'
+    ]
+]
+
+options = [
+    attributes: [
+        'toc=right',
+        'source-highlighter=coderay',
+        'toc-title=Table of Contents'
+    ]
+]
+
+options = [
+    attributes: 'toc=right source-highlighter=coderay toc-title=Table\\ of\\ Contents'
+]
+----
+
+IMPORTANT: Do not forget to transform Groovy strings into Strings (by explicitly invoking `.toString()` on them) when
+used as option values, otherwise the Ruby runtime will throw an exception.
+
+Notice how spaces are escaped in the last key/value pair.
+
 
 == Configuration
 
@@ -192,39 +229,6 @@ asciidoctorj {
 <2> resolves artifacts in Bintray's jcenter (where all other dependencies are found)
 
 
-For backwards compatibility with older version, embedding `attributes` within `options` are still allowed, including
-legacy forms.
-
-[source,groovy]
-.build.gradle
-----
-options = [
-    attributes: [
-        toc: 'right',
-        'source-highlighter': 'coderay',
-        'toc-title': 'Table of Contents'
-    ]
-]
-
-options = [
-    attributes: [
-        'toc=right',
-        'source-highlighter=coderay',
-        'toc-title=Table of Contents'
-    ]
-]
-
-options = [
-    attributes: 'toc=right source-highlighter=coderay toc-title=Table\\ of\\ Contents'
-]
-----
-
-IMPORTANT: Do not forget to transform Groovy strings into Strings (by explicitly invoking `.toString()` on them) when
-used as option values, otherwise the Ruby runtime will throw an exception.
-
-Notice how spaces are escaped in the last key/value pair.
-
-Refer to the {asciidoctor-docs}[Asciidoctor documentation] to learn more about these options and attributes.
 
 == Custom Extensions
 
