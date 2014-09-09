@@ -17,6 +17,7 @@ package org.asciidoctor.gradle
 
 import org.asciidoctor.SafeMode
 import org.gradle.api.GradleException
+import org.gradle.api.InvalidUserDataException
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.FileCollection
@@ -30,6 +31,7 @@ import spock.lang.Specification
  * @author Benjamin Muschko
  * @author Stephan Classen
  * @author Marcus Fihlon
+ * @author Schalk W. Cronjé
  */
 class AsciidoctorTaskSpec extends Specification {
     private static final String ASCIIDOCTOR = 'asciidoctor'
@@ -53,10 +55,284 @@ class AsciidoctorTaskSpec extends Specification {
         project.configurations.create(ASCIIDOCTOR)
         mockAsciidoctor = Mock(AsciidoctorProxy)
         testRootDir = new File('.')
-        srcDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR)
+        srcDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR).absoluteFile
         outDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
         systemOut = new ByteArrayOutputStream()
         System.out = new PrintStream(systemOut)
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Allow setting of options via method"() {
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                options eruby : 'erb'
+                options eruby : 'erubis'
+                options doctype : 'book', toc : 'right'
+            }
+
+        then:
+            ! systemOut.toString().contains('deprecated')
+            task.options['eruby'] == 'erubis'
+            task.options['doctype'] == 'book'
+            task.options['toc'] == 'right'
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Allow setting of options via assignment"() {
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                options = [eruby : 'erb', toc : 'right']
+                options = [eruby : 'erubis', doctype : 'book']
+            }
+
+        then:
+            ! systemOut.toString().contains('deprecated')
+            task.options['eruby'] == 'erubis'
+            task.options['doctype'] == 'book'
+            !task.options.containsKey('toc')
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Allow setting of attributes via method"() {
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                attributes 'source-highlighter': 'foo'
+                attributes 'source-highlighter': 'coderay'
+                attributes idprefix : '$', idseparator : '-'
+            }
+
+        then:
+            ! systemOut.toString().contains('deprecated')
+            task.attributes['source-highlighter'] == 'coderay'
+            task.attributes['idprefix'] == '$'
+            task.attributes['idseparator'] == '-'
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Allow setting of attributes via assignment"() {
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                attributes = ['source-highlighter': 'foo',idprefix : '$']
+                attributes = ['source-highlighter': 'coderay', idseparator : '-']
+            }
+
+        then:
+            ! systemOut.toString().contains('deprecated')
+            task.attributes['source-highlighter'] == 'coderay'
+            task.attributes['idseparator'] == '-'
+            !task.attributes.containsKey('idprefix')
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Mixing attributes with options, should produce a warning, but updates should be appended"() {
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                options eruby : 'erubis', attributes : ['source-highlighter': 'foo',idprefix : '$']
+                options doctype: 'book', attributes : [idseparator : '-' ]
+            }
+
+        then:
+            !task.attributes.containsKey('attributes')
+            task.attributes['source-highlighter'] == 'foo'
+            task.attributes['idseparator'] == '-'
+            task.attributes['idprefix'] == '$'
+            task.options['eruby'] == 'erubis'
+            task.options['doctype'] == 'book'
+            systemOut.toString().contains('Attributes found in options.')
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Mixing attributes with options with assignment, should produce a warning, and attributes will be replaced"() {
+        when:
+            Map tmpStore = [ eruby : 'erubis', attributes : ['source-highlighter': 'foo',idprefix : '$'] ]
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                options = tmpStore
+                options = [ doctype: 'book', attributes : [idseparator : '-' ] ]
+            }
+
+        then:
+            !task.attributes.containsKey('attributes')
+            task.attributes['idseparator'] == '-'
+            !task.attributes.containsKey('source-highlighter')
+            !task.attributes.containsKey('idprefix')
+            !task.options.containsKey('eruby')
+            task.options['doctype'] == 'book'
+            systemOut.toString().contains('Attributes found in options.')
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Mixing string legacy form of attributes with options with assignment, should produce a warning, and attributes will be replaced"() {
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                options = [ doctype: 'book', attributes : 'toc=right source-highlighter=coderay toc-title=Table\\ of\\ Contents' ]
+            }
+
+        then:
+            task.options['doctype'] == 'book'
+            !task.attributes.containsKey('attributes')
+            task.attributes['toc'] == 'right'
+            task.attributes['source-highlighter'] == 'coderay'
+            task.attributes['toc-title'] == 'Table of Contents'
+            systemOut.toString().contains('Attributes found in options.')
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Mixing list legacy form of attributes with options with assignment, should produce a warning, and attributes will be replaced"() {
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                options = [ doctype: 'book', attributes : [
+                            'toc=right',
+                            'source-highlighter=coderay',
+                            'toc-title=Table of Contents'
+                            ]]
+            }
+
+        then:
+            task.options['doctype'] == 'book'
+            !task.attributes.containsKey('attributes')
+            task.attributes['toc'] == 'right'
+            task.attributes['source-highlighter'] == 'coderay'
+            task.attributes['toc-title'] == 'Table of Contents'
+            systemOut.toString().contains('Attributes found in options.')
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Allow setting of backends via method"() {
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                backends 'foo','bar'
+                backends 'pdf'
+            }
+
+        then:
+            ! systemOut.toString().contains('deprecated')
+            task.backends.contains('pdf')
+            task.backends.contains('foo')
+            task.backends.contains('bar')
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Allow setting of backends via assignment"() {
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                backends = ['pdf']
+                backends = ['foo','bar']
+            }
+
+        then:
+            ! systemOut.toString().contains('deprecated')
+            !task.backends.contains('pdf')
+            task.backends.contains('foo')
+            task.backends.contains('bar')
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Allow setting of requires via method"() {
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                requires 'slim','tilt'
+                requires 'asciidoctor-pdf'
+            }
+
+        then:
+            ! systemOut.toString().contains('deprecated')
+            task.requires.contains('asciidoctor-pdf')
+            task.requires.contains('tilt')
+            task.requires.contains('slim')
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Allow setting of requires via assignment"() {
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                requires = ['asciidoctor-pdf']
+                requires = ['slim','tilt']
+            }
+
+        then:
+            ! systemOut.toString().contains('deprecated')
+            !task.requires.contains('asciidoctor-pdf')
+            task.requires.contains('tilt')
+            task.requires.contains('slim')
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Allow setting of sourceDir via method"() {
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                sourceDir project.projectDir
+            }
+
+        then:
+            ! systemOut.toString().contains('deprecated')
+            task.getSourceDir().absolutePath == project.projectDir.absolutePath
+            task.sourceDir.absolutePath == project.projectDir.absolutePath
+    }
+
+
+    @SuppressWarnings('MethodName')
+    def "When setting sourceDir via assignment"() {
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                sourceDir = project.projectDir
+            }
+
+        then:
+            task.getSourceDir().absolutePath == project.projectDir.absolutePath
+            task.sourceDir.absolutePath == project.projectDir.absolutePath
+
+    }
+
+    @SuppressWarnings('MethodName')
+    def "When setting sourceDir via setSourceDir"() {
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                setSourceDir project.projectDir
+            }
+
+        then:
+            task.getSourceDir().absolutePath == project.projectDir.absolutePath
+            task.sourceDir.absolutePath == project.projectDir.absolutePath
+            !systemOut.toString().contains('deprecated')
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Allow setting of gemPath via method"() {
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                gemPath project.projectDir
+            }
+
+        then:
+            ! systemOut.toString().contains('deprecated')
+            task.asGemPath() == project.projectDir.absolutePath
+//            task.gemPath.absolutePath == project.projectDir.absolutePath
+    }
+
+    @SuppressWarnings('MethodName')
+    def "When setting gemPath via assignment"() {
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                gemPath = project.projectDir
+            }
+
+        then:
+            task.asGemPath() == project.projectDir.absolutePath
+//            task.gemPath.absolutePath == project.projectDir.absolutePath
+            ! systemOut.toString().contains('deprecated')
+    }
+
+    @SuppressWarnings('MethodName')
+    def "When setting gemPath via setGemPath"() {
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                setGemPath project.projectDir
+            }
+
+        then:
+            task.asGemPath() == project.projectDir.absolutePath
+//            task.gemPath.absolutePath == project.projectDir.absolutePath
+            ! systemOut.toString().contains('deprecated')
     }
 
     @SuppressWarnings('MethodName')
@@ -103,7 +379,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = srcDir
+                sourceDir srcDir
                 outputDir = outDir
             }
 
@@ -272,8 +548,8 @@ class AsciidoctorTaskSpec extends Specification {
     }
 
     @SuppressWarnings('MethodName')
-    def "Throws exception when attributes option value is an unsupported type"() {
-        given:
+    def "Throws exception when attributes embedded in options is an unsupported type"() {
+        when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
                 sourceDir = srcDir
@@ -283,10 +559,9 @@ class AsciidoctorTaskSpec extends Specification {
                   attributes: 23
                 ]
             }
-        when:
             task.processAsciidocSources()
         then:
-            thrown(Exception)
+            thrown(InvalidUserDataException)
     }
 
     @SuppressWarnings('MethodName')
@@ -526,9 +801,9 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_SUB_DIR)
+                sourceDir new File(testRootDir, ASCIIDOC_RESOURCES_SUB_DIR).absoluteFile
                 outputDir = outDir
-                sourceDocumentName = new File(srcDir, ASCIIDOC_SAMPLE_FILE)
+                sourceDocumentNames new File(srcDir, ASCIIDOC_SAMPLE_FILE).absoluteFile
             }
         when:
             task.processAsciidocSources()
@@ -542,9 +817,9 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = new File(testRootDir, ASCIIDOC_RESOURCES_SUB_DIR)
+                sourceDir new File(testRootDir, ASCIIDOC_RESOURCES_SUB_DIR).absoluteFile
                 outputDir = outDir
-                sourceDocumentNames = new SimpleFileCollection(new File(srcDir, ASCIIDOC_SAMPLE_FILE))
+                sourceDocumentNames new SimpleFileCollection(new File(srcDir, ASCIIDOC_SAMPLE_FILE).absoluteFile)
             }
         when:
             task.processAsciidocSources()
