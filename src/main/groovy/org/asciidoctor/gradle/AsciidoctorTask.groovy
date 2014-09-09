@@ -21,6 +21,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.FileCollection
+import org.gradle.api.file.FileTree
 import org.gradle.api.internal.file.collections.SimpleFileCollection
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
@@ -317,28 +318,50 @@ class AsciidoctorTask extends DefaultTask {
 
     /** Returns the collection of source documents
      *
+     * If sourceDocumentNames was not set or is empty, it will return all asciidoc files
+     * in {@code sourceDir}. Otherwise only the files provided earlier to sourceDocumentNames
+     * are returned if they are found below {@code sourceDir}
      * @since 1.5.0
      */
     @Optional
     @InputFiles
     FileCollection getSourceDocumentNames() {
-        if(this.sourceDocumentNames?.size()) {
-            String sourceRoot = sourceDir.canonicalPath
-            def sdn = CollectionUtils.stringize(this.sourceDocumentNames) as Set
-            project.fileTree(sourceDir).filter { File f ->
-                null != sdn.find { String target ->
-                    if (f.path.endsWith(target)) {
-                        return true
-                    } else {
-                        String targetPath = new File(target).canonicalPath
-                        return f.canonicalPath == targetPath
-                    }
 
-                    false
+        if(this.sourceDocumentNames?.size()) {
+
+            def validate = { fName ->
+                def f = new File(fName)
+                if(f.isAbsolute()) {
+                    String intermediate = sourceDir.canonicalFile.toURI().relativize( f.canonicalFile.toURI() ).toString()
+                    if(intermediate.startsWith('file:')) {
+                        throw new GradleException("'${fName}' is not reachable from sourceDir (${sourceDir}). " +
+                                'All files given in `sourceDocumentNames` must be descendents of `sourceDir`' )
+                    } else {
+                        project.logger.warn "Should not be passing absolute paths"
+                        intermediate
+                    }
+                } else {
+                    fName
+                }
+            }
+
+            def sdn = CollectionUtils.flattenCollections(Object.class,this.sourceDocumentNames)
+            final String pathSep = PATH_SEPARATOR
+            project.fileTree(sourceDir) {
+                sdn.each { item ->
+                    if(item instanceof FileCollection) {
+                        item.asPath.split(pathSep).each { path ->
+                            include validate(path)
+                        }
+                    } else if (item instanceof Closure) {
+                        include validate(item.call().toString())
+                    } else {
+                        include validate(item.toString())
+                    }
                 }
             }
         } else {
-            fileTree(sourceDir) {
+            project.fileTree(sourceDir) {
                 include '**/*.adoc'
                 include '**/*.asc'
                 include '**/*.asciidoc'

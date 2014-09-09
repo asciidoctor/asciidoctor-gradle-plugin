@@ -22,6 +22,7 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.internal.file.collections.SimpleFileCollection
 import org.gradle.testfixtures.ProjectBuilder
+import spock.lang.IgnoreRest
 import spock.lang.Specification
 
 /**
@@ -381,9 +382,8 @@ class AsciidoctorTaskSpec extends Specification {
             def fileCollection = task.sourceDocumentNames
 
         then:
-            fileCollection.files.size() == 0
+            thrown(GradleException)
     }
-
 
     @SuppressWarnings('MethodName')
     def "sourceDocumentNames should resolve descendant files of sourceDir even if passed as a FileCollection"() {
