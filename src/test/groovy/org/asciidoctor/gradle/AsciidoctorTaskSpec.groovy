@@ -877,4 +877,15 @@ class AsciidoctorTaskSpec extends Specification {
             1 * mockAsciidoctor.renderFile(_, _)
     }
 
+    def "sanity test for default configuration" () {
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+            asciidoctor = mockAsciidoctor
+        }
+
+        then:
+            task.sourceDir.absolutePath.endsWith("src/docs/asciidoc")
+
+    }
+
 }
