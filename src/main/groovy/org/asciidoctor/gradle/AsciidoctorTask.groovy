@@ -15,6 +15,7 @@
  */
 package org.asciidoctor.gradle
 
+import org.apache.ivy.util.FileUtil
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
@@ -28,6 +29,7 @@ import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
+import org.gradle.internal.FileUtils
 import org.gradle.util.CollectionUtils
 
 /**
@@ -319,7 +321,30 @@ class AsciidoctorTask extends DefaultTask {
      */
     @Optional
     @InputFiles
-    FileCollection getSourceDocumentNames() { project.files(this.sourceDocumentNames) }
+    FileCollection getSourceDocumentNames() {
+        if(this.sourceDocumentNames?.size()) {
+            String sourceRoot = sourceDir.canonicalPath
+            def sdn = CollectionUtils.stringize(this.sourceDocumentNames) as Set
+            project.fileTree(sourceDir).filter { File f ->
+                null != sdn.find { String target ->
+                    if (f.path.endsWith(target)) {
+                        return true
+                    } else {
+                        String targetPath = new File(target).canonicalPath
+                        return f.canonicalPath == targetPath
+                    }
+
+                    false
+                }
+            }
+        } else {
+            fileTree(sourceDir) {
+                include '**/*.adoc'
+                include '**/*.asc'
+                include '**/*.asciidoc'
+            }
+        }
+    }
 
     /** Replaces the current set of source documents with a new set
      *

@@ -20,7 +20,6 @@ import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.file.FileCollection
 import org.gradle.api.internal.file.collections.SimpleFileCollection
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
@@ -306,7 +305,6 @@ class AsciidoctorTaskSpec extends Specification {
         then:
             ! systemOut.toString().contains('deprecated')
             task.asGemPath() == project.projectDir.absolutePath
-//            task.gemPath.absolutePath == project.projectDir.absolutePath
     }
 
     @SuppressWarnings('MethodName')
@@ -318,7 +316,6 @@ class AsciidoctorTaskSpec extends Specification {
 
         then:
             task.asGemPath() == project.projectDir.absolutePath
-//            task.gemPath.absolutePath == project.projectDir.absolutePath
             ! systemOut.toString().contains('deprecated')
     }
 
@@ -331,8 +328,81 @@ class AsciidoctorTaskSpec extends Specification {
 
         then:
             task.asGemPath() == project.projectDir.absolutePath
-//            task.gemPath.absolutePath == project.projectDir.absolutePath
             ! systemOut.toString().contains('deprecated')
+    }
+
+    @SuppressWarnings('MethodName')
+    def "sourceDocumentNames should resolve descendant files of sourceDir if supplied as relatives"() {
+        when: "I specify two files relative to sourceDir,including one in a subfoler"
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                sourceDir srcDir
+                sourceDocumentNames  ASCIIDOC_SAMPLE_FILE, ASCIIDOC_SAMPLE2_FILE
+            }
+            def fileCollection = task.sourceDocumentNames
+
+        then: "both files should be in collection, but any other files found in folder should be excluded"
+            fileCollection.contains(new File(srcDir,ASCIIDOC_SAMPLE_FILE).canonicalFile)
+            fileCollection.contains(new File(srcDir,ASCIIDOC_SAMPLE2_FILE).canonicalFile)
+            !fileCollection.contains(new File(srcDir,'sample-docinfo.xml').canonicalFile)
+            fileCollection.files.size() == 2
+    }
+
+    @SuppressWarnings('MethodName')
+    def "sourceDocumentNames should resolve descendant files of sourceDir even if given as absolute files"() {
+        given:
+            File sample1 = new File(srcDir,ASCIIDOC_SAMPLE_FILE).absoluteFile
+            File sample2 = new File(srcDir,ASCIIDOC_SAMPLE2_FILE).absoluteFile
+
+        when: "I specify two absolute path files, that are descendents of sourceDit"
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                sourceDir srcDir
+                sourceDocumentNames  sample1
+                sourceDocumentNames  sample2
+            }
+            def fileCollection = task.sourceDocumentNames
+
+        then: "both files should be in collection, but any other files found in folder should be excluded"
+            fileCollection.contains(new File(srcDir,ASCIIDOC_SAMPLE_FILE).canonicalFile)
+            fileCollection.contains(new File(srcDir,ASCIIDOC_SAMPLE2_FILE).canonicalFile)
+            !fileCollection.contains(new File(srcDir,'sample-docinfo.xml').canonicalFile)
+            fileCollection.files.size() == 2
+    }
+
+    @SuppressWarnings('MethodName')
+    def "sourceDocumentNames should not resolve files that are not descendants of sourceDir"() {
+        given:
+            File sample1 = new File(project.projectDir,ASCIIDOC_SAMPLE_FILE).absoluteFile
+
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                sourceDir srcDir
+                sourceDocumentNames  sample1
+            }
+            def fileCollection = task.sourceDocumentNames
+
+        then:
+            fileCollection.files.size() == 0
+    }
+
+
+    @SuppressWarnings('MethodName')
+    def "sourceDocumentNames should resolve descendant files of sourceDir even if passed as a FileCollection"() {
+        given:
+            File sample1 = new File(srcDir,ASCIIDOC_SAMPLE_FILE).absoluteFile
+            File sample2 = new File(srcDir,ASCIIDOC_SAMPLE2_FILE).absoluteFile
+
+        when: "I specify two files in a FileCollection, that are descendents of sourceDit"
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                sourceDir srcDir
+                sourceDocumentNames  new SimpleFileCollection(sample1,sample2)
+            }
+            def fileCollection = task.sourceDocumentNames
+
+        then: "both files should be in collection, but any other files found in folder should be excluded"
+            fileCollection.contains(new File(srcDir,ASCIIDOC_SAMPLE_FILE).canonicalFile)
+            fileCollection.contains(new File(srcDir,ASCIIDOC_SAMPLE2_FILE).canonicalFile)
+            !fileCollection.contains(new File(srcDir,'sample-docinfo.xml').canonicalFile)
+            fileCollection.files.size() == 2
     }
 
     @SuppressWarnings('MethodName')
@@ -861,7 +931,7 @@ class AsciidoctorTaskSpec extends Specification {
     }
 
     @SuppressWarnings('MethodName')
-    def "Should not emmit warning about absolute path in sourceDocumentNames"() {
+    def "Should not emit warning about absolute path in sourceDocumentNames"() {
         expect:
             project.tasks.findByName(ASCIIDOCTOR) == null
         when:
