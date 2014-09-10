@@ -22,7 +22,6 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.internal.file.collections.SimpleFileCollection
 import org.gradle.testfixtures.ProjectBuilder
-import spock.lang.IgnoreRest
 import spock.lang.Specification
 
 /**
