@@ -315,11 +315,56 @@ class AsciidoctorTask extends DefaultTask {
 
     /** Returns the collection of source documents
      *
+     * If sourceDocumentNames was not set or is empty, it will return all asciidoc files
+     * in {@code sourceDir}. Otherwise only the files provided earlier to sourceDocumentNames
+     * are returned if they are found below {@code sourceDir}
      * @since 1.5.0
      */
     @Optional
     @InputFiles
-    FileCollection getSourceDocumentNames() { project.files(this.sourceDocumentNames) }
+    FileCollection getSourceDocumentNames() {
+
+        if(this.sourceDocumentNames?.size()) {
+
+            def validate = { fName ->
+                def f = new File(fName)
+                if(f.isAbsolute()) {
+                    String intermediate = sourceDir.canonicalFile.toURI().relativize( f.canonicalFile.toURI() ).toString()
+                    if(intermediate.startsWith('file:')) {
+                        throw new GradleException("'${fName}' is not reachable from sourceDir (${sourceDir}). " +
+                                'All files given in `sourceDocumentNames` must be descendents of `sourceDir`' )
+                    } else {
+                        logger.warn("Entry '${fName}' of `sourceDocumentNames` should be specified relative to `sourceDir` (${sourceDir})")
+                        intermediate
+                    }
+                } else {
+                    fName
+                }
+            }
+
+            def sdn = CollectionUtils.flattenCollections(Object,this.sourceDocumentNames)
+            final String pathSep = PATH_SEPARATOR
+            project.fileTree(sourceDir) {
+                sdn.each { item ->
+                    if(item instanceof FileCollection) {
+                        item.asPath.split(pathSep).each { path ->
+                            include validate(path)
+                        }
+                    } else if (item instanceof Closure) {
+                        include validate(item.call().toString())
+                    } else {
+                        include validate(item.toString())
+                    }
+                }
+            }
+        } else {
+            project.fileTree(sourceDir) {
+                include '**/*.adoc'
+                include '**/*.asc'
+                include '**/*.asciidoc'
+            }
+        }
+    }
 
     /** Replaces the current set of source documents with a new set
      *
