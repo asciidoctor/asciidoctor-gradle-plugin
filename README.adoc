@@ -55,7 +55,7 @@ logDocuments:: a boolean specifying if documents being processed should be logge
 sourceDir:: where the asciidoc sources are.
   Use either `sourceDir path`, `setSourceDir path` or `sourceDir=path`
   Type: File, but any object convertible with `project.file` can be passed.
-  Default: `src/asciidoc`.
+  Default: `src/docs/asciidoc`.
 sourceDocumentNames:: an override to process multiple source files, which may be a subset of all
   files available in [x-]`${sourceDir}`.
   Use `sourceDocumentNames` to append and `setSourceNames` to overwrite.
@@ -128,10 +128,10 @@ asciidoctor { <1>
 
 You may need to include extra content into the head of the exported document.
 For example, you might want to include jQuery inside the `<head>` element of the HTML export.
-To do so, first create a docinfo file `src/asciidoc/docinfo.html` containing the content to include, in this case the `<script>` tag to load jQuery.
+To do so, first create a docinfo file `src/docs/asciidoc/docinfo.html` containing the content to include, in this case the `<script>` tag to load jQuery.
 
 [source,html]
-.src/asciidoc/docinfo.html
+.src/docs/asciidoc/docinfo.html
 ----
 <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.js"></script>
 ----
@@ -156,6 +156,8 @@ properties.
 [horizontal]
 sourceDocumentName:: an override to process a single source file. Use `sourceDocumentNames` instead.
 backend:: the backend to use. Use `backends` instead.
+sourceDir:: the default value has changed from `src/asciidoc` to `src/docs/asciidoc`.
+
 
 === Behavior
 

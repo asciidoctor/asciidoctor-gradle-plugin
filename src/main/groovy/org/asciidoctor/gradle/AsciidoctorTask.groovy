@@ -81,7 +81,7 @@ class AsciidoctorTask extends DefaultTask {
     Configuration classpath
 
     AsciidoctorTask() {
-        srcDir = project.file('src/asciidoc')
+        srcDir = project.file('src/docs/asciidoc')
         outputDir = new File(project.buildDir, 'asciidoc')
     }
 
