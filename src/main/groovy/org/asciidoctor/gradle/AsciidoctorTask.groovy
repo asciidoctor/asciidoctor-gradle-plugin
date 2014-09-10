@@ -15,13 +15,11 @@
  */
 package org.asciidoctor.gradle
 
-import org.apache.ivy.util.FileUtil
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.FileCollection
-import org.gradle.api.file.FileTree
 import org.gradle.api.internal.file.collections.SimpleFileCollection
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
@@ -30,7 +28,6 @@ import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
-import org.gradle.internal.FileUtils
 import org.gradle.util.CollectionUtils
 
 /**
@@ -337,7 +334,7 @@ class AsciidoctorTask extends DefaultTask {
                         throw new GradleException("'${fName}' is not reachable from sourceDir (${sourceDir}). " +
                                 'All files given in `sourceDocumentNames` must be descendents of `sourceDir`' )
                     } else {
-                        project.logger.warn "Should not be passing absolute paths"
+                        logger.warn("Entry '${fName}' of `sourceDocumentNames` should be specified relative to `sourceDir` (${sourceDir})")
                         intermediate
                     }
                 } else {
@@ -345,7 +342,7 @@ class AsciidoctorTask extends DefaultTask {
                 }
             }
 
-            def sdn = CollectionUtils.flattenCollections(Object.class,this.sourceDocumentNames)
+            def sdn = CollectionUtils.flattenCollections(Object,this.sourceDocumentNames)
             final String pathSep = PATH_SEPARATOR
             project.fileTree(sourceDir) {
                 sdn.each { item ->
