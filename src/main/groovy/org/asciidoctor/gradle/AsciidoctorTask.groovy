@@ -19,15 +19,19 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileCollection
-import org.gradle.api.internal.file.collections.SimpleFileCollection
+import org.gradle.api.file.FileTree
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.OutputDirectories
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.util.PatternSet
+import org.gradle.internal.FileUtils
 import org.gradle.util.CollectionUtils
 
 /**
@@ -49,20 +53,18 @@ class AsciidoctorTask extends DefaultTask {
     private static final String PATH_SEPARATOR=System.getProperty('path.separator')
     private static final String DOUBLE_BACKLASH = '\\\\'
     private static final String BACKLASH = '\\'
-    private static final ASCIIDOC_FILE_EXTENSION_PATTERN = ~/.*\.a((sc(iidoc)?)|d(oc)?)$/
-    private static final DOCINFO_FILE_PATTERN = ~/(.+\-)?docinfo(-footer)?\.[^.]+/
+//    private static final ASCIIDOC_FILE_EXTENSION_PATTERN = ~/.*\.a((sc(iidoc)?)|d(oc)?)$/
+//    private static final DOCINFO_FILE_PATTERN = ~/(.+\-)?docinfo(-footer)?\.[^.]+/
     private static final String SAFE_MODE_CLASSNAME = 'org.asciidoctor.SafeMode'
 
     private static final String DEFAULT_BACKEND = AsciidoctorBackend.HTML5.id
-    private static final Closure<Boolean> EXCLUDE_DOCINFO_AND_FILES_STARTING_WITH_UNDERSCORE = { File file ->
-        // skip files & directories that begin with an underscore and docinfo files
-        !file.name.startsWith('_') && (file.directory || !(file.name ==~ DOCINFO_FILE_PATTERN))
-    }
+//    private static final Closure<Boolean> EXCLUDE_DOCINFO_AND_FILES_STARTING_WITH_UNDERSCORE = { File file ->
+//        // skip files & directories that begin with an underscore and docinfo files
+//        !file.name.startsWith('_') && (file.directory || !(file.name ==~ DOCINFO_FILE_PATTERN))
+//    }
     public static final String ASCIIDOCTOR_FACTORY_CLASSNAME = 'org.asciidoctor.Asciidoctor$Factory'
 
     private boolean baseDirSetToNull
-    private final List<Object> sourceDocumentNames = []
-    private FileCollection sourceDocuments
     private Object outDir
     private Object srcDir
     private final List<Object> gemPaths = []
@@ -71,11 +73,37 @@ class AsciidoctorTask extends DefaultTask {
     private Map opts = [:]
     private Map attrs = [:]
     private static ClassLoader cl
+    private PatternSet sourceDocumentPattern
 
+    // TODO: Remove Suppress before release
+    @SuppressWarnings('UnusedPrivateField')
+    private PatternSet resourcesPattern
+
+    /** If set to true each backend will be output to a separate subfolder below {@code outputDir}
+     * @since 1.5.1
+     */
+    @Input
+    boolean separateOutputDirs = true
+
+    @Optional @InputDirectory
+    File baseDir
+
+    /** Logs documents as they are converted
+     *
+     */
+    @Optional
+    boolean logDocuments = false
+
+    /** Old way to set only one source document
+     * @deprecated Use {@code sources} instead
+     */
     @Optional @InputFile File sourceDocumentName
-    @Optional @InputDirectory File baseDir
+
+    /** Old way to define the backend to use
+     * @deprecated USe {@code backends} instead
+     */
     @Optional @Input String backend
-    @Optional boolean logDocuments = false
+
 
     AsciidoctorProxy asciidoctor
     Configuration classpath
@@ -182,9 +210,15 @@ class AsciidoctorTask extends DefaultTask {
     /** Returns the current set of Asciidoctor backends that will be used for document generation
      *
      * @since 0.7.1
+     * @deprecated
      */
     @Optional @Input
     Set<String> getBackends() {this.backends}
+
+    void setBackend(final String b) {
+        deprecated 'setBackend','backends','Using `backend` and `backends` together will result in `backend` being ignored.'
+        backend = b
+    }
 
     /** Applies a new set of Asciidoctor backends that will be used for document generation clearing any
      * previous backends
@@ -319,50 +353,24 @@ class AsciidoctorTask extends DefaultTask {
      * in {@code sourceDir}. Otherwise only the files provided earlier to sourceDocumentNames
      * are returned if they are found below {@code sourceDir}
      * @since 1.5.0
+     * @deprecated
      */
-    @Optional
-    @InputFiles
+//    @Optional
+//    @InputFiles
     FileCollection getSourceDocumentNames() {
+        deprecated 'getSourceDocumentNames', 'getSourceFileTree'
+        sourceFileTree
+    }
 
-        if(this.sourceDocumentNames?.size()) {
-
-            def validate = { fName ->
-                def f = new File(fName)
-                if(f.isAbsolute()) {
-                    String intermediate = sourceDir.canonicalFile.toURI().relativize( f.canonicalFile.toURI() ).toString()
-                    if(intermediate.startsWith('file:')) {
-                        throw new GradleException("'${fName}' is not reachable from sourceDir (${sourceDir}). " +
-                                'All files given in `sourceDocumentNames` must be descendents of `sourceDir`' )
-                    } else {
-                        logger.warn("Entry '${fName}' of `sourceDocumentNames` should be specified relative to `sourceDir` (${sourceDir})")
-                        intermediate
-                    }
-                } else {
-                    fName
-                }
-            }
-
-            def sdn = CollectionUtils.flattenCollections(Object,this.sourceDocumentNames)
-            final String pathSep = PATH_SEPARATOR
-            project.fileTree(sourceDir) {
-                sdn.each { item ->
-                    if(item instanceof FileCollection) {
-                        item.asPath.split(pathSep).each { path ->
-                            include validate(path)
-                        }
-                    } else if (item instanceof Closure) {
-                        include validate(item.call().toString())
-                    } else {
-                        include validate(item.toString())
-                    }
-                }
-            }
-        } else {
-            project.fileTree(sourceDir) {
-                include '**/*.adoc'
-                include '**/*.asc'
-                include '**/*.asciidoc'
-            }
+    /** Sets a single file to the main source file
+     *
+     * @param f
+     * @deprecated
+     */
+    void setSourceDocumentName(File f) {
+        deprecated 'setSourceDocumentName', 'setIncludes', 'File will be converted to a pattern.'
+        sources {
+            setIncludes([AsciidoctorUtils.getRelativePath(f.absoluteFile,sourceDir.absoluteFile)])
         }
     }
 
@@ -370,86 +378,172 @@ class AsciidoctorTask extends DefaultTask {
      *
      * @parm src List of source documents, which must be convertible using {@code project.files}
      * @since 1.5.0
+     * @deprecated
      */
+    @SuppressWarnings('DuplicateStringLiteral')
     void setSourceDocumentNames(Object... src) {
-        this.sourceDocumentNames.clear()
-        sourceDocumentNames(src)
+        deprecated 'setSourceDocumentNames', 'setIncludes', 'Files are converted to patterns. Some might not convert correctly' +
+                'FileCollections will not convert'
+        sources {
+            setIncludes(CollectionUtils.stringize(src as List))
+        }
     }
 
+    // TODO: Remove before 1.5.1 release
     /** Appends more source documents
      *
      * @parm src List of source documents, which must be convertible using {@code project.files}
      * @since 1.5.1
+     * @deprecated
      */
     @SuppressWarnings('ConfusingMethodName')
+    @SuppressWarnings('DuplicateStringLiteral')
     void sourceDocumentNames(Object... src) {
-        this.sourceDocumentNames.addAll(src as List)
+        deprecated 'sourceDocumentNames', 'includes', 'Files are converted to patterns. Some might not convert correctly' +
+                'FileCollections will not convert'
+        sources {
+            include CollectionUtils.stringize(src as List)
+        }
     }
+
 
     void setBaseDir(File baseDir) {
         this.baseDir = baseDir
         baseDirSetToNull = baseDir == null
     }
 
-    /**
-     * Validates input values. If an input value is not valid an exception is thrown.
+    /** Returns a list of all output directories.
+     * @since 1.5.1
      */
-    @SuppressWarnings('UnnecessaryGetter')
-    private void validateInputs() {
+    @OutputDirectories
+    getOutputDirectories() {
+        if (separateOutputDirs) {
+            backends.collect { new File(outputDir, it) } as Set
+        } else {
+            [outputDir] as Set
+        }
+    }
+
+    /** Returns a FileTree containing all of the source documents
+     *
+     * @return If {@code sources} was never called then all asciidoc source files below {@code sourceDir} will
+     * be included
+     * @since 1.5.1
+     */
+    @InputFiles
+    FileTree getSourceFileTree() {
+        project.fileTree(sourceDir).
+                matching (this.sourceDocumentPattern ?: this.defaultSourceDocumentPattern)
+    }
+
+    /** Add patterns for source files or source files via a closure
+     *
+     * @param cfg
+     * @since 1.5.1
+     */
+    void sources(Closure cfg) {
+        if(sourceDocumentPattern==null)  {
+            sourceDocumentPattern=new PatternSet()
+        }
+        def configuration = cfg.clone()
+        configuration.delegate=sourceDocumentPattern
+        configuration()
+    }
+
+
+    /** The default PatternSet that will be used if {@code sources} was never called
+     *
+     * By default all *.adoc,*.ad,*.asc,*.asciidoc is included. Files beginning with underscore are excluded
+     *
+     * @since 1.5.1
+     */
+    PatternSet getDefaultSourceDocumentPattern() {
+        PatternSet ps = new PatternSet()
+        ps.include '**/*.adoc'
+        ps.include '**/*.ad'
+        ps.include '**/*.asc'
+        ps.include '**/*.asciidoc'
+        ps.exclude '**/_*'
+    }
+
+    /** The default CopySpec that will be used if {@code resources} was never called
+     *
+     * By default anything below {@code $sourceDir/images} will be included.
+     *
+     * @since 1.5.1
+     */
+    CopySpec getDefaultResourcesCopySpec() {
+        project.copySpec {
+            from (sourceDir) {
+                include 'images/**'
+            }
+        }
+    }
+
+    // --- Experimental functions start here
+    @InputFiles
+    @Optional
+    CopySpec getResourceCopySpec() {
+        null
+//        project.copySpec {
+//
+//        }
+//
+//        if(resourcesPattern) {
+//
+//        } else {
+//
+//        } // defaultResourcesPattern
+    }
+    // --- Stops here
+
+    @TaskAction
+    void processAsciidocSources() {
+
+        if(sourceFileTree.files.size()==0) {
+            logger.lifecycle 'Asciidoc source file tree is empty. Nothing will be processed.'
+            return
+        }
+
+        if(classpath == null) {
+            classpath = project.configurations.getByName(AsciidoctorPlugin.ASCIIDOCTOR)
+        }
         setupClassLoader()
-        for(backend in backends) {
-            if (!AsciidoctorBackend.isBuiltIn(backend)) {
-                logger.lifecycle("Passing through unknown backend: $backend")
+
+        if (!asciidoctor) {
+            instantiateAsciidoctor()
+        }
+
+        if (requires) {
+            for (require in requires) {
+                // FIXME AsciidoctorJ should provide a public API for requiring paths in the Ruby runtime
+                asciidoctor.delegate.rubyRuntime.evalScriptlet(
+                        'require \'' + require.replaceAll('[^A-Za-z0-9/\\\\.\\-_]', '') + '\'')
             }
         }
-        if (backend) {
-            logger.warn('The `backend` property is deprecated and may not be supported in future versions. Please use the `backends` property instead.')
-            if (backends) {
-                logger.error('Both the `backend` and `backends` properties were specified. The `backend` property will be ignored.')
-            } else if (!AsciidoctorBackend.isBuiltIn(backend)) {
-                logger.lifecycle("Passing through unknown backend: $backend")
+
+        for (activeBackend in activeBackends()) {
+            if (!AsciidoctorBackend.isBuiltIn(activeBackend)) {
+                logger.lifecycle("Passing through unknown backend: $activeBackend")
             }
+            processDocumentsAndResources(activeBackend)
         }
-        if(sourceDocumentName) {
-            logger.warn('The `sourceDocumentName` property is deprecated and may not be supported in future versions. Please use the `sourceDocumentNames` property instead.')
-            if(sourceDocumentNames) {
-                logger.error('Both the `sourceDocumentName` and `sourceDocumentNames` properties were specified. The `sourceDocumentName` property will be ignored.')
-            } else {
-                sourceDocuments = new SimpleFileCollection(sourceDocumentName)
-                validateSourceDocuments(sourceDocuments)
-            }
-        }
-        if (sourceDocumentNames) {
-            sourceDocuments = getSourceDocumentNames()
-            validateSourceDocuments(sourceDocuments)
-        }
+
     }
 
-    private void validateSourceDocuments(FileCollection srcDocs) {
-        srcDocs.files.findAll {
-            it.isAbsolute() && !it.canonicalPath.startsWith(sourceDir.canonicalPath)
-        }.each {
-            logger.warn("Entry '$it' of `sourceDocumentNames` should be specified relative to `sourceDir` ($sourceDir)")
-        }
-        Collection<File> allReachableFiles = []
-        eachFileRecurse(sourceDir, EXCLUDE_DOCINFO_AND_FILES_STARTING_WITH_UNDERSCORE) { File file ->
-            allReachableFiles.add(file)
-        }
-        srcDocs.files.each { File file ->
-            if (! allReachableFiles.find {it.canonicalPath == file.canonicalPath}) {
-                throw new GradleException("'$file' is not reachable from sourceDir ($sourceDir). " +
-                        'All files given in `sourceDocumentNames` must be located in `sourceDir` ' +
-                        'or a subfolder of `sourceDir`.')
-            }
-        }
-    }
 
-    private static File outputDirFor(File source, String basePath, File outputDir) {
+    @groovy.transform.PackageScope
+    File outputDirFor(final File source, final String basePath, final File outputDir, final String backend) {
         String filePath = source.directory ? source.absolutePath : source.parentFile.absolutePath
         String relativeFilePath = normalizePath(filePath) - normalizePath(basePath)
-        File destinationParentDir = new File("${outputDir}/${relativeFilePath}")
-        if (!destinationParentDir.exists()) destinationParentDir.mkdirs()
+        File baseOutputDir = outputBackendDir(outputDir,backend)
+        File destinationParentDir = new File(baseOutputDir,relativeFilePath)
+        if (!destinationParentDir.exists()) {destinationParentDir.mkdirs()}
         destinationParentDir
+    }
+
+    private File outputBackendDir(final File outputDir, final String backend) {
+        separateOutputDirs ? new File(outputDir,FileUtils.toSafeFileName(backend)) : outputDir
     }
 
     private static String normalizePath(String path) {
@@ -460,30 +554,6 @@ class AsciidoctorTask extends DefaultTask {
         path
     }
 
-    @TaskAction
-    void processAsciidocSources() {
-        if(classpath == null) {
-            classpath = project.configurations.getByName(AsciidoctorPlugin.ASCIIDOCTOR)
-        }
-        validateInputs()
-        outputDir.mkdirs()
-
-        if (!asciidoctor) {
-            instantiateAsciidoctor()
-        }
-
-        if (requires) {
-            for (require in requires) {
-               // FIXME AsciidoctorJ should provide a public API for requiring paths in the Ruby runtime
-               asciidoctor.delegate.rubyRuntime.evalScriptlet(
-                   'require \'' + require.replaceAll('[^A-Za-z0-9/\\\\.\\-_]', '') + '\'')
-            }
-        }
-
-        for (activeBackend in activeBackends()) {
-            processDocumentsAndResources(activeBackend)
-        }
-    }
 
     @SuppressWarnings('CatchException')
     private void instantiateAsciidoctor() {
@@ -500,8 +570,8 @@ class AsciidoctorTask extends DefaultTask {
     }
 
     private Set<String> activeBackends() {
-        if (backends) {
-            return backends
+        if (this.backends) {
+            return this.backends
         } else if (backend) {
             return [backend]
         }
@@ -509,30 +579,27 @@ class AsciidoctorTask extends DefaultTask {
     }
 
     @SuppressWarnings('CatchException')
-    private void processDocumentsAndResources(String backend) {
-        try {
-            eachFileRecurse(sourceDir, EXCLUDE_DOCINFO_AND_FILES_STARTING_WITH_UNDERSCORE) { File file ->
-                processSourceDir(backend, file)
-            }
-        } catch (Exception e) {
-            throw new GradleException('Error running Asciidoctor', e)
-        }
-    }
+    @SuppressWarnings('DuplicateStringLiteral')
+    private void processDocumentsAndResources(final String backend) {
 
-    protected void processSourceDir(String backend, File file) {
-        File destinationParentDir = outputDirFor(file, sourceDir.absolutePath, outputDir)
-        if (file.name =~ ASCIIDOC_FILE_EXTENSION_PATTERN) {
-            if (sourceDocuments) {
-                if (sourceDocuments.files.find { it.canonicalPath == file.canonicalPath }) {
-                    processSingleFile(backend, destinationParentDir, file)
+        try {
+            sourceFileTree.files.each { File file ->
+                if(file.name.startsWith('_')) {
+                    throw new InvalidUserDataException('Source documents may not start with an underscore')
                 }
-                // check if single file was given
-            } else if (!sourceDocumentName || file.canonicalPath == sourceDocumentName.canonicalPath) {
+                File destinationParentDir = owner.outputDirFor(file, sourceDir.absolutePath, outputDir,backend)
                 processSingleFile(backend, destinationParentDir, file)
             }
-        } else {
-            File target = new File(destinationParentDir, file.name)
-            target.withOutputStream { it << file.newInputStream() }
+            CopySpec cs = resourceCopySpec
+            if(cs!=null) {
+                cs.into outputBackendDir(outputDir, backend)
+                project.copy {
+                    with cs
+                }
+            }
+
+        } catch (Exception e) {
+            throw new GradleException('Error running Asciidoctor', e)
         }
     }
 
@@ -550,18 +617,6 @@ class AsciidoctorTask extends DefaultTask {
                         rootDir: project.rootDir,
                         outputDir: destinationParentDir,
                         backend: backend ]))
-    }
-
-    private static void eachFileRecurse(File dir, Closure fileFilter, Closure fileProcessor) {
-        dir.eachFile { File file ->
-            if (fileFilter(file)) {
-                if (file.directory) {
-                    eachFileRecurse(file, fileFilter, fileProcessor)
-                } else {
-                    fileProcessor(file)
-                }
-            }
-        }
     }
 
     @SuppressWarnings('AbcMetric')
@@ -694,4 +749,11 @@ class AsciidoctorTask extends DefaultTask {
             cl = Thread.currentThread().contextClassLoader
         }
     }
+
+    private void deprecated(final String method,final String alternative,final String msg='') {
+        logger.lifecycle "Asciidoctor: ${method} is deprecated and will be removed in a future version." +
+                "Use ${alternative} instead. ${msg}"
+    }
+
+
 }

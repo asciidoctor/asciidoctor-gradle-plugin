@@ -347,26 +347,26 @@ class AsciidoctorTaskSpec extends Specification {
             fileCollection.files.size() == 2
     }
 
-    @SuppressWarnings('MethodName')
-    def "sourceDocumentNames should resolve descendant files of sourceDir even if given as absolute files"() {
-        given:
-            File sample1 = new File(srcDir,ASCIIDOC_SAMPLE_FILE).absoluteFile
-            File sample2 = new File(srcDir,ASCIIDOC_SAMPLE2_FILE).absoluteFile
-
-        when: "I specify two absolute path files, that are descendents of sourceDit"
-            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                sourceDir srcDir
-                sourceDocumentNames  sample1
-                sourceDocumentNames  sample2
-            }
-            def fileCollection = task.sourceDocumentNames
-
-        then: "both files should be in collection, but any other files found in folder should be excluded"
-            fileCollection.contains(new File(srcDir,ASCIIDOC_SAMPLE_FILE).canonicalFile)
-            fileCollection.contains(new File(srcDir,ASCIIDOC_SAMPLE2_FILE).canonicalFile)
-            !fileCollection.contains(new File(srcDir,'sample-docinfo.xml').canonicalFile)
-            fileCollection.files.size() == 2
-    }
+//    @SuppressWarnings('MethodName')
+//    def "sourceDocumentNames should resolve descendant files of sourceDir even if given as absolute files"() {
+//        given:
+//            File sample1 = new File(srcDir,ASCIIDOC_SAMPLE_FILE).absoluteFile
+//            File sample2 = new File(srcDir,ASCIIDOC_SAMPLE2_FILE).absoluteFile
+//
+//        when: "I specify two absolute path files, that are descendents of sourceDit"
+//            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+//                sourceDir srcDir
+//                sourceDocumentNames  sample1
+//                sourceDocumentNames  sample2
+//            }
+//            def fileCollection = task.sourceDocumentNames
+//
+//        then: "both files should be in collection, but any other files found in folder should be excluded"
+//            fileCollection.contains(new File(srcDir,ASCIIDOC_SAMPLE_FILE).canonicalFile)
+//            fileCollection.contains(new File(srcDir,ASCIIDOC_SAMPLE2_FILE).canonicalFile)
+//            !fileCollection.contains(new File(srcDir,'sample-docinfo.xml').canonicalFile)
+//            fileCollection.files.size() == 2
+//    }
 
     @SuppressWarnings('MethodName')
     def "sourceDocumentNames should not resolve files that are not descendants of sourceDir"() {
@@ -381,38 +381,38 @@ class AsciidoctorTaskSpec extends Specification {
             def fileCollection = task.sourceDocumentNames
 
         then:
-            thrown(GradleException)
+            fileCollection.files.size() == 0
     }
 
-    @SuppressWarnings('MethodName')
-    def "sourceDocumentNames should resolve descendant files of sourceDir even if passed as a FileCollection"() {
-        given:
-            File sample1 = new File(srcDir,ASCIIDOC_SAMPLE_FILE).absoluteFile
-            File sample2 = new File(srcDir,ASCIIDOC_SAMPLE2_FILE).absoluteFile
-
-        when: "I specify two files in a FileCollection, that are descendents of sourceDit"
-            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                sourceDir srcDir
-                sourceDocumentNames  new SimpleFileCollection(sample1,sample2)
-            }
-            def fileCollection = task.sourceDocumentNames
-
-        then: "both files should be in collection, but any other files found in folder should be excluded"
-            fileCollection.contains(new File(srcDir,ASCIIDOC_SAMPLE_FILE).canonicalFile)
-            fileCollection.contains(new File(srcDir,ASCIIDOC_SAMPLE2_FILE).canonicalFile)
-            !fileCollection.contains(new File(srcDir,'sample-docinfo.xml').canonicalFile)
-            fileCollection.files.size() == 2
-    }
+//    @SuppressWarnings('MethodName')
+//    def "sourceDocumentNames should resolve descendant files of sourceDir even if passed as a FileCollection"() {
+//        given:
+//            File sample1 = new File(srcDir,ASCIIDOC_SAMPLE_FILE).absoluteFile
+//            File sample2 = new File(srcDir,ASCIIDOC_SAMPLE2_FILE).absoluteFile
+//
+//        when: "I specify two files in a FileCollection, that are descendents of sourceDit"
+//            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+//                sourceDir srcDir
+//                sourceDocumentNames  new SimpleFileCollection(sample1,sample2)
+//            }
+//            def fileCollection = task.sourceDocumentNames
+//
+//        then: "both files should be in collection, but any other files found in folder should be excluded"
+//            fileCollection.contains(new File(srcDir,ASCIIDOC_SAMPLE_FILE).canonicalFile)
+//            fileCollection.contains(new File(srcDir,ASCIIDOC_SAMPLE2_FILE).canonicalFile)
+//            !fileCollection.contains(new File(srcDir,'sample-docinfo.xml').canonicalFile)
+//            fileCollection.files.size() == 2
+//    }
 
     @SuppressWarnings('MethodName')
     @SuppressWarnings('DuplicateNumberLiteral')
-    def "Adds asciidoctor task with multiple backends"() {
+    def "Add asciidoctor task with multiple backends"() {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
                 sourceDir = srcDir
                 outputDir = outDir
-                backends = [AsciidoctorBackend.DOCBOOK.id, AsciidoctorBackend.HTML5.id]
+                backends AsciidoctorBackend.DOCBOOK.id, AsciidoctorBackend.HTML5.id
             }
 
             task.processAsciidocSources()
@@ -437,7 +437,7 @@ class AsciidoctorTaskSpec extends Specification {
         then:
             2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == AsciidoctorBackend.DOCBOOK.id})
             2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == AsciidoctorBackend.HTML5.id})
-            systemOut.toString().contains('Both the `backend` and `backends` properties were specified. The `backend` property will be ignored.')
+            systemOut.toString().contains('Using `backend` and `backends` together will result in `backend` being ignored.')
     }
 
     @SuppressWarnings('MethodName')
@@ -474,7 +474,7 @@ class AsciidoctorTaskSpec extends Specification {
             task.processAsciidocSources()
         then:
             2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == AsciidoctorBackend.DOCBOOK.id})
-            systemOut.toString().contains('The `backend` property is deprecated and may not be supported in future versions. Please use the `backends` property instead.')
+            systemOut.toString().contains('Using `backend` and `backends` together will result in `backend` being ignored.')
     }
 
     @SuppressWarnings('MethodName')
@@ -523,7 +523,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             task.processAsciidocSources()
         then:
-            systemOut.toString().contains('The `sourceDocumentName` property is deprecated and may not be supported in future versions. Please use the `sourceDocumentNames` property instead.')
+            systemOut.toString().contains('setSourceDocumentName is deprecated')
     }
 
     @SuppressWarnings('MethodName')
@@ -539,7 +539,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             task.processAsciidocSources()
         then:
-            systemOut.toString().contains('Both the `sourceDocumentName` and `sourceDocumentNames` properties were specified. The `sourceDocumentName` property will be ignored.')
+            systemOut.toString().contains('setSourceDocumentNames is deprecated')
     }
 
     @SuppressWarnings('MethodName')
@@ -549,6 +549,7 @@ class AsciidoctorTaskSpec extends Specification {
                 asciidoctor = mockAsciidoctor
                 sourceDir = srcDir
                 outputDir = outDir
+                separateOutputDirs = false
             }
         when:
             task.processAsciidocSources()
@@ -853,10 +854,11 @@ class AsciidoctorTaskSpec extends Specification {
                 asciidoctor = mockAsciidoctor
                 sourceDir = srcDir
                 outputDir = outDir
-                sourceDocumentNames = new SimpleFileCollection(
-                        new File(srcDir, ASCIIDOC_SAMPLE_FILE),
-                        new File(srcDir, ASCIIDOC_SAMPLE2_FILE)
-                )
+                sourceDocumentNames ASCIIDOC_SAMPLE_FILE,ASCIIDOC_SAMPLE2_FILE
+//                sourceDocumentNames = new SimpleFileCollection(
+//                        new File(srcDir, ASCIIDOC_SAMPLE_FILE),
+//                        new File(srcDir, ASCIIDOC_SAMPLE2_FILE)
+//                )
             }
         when:
             task.processAsciidocSources()
@@ -865,37 +867,37 @@ class AsciidoctorTaskSpec extends Specification {
             1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE2_FILE),_ )
     }
 
-    @SuppressWarnings('MethodName')
-    def "Should throw exception if the file sourceDocumentName is not reachable from sourceDir"() {
-        given:
-            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
-                sourceDir new File(testRootDir, ASCIIDOC_RESOURCES_SUB_DIR).absoluteFile
-                outputDir = outDir
-                sourceDocumentNames new File(srcDir, ASCIIDOC_SAMPLE_FILE).absoluteFile
-            }
-        when:
-            task.processAsciidocSources()
-        then:
-            0 * mockAsciidoctor.renderFile(_, _)
-            thrown(GradleException)
-    }
+//    @SuppressWarnings('MethodName')
+//    def "Should throw exception if the file sourceDocumentName is not reachable from sourceDir"() {
+//        given:
+//            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+//                asciidoctor = mockAsciidoctor
+//                sourceDir new File(testRootDir, ASCIIDOC_RESOURCES_SUB_DIR).absoluteFile
+//                outputDir = outDir
+//                sourceDocumentNames new File(srcDir, ASCIIDOC_SAMPLE_FILE).absoluteFile
+//            }
+//        when:
+//            task.processAsciidocSources()
+//        then:
+//            0 * mockAsciidoctor.renderFile(_, _)
+//            thrown(GradleException)
+//    }
 
-    @SuppressWarnings('MethodName')
-    def "Should throw exception if a file in sourceDocumentNames is not reachable from sourceDir"() {
-        given:
-            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
-                sourceDir new File(testRootDir, ASCIIDOC_RESOURCES_SUB_DIR).absoluteFile
-                outputDir = outDir
-                sourceDocumentNames new SimpleFileCollection(new File(srcDir, ASCIIDOC_SAMPLE_FILE).absoluteFile)
-            }
-        when:
-            task.processAsciidocSources()
-        then:
-            0 * mockAsciidoctor.renderFile(_, _)
-            thrown(GradleException)
-    }
+//    @SuppressWarnings('MethodName')
+//    def "Should throw exception if a file in sourceDocumentNames is not reachable from sourceDir"() {
+//        given:
+//            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+//                asciidoctor = mockAsciidoctor
+//                sourceDir new File(testRootDir, ASCIIDOC_RESOURCES_SUB_DIR).absoluteFile
+//                outputDir = outDir
+//                sourceDocumentNames new SimpleFileCollection(new File(srcDir, ASCIIDOC_SAMPLE_FILE).absoluteFile)
+//            }
+//        when:
+//            task.processAsciidocSources()
+//        then:
+//            0 * mockAsciidoctor.renderFile(_, _)
+//            thrown(GradleException)
+//    }
 
     @SuppressWarnings('MethodName')
     def "Should throw exception if the file sourceDocumentName starts with underscore"() {
@@ -918,9 +920,9 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = srcDir
-                outputDir = outDir
-                sourceDocumentNames = new SimpleFileCollection(new File(srcDir, ASCIIDOC_INVALID_FILE))
+                sourceDir srcDir
+                outputDir outDir
+                setSourceDocumentNames ASCIIDOC_INVALID_FILE
             }
         when:
             task.processAsciidocSources()
@@ -929,22 +931,22 @@ class AsciidoctorTaskSpec extends Specification {
             thrown(GradleException)
     }
 
-    @SuppressWarnings('MethodName')
-    def "Should not emit warning about absolute path in sourceDocumentNames"() {
-        expect:
-            project.tasks.findByName(ASCIIDOCTOR) == null
-        when:
-            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
-                sourceDir = srcDir
-                outputDir = outDir
-                sourceDocumentNames = new SimpleFileCollection(new File(srcDir, ASCIIDOC_SAMPLE_FILE).absoluteFile)
-            }
-
-            task.processAsciidocSources()
-        then:
-            1 * mockAsciidoctor.renderFile(_, _)
-    }
+//    @SuppressWarnings('MethodName')
+//    def "Should not emit warning about absolute path in sourceDocumentNames"() {
+//        expect:
+//            project.tasks.findByName(ASCIIDOCTOR) == null
+//        when:
+//            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+//                asciidoctor = mockAsciidoctor
+//                sourceDir = srcDir
+//                outputDir = outDir
+//                sourceDocumentNames = new SimpleFileCollection(new File(srcDir, ASCIIDOC_SAMPLE_FILE).absoluteFile)
+//            }
+//
+//            task.processAsciidocSources()
+//        then:
+//            1 * mockAsciidoctor.renderFile(_, _)
+//    }
 
     def "sanity test for default configuration" () {
         when:
