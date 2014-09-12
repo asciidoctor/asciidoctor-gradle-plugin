@@ -29,6 +29,7 @@ import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectories
 import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.internal.FileUtils
@@ -53,15 +54,9 @@ class AsciidoctorTask extends DefaultTask {
     private static final String PATH_SEPARATOR=System.getProperty('path.separator')
     private static final String DOUBLE_BACKLASH = '\\\\'
     private static final String BACKLASH = '\\'
-//    private static final ASCIIDOC_FILE_EXTENSION_PATTERN = ~/.*\.a((sc(iidoc)?)|d(oc)?)$/
-//    private static final DOCINFO_FILE_PATTERN = ~/(.+\-)?docinfo(-footer)?\.[^.]+/
     private static final String SAFE_MODE_CLASSNAME = 'org.asciidoctor.SafeMode'
 
     private static final String DEFAULT_BACKEND = AsciidoctorBackend.HTML5.id
-//    private static final Closure<Boolean> EXCLUDE_DOCINFO_AND_FILES_STARTING_WITH_UNDERSCORE = { File file ->
-//        // skip files & directories that begin with an underscore and docinfo files
-//        !file.name.startsWith('_') && (file.directory || !(file.name ==~ DOCINFO_FILE_PATTERN))
-//    }
     public static final String ASCIIDOCTOR_FACTORY_CLASSNAME = 'org.asciidoctor.Asciidoctor$Factory'
 
     private boolean baseDirSetToNull
@@ -72,12 +67,9 @@ class AsciidoctorTask extends DefaultTask {
     private Set<String> requires
     private Map opts = [:]
     private Map attrs = [:]
-    private static ClassLoader cl
     private PatternSet sourceDocumentPattern
-
-    // TODO: Remove Suppress before release
-    @SuppressWarnings('UnusedPrivateField')
-    private PatternSet resourcesPattern
+    private CopySpec resourceCopy
+    private static ClassLoader cl
 
     /** If set to true each backend will be output to a separate subfolder below {@code outputDir}
      * @since 1.5.1
@@ -106,6 +98,7 @@ class AsciidoctorTask extends DefaultTask {
 
 
     AsciidoctorProxy asciidoctor
+    ResourceCopyProxy resourceCopyProxy
     Configuration classpath
 
     AsciidoctorTask() {
@@ -431,6 +424,7 @@ class AsciidoctorTask extends DefaultTask {
      * @since 1.5.1
      */
     @InputFiles
+    @SkipWhenEmpty
     FileTree getSourceFileTree() {
         project.fileTree(sourceDir).
                 matching (this.sourceDocumentPattern ?: this.defaultSourceDocumentPattern)
@@ -450,6 +444,16 @@ class AsciidoctorTask extends DefaultTask {
         configuration()
     }
 
+
+    void resources( Closure cfg ) {
+        if(this.resourceCopy==null) {
+            this.resourceCopy = project.copySpec(cfg)
+        } else {
+            def configuration = cfg.clone()
+            configuration.delegate = this.resourceCopy
+            configuration()
+        }
+    }
 
     /** The default PatternSet that will be used if {@code sources} was never called
      *
@@ -472,7 +476,7 @@ class AsciidoctorTask extends DefaultTask {
      *
      * @since 1.5.1
      */
-    CopySpec getDefaultResourcesCopySpec() {
+    CopySpec getDefaultResourceCopySpec() {
         project.copySpec {
             from (sourceDir) {
                 include 'images/**'
@@ -481,19 +485,11 @@ class AsciidoctorTask extends DefaultTask {
     }
 
     // --- Experimental functions start here
-    @InputFiles
-    @Optional
+    /** Gets the CopySpec for additional resources
+     *
+     */
     CopySpec getResourceCopySpec() {
-        null
-//        project.copySpec {
-//
-//        }
-//
-//        if(resourcesPattern) {
-//
-//        } else {
-//
-//        } // defaultResourcesPattern
+        this.resourceCopy ?: defaultResourceCopySpec
     }
     // --- Stops here
 
@@ -512,6 +508,10 @@ class AsciidoctorTask extends DefaultTask {
 
         if (!asciidoctor) {
             instantiateAsciidoctor()
+        }
+
+        if(resourceCopyProxy==null) {
+            resourceCopyProxy = new ResourceCopyProxyImpl(project)
         }
 
         if (requires) {
@@ -590,13 +590,9 @@ class AsciidoctorTask extends DefaultTask {
                 File destinationParentDir = owner.outputDirFor(file, sourceDir.absolutePath, outputDir,backend)
                 processSingleFile(backend, destinationParentDir, file)
             }
-            CopySpec cs = resourceCopySpec
-            if(cs!=null) {
-                cs.into outputBackendDir(outputDir, backend)
-                project.copy {
-                    with cs
-                }
-            }
+
+            resourceCopyProxy.copy(outputBackendDir(outputDir, backend),resourceCopySpec)
+            // TODO: Might have to copy specific per backend
 
         } catch (Exception e) {
             throw new GradleException('Error running Asciidoctor', e)

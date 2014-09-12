@@ -44,6 +44,7 @@ class AsciidoctorTaskSpec extends Specification {
 
     Project project
     AsciidoctorProxy mockAsciidoctor
+    ResourceCopyProxy mockCopyProxy
     File testRootDir
     File srcDir
     File outDir
@@ -53,9 +54,10 @@ class AsciidoctorTaskSpec extends Specification {
         project = ProjectBuilder.builder().withName('test').build()
         project.configurations.create(ASCIIDOCTOR)
         mockAsciidoctor = Mock(AsciidoctorProxy)
+        mockCopyProxy = Mock(ResourceCopyProxy)
         testRootDir = new File('.')
         srcDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR).absoluteFile
-        outDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+        outDir = new File(project.projectDir, ASCIIDOC_BUILD_DIR)
         systemOut = new ByteArrayOutputStream()
         System.out = new PrintStream(systemOut)
     }
@@ -410,6 +412,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 backends AsciidoctorBackend.DOCBOOK.id, AsciidoctorBackend.HTML5.id
@@ -427,6 +430,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 backends = [AsciidoctorBackend.DOCBOOK.id, AsciidoctorBackend.HTML5.id]
@@ -448,6 +452,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir srcDir
                 outputDir = outDir
             }
@@ -466,6 +471,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 backend = AsciidoctorBackend.DOCBOOK.id
@@ -484,6 +490,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
             }
@@ -501,6 +508,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 sourceDocumentName = new File(srcDir, ASCIIDOC_SAMPLE_FILE)
@@ -516,6 +524,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 sourceDocumentName = new File(srcDir, ASCIIDOC_SAMPLE_FILE)
@@ -531,6 +540,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 sourceDocumentName = new File(srcDir, ASCIIDOC_SAMPLE_FILE)
@@ -547,6 +557,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 separateOutputDirs = false
@@ -564,6 +575,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 sourceDocumentName = new File(srcDir, ASCIIDOC_SAMPLE_FILE)
@@ -583,6 +595,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 sourceDocumentName = new File(srcDir, ASCIIDOC_SAMPLE_FILE)
@@ -603,6 +616,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 sourceDocumentName = new File(srcDir, ASCIIDOC_SAMPLE_FILE)
@@ -622,6 +636,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 sourceDocumentName = new File(srcDir, ASCIIDOC_SAMPLE_FILE)
@@ -640,6 +655,7 @@ class AsciidoctorTaskSpec extends Specification {
             File basedir = new File(testRootDir, 'my_base_dir')
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 baseDir = basedir
@@ -655,6 +671,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
             }
@@ -670,6 +687,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 baseDir = null
@@ -685,6 +703,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
             }
@@ -701,6 +720,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 options = [
@@ -720,6 +740,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 options = [
@@ -739,6 +760,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 options = [
@@ -758,6 +780,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
             }
@@ -775,6 +798,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
             }
@@ -792,6 +816,7 @@ class AsciidoctorTaskSpec extends Specification {
             project.group = 'com.acme'
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
             }
@@ -812,6 +837,7 @@ class AsciidoctorTaskSpec extends Specification {
             project.group = 'com.acme'
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 options = [
@@ -837,6 +863,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 sourceDocumentName = new File(ASCIIDOC_RESOURCES_DIR, ASCIIDOC_SAMPLE_FILE)
@@ -852,6 +879,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 sourceDocumentNames ASCIIDOC_SAMPLE_FILE,ASCIIDOC_SAMPLE2_FILE
@@ -904,6 +932,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 sourceDocumentName = new File(srcDir, ASCIIDOC_INVALID_FILE)
@@ -920,6 +949,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir srcDir
                 outputDir outDir
                 setSourceDocumentNames ASCIIDOC_INVALID_FILE
@@ -948,11 +978,82 @@ class AsciidoctorTaskSpec extends Specification {
 //            1 * mockAsciidoctor.renderFile(_, _)
 //    }
 
+    def "When 'resources' not specified, then copy all images to backend"() {
+        given:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
+
+                sourceDir srcDir
+                outputDir outDir
+                backends AsciidoctorBackend.HTML5.id
+
+                sources {
+                    include ASCIIDOC_SAMPLE_FILE
+                }
+
+            }
+        when:
+            task.processAsciidocSources()
+        then:
+            1 * mockCopyProxy.copy(_, _)
+    }
+
+    def "When 'resources' not specified and more than one backend, then copy all images to every backend"() {
+        given:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
+
+                sourceDir srcDir
+                outputDir outDir
+                backends AsciidoctorBackend.HTML5.id,AsciidoctorBackend.DOCBOOK.id
+
+                sources {
+                    include ASCIIDOC_SAMPLE_FILE
+                }
+
+            }
+        when:
+            task.processAsciidocSources()
+        then:
+            1 * mockCopyProxy.copy( new File(outDir,AsciidoctorBackend.HTML5.id) , _)
+            1 * mockCopyProxy.copy( new File(outDir,AsciidoctorBackend.DOCBOOK.id) , _)
+    }
+
+    def "When 'resources' are specified, then copy according to all patterns"() {
+        given:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
+
+                sourceDir srcDir
+                outputDir outDir
+                backends AsciidoctorBackend.HTML5.id,AsciidoctorBackend.DOCBOOK.id
+
+                sources {
+                    include ASCIIDOC_SAMPLE_FILE
+                }
+
+                resources {
+                    from (sourceDir) {
+                        include 'images/**'
+                    }
+                }
+            }
+
+        when:
+            task.processAsciidocSources()
+        then:
+            1 * mockCopyProxy.copy( new File(outDir,AsciidoctorBackend.HTML5.id) , _)
+            1 * mockCopyProxy.copy( new File(outDir,AsciidoctorBackend.DOCBOOK.id) , _)
+
+    }
+
     def "sanity test for default configuration" () {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-            asciidoctor = mockAsciidoctor
-        }
+            }
 
         then:
             task.sourceDir.absolutePath.endsWith("src/docs/asciidoc")
