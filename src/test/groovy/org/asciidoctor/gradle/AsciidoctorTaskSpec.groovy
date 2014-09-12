@@ -338,7 +338,7 @@ class AsciidoctorTaskSpec extends Specification {
         when: "I specify two files relative to sourceDir,including one in a subfoler"
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 sourceDir srcDir
-                sourceDocumentNames  ASCIIDOC_SAMPLE_FILE, ASCIIDOC_SAMPLE2_FILE
+                sourceDocumentNames = [ASCIIDOC_SAMPLE_FILE, ASCIIDOC_SAMPLE2_FILE]
             }
             def fileCollection = task.sourceDocumentNames
 
@@ -378,7 +378,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 sourceDir srcDir
-                sourceDocumentNames  sample1
+                sourceDocumentNames = [sample1]
             }
             def fileCollection = task.sourceDocumentNames
 
@@ -882,11 +882,9 @@ class AsciidoctorTaskSpec extends Specification {
                 resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
-                sourceDocumentNames ASCIIDOC_SAMPLE_FILE,ASCIIDOC_SAMPLE2_FILE
-//                sourceDocumentNames = new SimpleFileCollection(
-//                        new File(srcDir, ASCIIDOC_SAMPLE_FILE),
-//                        new File(srcDir, ASCIIDOC_SAMPLE2_FILE)
-//                )
+                sources {
+                  include ASCIIDOC_SAMPLE_FILE,ASCIIDOC_SAMPLE2_FILE
+                }
             }
         when:
             task.processAsciidocSources()

@@ -382,24 +382,6 @@ class AsciidoctorTask extends DefaultTask {
         }
     }
 
-    // TODO: Remove before 1.5.1 release
-    /** Appends more source documents
-     *
-     * @parm src List of source documents, which must be convertible using {@code project.files}
-     * @since 1.5.1
-     * @deprecated
-     */
-    @SuppressWarnings('ConfusingMethodName')
-    @SuppressWarnings('DuplicateStringLiteral')
-    void sourceDocumentNames(Object... src) {
-        deprecated 'sourceDocumentNames', 'includes', 'Files are converted to patterns. Some might not convert correctly' +
-                'FileCollections will not convert'
-        sources {
-            include CollectionUtils.stringize(src as List)
-        }
-    }
-
-
     void setBaseDir(File baseDir) {
         this.baseDir = baseDir
         baseDirSetToNull = baseDir == null
@@ -432,7 +414,7 @@ class AsciidoctorTask extends DefaultTask {
 
     /** Add patterns for source files or source files via a closure
      *
-     * @param cfg
+     * @param cfg PatternSet configuration closure
      * @since 1.5.1
      */
     void sources(Closure cfg) {
@@ -445,6 +427,12 @@ class AsciidoctorTask extends DefaultTask {
     }
 
 
+    /** Add to the CopySpec for extra files. The destination of these files will always have a parent directory
+     * of {@code outputDir} or {@code outputDir + backend}
+     *
+     * @param cfg CopySpec configuration closure
+     * @since 1.5.1
+     */
     void resources( Closure cfg ) {
         if(this.resourceCopy==null) {
             this.resourceCopy = project.copySpec(cfg)
@@ -474,6 +462,7 @@ class AsciidoctorTask extends DefaultTask {
      *
      * By default anything below {@code $sourceDir/images} will be included.
      *
+     * @return A {@code CopySpec}, never null
      * @since 1.5.1
      */
     CopySpec getDefaultResourceCopySpec() {
@@ -484,14 +473,16 @@ class AsciidoctorTask extends DefaultTask {
         }
     }
 
-    // --- Experimental functions start here
     /** Gets the CopySpec for additional resources
+     * If {@code resources} was never called, it will return a default CopySpec otherwise it will return the
+     * one built up via successive calls to {@code resources}
      *
+     * @return A {@code CopySpec}, never null
+     * @since 1.5.1
      */
     CopySpec getResourceCopySpec() {
         this.resourceCopy ?: defaultResourceCopySpec
     }
-    // --- Stops here
 
     @TaskAction
     void processAsciidocSources() {
@@ -592,7 +583,7 @@ class AsciidoctorTask extends DefaultTask {
             }
 
             resourceCopyProxy.copy(outputBackendDir(outputDir, backend),resourceCopySpec)
-            // TODO: Might have to copy specific per backend
+            // TODO: Might have to copy specific per backend in a future update
 
         } catch (Exception e) {
             throw new GradleException('Error running Asciidoctor', e)
