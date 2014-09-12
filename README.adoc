@@ -49,6 +49,8 @@ The plugin adds a new task named `asciidoctor`. This task exposes a few properti
 .Properties
 [horizontal]
 logDocuments:: a boolean specifying if documents being processed should be logged on console. Type: boolean. Default: `false`.
+separateOutputDirs:: specifies whether each backend should use a separate subfolder under `outputDir`.
+  Default: `true`
 
 .Methods
 [horizontal]
@@ -56,11 +58,10 @@ sourceDir:: where the asciidoc sources are.
   Use either `sourceDir path`, `setSourceDir path` or `sourceDir=path`
   Type: File, but any object convertible with `project.file` can be passed.
   Default: `src/docs/asciidoc`.
-sourceDocumentNames:: an override to process multiple source files, which may be a subset of all
-  files available in [x-]`${sourceDir}`.
-  Use `sourceDocumentNames` to append and `setSourceNames` to overwrite.
-  Type: FileCollection, but any collection of objects convertible with `project.files` can be passed
-  Default: All files in [x-]`${sourceDir}`.
+sources:: specify which Asciidoctor source files to include by using an
+  {http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.html}[Ant-style PatternSet].
+resources:: specify which additional files (image etc.) must be copied to output directory using a
+  {http://www.gradle.org/docs/current/javadoc/org/gradle/api/file/CopySpec.html}[CopySpec].
 outputDir:: where generated docs go.
   Use either `outputDir path`, `setOutputDir path` or `outputDir=path`
   Type: File, but any object convertible with `project.file` can be passed.
@@ -85,22 +86,73 @@ options:: a Map specifying different options that can be sent to Asciidoctor.
 attributes:: a Map specifying various document attributes that can be sent to Asciidoctor
   Use `attributes` to append, Use `setAttributes` or `attributes=` to overwrite.
 
-Sources may have any of the following extensions in order to be discovered:
+=== Sources
 
- * .asciidoc
- * .adoc
- * .asc
- * .ad
+By default the plugin will search for sources under `sourceDir`. Sources may have any of the following extensions in
+order to be discovered:
 
-The following attributes are automatically set by the `asciidoctor` task:
+* .asciidoc
+* .adoc
+* .asc
+* .ad
 
- * project-name : matches `$project.name`
- * project-version: matches `$project.version` (if defined). Empty String value if undefined
- * project-group: matches `$project.group` (if defined). Empty String value if undefined
+To select only certain files use the `sources` method. This takes a closure which in turn configures an internal
+{http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.html}[PatternSet]
 
-These attributes may be overridden by explicit user input.
+[source,groovy]
+.build.gradle
+----
+sources {
+  include 'toplevel.adoc'
+}
+----
 
-==== Options & Attributes
+Source files are resolved relative to `sourceDir`.  Source files are also not allowed to start with an underscore.
+
+=== Handling additional files
+
+Some backends require that additional files be copied across. The most common example are images for HTML backends. For
+this the `resources` method is used. It is provided with a closure that configures an internal
+{http://www.gradle.org/docs/current/javadoc/org/gradle/api/file/CopySpec.html}[CopySpec]
+
+[source,groovy]
+.build.gradle
+----
+resources {
+  from('src/resources/images') {
+    include 'images/**/*.png'
+    exclude 'images/**/notThisOne.png'
+  }
+
+  from( "${buildDir}/downloads" ) {
+    include 'deck.js/**'
+  }
+}
+----
+
+Files will be copied to below `${outputDir}/${backend}` (or just `${outputDir}` if `separateOutputDirs=false`)
+
+Unlike `sourceDir` files can be copied from anywhere in the filesystem.
+
+If `resources` is never set, the default behaviour is as if the following was called
+[source,groovy]
+.build.gradle
+----
+resources {
+  from(sourceDir) {
+    include 'images/**'
+  }
+}
+----
+
+If you do not want this behaviour, then it can be turned off by doing
+[source,groovy]
+.build.gradle
+----
+resources {}
+----
+
+=== Options & Attributes
 The following options may be set using the task's `options` property
 
  * header_footer - boolean
@@ -126,6 +178,14 @@ asciidoctor { <1>
 ----
 <1> append below the line: `apply plugin: 'org.asciidoctor.gradle.asciidoctor'`
 
+The following attributes are automatically set by the `asciidoctor` task:
+
+ * project-name : matches `$project.name`
+ * project-version: matches `$project.version` (if defined). Empty String value if undefined
+ * project-group: matches `$project.group` (if defined). Empty String value if undefined
+
+These attributes may be overridden by explicit user input.
+
 You may need to include extra content into the head of the exported document.
 For example, you might want to include jQuery inside the `<head>` element of the HTML export.
 To do so, first create a docinfo file `src/docs/asciidoc/docinfo.html` containing the content to include, in this case the `<script>` tag to load jQuery.
@@ -150,22 +210,28 @@ Refer to the {asciidoctor-docs}[Asciidoctor documentation] to learn more about t
 
 === Task Properties
 
+[horizontal]
+
 The following properties have been marked as deprecated. Developers are encouraged to migrate ASAP to the alternate
 properties.
 
 [horizontal]
-sourceDocumentName:: an override to process a single source file. Use `sourceDocumentNames` instead.
+sourceDocumentNames:: an override to process multiple source files, which are relative to `sourceDir`.
+  Use `sources { include 'name' }` instead.
+sourceDocumentName:: an override to process a single source file. Use `sources { include 'name' }` instead.
 backend:: the backend to use. Use `backends` instead.
-sourceDir:: the default value has changed from `src/asciidoc` to `src/docs/asciidoc`.
 
 
 === Behavior
 
-Files specified in `sourceDocumentNames` must be relative to `sourceDir` and fully contained in `sourceDir`, in other words,
+* The default value for `sourceDir` has changed from `src/asciidoc` to `src/docs/asciidoc`.
+* Files specified in `sourceDocumentNames` must be relative to `sourceDir` and fully contained in `sourceDir`, in other words,
 it's no longer possible to process documents placed outside of the project's sources.
-
-For backwards compatibility with older version, embedding `attributes` within `options` are still allowed, including
-legacy forms.
+* For backwards compatibility with older version, embedding `attributes` within `options` are still allowed, including legacy forms.
+* Non-source files are no longer automatically copied, unless they are in the `images` folder and `resources` was never
+called.
+* Each backend will now write to a separate subfolder under `outputDir`. To have the old behaviour use
+`separateOutputDirs = false`.
 
 === Options & Attributes
 
