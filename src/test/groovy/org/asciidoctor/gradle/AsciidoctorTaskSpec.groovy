@@ -349,26 +349,25 @@ class AsciidoctorTaskSpec extends Specification {
             fileCollection.files.size() == 2
     }
 
-//    @SuppressWarnings('MethodName')
-//    def "sourceDocumentNames should resolve descendant files of sourceDir even if given as absolute files"() {
-//        given:
-//            File sample1 = new File(srcDir,ASCIIDOC_SAMPLE_FILE).absoluteFile
-//            File sample2 = new File(srcDir,ASCIIDOC_SAMPLE2_FILE).absoluteFile
-//
-//        when: "I specify two absolute path files, that are descendents of sourceDit"
-//            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-//                sourceDir srcDir
-//                sourceDocumentNames  sample1
-//                sourceDocumentNames  sample2
-//            }
-//            def fileCollection = task.sourceDocumentNames
-//
-//        then: "both files should be in collection, but any other files found in folder should be excluded"
-//            fileCollection.contains(new File(srcDir,ASCIIDOC_SAMPLE_FILE).canonicalFile)
-//            fileCollection.contains(new File(srcDir,ASCIIDOC_SAMPLE2_FILE).canonicalFile)
-//            !fileCollection.contains(new File(srcDir,'sample-docinfo.xml').canonicalFile)
-//            fileCollection.files.size() == 2
-//    }
+    @SuppressWarnings('MethodName')
+    def "sourceDocumentNames should resolve descendant files of sourceDir even if given as absolute files"() {
+        given:
+            File sample1 = new File(srcDir,ASCIIDOC_SAMPLE_FILE).absoluteFile
+            File sample2 = new File(srcDir,ASCIIDOC_SAMPLE2_FILE).absoluteFile
+
+        when: "I specify two absolute path files, that are descendents of sourceDit"
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                sourceDir srcDir
+                sourceDocumentNames = [sample1,sample2]
+            }
+            def fileCollection = task.sourceDocumentNames
+
+        then: "both files should be in collection, but any other files found in folder should be excluded"
+            fileCollection.contains(new File(srcDir,ASCIIDOC_SAMPLE_FILE).canonicalFile)
+            fileCollection.contains(new File(srcDir,ASCIIDOC_SAMPLE2_FILE).canonicalFile)
+            !fileCollection.contains(new File(srcDir,'sample-docinfo.xml').canonicalFile)
+            fileCollection.files.size() == 2
+    }
 
     @SuppressWarnings('MethodName')
     def "sourceDocumentNames should not resolve files that are not descendants of sourceDir"() {
@@ -385,26 +384,6 @@ class AsciidoctorTaskSpec extends Specification {
         then:
             fileCollection.files.size() == 0
     }
-
-//    @SuppressWarnings('MethodName')
-//    def "sourceDocumentNames should resolve descendant files of sourceDir even if passed as a FileCollection"() {
-//        given:
-//            File sample1 = new File(srcDir,ASCIIDOC_SAMPLE_FILE).absoluteFile
-//            File sample2 = new File(srcDir,ASCIIDOC_SAMPLE2_FILE).absoluteFile
-//
-//        when: "I specify two files in a FileCollection, that are descendents of sourceDit"
-//            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-//                sourceDir srcDir
-//                sourceDocumentNames  new SimpleFileCollection(sample1,sample2)
-//            }
-//            def fileCollection = task.sourceDocumentNames
-//
-//        then: "both files should be in collection, but any other files found in folder should be excluded"
-//            fileCollection.contains(new File(srcDir,ASCIIDOC_SAMPLE_FILE).canonicalFile)
-//            fileCollection.contains(new File(srcDir,ASCIIDOC_SAMPLE2_FILE).canonicalFile)
-//            !fileCollection.contains(new File(srcDir,'sample-docinfo.xml').canonicalFile)
-//            fileCollection.files.size() == 2
-//    }
 
     @SuppressWarnings('MethodName')
     @SuppressWarnings('DuplicateNumberLiteral')
@@ -893,38 +872,6 @@ class AsciidoctorTaskSpec extends Specification {
             1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE2_FILE),_ )
     }
 
-//    @SuppressWarnings('MethodName')
-//    def "Should throw exception if the file sourceDocumentName is not reachable from sourceDir"() {
-//        given:
-//            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-//                asciidoctor = mockAsciidoctor
-//                sourceDir new File(testRootDir, ASCIIDOC_RESOURCES_SUB_DIR).absoluteFile
-//                outputDir = outDir
-//                sourceDocumentNames new File(srcDir, ASCIIDOC_SAMPLE_FILE).absoluteFile
-//            }
-//        when:
-//            task.processAsciidocSources()
-//        then:
-//            0 * mockAsciidoctor.renderFile(_, _)
-//            thrown(GradleException)
-//    }
-
-//    @SuppressWarnings('MethodName')
-//    def "Should throw exception if a file in sourceDocumentNames is not reachable from sourceDir"() {
-//        given:
-//            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-//                asciidoctor = mockAsciidoctor
-//                sourceDir new File(testRootDir, ASCIIDOC_RESOURCES_SUB_DIR).absoluteFile
-//                outputDir = outDir
-//                sourceDocumentNames new SimpleFileCollection(new File(srcDir, ASCIIDOC_SAMPLE_FILE).absoluteFile)
-//            }
-//        when:
-//            task.processAsciidocSources()
-//        then:
-//            0 * mockAsciidoctor.renderFile(_, _)
-//            thrown(GradleException)
-//    }
-
     @SuppressWarnings('MethodName')
     def "Should throw exception if the file sourceDocumentName starts with underscore"() {
         given:
@@ -958,23 +905,6 @@ class AsciidoctorTaskSpec extends Specification {
             0 * mockAsciidoctor.renderFile(_, _)
             thrown(GradleException)
     }
-
-//    @SuppressWarnings('MethodName')
-//    def "Should not emit warning about absolute path in sourceDocumentNames"() {
-//        expect:
-//            project.tasks.findByName(ASCIIDOCTOR) == null
-//        when:
-//            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-//                asciidoctor = mockAsciidoctor
-//                sourceDir = srcDir
-//                outputDir = outDir
-//                sourceDocumentNames = new SimpleFileCollection(new File(srcDir, ASCIIDOC_SAMPLE_FILE).absoluteFile)
-//            }
-//
-//            task.processAsciidocSources()
-//        then:
-//            1 * mockAsciidoctor.renderFile(_, _)
-//    }
 
     def "When 'resources' not specified, then copy all images to backend"() {
         given:
@@ -1055,6 +985,7 @@ class AsciidoctorTaskSpec extends Specification {
 
         then:
             task.sourceDir.absolutePath.endsWith("src/docs/asciidoc")
+            task.outputDir.absolutePath.endsWith("build/asciidoc")
 
     }
 

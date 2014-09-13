@@ -348,8 +348,6 @@ class AsciidoctorTask extends DefaultTask {
      * @since 1.5.0
      * @deprecated
      */
-//    @Optional
-//    @InputFiles
     FileCollection getSourceDocumentNames() {
         deprecated 'getSourceDocumentNames', 'getSourceFileTree'
         sourceFileTree
@@ -357,7 +355,7 @@ class AsciidoctorTask extends DefaultTask {
 
     /** Sets a single file to the main source file
      *
-     * @param f
+     * @param f A file that is relative to {@code sourceDir}
      * @deprecated
      */
     void setSourceDocumentName(File f) {
@@ -377,8 +375,20 @@ class AsciidoctorTask extends DefaultTask {
     void setSourceDocumentNames(Object... src) {
         deprecated 'setSourceDocumentNames', 'setIncludes', 'Files are converted to patterns. Some might not convert correctly' +
                 'FileCollections will not convert'
+        File base=sourceDir.absoluteFile
+        def patterns = CollectionUtils.stringize(src as List).collect { String it ->
+            def tmpFile = new File(it)
+            String relPath
+            if(tmpFile.isAbsolute()) {
+                relPath=AsciidoctorUtils.getRelativePath(tmpFile.absoluteFile,base)
+            } else {
+                relPath=it
+            }
+            logger.debug "setSourceDocumentNames - Found ${it}, converted to ${relPath}"
+            relPath
+        }
         sources {
-            setIncludes(CollectionUtils.stringize(src as List))
+            setIncludes(patterns)
         }
     }
 
@@ -409,7 +419,7 @@ class AsciidoctorTask extends DefaultTask {
     @SkipWhenEmpty
     FileTree getSourceFileTree() {
         project.fileTree(sourceDir).
-                matching (this.sourceDocumentPattern ?: this.defaultSourceDocumentPattern)
+                matching (this.sourceDocumentPattern ?: defaultSourceDocumentPattern)
     }
 
     /** Add patterns for source files or source files via a closure
@@ -495,13 +505,14 @@ class AsciidoctorTask extends DefaultTask {
         if(classpath == null) {
             classpath = project.configurations.getByName(AsciidoctorPlugin.ASCIIDOCTOR)
         }
+
         setupClassLoader()
 
         if (!asciidoctor) {
             instantiateAsciidoctor()
         }
 
-        if(resourceCopyProxy==null) {
+        if(resourceCopyProxy == null) {
             resourceCopyProxy = new ResourceCopyProxyImpl(project)
         }
 
@@ -741,6 +752,4 @@ class AsciidoctorTask extends DefaultTask {
         logger.lifecycle "Asciidoctor: ${method} is deprecated and will be removed in a future version." +
                 "Use ${alternative} instead. ${msg}"
     }
-
-
 }

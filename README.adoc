@@ -226,7 +226,9 @@ backend:: the backend to use. Use `backends` instead.
 
 * The default value for `sourceDir` has changed from `src/asciidoc` to `src/docs/asciidoc`.
 * Files specified in `sourceDocumentNames` must be relative to `sourceDir` and fully contained in `sourceDir`, in other words,
-it's no longer possible to process documents placed outside of the project's sources.
+it's no longer possible to process documents placed outside of the project's sources. Attempts will be made to convert absolute paths
+to relative paths  but conversion will not be guaranteed. Do not pass FileCollections as they will not convert correctly.
+* Source files that are not reachable from `sourceDir`, will no longer cause a build exception, they will just be silently ignored.
 * For backwards compatibility with older version, embedding `attributes` within `options` are still allowed, including legacy forms.
 * Non-source files are no longer automatically copied, unless they are in the `images` folder and `resources` was never
 called.
