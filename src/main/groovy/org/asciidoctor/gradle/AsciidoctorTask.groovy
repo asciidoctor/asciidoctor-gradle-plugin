@@ -123,7 +123,7 @@ class AsciidoctorTask extends DefaultTask {
     @SuppressWarnings('DuplicateStringLiteral')
     void setOptions( Map m ) {
         if(m.containsKey('attributes')) {
-            logger.warn 'Attributes found in options. Existing attributes qill be replaced due to assignment. ' +
+            logger.warn 'Attributes found in options. Existing attributes will be replaced due to assignment. ' +
                     'Please use \'attributes\' method instead as current behaviour will be removed in future'
             attrs = coerceLegacyAttributeFormats(m.attributes)
             m.remove('attributes')
