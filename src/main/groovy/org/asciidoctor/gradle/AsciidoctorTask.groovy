@@ -91,6 +91,20 @@ class AsciidoctorTask extends DefaultTask {
         baseDirSetToNull = baseDir == null
     }
 
+    def asciidoctorExtensions = []
+
+    void extensions(Closure cl) {
+        asciidoctorExtensions << cl
+    }
+    
+    void extensions(Iterable<File> files) {
+        files.each {asciidoctorExtensions << it}
+    }
+
+    void extensions(File file) {
+        asciidoctorExtensions << file
+    }
+
     /**
      * Validates input values. If an input value is not valid an exception is thrown.
      */
@@ -168,6 +182,11 @@ class AsciidoctorTask extends DefaultTask {
         validateInputs()
         outputDir.mkdirs()
 
+        if (!asciidoctorExtensions?.empty) {
+            def asciidoctorExtensionsDslRegistry = loadClass('org.asciidoctor.groovydsl.AsciidoctorExtensions')
+            asciidoctorExtensions.each { asciidoctorExtensionsDslRegistry.extensions(it) }
+        }
+        
         if (!asciidoctor) {
             instantiateAsciidoctor()
         }
@@ -366,7 +385,7 @@ class AsciidoctorTask extends DefaultTask {
     }
 
     private static Class loadClass(String className) {
-        cl.loadClass(className)
+            cl.loadClass(className)
     }
 
     private void setupClassLoader() {
