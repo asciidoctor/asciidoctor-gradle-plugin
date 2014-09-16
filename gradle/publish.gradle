@@ -134,5 +134,14 @@ bintray {
         desc = 'A Gradle plugin that uses Asciidoctor via JRuby to process AsciiDoc source files within the project'
         licenses = ['Apache-2.0']
         labels = ['gradle', 'plugin', 'asciidoctor']
+        websiteUrl = 'https://github.com/asciidoctor/asciidoctor-gradle-plugin'
+        issueTrackerUrl = 'https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues'
+        vcsUrl = 'https://github.com/asciidoctor/asciidoctor-gradle-plugin.git'
+        version {
+            vcsTag = project.version
+            attributes = [
+                'gradle-plugin': 'org.asciidoctor.gradle.asciidoctor:org.asciidoctor:asciidoctor-gradle-plugin'
+            ]
+        }
     }
 }
