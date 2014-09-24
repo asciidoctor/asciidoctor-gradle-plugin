@@ -34,14 +34,13 @@ class AsciidoctorPlugin implements Plugin<Project> {
 
         project.repositories {
             jcenter()
-            maven { url 'http://dl.bintray.com/bobbytank42/maven'}
         }
 
         Configuration configuration = project.configurations.maybeCreate(ASCIIDOCTOR)
         project.afterEvaluate {
             project.dependencies {
                 asciidoctor("org.asciidoctor:asciidoctorj:${extension.version}")
-                asciidoctor('org.asciidoctor:asciidoctorj-groovy-dsl:0.1.Alpha1')
+                asciidoctor("org.asciidoctor:asciidoctorj-groovy-dsl:${extension.version}")
             }
         }
 

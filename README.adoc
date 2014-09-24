@@ -294,6 +294,55 @@ dependencies {
 }
 ----
 
+=== Inline extensions
+
+The next option is to define extensions directly in the build script.
+This approach is based on the project asciidoctorj-groovy-dsl that allows to define Asciidoctor extensions in Groovy.
+An extension is registered via the `extensions` element.
+
+.build.gradle
+[source,groovy]
+----
+asciidoctor {
+    extensions {
+        block(name: "BIG", contexts: [":paragraph"]) {
+            parent, reader, attributes ->
+            def upperLines = reader.readLines()
+                .collect {it.toUpperCase()}
+                .inject("") {a, b -> a + '\n' + b}
+
+            createBlock(parent, "paragraph", [upperLines], attributes, [:])
+        }
+    }
+}
+----
+
+http://github.com/asciidoctor/asciidoctorj-groovy-dsl contains a description of the DSL itself.
+
+Groovy extensions can also be included as files.
+
+.build.gradle
+[source,groovy]
+----
+asciidoctor {
+    extensions new File('big.groovy')
+}
+----
+
+.big.groovy
+[source,groovy]
+----
+block(name: "BIG", contexts: [":paragraph"]) {
+    parent, reader, attributes ->
+    def upperLines = reader.readLines()
+        .collect {it.toUpperCase()}
+        .inject("") {a, b -> a + '\n' + b}
+
+    createBlock(parent, "paragraph", [upperLines], attributes, [:])
+}
+----
+
+
 === Build Dependency
 
 The last option is to move the `extension` project into Gradle's `buildSrc` directory. There are no additional dependencies

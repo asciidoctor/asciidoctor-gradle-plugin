@@ -213,7 +213,7 @@ class AsciidoctorTaskInlineExtensionsSpec extends Specification {
 			sourceDocumentName = new File(new File(testRootDir, ASCIIDOC_RESOURCES_DIR), ASCIIDOC_INLINE_EXTENSIONS_FILE)
 			outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
 			extensions {
-				blockMacro (name: "gist") {
+				blockmacro (name: "gist") {
 					parent, target, attributes ->
 					String content = """<div class="content"> 
 <script src="https://gist.github.com/${target}.js"></script> 
@@ -238,7 +238,7 @@ class AsciidoctorTaskInlineExtensionsSpec extends Specification {
 			sourceDocumentName = new File(new File(testRootDir, ASCIIDOC_RESOURCES_DIR), ASCIIDOC_INLINE_EXTENSIONS_FILE)
 			outputDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
 			extensions {
-				inlineMacro (name: "man") {
+				inlinemacro (name: "man") {
 					parent, target, attributes ->
 					options=["type": ":link", "target": target + ".html"]
 					createInline(parent, "anchor", target, attributes, options).render()

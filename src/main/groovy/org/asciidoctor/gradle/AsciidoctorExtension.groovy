@@ -23,6 +23,8 @@ import org.gradle.api.Project
 class AsciidoctorExtension {
     String version = '1.5.0'
 
+    String groovyDslVersion = '1.0.0.preview1'
+    
     final Project project
 
     AsciidoctorExtension(Project project) {
