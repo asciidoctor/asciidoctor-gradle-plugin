@@ -51,7 +51,7 @@ import org.gradle.util.CollectionUtils
 @SuppressWarnings('MethodCount')
 class AsciidoctorTask extends DefaultTask {
     private static final boolean IS_WINDOWS = System.getProperty('os.name').contains('Windows')
-    private static final String PATH_SEPARATOR=System.getProperty('path.separator')
+    private static final String PATH_SEPARATOR = System.getProperty('path.separator')
     private static final String DOUBLE_BACKLASH = '\\\\'
     private static final String BACKLASH = '\\'
     private static final String SAFE_MODE_CLASSNAME = 'org.asciidoctor.SafeMode'
@@ -109,8 +109,9 @@ class AsciidoctorTask extends DefaultTask {
     /** Returns all of the Asciidoctor options
      *
      */
-    @Optional @Input
-    Map getOptions() {this.opts}
+    @Optional
+    @Input
+    Map getOptions() { this.opts }
 
     /** Apply a new set of Asciidoctor options, clearing any options previously set.
      *
@@ -121,14 +122,14 @@ class AsciidoctorTask extends DefaultTask {
      * @param m Map with new options
      */
     @SuppressWarnings('DuplicateStringLiteral')
-    void setOptions( Map m ) {
-        if(m.containsKey('attributes')) {
+    void setOptions(Map m) {
+        if (m.containsKey('attributes')) {
             logger.warn 'Attributes found in options. Existing attributes will be replaced due to assignment. ' +
-                    'Please use \'attributes\' method instead as current behaviour will be removed in future'
+                'Please use \'attributes\' method instead as current behaviour will be removed in future'
             attrs = coerceLegacyAttributeFormats(m.attributes)
             m.remove('attributes')
         }
-        this.opts=m
+        this.opts = m
     }
 
     /** Appends a new set of Asciidoctor options, clearing any options previously set.
@@ -141,43 +142,45 @@ class AsciidoctorTask extends DefaultTask {
      * @since 1.5.1
      */
     @SuppressWarnings('DuplicateStringLiteral')
-    void options( Map m ) {
-        if(m.containsKey('attributes')) {
+    void options(Map m) {
+        if (m.containsKey('attributes')) {
             logger.warn 'Attributes found in options. These will be added to existing attributes. ' +
-                    'Please use \'attributes\' method instead as current behaviour will be removed in future'
+                'Please use \'attributes\' method instead as current behaviour will be removed in future'
             attributes coerceLegacyAttributeFormats(m.attributes)
             m.remove('attributes')
         }
-        this.opts+=m
+        this.opts += m
     }
 
     /** Returns the current set of Asciidoctor attributes
      *
      * @since 1.5.1
      */
-    @Optional @Input
-    Map getAttributes() {this.attrs}
+    @Optional
+    @Input
+    Map getAttributes() { this.attrs }
 
     /** Applies a new set of Asciidoctor attributes, clearing any previsouly set
      *
      * @param m New map of attributes
      * @since 1.5.1
      */
-    void setAttributes(Map m) {this.attrs=m}
+    void setAttributes(Map m) { this.attrs = m }
 
     /** Appends a set of Asciidoctor attributes, clearing any previsouly set
      *
      * @param m Map of additional attributes
      * @since 1.5.1
      */
-    void attributes(Map m) {this.attrs+=m}
+    void attributes(Map m) { this.attrs += m }
 
     /** Returns the set of  Ruby modules to be included.
      *
      * @since 1.5.0
      */
-    @Optional @Input
-    Set<String> getRequires() {this.requires}
+    @Optional
+    @Input
+    Set<String> getRequires() { this.requires }
 
     /** Applies a new set of  Ruby modules to be included, clearing any previous set.
      *
@@ -196,7 +199,9 @@ class AsciidoctorTask extends DefaultTask {
      */
     @SuppressWarnings('ConfusingMethodName')
     void requires(Object... b) {
-        if(this.requires==null) {this.requires=[]}
+        if (this.requires == null) {
+            this.requires = []
+        }
         this.requires.addAll(CollectionUtils.stringize(b as List))
     }
 
@@ -205,11 +210,12 @@ class AsciidoctorTask extends DefaultTask {
      * @since 0.7.1
      * @deprecated
      */
-    @Optional @Input
-    Set<String> getBackends() {this.backends}
+    @Optional
+    @Input
+    Set<String> getBackends() { this.backends }
 
     void setBackend(final String b) {
-        deprecated 'setBackend','backends','Using `backend` and `backends` together will result in `backend` being ignored.'
+        deprecated 'setBackend', 'backends', 'Using `backend` and `backends` together will result in `backend` being ignored.'
         backend = b
     }
 
@@ -233,7 +239,9 @@ class AsciidoctorTask extends DefaultTask {
      */
     @SuppressWarnings('ConfusingMethodName')
     void backends(Object... b) {
-        if(this.backends==null) {this.backends=[]}
+        if (this.backends == null) {
+            this.backends = []
+        }
         this.backends.addAll(CollectionUtils.stringize(b as List))
     }
 
@@ -264,7 +272,7 @@ class AsciidoctorTask extends DefaultTask {
      */
     void setGemPath(final Object path) {
         this.gemPaths.clear()
-        if(path instanceof CharSequence) {
+        if (path instanceof CharSequence) {
             this.gemPaths.addAll(setGemPath(path.split(PATH_SEPARATOR)))
         } else {
             this.gemPaths.addAll(path)
@@ -298,7 +306,7 @@ class AsciidoctorTask extends DefaultTask {
      * @since 1.5.1
      */
     void sourceDir(Object f) {
-        this.srcDir=f
+        this.srcDir = f
     }
 
     /** Sets the new Asciidoctor parent source directory.
@@ -306,7 +314,7 @@ class AsciidoctorTask extends DefaultTask {
      * @param f A {@code File} object pointing to the parent source directory
      */
     void setSourceDir(File f) {
-        this.srcDir=f
+        this.srcDir = f
     }
 
     /** Returns the parent directory for Asciidoctor source. Default is {@code src/asciidoc}.
@@ -323,7 +331,7 @@ class AsciidoctorTask extends DefaultTask {
      * @since 1.5.1
      */
     void outputDir(Object f) {
-        this.outDir=f
+        this.outDir = f
     }
 
     /** Sets the new Asciidoctor parent output directory.
@@ -331,14 +339,14 @@ class AsciidoctorTask extends DefaultTask {
      * @param f A {@code File} object pointing to the parent output directory
      */
     void setOutputDir(File f) {
-        this.outDir=f
+        this.outDir = f
     }
 
     /** Returns the current toplevel output directory
      *
      */
     @OutputDirectory
-    File getOutputDir() {project.file(this.outDir)}
+    File getOutputDir() { project.file(this.outDir) }
 
     /** Returns the collection of source documents
      *
@@ -361,7 +369,7 @@ class AsciidoctorTask extends DefaultTask {
     void setSourceDocumentName(File f) {
         deprecated 'setSourceDocumentName', 'setIncludes', 'File will be converted to a pattern.'
         sources {
-            setIncludes([AsciidoctorUtils.getRelativePath(f.absoluteFile,sourceDir.absoluteFile)])
+            setIncludes([AsciidoctorUtils.getRelativePath(f.absoluteFile, sourceDir.absoluteFile)])
         }
     }
 
@@ -374,15 +382,15 @@ class AsciidoctorTask extends DefaultTask {
     @SuppressWarnings('DuplicateStringLiteral')
     void setSourceDocumentNames(Object... src) {
         deprecated 'setSourceDocumentNames', 'setIncludes', 'Files are converted to patterns. Some might not convert correctly' +
-                'FileCollections will not convert'
-        File base=sourceDir.absoluteFile
+            'FileCollections will not convert'
+        File base = sourceDir.absoluteFile
         def patterns = CollectionUtils.stringize(src as List).collect { String it ->
             def tmpFile = new File(it)
             String relPath
-            if(tmpFile.isAbsolute()) {
-                relPath=AsciidoctorUtils.getRelativePath(tmpFile.absoluteFile,base)
+            if (tmpFile.isAbsolute()) {
+                relPath = AsciidoctorUtils.getRelativePath(tmpFile.absoluteFile, base)
             } else {
-                relPath=it
+                relPath = it
             }
             logger.debug "setSourceDocumentNames - Found ${it}, converted to ${relPath}"
             relPath
@@ -419,7 +427,7 @@ class AsciidoctorTask extends DefaultTask {
     @SkipWhenEmpty
     FileTree getSourceFileTree() {
         project.fileTree(sourceDir).
-                matching (this.sourceDocumentPattern ?: defaultSourceDocumentPattern)
+            matching(this.sourceDocumentPattern ?: defaultSourceDocumentPattern)
     }
 
     /** Add patterns for source files or source files via a closure
@@ -428,14 +436,13 @@ class AsciidoctorTask extends DefaultTask {
      * @since 1.5.1
      */
     void sources(Closure cfg) {
-        if(sourceDocumentPattern==null)  {
-            sourceDocumentPattern=new PatternSet()
+        if (sourceDocumentPattern == null) {
+            sourceDocumentPattern = new PatternSet()
         }
         def configuration = cfg.clone()
-        configuration.delegate=sourceDocumentPattern
+        configuration.delegate = sourceDocumentPattern
         configuration()
     }
-
 
     /** Add to the CopySpec for extra files. The destination of these files will always have a parent directory
      * of {@code outputDir} or {@code outputDir + backend}
@@ -443,8 +450,8 @@ class AsciidoctorTask extends DefaultTask {
      * @param cfg CopySpec configuration closure
      * @since 1.5.1
      */
-    void resources( Closure cfg ) {
-        if(this.resourceCopy==null) {
+    void resources(Closure cfg) {
+        if (this.resourceCopy == null) {
             this.resourceCopy = project.copySpec(cfg)
         } else {
             def configuration = cfg.clone()
@@ -477,7 +484,7 @@ class AsciidoctorTask extends DefaultTask {
      */
     CopySpec getDefaultResourceCopySpec() {
         project.copySpec {
-            from (sourceDir) {
+            from(sourceDir) {
                 include 'images/**'
             }
         }
@@ -497,12 +504,12 @@ class AsciidoctorTask extends DefaultTask {
     @TaskAction
     void processAsciidocSources() {
 
-        if(sourceFileTree.files.size()==0) {
+        if (sourceFileTree.files.size() == 0) {
             logger.lifecycle 'Asciidoc source file tree is empty. Nothing will be processed.'
             return
         }
 
-        if(classpath == null) {
+        if (classpath == null) {
             classpath = project.configurations.getByName(AsciidoctorPlugin.ASCIIDOCTOR)
         }
 
@@ -512,7 +519,7 @@ class AsciidoctorTask extends DefaultTask {
             instantiateAsciidoctor()
         }
 
-        if(resourceCopyProxy == null) {
+        if (resourceCopyProxy == null) {
             resourceCopyProxy = new ResourceCopyProxyImpl(project)
         }
 
@@ -520,7 +527,7 @@ class AsciidoctorTask extends DefaultTask {
             for (require in requires) {
                 // FIXME AsciidoctorJ should provide a public API for requiring paths in the Ruby runtime
                 asciidoctor.delegate.rubyRuntime.evalScriptlet(
-                        'require \'' + require.replaceAll('[^A-Za-z0-9/\\\\.\\-_]', '') + '\'')
+                    'require \'' + require.replaceAll('[^A-Za-z0-9/\\\\.\\-_]', '') + '\'')
             }
         }
 
@@ -538,14 +545,16 @@ class AsciidoctorTask extends DefaultTask {
     File outputDirFor(final File source, final String basePath, final File outputDir, final String backend) {
         String filePath = source.directory ? source.absolutePath : source.parentFile.absolutePath
         String relativeFilePath = normalizePath(filePath) - normalizePath(basePath)
-        File baseOutputDir = outputBackendDir(outputDir,backend)
-        File destinationParentDir = new File(baseOutputDir,relativeFilePath)
-        if (!destinationParentDir.exists()) {destinationParentDir.mkdirs()}
+        File baseOutputDir = outputBackendDir(outputDir, backend)
+        File destinationParentDir = new File(baseOutputDir, relativeFilePath)
+        if (!destinationParentDir.exists()) {
+            destinationParentDir.mkdirs()
+        }
         destinationParentDir
     }
 
     private File outputBackendDir(final File outputDir, final String backend) {
-        separateOutputDirs ? new File(outputDir,FileUtils.toSafeFileName(backend)) : outputDir
+        separateOutputDirs ? new File(outputDir, FileUtils.toSafeFileName(backend)) : outputDir
     }
 
     private static String normalizePath(String path) {
@@ -586,14 +595,14 @@ class AsciidoctorTask extends DefaultTask {
 
         try {
             sourceFileTree.files.each { File file ->
-                if(file.name.startsWith('_')) {
+                if (file.name.startsWith('_')) {
                     throw new InvalidUserDataException('Source documents may not start with an underscore')
                 }
-                File destinationParentDir = owner.outputDirFor(file, sourceDir.absolutePath, outputDir,backend)
+                File destinationParentDir = owner.outputDirFor(file, sourceDir.absolutePath, outputDir, backend)
                 processSingleFile(backend, destinationParentDir, file)
             }
 
-            resourceCopyProxy.copy(outputBackendDir(outputDir, backend),resourceCopySpec)
+            resourceCopyProxy.copy(outputBackendDir(outputDir, backend), resourceCopySpec)
             // TODO: Might have to copy specific per backend in a future update
 
         } catch (Exception e) {
@@ -606,15 +615,15 @@ class AsciidoctorTask extends DefaultTask {
             logger.lifecycle("Converting $file")
         }
         asciidoctor.renderFile(file, mergedOptions(file,
-                [
-                        project: project,
-                        options: options,
-                        attributes : attrs,
-                        baseDir: !baseDir && !baseDirSetToNull ? file.parentFile : baseDir,
-                        projectDir: project.projectDir,
-                        rootDir: project.rootDir,
-                        outputDir: destinationParentDir,
-                        backend: backend ]))
+            [
+                project   : project,
+                options   : options,
+                attributes: attrs,
+                baseDir   : !baseDir && !baseDirSetToNull ? file.parentFile : baseDir,
+                projectDir: project.projectDir,
+                rootDir   : project.rootDir,
+                outputDir : destinationParentDir,
+                backend   : backend]))
     }
 
     @SuppressWarnings('AbcMetric')
@@ -676,7 +685,7 @@ class AsciidoctorTask extends DefaultTask {
     }
 
     protected static void processCollectionAttributes(Map attributes, rawAttributes) {
-        for(attr in rawAttributes) {
+        for (attr in rawAttributes) {
             if (attr instanceof CharSequence) {
                 def (k, v) = attr.toString().split('=', 2) as List
                 attributes.put(k, v != null ? v : '')
@@ -689,16 +698,16 @@ class AsciidoctorTask extends DefaultTask {
 
     @SuppressWarnings('DuplicateStringLiteral')
     @SuppressWarnings('DuplicateNumberLiteral')
-    private static Map coerceLegacyAttributeFormats( Object attributes ) {
-        Map transformedMap=[:]
-        switch(attributes) {
+    private static Map coerceLegacyAttributeFormats(Object attributes) {
+        Map transformedMap = [:]
+        switch (attributes) {
             case Map:
                 transformedMap = attributes
                 break
             case CharSequence:
                 attributes.replaceAll('([^\\\\]) ', '$1\0').replaceAll('\\\\ ', ' ').split('\0').collect {
                     def split = it.split('=')
-                    if(split.size()<2) {
+                    if (split.size() < 2) {
                         throw new InvalidUserDataException("Unsupported format for attributes: ${attributes}")
                     }
                     transformedMap[split[0]] = split.drop(1).join('=')
@@ -708,7 +717,7 @@ class AsciidoctorTask extends DefaultTask {
                 processCollectionAttributes(transformedMap, attributes)
                 break
             default:
-                if(attributes.class.isArray()) {
+                if (attributes.class.isArray()) {
                     processCollectionAttributes(transformedMap, attributes)
                 } else {
                     throw new InvalidUserDataException("Unsupported type for attributes: ${attributes.class}")
@@ -748,8 +757,8 @@ class AsciidoctorTask extends DefaultTask {
         }
     }
 
-    private void deprecated(final String method,final String alternative,final String msg='') {
+    private void deprecated(final String method, final String alternative, final String msg = '') {
         logger.lifecycle "Asciidoctor: ${method} is deprecated and will be removed in a future version." +
-                "Use ${alternative} instead. ${msg}"
+            "Use ${alternative} instead. ${msg}"
     }
 }
