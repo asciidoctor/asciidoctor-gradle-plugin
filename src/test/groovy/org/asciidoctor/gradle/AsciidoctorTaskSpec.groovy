@@ -20,7 +20,6 @@ import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.file.FileCollection
 import org.gradle.api.internal.file.collections.SimpleFileCollection
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
@@ -45,6 +44,7 @@ class AsciidoctorTaskSpec extends Specification {
 
     Project project
     AsciidoctorProxy mockAsciidoctor
+    ResourceCopyProxy mockCopyProxy
     File testRootDir
     File srcDir
     File outDir
@@ -54,9 +54,10 @@ class AsciidoctorTaskSpec extends Specification {
         project = ProjectBuilder.builder().withName('test').build()
         project.configurations.create(ASCIIDOCTOR)
         mockAsciidoctor = Mock(AsciidoctorProxy)
+        mockCopyProxy = Mock(ResourceCopyProxy)
         testRootDir = new File('.')
         srcDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR).absoluteFile
-        outDir = new File(testRootDir, ASCIIDOC_BUILD_DIR)
+        outDir = new File(project.projectDir, ASCIIDOC_BUILD_DIR)
         systemOut = new ByteArrayOutputStream()
         System.out = new PrintStream(systemOut)
     }
@@ -306,7 +307,6 @@ class AsciidoctorTaskSpec extends Specification {
         then:
             ! systemOut.toString().contains('deprecated')
             task.asGemPath() == project.projectDir.absolutePath
-//            task.gemPath.absolutePath == project.projectDir.absolutePath
     }
 
     @SuppressWarnings('MethodName')
@@ -318,7 +318,6 @@ class AsciidoctorTaskSpec extends Specification {
 
         then:
             task.asGemPath() == project.projectDir.absolutePath
-//            task.gemPath.absolutePath == project.projectDir.absolutePath
             ! systemOut.toString().contains('deprecated')
     }
 
@@ -331,19 +330,71 @@ class AsciidoctorTaskSpec extends Specification {
 
         then:
             task.asGemPath() == project.projectDir.absolutePath
-//            task.gemPath.absolutePath == project.projectDir.absolutePath
             ! systemOut.toString().contains('deprecated')
     }
 
     @SuppressWarnings('MethodName')
+    def "sourceDocumentNames should resolve descendant files of sourceDir if supplied as relatives"() {
+        when: "I specify two files relative to sourceDir,including one in a subfoler"
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                sourceDir srcDir
+                sourceDocumentNames = [ASCIIDOC_SAMPLE_FILE, ASCIIDOC_SAMPLE2_FILE]
+            }
+            def fileCollection = task.sourceDocumentNames
+
+        then: "both files should be in collection, but any other files found in folder should be excluded"
+            fileCollection.contains(new File(srcDir,ASCIIDOC_SAMPLE_FILE).canonicalFile)
+            fileCollection.contains(new File(srcDir,ASCIIDOC_SAMPLE2_FILE).canonicalFile)
+            !fileCollection.contains(new File(srcDir,'sample-docinfo.xml').canonicalFile)
+            fileCollection.files.size() == 2
+    }
+
+    @SuppressWarnings('MethodName')
+    def "sourceDocumentNames should resolve descendant files of sourceDir even if given as absolute files"() {
+        given:
+            File sample1 = new File(srcDir,ASCIIDOC_SAMPLE_FILE).absoluteFile
+            File sample2 = new File(srcDir,ASCIIDOC_SAMPLE2_FILE).absoluteFile
+
+        when: "I specify two absolute path files, that are descendents of sourceDit"
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                sourceDir srcDir
+                sourceDocumentNames = [sample1,sample2]
+            }
+            def fileCollection = task.sourceDocumentNames
+
+        then: "both files should be in collection, but any other files found in folder should be excluded"
+            fileCollection.contains(new File(srcDir,ASCIIDOC_SAMPLE_FILE).canonicalFile)
+            fileCollection.contains(new File(srcDir,ASCIIDOC_SAMPLE2_FILE).canonicalFile)
+            !fileCollection.contains(new File(srcDir,'sample-docinfo.xml').canonicalFile)
+            fileCollection.files.size() == 2
+    }
+
+    @SuppressWarnings('MethodName')
+    def "sourceDocumentNames should not resolve files that are not descendants of sourceDir"() {
+        given:
+            File sample1 = new File(project.projectDir,ASCIIDOC_SAMPLE_FILE).absoluteFile
+
+        when:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                sourceDir srcDir
+                sourceDocumentNames = [sample1]
+            }
+            def fileCollection = task.sourceDocumentNames
+
+        then:
+            fileCollection.files.size() == 0
+    }
+
+    @SuppressWarnings('MethodName')
     @SuppressWarnings('DuplicateNumberLiteral')
-    def "Adds asciidoctor task with multiple backends"() {
+    def "Add asciidoctor task with multiple backends"() {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
-                backends = [AsciidoctorBackend.DOCBOOK.id, AsciidoctorBackend.HTML5.id]
+                backends AsciidoctorBackend.DOCBOOK.id, AsciidoctorBackend.HTML5.id
             }
 
             task.processAsciidocSources()
@@ -358,6 +409,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 backends = [AsciidoctorBackend.DOCBOOK.id, AsciidoctorBackend.HTML5.id]
@@ -368,7 +420,7 @@ class AsciidoctorTaskSpec extends Specification {
         then:
             2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == AsciidoctorBackend.DOCBOOK.id})
             2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == AsciidoctorBackend.HTML5.id})
-            systemOut.toString().contains('Both the `backend` and `backends` properties were specified. The `backend` property will be ignored.')
+            systemOut.toString().contains('Using `backend` and `backends` together will result in `backend` being ignored.')
     }
 
     @SuppressWarnings('MethodName')
@@ -379,6 +431,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir srcDir
                 outputDir = outDir
             }
@@ -397,6 +450,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 backend = AsciidoctorBackend.DOCBOOK.id
@@ -405,7 +459,7 @@ class AsciidoctorTaskSpec extends Specification {
             task.processAsciidocSources()
         then:
             2 * mockAsciidoctor.renderFile(_, { Map map -> map.backend == AsciidoctorBackend.DOCBOOK.id})
-            systemOut.toString().contains('The `backend` property is deprecated and may not be supported in future versions. Please use the `backends` property instead.')
+            systemOut.toString().contains('Using `backend` and `backends` together will result in `backend` being ignored.')
     }
 
     @SuppressWarnings('MethodName')
@@ -415,6 +469,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
             }
@@ -432,6 +487,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 sourceDocumentName = new File(srcDir, ASCIIDOC_SAMPLE_FILE)
@@ -447,6 +503,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 sourceDocumentName = new File(srcDir, ASCIIDOC_SAMPLE_FILE)
@@ -454,7 +511,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             task.processAsciidocSources()
         then:
-            systemOut.toString().contains('The `sourceDocumentName` property is deprecated and may not be supported in future versions. Please use the `sourceDocumentNames` property instead.')
+            systemOut.toString().contains('setSourceDocumentName is deprecated')
     }
 
     @SuppressWarnings('MethodName')
@@ -462,6 +519,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 sourceDocumentName = new File(srcDir, ASCIIDOC_SAMPLE_FILE)
@@ -470,7 +528,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             task.processAsciidocSources()
         then:
-            systemOut.toString().contains('Both the `sourceDocumentName` and `sourceDocumentNames` properties were specified. The `sourceDocumentName` property will be ignored.')
+            systemOut.toString().contains('setSourceDocumentNames is deprecated')
     }
 
     @SuppressWarnings('MethodName')
@@ -478,8 +536,10 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
+                separateOutputDirs = false
             }
         when:
             task.processAsciidocSources()
@@ -494,6 +554,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 sourceDocumentName = new File(srcDir, ASCIIDOC_SAMPLE_FILE)
@@ -513,6 +574,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 sourceDocumentName = new File(srcDir, ASCIIDOC_SAMPLE_FILE)
@@ -533,6 +595,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 sourceDocumentName = new File(srcDir, ASCIIDOC_SAMPLE_FILE)
@@ -552,6 +615,7 @@ class AsciidoctorTaskSpec extends Specification {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 sourceDocumentName = new File(srcDir, ASCIIDOC_SAMPLE_FILE)
@@ -570,6 +634,7 @@ class AsciidoctorTaskSpec extends Specification {
             File basedir = new File(testRootDir, 'my_base_dir')
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 baseDir = basedir
@@ -585,6 +650,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
             }
@@ -600,6 +666,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 baseDir = null
@@ -615,6 +682,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
             }
@@ -631,6 +699,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 options = [
@@ -650,6 +719,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 options = [
@@ -669,6 +739,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 options = [
@@ -688,6 +759,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
             }
@@ -705,6 +777,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
             }
@@ -722,6 +795,7 @@ class AsciidoctorTaskSpec extends Specification {
             project.group = 'com.acme'
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
             }
@@ -742,6 +816,7 @@ class AsciidoctorTaskSpec extends Specification {
             project.group = 'com.acme'
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 options = [
@@ -767,6 +842,7 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 sourceDocumentName = new File(ASCIIDOC_RESOURCES_DIR, ASCIIDOC_SAMPLE_FILE)
@@ -782,12 +858,12 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
-                sourceDocumentNames = new SimpleFileCollection(
-                        new File(srcDir, ASCIIDOC_SAMPLE_FILE),
-                        new File(srcDir, ASCIIDOC_SAMPLE2_FILE)
-                )
+                sources {
+                  include ASCIIDOC_SAMPLE_FILE,ASCIIDOC_SAMPLE2_FILE
+                }
             }
         when:
             task.processAsciidocSources()
@@ -797,42 +873,11 @@ class AsciidoctorTaskSpec extends Specification {
     }
 
     @SuppressWarnings('MethodName')
-    def "Should throw exception if the file sourceDocumentName is not reachable from sourceDir"() {
-        given:
-            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
-                sourceDir new File(testRootDir, ASCIIDOC_RESOURCES_SUB_DIR).absoluteFile
-                outputDir = outDir
-                sourceDocumentNames new File(srcDir, ASCIIDOC_SAMPLE_FILE).absoluteFile
-            }
-        when:
-            task.processAsciidocSources()
-        then:
-            0 * mockAsciidoctor.renderFile(_, _)
-            thrown(GradleException)
-    }
-
-    @SuppressWarnings('MethodName')
-    def "Should throw exception if a file in sourceDocumentNames is not reachable from sourceDir"() {
-        given:
-            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
-                sourceDir new File(testRootDir, ASCIIDOC_RESOURCES_SUB_DIR).absoluteFile
-                outputDir = outDir
-                sourceDocumentNames new SimpleFileCollection(new File(srcDir, ASCIIDOC_SAMPLE_FILE).absoluteFile)
-            }
-        when:
-            task.processAsciidocSources()
-        then:
-            0 * mockAsciidoctor.renderFile(_, _)
-            thrown(GradleException)
-    }
-
-    @SuppressWarnings('MethodName')
     def "Should throw exception if the file sourceDocumentName starts with underscore"() {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
                 sourceDocumentName = new File(srcDir, ASCIIDOC_INVALID_FILE)
@@ -849,9 +894,10 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = srcDir
-                outputDir = outDir
-                sourceDocumentNames = new SimpleFileCollection(new File(srcDir, ASCIIDOC_INVALID_FILE))
+                resourceCopyProxy = mockCopyProxy
+                sourceDir srcDir
+                outputDir outDir
+                setSourceDocumentNames ASCIIDOC_INVALID_FILE
             }
         when:
             task.processAsciidocSources()
@@ -860,31 +906,86 @@ class AsciidoctorTaskSpec extends Specification {
             thrown(GradleException)
     }
 
-    @SuppressWarnings('MethodName')
-    def "Should not emmit warning about absolute path in sourceDocumentNames"() {
-        expect:
-            project.tasks.findByName(ASCIIDOCTOR) == null
-        when:
+    def "When 'resources' not specified, then copy all images to backend"() {
+        given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 asciidoctor = mockAsciidoctor
-                sourceDir = srcDir
-                outputDir = outDir
-                sourceDocumentNames = new SimpleFileCollection(new File(srcDir, ASCIIDOC_SAMPLE_FILE).absoluteFile)
-            }
+                resourceCopyProxy = mockCopyProxy
 
+                sourceDir srcDir
+                outputDir outDir
+                backends AsciidoctorBackend.HTML5.id
+
+                sources {
+                    include ASCIIDOC_SAMPLE_FILE
+                }
+
+            }
+        when:
             task.processAsciidocSources()
         then:
-            1 * mockAsciidoctor.renderFile(_, _)
+            1 * mockCopyProxy.copy(_, _)
+    }
+
+    def "When 'resources' not specified and more than one backend, then copy all images to every backend"() {
+        given:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
+
+                sourceDir srcDir
+                outputDir outDir
+                backends AsciidoctorBackend.HTML5.id,AsciidoctorBackend.DOCBOOK.id
+
+                sources {
+                    include ASCIIDOC_SAMPLE_FILE
+                }
+
+            }
+        when:
+            task.processAsciidocSources()
+        then:
+            1 * mockCopyProxy.copy( new File(outDir,AsciidoctorBackend.HTML5.id) , _)
+            1 * mockCopyProxy.copy( new File(outDir,AsciidoctorBackend.DOCBOOK.id) , _)
+    }
+
+    def "When 'resources' are specified, then copy according to all patterns"() {
+        given:
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
+
+                sourceDir srcDir
+                outputDir outDir
+                backends AsciidoctorBackend.HTML5.id,AsciidoctorBackend.DOCBOOK.id
+
+                sources {
+                    include ASCIIDOC_SAMPLE_FILE
+                }
+
+                resources {
+                    from (sourceDir) {
+                        include 'images/**'
+                    }
+                }
+            }
+
+        when:
+            task.processAsciidocSources()
+        then:
+            1 * mockCopyProxy.copy( new File(outDir,AsciidoctorBackend.HTML5.id) , _)
+            1 * mockCopyProxy.copy( new File(outDir,AsciidoctorBackend.DOCBOOK.id) , _)
+
     }
 
     def "sanity test for default configuration" () {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-            asciidoctor = mockAsciidoctor
-        }
+            }
 
         then:
             task.sourceDir.absolutePath.endsWith("src/docs/asciidoc")
+            task.outputDir.absolutePath.endsWith("build/asciidoc")
 
     }
 

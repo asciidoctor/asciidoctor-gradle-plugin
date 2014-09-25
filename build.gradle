@@ -63,7 +63,7 @@ license {
         groovy ='SLASHSTAR_STYLE'
     }
     ext.year = '2013-2014'
-    excludes(['**/*.ad', '**/*.asciidoc', '**/*.adoc'])
+    excludes(['**/*.ad', '**/*.asciidoc', '**/*.adoc', '**/fake.txt'])
 }
 
 cobertura {
