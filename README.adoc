@@ -59,9 +59,9 @@ sourceDir:: where the asciidoc sources are.
   Type: File, but any object convertible with `project.file` can be passed.
   Default: `src/docs/asciidoc`.
 sources:: specify which Asciidoctor source files to include by using an
-  {http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.html}[Ant-style PatternSet].
+  http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.html[Ant-style PatternSet].
 resources:: specify which additional files (image etc.) must be copied to output directory using a
-  {http://www.gradle.org/docs/current/javadoc/org/gradle/api/file/CopySpec.html}[CopySpec].
+  http://www.gradle.org/docs/current/javadoc/org/gradle/api/file/CopySpec.html[CopySpec].
 outputDir:: where generated docs go.
   Use either `outputDir path`, `setOutputDir path` or `outputDir=path`
   Type: File, but any object convertible with `project.file` can be passed.
@@ -97,7 +97,7 @@ order to be discovered:
 * .ad
 
 To select only certain files use the `sources` method. This takes a closure which in turn configures an internal
-{http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.html}[PatternSet]
+http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.html[PatternSet]
 
 [source,groovy]
 .build.gradle
@@ -113,7 +113,7 @@ Source files are resolved relative to `sourceDir`.  Source files are also not al
 
 Some backends require that additional files be copied across. The most common example are images for HTML backends. For
 this the `resources` method is used. It is provided with a closure that configures an internal
-{http://www.gradle.org/docs/current/javadoc/org/gradle/api/file/CopySpec.html}[CopySpec]
+http://www.gradle.org/docs/current/javadoc/org/gradle/api/file/CopySpec.html[CopySpec]
 
 [source,groovy]
 .build.gradle
