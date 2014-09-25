@@ -21,7 +21,7 @@ import org.gradle.api.Project
  * @author Andres Almiray
  */
 class AsciidoctorExtension {
-    String version = '1.5.0'
+    String version = '1.5.1'
 
     final Project project
 

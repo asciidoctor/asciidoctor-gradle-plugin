@@ -269,7 +269,7 @@ Notice how spaces are escaped in the last key/value pair.
 
 == Configuration
 
-This plugin uses `asciidoctorj-1.5.0` by default, however, you can change this by
+This plugin uses `asciidoctorj-1.5.1` by default, however, you can change this by
 defining a value on the +asciidoctorj+ extension, like so
 
 [source,groovy]
