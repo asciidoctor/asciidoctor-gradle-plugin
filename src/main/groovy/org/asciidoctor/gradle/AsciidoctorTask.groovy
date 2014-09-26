@@ -68,6 +68,9 @@ class AsciidoctorTask extends DefaultTask {
     @Optional boolean logDocuments = false
     private boolean baseDirSetToNull
 
+    @Input
+    List<Object> asciidoctorExtensions = []
+
     private final List<Object> sourceDocumentNames = []
     private FileCollection sourceDocuments
 
@@ -91,20 +94,10 @@ class AsciidoctorTask extends DefaultTask {
         baseDirSetToNull = baseDir == null
     }
 
-    def asciidoctorExtensions = []
-
-    void extensions(Closure cl) {
-        asciidoctorExtensions << cl
+    def extensions(Object... exts) {
+        asciidoctorExtensions.addAll(exts as List)
     }
     
-    void extensions(Iterable<File> files) {
-        files.each {asciidoctorExtensions << it}
-    }
-
-    void extensions(File file) {
-        asciidoctorExtensions << file
-    }
-
     /**
      * Validates input values. If an input value is not valid an exception is thrown.
      */
