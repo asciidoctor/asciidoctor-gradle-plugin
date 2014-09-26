@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle
+block(name: "BIG", contexts: [":paragraph"]) {
+        parent, reader, attributes ->
+        def upperLines = reader.readLines()
+        .collect {it.toUpperCase()}
+        .inject("") {a, b -> a + '\n' + b}
 
-import org.gradle.api.Project
+        createBlock(parent, "paragraph", [upperLines], attributes, [:])
+}
+block("small") {
+        parent, reader, attributes ->
+        def lowerLines = reader.readLines()
+        .collect {it.toLowerCase()}
+        .inject("") {a, b -> a + '\n' + b}
 
-/**
- * @author Andres Almiray
- */
-class AsciidoctorExtension {
-    String version = '1.5.0'
-
-    String groovyDslVersion = '1.0.0.preview1'
-    
-    final Project project
-
-    AsciidoctorExtension(Project project) {
-        this.project = project
-    }
+        createBlock(parent, "paragraph", [lowerLines], attributes, [:])
 }
