@@ -101,7 +101,7 @@ asciidoctorj {
 }
 ----
 
-Do not forgte to add an entry to the `repositories` block pointint to Maven local if you'd like to run a local version
+Do not forget to add an entry to the `repositories` block pointint to Maven local if you'd like to run a local version
 of Asciidoctor (such as an snapshot build for testing bleeding edge features). The following snippet is all you need
 
 .build.gradle
