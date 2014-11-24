@@ -96,6 +96,11 @@ class AsciidoctorTask extends DefaultTask {
      */
     @Optional @Input String backend
 
+    /**
+     * Stores the extensions defined in the configuration phase
+     * to register them in the execution phase.
+     */
+    List<Object> asciidoctorExtensions = []
 
     AsciidoctorProxy asciidoctor
     ResourceCopyProxy resourceCopyProxy
@@ -243,6 +248,14 @@ class AsciidoctorTask extends DefaultTask {
             this.backends = []
         }
         this.backends.addAll(CollectionUtils.stringize(b as List))
+    }
+
+    /** Defines extensions. The given parameters should
+     * either contain Asciidoctor Groovy DSL closures or files
+     * with content conforming to the Asciidoctor Groovy DSL.
+     */
+    def extensions(Object... exts) {
+        asciidoctorExtensions.addAll(exts as List)
     }
 
     /** Sets a new gemPath to be used
@@ -514,6 +527,11 @@ class AsciidoctorTask extends DefaultTask {
         }
 
         setupClassLoader()
+
+        if (!asciidoctorExtensions?.empty) {
+            def asciidoctorExtensionsDslRegistry = loadClass('org.asciidoctor.groovydsl.AsciidoctorExtensions')
+            asciidoctorExtensions.each { asciidoctorExtensionsDslRegistry.extensions(it) }
+        }
 
         if (!asciidoctor) {
             instantiateAsciidoctor()

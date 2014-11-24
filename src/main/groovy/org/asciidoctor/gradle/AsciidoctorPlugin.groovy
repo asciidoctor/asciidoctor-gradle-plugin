@@ -40,6 +40,7 @@ class AsciidoctorPlugin implements Plugin<Project> {
         project.afterEvaluate {
             project.dependencies {
                 asciidoctor("org.asciidoctor:asciidoctorj:${extension.version}")
+                asciidoctor("org.asciidoctor:asciidoctorj-groovy-dsl:${extension.groovyDslVersion}")
             }
         }
 
