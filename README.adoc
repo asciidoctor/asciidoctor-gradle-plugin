@@ -221,7 +221,6 @@ sourceDocumentNames:: an override to process multiple source files, which are re
 sourceDocumentName:: an override to process a single source file. Use `sources { include 'name' }` instead.
 backend:: the backend to use. Use `backends` instead.
 
-
 === Behavior
 
 * The default value for `sourceDir` has changed from `src/asciidoc` to `src/docs/asciidoc`.
@@ -240,25 +239,17 @@ called.
 [source,groovy]
 .build.gradle
 ----
-options = [
-    attributes: [
-        toc: 'right',
-        'source-highlighter': 'coderay',
-        'toc-title': 'Table of Contents'
-    ]
+attributes: toc: 'right',
+            'source-highlighter': 'coderay',
+            'toc-title': 'Table of Contents'
+
+attributes: [
+    'toc=right',
+    'source-highlighter=coderay',
+    'toc-title=Table of Contents'
 ]
 
-options = [
-    attributes: [
-        'toc=right',
-        'source-highlighter=coderay',
-        'toc-title=Table of Contents'
-    ]
-]
-
-options = [
-    attributes: 'toc=right source-highlighter=coderay toc-title=Table\\ of\\ Contents'
-]
+attributes: 'toc=right source-highlighter=coderay toc-title=Table\\ of\\ Contents'
 ----
 
 IMPORTANT: Do not forget to transform Groovy strings into Strings (by explicitly invoking `.toString()` on them) when
@@ -297,8 +288,6 @@ asciidoctorj {
 ----
 <1> resolves artifacts in your local Maven repository
 <2> resolves artifacts in Bintray's jcenter (where all other dependencies are found)
-
-
 
 == Custom Extensions
 
@@ -385,8 +374,8 @@ The next option is to define extensions directly in the build script.
 This approach is based on the project asciidoctorj-groovy-dsl that allows to define Asciidoctor extensions in Groovy.
 An extension is registered via the `extensions` element.
 
-.build.gradle
 [source,groovy]
+.build.gradle
 ----
 asciidoctor {
     extensions {
@@ -406,16 +395,16 @@ http://github.com/asciidoctor/asciidoctorj-groovy-dsl contains a description of 
 
 Groovy extensions can also be included as files.
 
-.build.gradle
 [source,groovy]
+.build.gradle
 ----
 asciidoctor {
     extensions new File('big.groovy')
 }
 ----
 
-.big.groovy
 [source,groovy]
+.big.groovy
 ----
 block(name: "BIG", contexts: [":paragraph"]) {
     parent, reader, attributes ->
