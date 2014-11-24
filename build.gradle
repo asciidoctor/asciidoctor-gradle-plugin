@@ -114,7 +114,10 @@ plugindev {
                 McPringle  : 'Marcus Fihlon',
                 msgilligan : 'Sean Gilligan',
                 afolmert   : 'Adam Folmert',
-                mrhaki     : 'Hubert Klein Ikkink'
+                mrhaki     : 'Hubert Klein Ikkink',
+                bobbytank42: 'Robert Panzer',
+                oti        : 'Otmar Humbel',
+                anschmi    : 'Andreas Schmidt'
             ].each { devId, devName ->
                 contributor {
                     name devName

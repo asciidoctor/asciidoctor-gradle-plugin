@@ -41,12 +41,14 @@ import org.gradle.util.CollectionUtils
  * @author Tom Bujok
  * @author Lukasz Pielak
  * @author Dmitri Vyazelenko
+ * @author Benjamin Muschko
  * @author Dan Allen
  * @author Rob Winch
  * @author Stefan Schlott
  * @author Stephan Classen
  * @author Marcus Fihlon
  * @author Schalk W. Cronjé
+ * @author Robert Panzer
  */
 @SuppressWarnings('MethodCount')
 class AsciidoctorTask extends DefaultTask {
