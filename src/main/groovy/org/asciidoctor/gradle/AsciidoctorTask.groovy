@@ -128,6 +128,7 @@ class AsciidoctorTask extends DefaultTask {
      */
     @SuppressWarnings('DuplicateStringLiteral')
     void setOptions(Map m) {
+        if (!m) return // null check
         if (m.containsKey('attributes')) {
             logger.warn 'Attributes found in options. Existing attributes will be replaced due to assignment. ' +
                 'Please use \'attributes\' method instead as current behaviour will be removed in future'
@@ -148,6 +149,7 @@ class AsciidoctorTask extends DefaultTask {
      */
     @SuppressWarnings('DuplicateStringLiteral')
     void options(Map m) {
+        if (!m) return // null check
         if (m.containsKey('attributes')) {
             logger.warn 'Attributes found in options. These will be added to existing attributes. ' +
                 'Please use \'attributes\' method instead as current behaviour will be removed in future'
@@ -170,7 +172,13 @@ class AsciidoctorTask extends DefaultTask {
      * @param m New map of attributes
      * @since 1.5.1
      */
-    void setAttributes(Map m) { this.attrs = m }
+    void setAttributes(Map m) {
+        if (m) {
+            this.attrs = m
+        } else {
+            this.attrs.clear()
+        }
+    }
 
     /** Appends a set of Asciidoctor attributes.
      *
@@ -178,7 +186,10 @@ class AsciidoctorTask extends DefaultTask {
      * @since 1.5.1
      */
     void attributes(Object... o) {
-        if (!o) return
+        if (!o) {
+            this.attrs.clear()
+            return
+        }
         for (input in o) {
             this.attrs += coerceLegacyAttributeFormats(input)
         }
@@ -212,6 +223,7 @@ class AsciidoctorTask extends DefaultTask {
         if (this.requires == null) {
             this.requires = []
         }
+        if (!b) return // null check
         this.requires.addAll(CollectionUtils.stringize(b as List))
     }
 
@@ -224,7 +236,8 @@ class AsciidoctorTask extends DefaultTask {
     @Input
     Set<String> getBackends() { this.backends }
 
-    void setBackend(final String b) {
+    void setBackend(String b) {
+        if (!b) return // null check
         deprecated 'setBackend', 'backends', 'Using `backend` and `backends` together will result in `backend` being ignored.'
         backend = b
     }
@@ -252,6 +265,7 @@ class AsciidoctorTask extends DefaultTask {
         if (this.backends == null) {
             this.backends = []
         }
+        if (!b) return // null check
         this.backends.addAll(CollectionUtils.stringize(b as List))
     }
 
@@ -259,7 +273,8 @@ class AsciidoctorTask extends DefaultTask {
      * either contain Asciidoctor Groovy DSL closures or files
      * with content conforming to the Asciidoctor Groovy DSL.
      */
-    def extensions(Object... exts) {
+    void extensions(Object... exts) {
+        if (!exts) return // null check
         asciidoctorExtensions.addAll(exts as List)
     }
 
@@ -270,6 +285,7 @@ class AsciidoctorTask extends DefaultTask {
      */
     @SuppressWarnings('ConfusingMethodName')
     void gemPath(Object... f) {
+        if (!f) return // null check
         this.gemPaths.addAll(f as List)
     }
 
@@ -280,6 +296,7 @@ class AsciidoctorTask extends DefaultTask {
      */
     void setGemPath(Object... f) {
         this.gemPaths.clear()
+        if (!f) return // null check
         this.gemPaths.addAll(f as List)
     }
 
@@ -288,11 +305,11 @@ class AsciidoctorTask extends DefaultTask {
      *
      * @param s
      */
-    void setGemPath(final Object path) {
+    void setGemPath(Object path) {
         this.gemPaths.clear()
         if (path instanceof CharSequence) {
             this.gemPaths.addAll(setGemPath(path.split(PATH_SEPARATOR)))
-        } else {
+        } else if(path){
             this.gemPaths.addAll(path)
         }
     }
@@ -521,7 +538,6 @@ class AsciidoctorTask extends DefaultTask {
 
     @TaskAction
     void processAsciidocSources() {
-
         if (sourceFileTree.files.size() == 0) {
             logger.lifecycle 'Asciidoc source file tree is empty. Nothing will be processed.'
             return
@@ -534,7 +550,7 @@ class AsciidoctorTask extends DefaultTask {
         setupClassLoader()
 
         if (!asciidoctorExtensions?.empty) {
-            def asciidoctorExtensionsDslRegistry = loadClass('org.asciidoctor.groovydsl.AsciidoctorExtensions')
+            Class asciidoctorExtensionsDslRegistry = loadClass('org.asciidoctor.groovydsl.AsciidoctorExtensions')
             asciidoctorExtensions.each { asciidoctorExtensionsDslRegistry.extensions(it) }
         }
 
@@ -560,7 +576,6 @@ class AsciidoctorTask extends DefaultTask {
             }
             processDocumentsAndResources(activeBackend)
         }
-
     }
 
     @groovy.transform.PackageScope
