@@ -137,7 +137,7 @@ class AsciidoctorTask extends DefaultTask {
         this.opts = m
     }
 
-    /** Appends a new set of Asciidoctor options, clearing any options previously set.
+    /** Appends a new set of Asciidoctor options.
      *
      * For backwards compatibility it is still possible to append attributes via this call. However the
      * use of {@link #setAttributes(java.util.Map)} and {@link #attributes(java.util.Map)} are the now
@@ -165,19 +165,24 @@ class AsciidoctorTask extends DefaultTask {
     @Input
     Map getAttributes() { this.attrs }
 
-    /** Applies a new set of Asciidoctor attributes, clearing any previsouly set
+    /** Applies a new set of Asciidoctor attributes, clearing any previously set
      *
      * @param m New map of attributes
      * @since 1.5.1
      */
     void setAttributes(Map m) { this.attrs = m }
 
-    /** Appends a set of Asciidoctor attributes, clearing any previsouly set
+    /** Appends a set of Asciidoctor attributes.
      *
-     * @param m Map of additional attributes
+     * @param o a Map, List or a literal (String) definition
      * @since 1.5.1
      */
-    void attributes(Map m) { this.attrs += m }
+    void attributes(Object... o) {
+        if (!o) return
+        for (input in o) {
+            this.attrs += coerceLegacyAttributeFormats(input)
+        }
+    }
 
     /** Returns the set of  Ruby modules to be included.
      *
@@ -187,7 +192,7 @@ class AsciidoctorTask extends DefaultTask {
     @Input
     Set<String> getRequires() { this.requires }
 
-    /** Applies a new set of  Ruby modules to be included, clearing any previous set.
+    /** Applies a new set of Ruby modules to be included, clearing any previous set.
      *
      * @param b One or more ruby modules to be included
      * @since 1.5.0
@@ -197,7 +202,7 @@ class AsciidoctorTask extends DefaultTask {
         requires(b)
     }
 
-    /** Appends new set of  Ruby modules to be included.
+    /** Appends new set of Ruby modules to be included.
      *
      * @param b One or more ruby modules to be included
      * @since 1.5.1
@@ -422,7 +427,7 @@ class AsciidoctorTask extends DefaultTask {
      * @since 1.5.1
      */
     @OutputDirectories
-    getOutputDirectories() {
+    Set<File> getOutputDirectories() {
         if (separateOutputDirs) {
             backends.collect { new File(outputDir, it) } as Set
         } else {
@@ -557,7 +562,6 @@ class AsciidoctorTask extends DefaultTask {
         }
 
     }
-
 
     @groovy.transform.PackageScope
     File outputDirFor(final File source, final String basePath, final File outputDir, final String backend) {

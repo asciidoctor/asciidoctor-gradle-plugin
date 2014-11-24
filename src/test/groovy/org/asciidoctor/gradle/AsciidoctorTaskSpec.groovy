@@ -94,7 +94,7 @@ class AsciidoctorTaskSpec extends Specification {
     }
 
     @SuppressWarnings('MethodName')
-    def "Allow setting of attributes via method"() {
+    def "Allow setting of attributes via method (Map variant)"() {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
                 attributes 'source-highlighter': 'foo'
@@ -107,6 +107,34 @@ class AsciidoctorTaskSpec extends Specification {
             task.attributes['source-highlighter'] == 'coderay'
             task.attributes['idprefix'] == '$'
             task.attributes['idseparator'] == '-'
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Allow setting of attributes via method (List variant)"() {
+        when:
+        Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+            attributes(['source-highlighter=foo', 'source-highlighter=coderay', 'idprefix=$', 'idseparator=-'])
+        }
+
+        then:
+        ! systemOut.toString().contains('deprecated')
+        task.attributes['source-highlighter'] == 'coderay'
+        task.attributes['idprefix'] == '$'
+        task.attributes['idseparator'] == '-'
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Allow setting of attributes via method (String variant)"() {
+        when:
+        Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+            attributes 'source-highlighter=foo source-highlighter=coderay idprefix=$ idseparator=-'
+        }
+
+        then:
+        ! systemOut.toString().contains('deprecated')
+        task.attributes['source-highlighter'] == 'coderay'
+        task.attributes['idprefix'] == '$'
+        task.attributes['idseparator'] == '-'
     }
 
     @SuppressWarnings('MethodName')
