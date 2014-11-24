@@ -587,7 +587,6 @@ class AsciidoctorTask extends DefaultTask {
         path
     }
 
-
     @SuppressWarnings('CatchException')
     private void instantiateAsciidoctor() {
         if (gemPaths.size()) {
