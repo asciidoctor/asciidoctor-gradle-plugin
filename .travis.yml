@@ -1,6 +1,6 @@
 language: groovy
 
-script: ./gradlew clean build cobertura
+script: ./gradlew clean build jacocoTestReport
 
 jdk:
   - oraclejdk7

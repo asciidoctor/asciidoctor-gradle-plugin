@@ -13,21 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle
+package org.asciidoctor.gradle;
 
-import org.gradle.api.Project
+import org.gradle.api.file.CopySpec;
+import org.gradle.api.tasks.WorkResult;
+
+import java.io.File;
 
 /**
- * @author Andres Almiray
+ * @author Schalk W. Cronjé.
  */
-class AsciidoctorExtension {
-    String version = '1.5.1'
-
-    String groovyDslVersion = '1.0.0.preview2'
-
-    final Project project
-
-    AsciidoctorExtension(Project project) {
-        this.project = project
-    }
+public interface ResourceCopyProxy {
+    WorkResult copy(File outputDir, CopySpec spec);
 }

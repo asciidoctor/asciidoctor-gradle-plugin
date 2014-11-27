@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2013-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,24 +20,21 @@ buildscript {
     }
 
     dependencies {
-        classpath 'net.saliman:gradle-cobertura-plugin:2.2.4'
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.0'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.5'
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1'
         classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.5-beta-6'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.5'
+        classpath 'nu.studer:gradle-plugindev-plugin:1.0.3'
         classpath 'org.codehaus.groovy:groovy-backports-compat23:2.3.6'
     }
 }
 
-apply plugin: 'groovy'
 apply plugin: 'idea'
-apply plugin: 'codenarc'
-apply plugin: 'cobertura'
+apply plugin: 'groovy'
+apply plugin: 'nu.studer.plugindev'
 apply plugin: 'com.github.kt3k.coveralls'
-apply plugin: 'com.github.hierynomus.license'
 apply plugin: 'com.github.ben-manes.versions'
-apply plugin: 'build-dashboard'
-apply from: 'gradle/publish.gradle'
+apply from: 'gradle/code-coverage.gradle'
+apply from: 'gradle/code-quality.gradle'
 
 repositories {
     jcenter()
@@ -46,44 +43,93 @@ repositories {
 
 dependencies {
     compile gradleApi()
-    testCompile 'org.asciidoctor:asciidoctorj:1.5.0'
-    testCompile('org.spockframework:spock-core:0.7-groovy-1.8') {
+    testCompile 'org.asciidoctor:asciidoctorj:1.5.1'
+    testCompile 'org.asciidoctor:asciidoctorj-groovy-dsl:1.0.0.preview2'
+    testCompile('org.spockframework:spock-core:0.7-groovy-2.0') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
         exclude group: 'org.hamcrest', module: 'hamcrest-core'
     }
     testCompile 'cglib:cglib-nodep:2.2.2'
+    testCompile 'org.jsoup:jsoup:1.8.1'
+    testCompile 'cglib:cglib-nodep:3.1'
 }
 
-license {
-    header = rootProject.file('config/HEADER')
-    strictCheck = true
-    ignoreFailures = false
-    mapping {
-        java ='SLASHSTAR_STYLE'
-        groovy ='SLASHSTAR_STYLE'
+plugindev {
+    pluginId = 'org.asciidoctor.gradle.asciidoctor'
+    pluginImplementationClass 'org.asciidoctor.gradle.AsciidoctorPlugin'
+    pluginDescription 'A Gradle plugin that uses Asciidoctor via JRuby to process AsciiDoc source files within the project.'
+    pluginLicenses 'Apache-2.0'
+    pluginTags 'gradle', 'plugin', 'asciidoctor'
+    authorId 'aalmiray'
+    authorName 'Andres Almiray'
+    authorEmail 'aalmiray@yahoo.com'
+    projectUrl 'https://github.com/asciidoctor/asciidoctor-gradle-plugin'
+    projectInceptionYear '2013'
+    pomConfiguration {
+        name 'asciidoctor-gradle-plugin'
+        description 'A Gradle plugin that uses Asciidoctor via JRuby to process AsciiDoc source files within the project'
+        url 'http://asciidoctor.org'
+        inceptionYear '2013'
+        licenses {
+            license([:]) {
+                name 'The Apache Software License, Version 2.0'
+                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                distribution 'repo'
+            }
+        }
+        scm {
+            url 'https://github.com/asciidoctor/asciidoctor-gradle-plugin'
+        }
+        developers {
+            developer {
+                id 'mojavelinux'
+                name 'Dan Allen'
+                roles {
+                    role 'Asciidoctor Founder and Benevolent Dictator'
+                    role 'Open Source Hero'
+                }
+            }
+            [
+                aalmiray: 'Andres Almiray',
+                noamt   : 'Noam Tenne',
+                bmuschko: 'Benjamin Muschko'
+            ].each { devId, devName ->
+                developer {
+                    id devId
+                    name devName
+                    roles {
+                        role 'Developer'
+                    }
+                }
+            }
+        }
+        contributors {
+            [
+                tombujok   : 'Tom Bujok',
+                jlupi      : 'Lukasz Pielak',
+                dvyazelenko: 'Dmitri Vyazelenko',
+                rwinch     : 'Rob Winch',
+                Skyr       : 'Stefan Schlott',
+                sclassen   : 'Stephan Classen',
+                McPringle  : 'Marcus Fihlon',
+                msgilligan : 'Sean Gilligan',
+                afolmert   : 'Adam Folmert',
+                mrhaki     : 'Hubert Klein Ikkink',
+                bobbytank42: 'Robert Panzer',
+                oti        : 'Otmar Humbel',
+                anschmi    : 'Andreas Schmidt'
+            ].each { devId, devName ->
+                contributor {
+                    name devName
+                    roles {
+                        role 'contributor'
+                    }
+                }
+            }
+        }
     }
-    ext.year = '2013-2014'
-    excludes(['**/*.ad', '**/*.asciidoc', '**/*.adoc'])
+    done()
 }
 
-cobertura {
-    coverageFormats = ['html', 'xml']
-    coverageSourceDirs = sourceSets.main.groovy.srcDirs
-}
+apply from: 'gradle/publishing.gradle'
 
-codenarc {
-    configFile = file('config/codenarc/codenarc.groovy')
-    // run codenarc on production sources only
-    sourceSets = [project.sourceSets.main]
-}
-
-task sourceJar(type: Jar) {
-    group 'Build'
-    description 'An archive of the source code'
-    classifier 'sources'
-    from sourceSets.main.allSource
-}
-
-artifacts {
-    sourceJar
-}
