@@ -153,6 +153,7 @@ resources {}
 ----
 
 === Options & Attributes
+
 The following options may be set using the task's `options` property
 
  * header_footer - boolean
@@ -210,8 +211,6 @@ Refer to the {asciidoctor-docs}[Asciidoctor documentation] to learn more about t
 
 === Task Properties
 
-[horizontal]
-
 The following properties have been marked as deprecated. Developers are encouraged to migrate ASAP to the alternate
 properties.
 
@@ -239,16 +238,19 @@ called.
 [source,groovy]
 .build.gradle
 ----
+// Map notation
 attributes: toc: 'right',
             'source-highlighter': 'coderay',
             'toc-title': 'Table of Contents'
 
+// List notation
 attributes: [
     'toc=right',
     'source-highlighter=coderay',
     'toc-title=Table of Contents'
 ]
 
+// String notation
 attributes: 'toc=right source-highlighter=coderay toc-title=Table\\ of\\ Contents'
 ----
 
@@ -256,7 +258,6 @@ IMPORTANT: Do not forget to transform Groovy strings into Strings (by explicitly
 used as option values, otherwise the Ruby runtime will throw an exception.
 
 Notice how spaces are escaped in the last key/value pair.
-
 
 == Configuration
 
