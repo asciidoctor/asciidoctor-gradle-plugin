@@ -24,5 +24,5 @@ import java.io.File;
  * @author Schalk W. Cronjé.
  */
 public interface ResourceCopyProxy {
-    WorkResult copy( File outputDir, CopySpec spec );
+    WorkResult copy(File outputDir, CopySpec spec);
 }

@@ -23,10 +23,9 @@ import org.gradle.api.tasks.WorkResult
  * @author Schalk W. Cronjé.
  */
 class ResourceCopyProxyImpl implements ResourceCopyProxy {
-
     Project project
 
-    ResourceCopyProxyImpl(Project p) {project=p}
+    ResourceCopyProxyImpl(Project p) { project = p }
 
     @Override
     WorkResult copy(File outputDir, CopySpec spec) {
