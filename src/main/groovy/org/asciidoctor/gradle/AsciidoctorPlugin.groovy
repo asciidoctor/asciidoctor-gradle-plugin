@@ -38,8 +38,8 @@ class AsciidoctorPlugin implements Plugin<Project> {
 
         Configuration configuration = project.configurations.maybeCreate(ASCIIDOCTOR)
         project.afterEvaluate {
-            logger.info("asciidoctorj: ${extension.version}")
-            logger.info("asciidoctorj-groovy-dsl: ${extension.groovyDslVersion}")
+            project.logger.info("[Asciidoctor] asciidoctorj: ${extension.version}")
+            project.logger.info("[Asciidoctor] asciidoctorj-groovy-dsl: ${extension.groovyDslVersion}")
             project.dependencies {
                 asciidoctor("org.asciidoctor:asciidoctorj:${extension.version}")
                 asciidoctor("org.asciidoctor:asciidoctorj-groovy-dsl:${extension.groovyDslVersion}")
