@@ -418,7 +418,7 @@ class AsciidoctorTask extends DefaultTask {
      */
     @SuppressWarnings('DuplicateStringLiteral')
     void setSourceDocumentNames(Object... src) {
-        deprecated 'setSourceDocumentNames', 'setIncludes', 'Files are converted to patterns. Some might not convert correctly' +
+        deprecated 'setSourceDocumentNames', 'setIncludes', 'Files are converted to patterns. Some might not convert correctly. ' +
             'FileCollections will not convert'
         File base = sourceDir.absoluteFile
         def patterns = CollectionUtils.stringize(src as List).collect { String it ->
@@ -796,7 +796,7 @@ class AsciidoctorTask extends DefaultTask {
     }
 
     private void deprecated(final String method, final String alternative, final String msg = '') {
-        logger.lifecycle "Asciidoctor: ${method} is deprecated and will be removed in a future version." +
+        logger.lifecycle "Asciidoctor: ${method} is deprecated and will be removed in a future version. " +
             "Use ${alternative} instead. ${msg}"
     }
 }
