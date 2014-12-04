@@ -94,7 +94,7 @@ class AsciidoctorTask extends DefaultTask {
     @Optional @InputFile File sourceDocumentName
 
     /** Old way to define the backend to use
-     * @deprecated USe {@code backends} instead
+     * @deprecated Use {@code backends} instead
      */
     @Optional @Input String backend
 
@@ -630,7 +630,6 @@ class AsciidoctorTask extends DefaultTask {
     @SuppressWarnings('CatchException')
     @SuppressWarnings('DuplicateStringLiteral')
     private void processDocumentsAndResources(final String backend) {
-
         try {
             sourceFileTree.files.each { File file ->
                 if (file.name.startsWith('_')) {
