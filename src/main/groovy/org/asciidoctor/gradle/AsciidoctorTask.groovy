@@ -22,6 +22,7 @@ import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.FileTree
+import org.gradle.api.internal.file.copy.CopySpecInternal
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
@@ -536,6 +537,18 @@ class AsciidoctorTask extends DefaultTask {
      */
     CopySpec getResourceCopySpec() {
         this.resourceCopy ?: defaultResourceCopySpec
+    }
+
+    /** Gets the additional resources as a FileCollection.
+     * If {@code resources} was never called, it will return the file collections as per default CopySpec otherwise it
+     * will return the collections as built up via successive calls to {@code resources}
+     *
+     * @return A {@code FileCollection}, never null
+     * @since 1.5.2
+     */
+    @InputFiles @SkipWhenEmpty @Optional
+    FileCollection getResourceFileCollection() {
+        (resourceCopySpec as CopySpecInternal).buildRootResolver().allSource
     }
 
     @TaskAction
