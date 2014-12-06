@@ -1017,4 +1017,39 @@ class AsciidoctorTaskSpec extends Specification {
 
     }
 
+    def "Files in the resources copyspec should be recognised as input files" () {
+        given:
+            File imagesDir = new File(outDir,'images')
+            File imageFile = new File(imagesDir,'fake.txt')
+            imagesDir.mkdirs()
+            imageFile.text = 'foo'
+
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
+
+                sourceDir srcDir
+                outputDir "${outDir}/foo"
+                backends AsciidoctorBackend.HTML5.id
+
+                sources {
+                    include ASCIIDOC_SAMPLE_FILE
+                }
+
+                resources {
+                    from (outDir) {
+                        include 'images/**'
+                    }
+                }
+            }
+
+
+        when:
+            project.evaluate()
+
+        then:
+            task.inputs.files.contains( project.file("${srcDir}/sample.asciidoc") )
+            task.inputs.files.contains( project.file("${imagesDir}/fake.txt") )
+
+    }
 }
