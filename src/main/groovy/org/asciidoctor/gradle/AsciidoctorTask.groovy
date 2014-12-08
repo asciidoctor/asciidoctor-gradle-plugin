@@ -22,6 +22,7 @@ import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.FileTree
+import org.gradle.api.internal.file.copy.CopySpecInternal
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
@@ -94,7 +95,7 @@ class AsciidoctorTask extends DefaultTask {
     @Optional @InputFile File sourceDocumentName
 
     /** Old way to define the backend to use
-     * @deprecated USe {@code backends} instead
+     * @deprecated Use {@code backends} instead
      */
     @Optional @Input String backend
 
@@ -538,6 +539,18 @@ class AsciidoctorTask extends DefaultTask {
         this.resourceCopy ?: defaultResourceCopySpec
     }
 
+    /** Gets the additional resources as a FileCollection.
+     * If {@code resources} was never called, it will return the file collections as per default CopySpec otherwise it
+     * will return the collections as built up via successive calls to {@code resources}
+     *
+     * @return A {@code FileCollection}, never null
+     * @since 1.5.2
+     */
+    @InputFiles @SkipWhenEmpty @Optional
+    FileCollection getResourceFileCollection() {
+        (resourceCopySpec as CopySpecInternal).buildRootResolver().allSource
+    }
+
     @TaskAction
     void processAsciidocSources() {
         if (sourceFileTree.files.size() == 0) {
@@ -630,7 +643,6 @@ class AsciidoctorTask extends DefaultTask {
     @SuppressWarnings('CatchException')
     @SuppressWarnings('DuplicateStringLiteral')
     private void processDocumentsAndResources(final String backend) {
-
         try {
             sourceFileTree.files.each { File file ->
                 if (file.name.startsWith('_')) {
@@ -700,10 +712,44 @@ class AsciidoctorTask extends DefaultTask {
         for (entry in mergedOptions) {
             if (entry.value instanceof CharSequence) {
                 mergedOptions[entry.key] = entry.value.toString()
+            } else if (entry.value instanceof List) {
+                mergedOptions[entry.key] = stringifyList(entry.value)
+            } else if (entry.value instanceof Map) {
+                mergedOptions[entry.key] = stringifyMap(entry.value)
             }
         }
 
         mergedOptions
+    }
+
+    private static List stringifyList(List input) {
+        input.collect { element ->
+            if (element instanceof CharSequence) {
+                element.toString()
+            } else if (element instanceof List) {
+               stringifyList(element)
+            } else if (element instanceof Map) {
+                stringifyMap(element)
+            } else {
+                element
+            }
+        }
+    }
+
+    private static Map stringifyMap(Map input) {
+        Map output = [:]
+        input.each { key, value ->
+            if (value instanceof CharSequence) {
+                output[key] = value.toString()
+            } else if (value instanceof List) {
+                output[key] = stringifyList(value)
+            } else if (value instanceof Map) {
+                output[key] = stringifyMap(value)
+            } else {
+                output[key] = value
+            }
+        }
+        output
     }
 
     protected static void processMapAttributes(Map attributes, Map rawAttributes) {

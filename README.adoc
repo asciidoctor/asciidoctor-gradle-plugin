@@ -1,6 +1,6 @@
 = Asciidoctor Gradle Plugin
 Andres Almiray <https://github.com/aalmiray[@aalmiray]>
-:version: 1.5.1
+:version: 1.5.2-SNAPSHOT
 :asciidoc-url: http://asciidoc.org
 :asciidoctor-url: http://asciidoctor.org
 :issues: https://github.com/asciidoctor/asciidoctor-maven-plugin/issues
@@ -11,10 +11,11 @@ Andres Almiray <https://github.com/aalmiray[@aalmiray]>
 :lordofthejars: https://github.com/lordofthejars
 :asciidoctor-docs: http://asciidoctor.org/docs/
 :project-name: asciidoctor-gradle-plugin
+:github-branch: development
 
-image:http://img.shields.io/travis/asciidoctor/{project-name}/master.svg["Build Status", link="https://travis-ci.org/asciidoctor/{project-name}"]
-image:http://img.shields.io/coveralls/asciidoctor/{project-name}/master.svg["Coverage Status", link="https://coveralls.io/r/asciidoctor/{project-name}"]
-image:http://img.shields.io/:semver-{version}-blue.svg["Semantic Versioning", link="http://semver.org"]
+image:http://img.shields.io/travis/asciidoctor/{project-name}/{github-branch}.svg["Build Status", link="https://travis-ci.org/asciidoctor/{project-name}"]
+image:http://img.shields.io/coveralls/asciidoctor/{project-name}/{github-branch}.svg["Coverage Status", link="https://coveralls.io/r/asciidoctor/{project-name}"]
+image:http://img.shields.io/badge/license-ASF2-blue.svg["Apache License 2", link="http://www.apache.org/licenses/LICENSE-2.0.txt"]
 image:http://img.shields.io/badge/download-latest-bb00bb.svg[link="https://bintray.com/aalmiray/asciidoctor/{project-name}/_latestVersion"]
 
 The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to render all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
@@ -39,7 +40,7 @@ buildscript {
     }
 }
 
-apply plugin: 'org.asciidoctor.gradle.asciidoctor'
+apply plugin: 'org.asciidoctor.convert'
 ----
 
 == Usage
@@ -177,7 +178,7 @@ asciidoctor { <1>
                 idseparator         : '-'
 }
 ----
-<1> append below the line: `apply plugin: 'org.asciidoctor.gradle.asciidoctor'`
+<1> append below the line: `apply plugin: 'org.asciidoctor.convert'`
 
 The following attributes are automatically set by the `asciidoctor` task:
 
@@ -358,7 +359,7 @@ buildscript {
     }
 }
 
-apply plugin: 'org.asciidoctor.gradle.asciidoctor'
+apply plugin: 'org.asciidoctor.convert'
 
 repositories {
     jcenter()
