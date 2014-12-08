@@ -55,7 +55,7 @@ dependencies {
 }
 
 plugindev {
-    pluginId = 'org.asciidoctor.gradle.asciidoctor'
+    pluginId = 'org.asciidoctor.convert'
     pluginImplementationClass 'org.asciidoctor.gradle.AsciidoctorPlugin'
     pluginDescription 'A Gradle plugin that uses Asciidoctor via JRuby to process AsciiDoc source files within the project.'
     pluginLicenses 'Apache-2.0'

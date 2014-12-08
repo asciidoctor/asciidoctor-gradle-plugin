@@ -40,7 +40,7 @@ buildscript {
     }
 }
 
-apply plugin: 'org.asciidoctor.gradle.asciidoctor'
+apply plugin: 'org.asciidoctor.convert'
 ----
 
 == Usage
@@ -178,7 +178,7 @@ asciidoctor { <1>
                 idseparator         : '-'
 }
 ----
-<1> append below the line: `apply plugin: 'org.asciidoctor.gradle.asciidoctor'`
+<1> append below the line: `apply plugin: 'org.asciidoctor.convert'`
 
 The following attributes are automatically set by the `asciidoctor` task:
 
@@ -359,7 +359,7 @@ buildscript {
     }
 }
 
-apply plugin: 'org.asciidoctor.gradle.asciidoctor'
+apply plugin: 'org.asciidoctor.convert'
 
 repositories {
     jcenter()
