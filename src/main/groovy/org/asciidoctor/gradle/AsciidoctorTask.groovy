@@ -712,10 +712,44 @@ class AsciidoctorTask extends DefaultTask {
         for (entry in mergedOptions) {
             if (entry.value instanceof CharSequence) {
                 mergedOptions[entry.key] = entry.value.toString()
+            } else if (entry.value instanceof List) {
+                mergedOptions[entry.key] = stringifyList(entry.value)
+            } else if (entry.value instanceof Map) {
+                mergedOptions[entry.key] = stringifyMap(entry.value)
             }
         }
 
         mergedOptions
+    }
+
+    private static List stringifyList(List input) {
+        input.collect { element ->
+            if (element instanceof CharSequence) {
+                element.toString()
+            } else if (element instanceof List) {
+               stringifyList(element)
+            } else if (element instanceof Map) {
+                stringifyMap(element)
+            } else {
+                element
+            }
+        }
+    }
+
+    private static Map stringifyMap(Map input) {
+        Map output = [:]
+        input.each { key, value ->
+            if (value instanceof CharSequence) {
+                output[key] = value.toString()
+            } else if (value instanceof List) {
+                output[key] = stringifyList(value)
+            } else if (value instanceof Map) {
+                output[key] = stringifyMap(value)
+            } else {
+                output[key] = value
+            }
+        }
+        output
     }
 
     protected static void processMapAttributes(Map attributes, Map rawAttributes) {

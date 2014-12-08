@@ -1003,7 +1003,6 @@ class AsciidoctorTaskSpec extends Specification {
         then:
             1 * mockCopyProxy.copy( new File(outDir,AsciidoctorBackend.HTML5.id) , _)
             1 * mockCopyProxy.copy( new File(outDir,AsciidoctorBackend.DOCBOOK.id) , _)
-
     }
 
     def "sanity test for default configuration" () {
@@ -1014,7 +1013,6 @@ class AsciidoctorTaskSpec extends Specification {
         then:
             task.sourceDir.absolutePath.endsWith("src/docs/asciidoc")
             task.outputDir.absolutePath.endsWith("build/asciidoc")
-
     }
 
     def "Files in the resources copyspec should be recognised as input files" () {
@@ -1043,13 +1041,37 @@ class AsciidoctorTaskSpec extends Specification {
                 }
             }
 
-
         when:
             project.evaluate()
 
         then:
-            task.inputs.files.contains( project.file("${srcDir}/sample.asciidoc") )
-            task.inputs.files.contains( project.file("${imagesDir}/fake.txt") )
+            task.inputs.files.contains(project.file("${srcDir}/sample.asciidoc"))
+            task.inputs.files.contains(project.file("${imagesDir}/fake.txt"))
+    }
 
+    def "GroovyStrings in options and attributes are converted into Strings" () {
+        given:
+            String variable = 'bar'
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+                options = [
+                    template_dirs: ["${project.projectDir}/templates/haml"]
+                ]
+                attributes = [
+                    foo: "${variable}"
+                ]
+                asciidoctor = mockAsciidoctor
+                resourceCopyProxy = mockCopyProxy
+                sourceDir srcDir
+                outputDir = outDir
+            }
+
+        when:
+            task.processAsciidocSources()
+
+        then:
+            1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), { Map props ->
+                props.template_dirs*.class == [String] &&
+                props.attributes.foo.class == String
+            })
     }
 }
