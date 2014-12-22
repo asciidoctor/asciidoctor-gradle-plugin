@@ -11,12 +11,14 @@ Andres Almiray <https://github.com/aalmiray[@aalmiray]>
 :lordofthejars: https://github.com/lordofthejars
 :asciidoctor-docs: http://asciidoctor.org/docs/
 :project-name: asciidoctor-gradle-plugin
+:project-full-path: asciidoctor/asciidoctor-gradle-plugin
 :github-branch: development
 
-image:http://img.shields.io/travis/asciidoctor/{project-name}/{github-branch}.svg["Build Status", link="https://travis-ci.org/asciidoctor/{project-name}"]
-image:http://img.shields.io/coveralls/asciidoctor/{project-name}/{github-branch}.svg["Coverage Status", link="https://coveralls.io/r/asciidoctor/{project-name}"]
+image:https://ci.appveyor.com/api/projects/status/db102rphsu5lviv6/branch/{github-branch}?svg=true[Build Status", link="https://ci.appveyor.com/project/{project-full-path}/branch/{github-branch}"]
+image:http://img.shields.io/travis/{project-full-path}/{github-branch}.svg["Build Status", link="https://travis-ci.org/{project-full-path}"]
+image:http://img.shields.io/coveralls/{project-full-path}/{github-branch}.svg["Coverage Status", link="https://coveralls.io/r/{project-full-path}"]
 image:http://img.shields.io/badge/license-ASF2-blue.svg["Apache License 2", link="http://www.apache.org/licenses/LICENSE-2.0.txt"]
-image:http://img.shields.io/badge/download-latest-bb00bb.svg[link="https://bintray.com/aalmiray/asciidoctor/{project-name}/_latestVersion"]
+image:http://img.shields.io/badge/download-latest-bb00bb.svg[link="https://bintray.com/aalmiray/{project-full-path}/_latestVersion"]
 
 The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to render all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
 
