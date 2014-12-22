@@ -1011,8 +1011,8 @@ class AsciidoctorTaskSpec extends Specification {
             }
 
         then:
-            task.sourceDir.absolutePath.endsWith("src/docs/asciidoc")
-            task.outputDir.absolutePath.endsWith("build/asciidoc")
+            task.sourceDir.absolutePath.replace('\\', '/').endsWith('src/docs/asciidoc')
+            task.outputDir.absolutePath.replace('\\', '/').endsWith('build/asciidoc')
     }
 
     def "Files in the resources copyspec should be recognised as input files" () {
