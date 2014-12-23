@@ -14,7 +14,7 @@ Andres Almiray <https://github.com/aalmiray[@aalmiray]>
 :project-full-path: asciidoctor/asciidoctor-gradle-plugin
 :github-branch: development
 
-image:https://ci.appveyor.com/api/projects/status/db102rphsu5lviv6/branch/{github-branch}?svg=true[Build Status", link="https://ci.appveyor.com/project/{project-full-path}/branch/{github-branch}"]
+image:https://ci.appveyor.com/api/projects/status/db102rphsu5lviv6/branch/{github-branch}?svg=true&passingText={github-branch}%20-%20OK&failingText={github-branch}%20-%20Fails&pendingText={github-branch}%20-%20Pending[Build Status", link="https://ci.appveyor.com/project/{project-full-path}/branch/{github-branch}"]
 image:http://img.shields.io/travis/{project-full-path}/{github-branch}.svg["Build Status", link="https://travis-ci.org/{project-full-path}"]
 image:http://img.shields.io/coveralls/{project-full-path}/{github-branch}.svg["Coverage Status", link="https://coveralls.io/r/{project-full-path}"]
 image:http://img.shields.io/badge/license-ASF2-blue.svg["Apache License 2", link="http://www.apache.org/licenses/LICENSE-2.0.txt"]
