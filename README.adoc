@@ -18,7 +18,7 @@ image:https://ci.appveyor.com/api/projects/status/db102rphsu5lviv6/branch/{githu
 image:http://img.shields.io/travis/{project-full-path}/{github-branch}.svg["Build Status", link="https://travis-ci.org/{project-full-path}"]
 image:http://img.shields.io/coveralls/{project-full-path}/{github-branch}.svg["Coverage Status", link="https://coveralls.io/r/{project-full-path}"]
 image:http://img.shields.io/badge/license-ASF2-blue.svg["Apache License 2", link="http://www.apache.org/licenses/LICENSE-2.0.txt"]
-image:http://img.shields.io/badge/download-latest-bb00bb.svg[link="https://bintray.com/aalmiray/{project-full-path}/_latestVersion"]
+image:https://api.bintray.com/packages/asciidoctor/maven/{project-full-path}/images/download.svg[Download, link="https://bintray.com/asciidoctor/maven/{project-full-path}"]
 
 The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to render all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
 
