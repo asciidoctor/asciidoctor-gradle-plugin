@@ -17,6 +17,8 @@ package org.asciidoctor.gradle
 
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.artifacts.DependencyResolutionListener
+import org.gradle.api.artifacts.ResolvableDependencies
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
@@ -24,6 +26,8 @@ import spock.lang.Specification
  * Plugin specification.
  *
  * @author Benjamin Muschko
+ * @author Patrick Reimers
+ * @author Markus Schlichting
  */
 class AsciidoctorPluginSpec extends Specification {
     private static final String ASCIIDOCTOR = 'asciidoctor'
@@ -48,5 +52,33 @@ class AsciidoctorPluginSpec extends Specification {
             asciidoctorTask.outputDir == new File(project.buildDir, 'asciidoc')
 
             project.tasks.findByName('clean') != null
+    }
+
+    def "testPluginWithAlternativeAsciidoctorVersion"() {
+        expect:
+        project.tasks.findByName(ASCIIDOCTOR) == null
+
+        when:
+        project.apply plugin: AsciidoctorPlugin
+
+        def expectedVersion = 'my.expected.version-SNAPSHOT'
+        project.asciidoctorj.version = expectedVersion
+
+        def expectedDslVersion = 'dsl.' + expectedVersion
+        project.asciidoctorj.groovyDslVersion = expectedDslVersion
+
+        def config = project.project.configurations.getByName('asciidoctor')
+        def dependencies = config.dependencies
+        assert dependencies.isEmpty();
+
+        // mock-trigger beforeResolve() to avoid 'real' resolution of dependencies
+        DependencyResolutionListener broadcast = config.getDependencyResolutionBroadcast()
+        ResolvableDependencies incoming = config.getIncoming()
+        broadcast.beforeResolve(incoming)
+        def dependencyHandler = project.getDependencies();
+
+        then:
+        assert dependencies.contains(dependencyHandler.create(AsciidoctorPlugin.ASCIIDOCTORJ_GROOVY_DSL_DEPENDENCY + expectedDslVersion))
+        assert dependencies.contains(dependencyHandler.create(AsciidoctorPlugin.ACSIIDOCTORJ_CORE_DEPENDENCY + expectedVersion))
     }
 }
