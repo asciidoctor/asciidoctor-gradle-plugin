@@ -47,14 +47,15 @@ class AsciidoctorPlugin implements Plugin<Project> {
         project.logger.info("[Asciidoctor] asciidoctorj: ${extension.version}")
         project.logger.info("[Asciidoctor] asciidoctorj-groovy-dsl: ${extension.groovyDslVersion}")
 
-        configuration.getIncoming().beforeResolve(new Action<ResolvableDependencies>() {
-            public void execute(ResolvableDependencies resolvableDependencies) {
-                DependencyHandler dependencyHandler = project.getDependencies();
-                def dependencies = configuration.getDependencies()
+        configuration.incoming.beforeResolve(new Action<ResolvableDependencies>() {
+            @SuppressWarnings('UnusedMethodParameter')
+            void execute(ResolvableDependencies resolvableDependencies) {
+                DependencyHandler dependencyHandler = project.dependencies
+                def dependencies = configuration.dependencies
                 dependencies.add(dependencyHandler.create(ACSIIDOCTORJ_CORE_DEPENDENCY + extension.version))
                 dependencies.add(dependencyHandler.create(ASCIIDOCTORJ_GROOVY_DSL_DEPENDENCY + extension.groovyDslVersion))
             }
-        });
+        })
 
         project.task(ASCIIDOCTOR,
                 type: AsciidoctorTask,
