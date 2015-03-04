@@ -1,0 +1,19 @@
+= Asciidoctor Hacking Guide
+
+This is a guide to contributing to the Aciidoctor plugin for Gradle. (It is still very much work-in-progress)
+
+== Branches
+
+The default branch in github is `development` which is our working branch. `master` is set as the stable branch from
+which we make our releases. We made `development` the default because people kept sending PRs targeting `master` instead.
+
+== Snapshots
+
+We do not publish snapshot releases because plugin snapshots break one very important tenet from `Gradle`: reproducible builds.
+If a developer requires a snapshot release then we think this has to be a very conscious decision and they must bear
+the responsibility of building said snapshot. In this way they can be sure it's their version and not someone else's
+which might bring incompatibility problems.
+
+If you need to work with snapshots consider building locally and publishing to your local `~/.m2`. This can be achieved
+by running `./gradlew build install`.
+
