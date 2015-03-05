@@ -13,6 +13,7 @@ Andres Almiray <https://github.com/aalmiray[@aalmiray]>
 :project-name: asciidoctor-gradle-plugin
 :project-full-path: asciidoctor/asciidoctor-gradle-plugin
 :github-branch: development
+:linkattrs:
 
 image:https://ci.appveyor.com/api/projects/status/db102rphsu5lviv6/branch/{github-branch}?svg=true&passingText={github-branch}%20-%20OK&failingText={github-branch}%20-%20Fails&pendingText={github-branch}%20-%20Pending[Build Status", link="https://ci.appveyor.com/project/{project-full-path}/branch/{github-branch}"]
 image:http://img.shields.io/travis/{project-full-path}/{github-branch}.svg["Build Status", link="https://travis-ci.org/{project-full-path}"]
@@ -214,6 +215,13 @@ attributes docinfo1: ''
 ----
 
 Refer to the {asciidoctor-docs}[Asciidoctor documentation] to learn more about these options and attributes.
+
+.Note
+
+Attribute values defined on the build file will win over values defined on the documents themselves. You can change
+this behavior by appending an `@` at the end of the value when defined in the build file. Please refer to
+link:http://asciidoctor.org/docs/user-manual/#attribute-assignment-precedence[Attribute assignment precedence, window="_blank"]
+for more information.
 
 == Compatibility With Previous Releases
 
