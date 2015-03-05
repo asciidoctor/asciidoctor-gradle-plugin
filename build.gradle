@@ -20,9 +20,9 @@ buildscript {
     }
 
     dependencies {
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1'
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.3.1'
         classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.6'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.8'
         classpath 'nu.studer:gradle-plugindev-plugin:1.0.3'
     }
 }
@@ -44,7 +44,7 @@ dependencies {
     compile gradleApi()
     testCompile 'org.asciidoctor:asciidoctorj:1.5.2'
     testCompile 'org.asciidoctor:asciidoctorj-groovy-dsl:1.0.0.preview2'
-    testCompile('org.spockframework:spock-core:0.7-groovy-2.0') {
+    testCompile('org.spockframework:spock-core:1.0-groovy-2.3') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
         exclude group: 'org.hamcrest', module: 'hamcrest-core'
     }
