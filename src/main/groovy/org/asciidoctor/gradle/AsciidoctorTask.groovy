@@ -683,14 +683,14 @@ class AsciidoctorTask extends DefaultTask {
         mergedOptions.backend = params.backend
         mergedOptions.in_place = false
         mergedOptions.safe = resolveSafeModeLevel(mergedOptions.safe, 0i)
-        mergedOptions.to_dir = params.outputDir.absolutePath
+        mergedOptions.to_dir = params.outputDir
         if (params.baseDir) {
-            mergedOptions.base_dir = params.baseDir.absolutePath
+            mergedOptions.base_dir = params.baseDir
         }
 
         if (mergedOptions.to_file) {
             File toFile = new File(mergedOptions.to_file)
-            mergedOptions.to_file = new File(mergedOptions.remove('to_dir'), toFile.name).absolutePath
+            mergedOptions.to_file = new File(mergedOptions.remove('to_dir'), toFile.name)
         }
 
         Map attributes = [:]
@@ -716,6 +716,8 @@ class AsciidoctorTask extends DefaultTask {
                 mergedOptions[entry.key] = stringifyList(entry.value)
             } else if (entry.value instanceof Map) {
                 mergedOptions[entry.key] = stringifyMap(entry.value)
+            } else if (entry.value instanceof File) {
+                mergedOptions[entry.key] = entry.value.absolutePath
             }
         }
 
@@ -730,6 +732,8 @@ class AsciidoctorTask extends DefaultTask {
                stringifyList(element)
             } else if (element instanceof Map) {
                 stringifyMap(element)
+            } else if(element instanceof File) {
+                element.absolutePath
             } else {
                 element
             }
@@ -745,6 +749,8 @@ class AsciidoctorTask extends DefaultTask {
                 output[key] = stringifyList(value)
             } else if (value instanceof Map) {
                 output[key] = stringifyMap(value)
+            } else if(value instanceof File) {
+                output[key] = value.absolutePath
             } else {
                 output[key] = value
             }
