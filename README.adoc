@@ -24,6 +24,11 @@ The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to 
 
 This is a port of the {asciidoctor-maven-plugin}[Asciidoctor Maven Plugin] project founded by {lightguard}[@LightGuard]. Relies on {asciidoctorj}[AsciidoctorJ] founded by {lordofthejars}[@lordofthejars].
 
+== Contributing
+
+Are you interested in contributing to this project? If so please read link:HACKING.adoc[HACKING] before sending in a patch. +
+Thank you!
+
 == Installation
 
 Use the following snippet inside a Gradle build file:
