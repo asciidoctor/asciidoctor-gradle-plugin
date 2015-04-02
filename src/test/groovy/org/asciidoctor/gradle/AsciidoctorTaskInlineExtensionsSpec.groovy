@@ -189,7 +189,7 @@ class AsciidoctorTaskInlineExtensionsSpec extends Specification {
                 sourceDocumentNames = [ASCIIDOC_INLINE_EXTENSIONS_FILE]
                 outputDir = outDir
                 extensions {
-                    includeprocessor (filter: {it.startsWith('http')}) {
+                    include_processor (filter: {it.startsWith('http')}) {
                         document, reader, target, attributes ->
                         reader.push_include(content, target, target, 1, attributes);
                     }
