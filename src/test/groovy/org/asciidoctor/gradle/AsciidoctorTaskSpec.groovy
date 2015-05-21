@@ -574,6 +574,7 @@ class AsciidoctorTaskSpec extends Specification {
         then:
             1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE2_FILE), { it.to_dir == new File(task.outputDir, 'subdir').absolutePath })
             1 * mockAsciidoctor.renderFile(new File(task.sourceDir, ASCIIDOC_SAMPLE_FILE), { it.to_dir == task.outputDir.absolutePath })
+        and:
             0 * mockAsciidoctor.renderFile(_, _)
     }
 
