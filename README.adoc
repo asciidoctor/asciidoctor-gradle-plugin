@@ -136,6 +136,8 @@ resources {
   from( "${buildDir}/downloads" ) {
     include 'deck.js/**'
   }
+  
+  into "./images"
 }
 ----
 
