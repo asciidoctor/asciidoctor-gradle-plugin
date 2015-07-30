@@ -1,6 +1,7 @@
 = Asciidoctor Gradle Plugin
 Andres Almiray <https://github.com/aalmiray[@aalmiray]>
 :version: 1.5.3-SNAPSHOT
+:version-published: 1.5.2
 :asciidoc-url: http://asciidoc.org
 :asciidoctor-url: http://asciidoctor.org
 :issues: https://github.com/asciidoctor/asciidoctor-maven-plugin/issues
@@ -35,7 +36,7 @@ Thank you!
 Use the following snippet inside a Gradle build file:
 
 [source,groovy]
-[subs="attributes"]
+[subs="attributes,specialcharacters"]
 .build.gradle
 ----
 buildscript {
@@ -44,7 +45,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'org.asciidoctor:{project-name}:{version}'
+        classpath 'org.asciidoctor:{project-name}:{version-published}'
     }
 }
 
@@ -363,7 +364,7 @@ following setup:
 The `extension` project is a sibling for `core`. The build file for the latter looks like this:
 
 [source,groovy]
-[subs="attributes"]
+[subs="attributes,specialcharacters"]
 .build.gradle
 ----
 buildscript {
@@ -372,7 +373,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:{version}'
+        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:{version-published}'
     }
 }
 

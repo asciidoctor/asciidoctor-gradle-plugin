@@ -1,4 +1,6 @@
 = Asciidoctor Hacking Guide
+:version: 1.5.3-SNAPSHOT
+:project-name: asciidoctor-gradle-plugin
 
 This is a guide to contributing to the Aciidoctor plugin for Gradle. (It is still very much work-in-progress)
 
@@ -16,4 +18,21 @@ which might bring incompatibility problems.
 
 If you need to work with snapshots consider building locally and publishing to your local `~/.m2`. This can be achieved
 by running `./gradlew build install`.
+You can then use the snapshot in your Gradle build as follows:
 
+[source,groovy]
+[subs="attributes,specialcharacters"]
+.build.gradle
+----
+buildscript {
+    repositories {
+        mavenLocal()
+    }
+
+    dependencies {
+        classpath 'org.asciidoctor:{project-name}:{version}'
+    }
+}
+
+apply plugin: 'org.asciidoctor.convert'
+----
