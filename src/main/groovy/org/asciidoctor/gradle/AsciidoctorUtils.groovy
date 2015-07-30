@@ -46,16 +46,19 @@ class AsciidoctorUtils {
         if (index != baseComponents.length) {
             // backtrack to base directory
             for (int i = index; i < baseComponents.length; ++i) {
-                result.append('..' + File.separator)
+                if (i != index) {
+                    result.append(File.separator)
+                }
+                result.append('..')
             }
         }
-        for (; index < targetComponents.length; ++index) {
-            result.append(targetComponents[index] + File.separator)
+        for (int i = index; i < targetComponents.length; ++i) {
+            if (i != index) {
+                result.append(File.separator)
+            }
+            result.append(targetComponents[i])
         }
-        if (!target.path.endsWith('/') && !target.path.endsWith('\\')) {
-            // remove final path separator
-            result.delete(result.length() - File.separator.length(), result.length())
-        }
+
         result.toString()
     }
 }
