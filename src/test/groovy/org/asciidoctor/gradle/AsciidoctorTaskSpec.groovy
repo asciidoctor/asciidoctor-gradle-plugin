@@ -1016,6 +1016,26 @@ class AsciidoctorTaskSpec extends Specification {
             task.outputDir.absolutePath.replace('\\', '/').endsWith('build/asciidoc')
     }
 
+    def "set output dir to sth else than the default" () {
+        given:
+        project.version = '1.0.0-SNAPSHOT'
+        project.group = 'com.acme'
+
+        Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+            asciidoctor = mockAsciidoctor
+            resourceCopyProxy = mockCopyProxy
+            sourceDir = srcDir
+        }
+        project.buildDir =  '/tmp/testbuild/asciidoctor'
+
+        when:
+        task.processAsciidocSources()
+
+        then: 'the html files must be in testbuild/asciidoctor '
+        task.outputDir.absolutePath.replace('\\', '/').endsWith('testbuild/asciidoctor')
+        2 * mockAsciidoctor.renderFile(_, { it.to_dir.startsWith(project.buildDir.absolutePath) })
+    }
+
     def "Files in the resources copyspec should be recognised as input files" () {
         given:
             File imagesDir = new File(outDir,'images')
