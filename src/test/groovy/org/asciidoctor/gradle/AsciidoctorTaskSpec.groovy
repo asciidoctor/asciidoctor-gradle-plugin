@@ -1016,7 +1016,7 @@ class AsciidoctorTaskSpec extends Specification {
             task.outputDir.absolutePath.replace('\\', '/').endsWith('build/asciidoc')
     }
 
-    def "set output dir to sth else than the default" () {
+    def "set output dir to something else than the default" () {
         given:
         project.version = '1.0.0-SNAPSHOT'
         project.group = 'com.acme'
@@ -1032,7 +1032,7 @@ class AsciidoctorTaskSpec extends Specification {
         task.processAsciidocSources()
 
         then: 'the html files must be in testbuild/asciidoctor '
-        task.outputDir.absolutePath.replace('\\', '/').endsWith('testbuild/asciidoctor')
+        task.outputDir.absolutePath.replace('\\', '/').contains('testbuild/asciidoctor')
         2 * mockAsciidoctor.renderFile(_, { it.to_dir.startsWith(project.buildDir.absolutePath) })
     }
 

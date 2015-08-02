@@ -111,7 +111,6 @@ class AsciidoctorTask extends DefaultTask {
 
     AsciidoctorTask() {
         srcDir = project.file('src/docs/asciidoc')
-        outputDir = new File(project.buildDir, 'asciidoc')
     }
 
     /** Returns all of the Asciidoctor options
@@ -384,7 +383,12 @@ class AsciidoctorTask extends DefaultTask {
      *
      */
     @OutputDirectory
-    File getOutputDir() { project.file(this.outDir) }
+    File getOutputDir() {
+        if (this.outDir == null) {
+            this.outDir = new File(project.buildDir, 'asciidoc')
+        }
+        project.file(this.outDir)
+    }
 
     /** Returns the collection of source documents
      *
