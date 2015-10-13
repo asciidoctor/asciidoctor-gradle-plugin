@@ -27,6 +27,7 @@ import org.gradle.api.artifacts.dsl.DependencyHandler
  * @author Andres Almiray
  * @author Patrick Reimers
  * @author Markus Schlichting
+ * @author Schalk W. Cronjé
  */
 class AsciidoctorPlugin implements Plugin<Project> {
     static final String ASCIIDOCTOR = 'asciidoctor'
@@ -39,8 +40,12 @@ class AsciidoctorPlugin implements Plugin<Project> {
 
         AsciidoctorExtension extension = project.extensions.create(ASCIIDOCTORJ, AsciidoctorExtension, project)
 
-        project.repositories {
-            jcenter()
+        project.afterEvaluate {
+            if(!project.extensions.asciidoctorj.noDefaultRepositories) {
+                project.repositories {
+                    jcenter()
+                }
+            }
         }
 
         Configuration configuration = project.configurations.maybeCreate(ASCIIDOCTOR)
