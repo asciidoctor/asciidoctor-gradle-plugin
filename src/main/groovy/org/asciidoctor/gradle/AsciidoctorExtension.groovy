@@ -25,6 +25,13 @@ class AsciidoctorExtension {
 
     String groovyDslVersion = '1.0.0.preview2'
 
+    /**
+     * By default the plugin will try to add a default repository to find AsciidoctorJ.
+     * For certain cases this approach is not acceptable, the behaviour can be turned off
+     * by setting this value to {@code true}
+     */
+    boolean noDefaultRepositories = false
+
     final Project project
 
     AsciidoctorExtension(Project project) {

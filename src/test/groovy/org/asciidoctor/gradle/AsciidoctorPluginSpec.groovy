@@ -81,4 +81,24 @@ class AsciidoctorPluginSpec extends Specification {
         assert dependencies.contains(dependencyHandler.create(AsciidoctorPlugin.ASCIIDOCTORJ_GROOVY_DSL_DEPENDENCY + expectedDslVersion))
         assert dependencies.contains(dependencyHandler.create(AsciidoctorPlugin.ACSIIDOCTORJ_CORE_DEPENDENCY + expectedVersion))
     }
+
+    def "JCenter repository is added by default"() {
+        when:
+        project.apply plugin : AsciidoctorPlugin
+        project.evaluate()
+
+        then:
+        project.repositories.findByName('BintrayJCenter')
+    }
+
+    def "JCenter repository must not be added when noDefaultRepositories is set"() {
+        when:
+        project.apply plugin : AsciidoctorPlugin
+        project.extensions.asciidoctorj.noDefaultRepositories = true
+        project.evaluate()
+
+        then:
+        project.repositories.findByName('BintrayJCenter') == null
+    }
 }
+
