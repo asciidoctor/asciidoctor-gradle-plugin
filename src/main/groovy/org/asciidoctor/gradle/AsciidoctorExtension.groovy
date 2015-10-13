@@ -29,6 +29,8 @@ class AsciidoctorExtension {
      * By default the plugin will try to add a default repository to find AsciidoctorJ.
      * For certain cases this approach is not acceptable, the behaviour can be turned off
      * by setting this value to {@code true}
+     *
+     * @since 1.6.0
      */
     boolean noDefaultRepositories = false
 
