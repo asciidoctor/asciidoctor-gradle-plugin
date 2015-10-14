@@ -309,6 +309,16 @@ asciidoctorj {
 <1> resolves artifacts in your local Maven repository
 <2> resolves artifacts in Bintray's jcenter (where all other dependencies are found)
 
+The plugin also adds Bintray's JCenter as a default repository as the place to looks for `asciidocotorj`. In some contexts
+this behaviour can be considered detrimental or unwanted. In such cases this behaviour can be turned off by doing
+
+[source,groovy]
+----
+asciidoctorj {
+  noDefaultRepositories = true
+}
+----
+
 == Custom Extensions
 
 Starting with version 1.5.0 you'll be able to write your own Asciidoctor extensions in Groovy, or any other JVM language
