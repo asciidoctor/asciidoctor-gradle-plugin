@@ -47,7 +47,7 @@ if (!project.hasProperty('bintrayUsername')) ext.bintrayUsername = ''
 if (!project.hasProperty('bintrayApiKey')) ext.bintrayApiKey = ''
 
 bintray {
-    user = project.bintrayUsername
+    user = 'asciidoctor'
     key = project.bintrayApiKey
-    pkg.repo = 'asciidoctor'
+    pkg.repo = 'maven'
 }
