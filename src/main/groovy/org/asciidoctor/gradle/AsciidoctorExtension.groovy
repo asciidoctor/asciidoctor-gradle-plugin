@@ -21,7 +21,7 @@ import org.gradle.api.Project
  * @author Andres Almiray
  */
 class AsciidoctorExtension {
-    String version = '1.5.2'
+    String version = '1.5.3.2'
 
     String groovyDslVersion = '1.0.0.preview2'
 
@@ -30,7 +30,7 @@ class AsciidoctorExtension {
      * For certain cases this approach is not acceptable, the behaviour can be turned off
      * by setting this value to {@code true}
      *
-     * @since 1.6.0
+     * @since 1.5.3
      */
     boolean noDefaultRepositories = false
 

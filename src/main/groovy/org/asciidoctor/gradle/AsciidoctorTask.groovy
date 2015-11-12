@@ -51,7 +51,7 @@ import org.gradle.util.CollectionUtils
  * @author Schalk W. Cronjé
  * @author Robert Panzer
  */
-@SuppressWarnings('MethodCount')
+@SuppressWarnings(['MethodCount', 'Instanceof'])
 class AsciidoctorTask extends DefaultTask {
     private static final boolean IS_WINDOWS = System.getProperty('os.name').contains('Windows')
     private static final String PATH_SEPARATOR = System.getProperty('path.separator')
@@ -841,6 +841,7 @@ class AsciidoctorTask extends DefaultTask {
         cl.loadClass(className)
     }
 
+    @SuppressWarnings('AssignmentToStaticFieldFromInstanceMethod')
     private void setupClassLoader() {
         if (classpath?.files) {
             def urls = classpath.files.collect { it.toURI().toURL() }
