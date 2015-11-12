@@ -1,5 +1,5 @@
 = Asciidoctor Hacking Guide
-:version: 1.5.3-SNAPSHOT
+:version: 1.6.0-SNAPSHOT
 :project-name: asciidoctor-gradle-plugin
 
 This is a guide to contributing to the Aciidoctor plugin for Gradle. (It is still very much work-in-progress)

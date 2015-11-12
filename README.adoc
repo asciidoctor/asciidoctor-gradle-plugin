@@ -1,6 +1,6 @@
 = Asciidoctor Gradle Plugin
 Andres Almiray <https://github.com/aalmiray[@aalmiray]>
-:version: 1.5.3-SNAPSHOT
+:version: 1.6.0-SNAPSHOT
 :version-published: 1.5.3
 :asciidoc-url: http://asciidoc.org
 :asciidoctor-url: http://asciidoctor.org
@@ -13,7 +13,7 @@ Andres Almiray <https://github.com/aalmiray[@aalmiray]>
 :asciidoctor-docs: http://asciidoctor.org/docs/
 :project-name: asciidoctor-gradle-plugin
 :project-full-path: asciidoctor/asciidoctor-gradle-plugin
-:github-branch: master
+:github-branch: development
 :linkattrs:
 
 image:https://ci.appveyor.com/api/projects/status/db102rphsu5lviv6/branch/{github-branch}?svg=true&passingText={github-branch}%20-%20OK&failingText={github-branch}%20-%20Fails&pendingText={github-branch}%20-%20Pending[Build Status", link="https://ci.appveyor.com/project/{project-full-path}/branch/{github-branch}"]
