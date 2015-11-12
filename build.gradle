@@ -23,7 +23,7 @@ buildscript {
         classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.4.0'
         classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.11.3'
-        classpath 'nu.studer:gradle-plugindev-plugin:1.0.3'
+        classpath 'nu.studer:gradle-plugindev-plugin:1.0.4'
     }
 }
 
@@ -42,14 +42,14 @@ repositories {
 
 dependencies {
     compile gradleApi()
-    testCompile 'org.asciidoctor:asciidoctorj:1.5.2'
-    testCompile 'org.asciidoctor:asciidoctorj-groovy-dsl:1.0.0.Alpha1'
-    testCompile('org.spockframework:spock-core:1.0-groovy-2.3') {
+    testCompile 'org.asciidoctor:asciidoctorj:1.5.3'
+    testCompile 'org.asciidoctor:asciidoctorj-groovy-dsl:1.0.0.preview2'
+    testCompile('org.spockframework:spock-core:1.0-groovy-2.4') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
         exclude group: 'org.hamcrest', module: 'hamcrest-core'
     }
-    testCompile 'org.jsoup:jsoup:1.8.2'
-    testCompile 'cglib:cglib-nodep:3.1'
+    testCompile 'org.jsoup:jsoup:1.8.3'
+    testCompile 'cglib:cglib-nodep:3.2.0'
 }
 
 plugindev {
