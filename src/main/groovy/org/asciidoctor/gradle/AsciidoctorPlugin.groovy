@@ -32,7 +32,7 @@ import org.gradle.api.artifacts.dsl.DependencyHandler
 class AsciidoctorPlugin implements Plugin<Project> {
     static final String ASCIIDOCTOR = 'asciidoctor'
     static final String ASCIIDOCTORJ = 'asciidoctorj'
-    static final String ACSIIDOCTORJ_CORE_DEPENDENCY = 'org.asciidoctor:asciidoctorj:'
+    static final String ASCIIDOCTORJ_CORE_DEPENDENCY = 'org.asciidoctor:asciidoctorj:'
     static final String ASCIIDOCTORJ_GROOVY_DSL_DEPENDENCY = 'org.asciidoctor:asciidoctorj-groovy-dsl:'
 
     void apply(Project project) {
@@ -57,7 +57,7 @@ class AsciidoctorPlugin implements Plugin<Project> {
             void execute(ResolvableDependencies resolvableDependencies) {
                 DependencyHandler dependencyHandler = project.dependencies
                 def dependencies = configuration.dependencies
-                dependencies.add(dependencyHandler.create(ACSIIDOCTORJ_CORE_DEPENDENCY + extension.version))
+                dependencies.add(dependencyHandler.create(ASCIIDOCTORJ_CORE_DEPENDENCY + extension.version))
                 dependencies.add(dependencyHandler.create(ASCIIDOCTORJ_GROOVY_DSL_DEPENDENCY + extension.groovyDslVersion))
             }
         })
