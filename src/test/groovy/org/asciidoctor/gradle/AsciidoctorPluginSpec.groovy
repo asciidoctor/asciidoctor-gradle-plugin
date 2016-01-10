@@ -81,7 +81,7 @@ class AsciidoctorPluginSpec extends Specification {
 
         then:
         assert dependencies.contains(dependencyHandler.create(AsciidoctorPlugin.ASCIIDOCTORJ_GROOVY_DSL_DEPENDENCY + expectedDslVersion))
-        assert dependencies.contains(dependencyHandler.create(AsciidoctorPlugin.ACSIIDOCTORJ_CORE_DEPENDENCY + expectedVersion))
+        assert dependencies.contains(dependencyHandler.create(AsciidoctorPlugin.ASCIIDOCTORJ_CORE_DEPENDENCY + expectedVersion))
     }
 
     def "JCenter repository is added by default"() {
