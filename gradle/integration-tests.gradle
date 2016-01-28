@@ -1,0 +1,40 @@
+// Write the plugin's classpath to a file to share with the integration tests.
+// This is a workaround/hack as described in the Gradle user guide:
+//
+//    https://docs.gradle.org/2.10/userguide/test_kit.html#testKitFunctionalTestSpockClassesTestConfig
+//
+// It has to come before the `dependencies` block because one of the dependencies
+// relies on it.
+task createClasspathManifest {
+    def outputDir = file("$buildDir/$name")
+
+    inputs.files sourceSets.main.runtimeClasspath
+    outputs.dir outputDir
+
+    doLast {
+        outputDir.mkdirs()
+        file("$outputDir/plugin-classpath.txt").text = sourceSets.main.runtimeClasspath.join("\n")
+    }
+}
+
+sourceSets {
+    intTest
+}
+
+// For a single test, you can run "gradle -DintTest.single=<test name> intTest"
+task intTest(type: Test) {
+    description = "Runs the plugin's integration tests"
+    group = "verification"
+
+    mustRunAfter "test"
+    inputs.dir sourceSets.main.output.classesDir
+    inputs.dir sourceSets.main.output.resourcesDir
+
+    testClassesDir = sourceSets.intTest.output.classesDir
+    classpath = sourceSets.intTest.runtimeClasspath
+
+    include "**/*Spec*"
+    exclude "**/Abstract*Spec*"
+}
+
+check.dependsOn intTest
