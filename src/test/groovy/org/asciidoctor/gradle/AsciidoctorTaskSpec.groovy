@@ -1105,4 +1105,24 @@ class AsciidoctorTaskSpec extends Specification {
                 props.attributes.foo.class == String
             })
     }
+
+    @SuppressWarnings('MethodName')
+    def "Should require libraries"() {
+        expect:
+        project.tasks.findByName(ASCIIDOCTOR) == null
+        when:
+        Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+            asciidoctor = mockAsciidoctor
+            resourceCopyProxy = mockCopyProxy
+            sourceDir = srcDir
+            outputDir = outDir
+            sourceDocumentName = new File(srcDir, ASCIIDOC_SAMPLE_FILE)
+            requires 'asciidoctor-pdf'
+        }
+
+        task.processAsciidocSources()
+        then:
+        1 * mockAsciidoctor.requireLibrary("asciidoctor-pdf")
+    }
+
 }
