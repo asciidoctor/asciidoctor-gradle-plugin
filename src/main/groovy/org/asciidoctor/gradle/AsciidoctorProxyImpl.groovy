@@ -25,4 +25,9 @@ class AsciidoctorProxyImpl implements AsciidoctorProxy {
     String renderFile(File filename, Map<String, Object> options) {
         delegate.renderFile(filename, options)
     }
+
+    @Override
+    void requireLibrary(String... requiredLibraries) {
+        delegate.requireLibrary(requiredLibraries)
+    }
 }
