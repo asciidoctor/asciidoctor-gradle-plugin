@@ -15,28 +15,44 @@ Andres Almiray <https://github.com/aalmiray[@aalmiray]>
 :project-full-path: asciidoctor/asciidoctor-gradle-plugin
 :github-branch: development
 :linkattrs:
+ifndef::env-github[:icons: font]
+ifdef::env-github,env-browser[]
+:toc: preamble
+:toclevels: 2
+endif::[]
+ifdef::env-github[]
+:status:
+:outfilesuffix: .adoc
+:!toc-title:
+:note-caption: :paperclip:
+:important-caption: :exclamation:
+endif::[]
 
-image:https://ci.appveyor.com/api/projects/status/db102rphsu5lviv6/branch/{github-branch}?svg=true&passingText={github-branch}%20-%20OK&failingText={github-branch}%20-%20Fails&pendingText={github-branch}%20-%20Pending[Build Status", link="https://ci.appveyor.com/project/{project-full-path}/branch/{github-branch}"]
-image:http://img.shields.io/travis/{project-full-path}/{github-branch}.svg["Build Status", link="https://travis-ci.org/{project-full-path}"]
-image:http://img.shields.io/coveralls/{project-full-path}/{github-branch}.svg["Coverage Status", link="https://coveralls.io/r/{project-full-path}"]
-image:http://img.shields.io/badge/license-ASF2-blue.svg["Apache License 2", link="http://www.apache.org/licenses/LICENSE-2.0.txt"]
-image:https://api.bintray.com/packages/asciidoctor/maven/{project-name}/images/download.svg[Download, link="https://bintray.com/asciidoctor/maven/{project-name}"]
+ifdef::status[]
+image:http://img.shields.io/travis/{project-full-path}/{github-branch}.svg[Build Status, link=https://travis-ci.org/{project-full-path}]
+image:https://ci.appveyor.com/api/projects/status/db102rphsu5lviv6/branch/{github-branch}?svg=true&passingText={github-branch}%20-%20OK&failingText={github-branch}%20-%20Fails&pendingText={github-branch}%20-%20Pending[Build Status, link=https://ci.appveyor.com/project/{project-full-path}/branch/{github-branch}]
+image:http://img.shields.io/coveralls/{project-full-path}/{github-branch}.svg[Coverage Status, link=https://coveralls.io/r/{project-full-path}]
+image:http://img.shields.io/badge/license-ASF2-blue.svg[Apache License 2, link=http://www.apache.org/licenses/LICENSE-2.0.txt]
+image:https://api.bintray.com/packages/asciidoctor/maven/{project-name}/images/download.svg[Download, link=https://bintray.com/asciidoctor/maven/{project-name}]
+endif::[]
 
 The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to render all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
 
-This is a port of the {asciidoctor-maven-plugin}[Asciidoctor Maven Plugin] project founded by {lightguard}[@LightGuard]. Relies on {asciidoctorj}[AsciidoctorJ] founded by {lordofthejars}[@lordofthejars].
+NOTE: This is a port of the {asciidoctor-maven-plugin}[Asciidoctor Maven Plugin] project founded by {lightguard}[@LightGuard] and relies on {asciidoctorj}[AsciidoctorJ] founded by {lordofthejars}[@lordofthejars].
 
+ifndef::env-site[]
 == Contributing
 
-Are you interested in contributing to this project? If so please read link:HACKING.adoc[HACKING] before sending in a patch. +
+Are you interested in contributing to this project? If so please read link:HACKING.adoc[HACKING] before sending in a patch.
 Thank you!
+endif::[]
 
 == Installation
 
 Use the following snippet inside a Gradle build file:
 
 [source,groovy]
-[subs="attributes,specialcharacters"]
+[subs=attributes+]
 .build.gradle
 ----
 buildscript {
@@ -96,7 +112,7 @@ options:: a Map specifying different options that can be sent to Asciidoctor.
 attributes:: a Map specifying various document attributes that can be sent to Asciidoctor
   Use `attributes` to append, Use `setAttributes` or `attributes=` to overwrite.
 
-=== Sources
+=== Defining Sources
 
 By default the plugin will search for sources under `sourceDir`. Sources may have any of the following extensions in
 order to be discovered:
@@ -119,7 +135,7 @@ sources {
 
 Source files are resolved relative to `sourceDir`.  Source files are also not allowed to start with an underscore.
 
-=== Handling additional files
+=== Processing Auxiliary Files
 
 Some backends require that additional files be copied across. The most common example are images for HTML backends. For
 this the `resources` method is used. It is provided with a closure that configures an internal
@@ -142,7 +158,7 @@ resources {
 }
 ----
 
-Files will be copied to below `${outputDir}/${backend}` (or just `${outputDir}` if `separateOutputDirs=false`)
+Files will be copied to below `+${outputDir}/${backend}+` (or just `+${outputDir}+` if `separateOutputDirs=false`)
 
 Unlike `sourceDir` files can be copied from anywhere in the filesystem.
 
@@ -226,6 +242,181 @@ this behavior by appending an `@` at the end of the value when defined in the bu
 link:http://asciidoctor.org/docs/user-manual/#attribute-assignment-precedence[Attribute assignment precedence, window="_blank"]
 for more information.
 
+== Configuration
+
+This plugin uses `asciidoctorj-1.5.3.2` by default, however, you can change this by
+defining a value on the `asciidoctorj` extension, like so
+
+[source,groovy]
+.build.gradle
+----
+asciidoctorj {
+    version = '1.6.0-SNAPSHOT'
+}
+----
+
+Do not forget to add an entry to the `repositories` block pointing to Maven local if you'd like to run a local version
+of Asciidoctorj (such as an snapshot build for testing bleeding edge features). The following snippet is all you need.
+
+[source,groovy]
+.build.gradle
+----
+repositories {
+    mavenLocal() // <1>
+    jcenter()    // <2>
+}
+
+asciidoctorj {
+    version = '1.6.0-MY_SNAPSHOT'
+}
+----
+<1> resolves artifacts in your local Maven repository
+<2> resolves artifacts in Bintray's jcenter (where all other dependencies are found)
+
+The plugin also adds Bintray's JCenter as a default repository as the place to looks for `asciidocotorj`. In some contexts
+this behaviour can be considered detrimental or unwanted. In such cases this behaviour can be turned off by doing
+
+[source,groovy]
+----
+asciidoctorj {
+  noDefaultRepositories = true
+}
+----
+
+== Adding Custom Extensions
+
+Starting with version 1.5.0 you'll be able to write your own Asciidoctor extensions in Groovy, or any other JVM language
+for that matter. There are several options for you to make it happen.
+
+=== As External Library
+
+This is the most versatile option, as it allows you to reuse the same extension in different projects. An external library
+is just like any other Java/Groovy project. You simply define a dependency using the `asciidoctor` configuration.
+
+[source,groovy]
+.build.gradle
+----
+dependencies {
+    asciidoctor 'com.acme:asciidoctor-extensions:x.y.z'
+}
+----
+
+=== As Project Dependency
+
+The next option is to host the extension project in a multi-project build. This allows for a much quicker development cycle
+as you don't have to publish the jar to a repository every time you make adjustments to the code. Take for example the
+following setup:
+
+[source]
+----
+.
+├── build.gradle
+├── core
+│   ├── build.gradle
+│   └── src
+│       ├── asciidoc
+│       │   └── index.adoc
+│       └── main
+│           └── java
+├── extension
+│   ├── build.gradle
+│   └── src
+│       └── main
+│           ├── groovy
+│           │   └── org
+│           │       └── asciidoctor
+│           │           └── example
+│           │               ├── ExampleExtensionRegistry.groovy
+│           │               └── YellBlock.groovy
+│           └── resources
+│               └── META-INF
+│                   └── services
+│                       └── org.asciidoctor.extension.spi.ExtensionRegistry
+└── settings.gradle
+----
+
+The `extension` project is a sibling for `core`. The build file for the latter looks like this:
+
+[source,groovy]
+[subs=attributes+]
+.build.gradle
+----
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:{version-published}'
+    }
+}
+
+apply plugin: 'org.asciidoctor.convert'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    asciidoctor project(':extension')
+}
+----
+
+=== As Inline Script
+
+The next option is to define extensions directly in the build script.
+This approach is based on the project asciidoctorj-groovy-dsl that allows to define Asciidoctor extensions in Groovy.
+An extension is registered via the `extensions` element.
+
+[source,groovy]
+.build.gradle
+----
+asciidoctor {
+    extensions {
+        block(name: "BIG", contexts: [":paragraph"]) {
+            parent, reader, attributes ->
+            def upperLines = reader.readLines()
+                .collect {it.toUpperCase()}
+                .inject("") {a, b -> a + '\n' + b}
+
+            createBlock(parent, "paragraph", [upperLines], attributes, [:])
+        }
+    }
+}
+----
+
+http://github.com/asciidoctor/asciidoctorj-groovy-dsl contains a description of the DSL itself.
+
+Groovy extensions can also be included as files.
+
+[source,groovy]
+.build.gradle
+----
+asciidoctor {
+    extensions new File('big.groovy')
+}
+----
+
+[source,groovy]
+.big.groovy
+----
+block(name: "BIG", contexts: [":paragraph"]) {
+    parent, reader, attributes ->
+    def upperLines = reader.readLines()
+        .collect {it.toUpperCase()}
+        .inject("") {a, b -> a + '\n' + b}
+
+    createBlock(parent, "paragraph", [upperLines], attributes, [:])
+}
+----
+
+=== As Build Dependency
+
+The last option is to move the `extension` project into Gradle's `buildSrc` directory. There are no additional dependencies
+to be defined on the consuming projects, as the extension will be automatically picked up by the `asciidoctor` task,
+as the compiled extension is already in the task's classpath.
+
+[appendix]
 == Compatibility With Previous Releases
 
 === Task Properties
@@ -277,177 +468,3 @@ IMPORTANT: Do not forget to transform Groovy strings into Strings (by explicitly
 used as option values, otherwise the Ruby runtime will throw an exception.
 
 Notice how spaces are escaped in the last key/value pair.
-
-== Configuration
-
-This plugin uses `asciidoctorj-1.5.3.2` by default, however, you can change this by
-defining a value on the +asciidoctorj+ extension, like so
-
-[source,groovy]
-.build.gradle
-----
-asciidoctorj {
-    version = '1.6.0-SNAPSHOT'
-}
-----
-
-Do not forget to add an entry to the `repositories` block pointing to Maven local if you'd like to run a local version
-of Asciidoctorj (such as an snapshot build for testing bleeding edge features). The following snippet is all you need.
-
-[source,groovy]
-.build.gradle
-----
-repositories {
-    mavenLocal() // <1>
-    jcenter()    // <2>
-}
-
-asciidoctorj {
-    version = '1.6.0-MY_SNAPSHOT'
-}
-----
-<1> resolves artifacts in your local Maven repository
-<2> resolves artifacts in Bintray's jcenter (where all other dependencies are found)
-
-The plugin also adds Bintray's JCenter as a default repository as the place to looks for `asciidocotorj`. In some contexts
-this behaviour can be considered detrimental or unwanted. In such cases this behaviour can be turned off by doing
-
-[source,groovy]
-----
-asciidoctorj {
-  noDefaultRepositories = true
-}
-----
-
-== Custom Extensions
-
-Starting with version 1.5.0 you'll be able to write your own Asciidoctor extensions in Groovy, or any other JVM language
-for that matter. There are several options for you to make it happen.
-
-=== External Library
-
-This is the most versatile option, as it allows you to reuse the same extension in different projects. An external library
-is just like any other Java/Groovy project. You simply define a dependency using the `asciidoctor` configuration.
-
-[source,groovy]
-.build.gradle
-----
-dependencies {
-    asciidoctor 'com.acme:asciidoctor-extensions:x.y.z'
-}
-----
-
-=== Project Dependency
-
-The next option is to host the extension project in a multi-project build. This allows for a much quicker development cycle
-as you don't have to publish the jar to a repository every time you make adjustments to the code. Take for example the
-following setup:
-
-[source]
-----
-.
-├── build.gradle
-├── core
-│   ├── build.gradle
-│   └── src
-│       ├── asciidoc
-│       │   └── index.adoc
-│       └── main
-│           └── java
-├── extension
-│   ├── build.gradle
-│   └── src
-│       └── main
-│           ├── groovy
-│           │   └── org
-│           │       └── asciidoctor
-│           │           └── example
-│           │               ├── ExampleExtensionRegistry.groovy
-│           │               └── YellBlock.groovy
-│           └── resources
-│               └── META-INF
-│                   └── services
-│                       └── org.asciidoctor.extension.spi.ExtensionRegistry
-└── settings.gradle
-----
-
-The `extension` project is a sibling for `core`. The build file for the latter looks like this:
-
-[source,groovy]
-[subs="attributes,specialcharacters"]
-.build.gradle
-----
-buildscript {
-    repositories {
-        jcenter()
-    }
-
-    dependencies {
-        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:{version-published}'
-    }
-}
-
-apply plugin: 'org.asciidoctor.convert'
-
-repositories {
-    jcenter()
-}
-
-dependencies {
-    asciidoctor project(':extension')
-}
-----
-
-=== Inline extensions
-
-The next option is to define extensions directly in the build script.
-This approach is based on the project asciidoctorj-groovy-dsl that allows to define Asciidoctor extensions in Groovy.
-An extension is registered via the `extensions` element.
-
-[source,groovy]
-.build.gradle
-----
-asciidoctor {
-    extensions {
-        block(name: "BIG", contexts: [":paragraph"]) {
-            parent, reader, attributes ->
-            def upperLines = reader.readLines()
-                .collect {it.toUpperCase()}
-                .inject("") {a, b -> a + '\n' + b}
-
-            createBlock(parent, "paragraph", [upperLines], attributes, [:])
-        }
-    }
-}
-----
-
-http://github.com/asciidoctor/asciidoctorj-groovy-dsl contains a description of the DSL itself.
-
-Groovy extensions can also be included as files.
-
-[source,groovy]
-.build.gradle
-----
-asciidoctor {
-    extensions new File('big.groovy')
-}
-----
-
-[source,groovy]
-.big.groovy
-----
-block(name: "BIG", contexts: [":paragraph"]) {
-    parent, reader, attributes ->
-    def upperLines = reader.readLines()
-        .collect {it.toUpperCase()}
-        .inject("") {a, b -> a + '\n' + b}
-
-    createBlock(parent, "paragraph", [upperLines], attributes, [:])
-}
-----
-
-=== Build Dependency
-
-The last option is to move the `extension` project into Gradle's `buildSrc` directory. There are no additional dependencies
-to be defined on the consuming projects, as the extension will be automatically picked up by the `asciidoctor` task,
-as the compiled extension is already in the task's classpath.
