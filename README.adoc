@@ -36,7 +36,7 @@ image:http://img.shields.io/badge/license-ASF2-blue.svg[Apache License 2, link=h
 image:https://api.bintray.com/packages/asciidoctor/maven/{project-name}/images/download.svg[Download, link=https://bintray.com/asciidoctor/maven/{project-name}]
 endif::[]
 
-The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to render all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
+The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to convert all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
 
 NOTE: This is a port of the {asciidoctor-maven-plugin}[Asciidoctor Maven Plugin] project founded by {lightguard}[@LightGuard] and relies on {asciidoctorj}[AsciidoctorJ] founded by {lordofthejars}[@lordofthejars].
 
@@ -70,7 +70,8 @@ apply plugin: 'org.asciidoctor.convert'
 
 == Usage
 
-The plugin adds a new task named `asciidoctor`. This task exposes a few properties as part of its configuration.
+The plugin adds a new task named *asciidoctor*.
+You can configure this task using the following configuration properties and methods.
 
 .Properties
 [horizontal]
@@ -112,18 +113,19 @@ options:: a Map specifying different options that can be sent to Asciidoctor.
 attributes:: a Map specifying various document attributes that can be sent to Asciidoctor
   Use `attributes` to append, Use `setAttributes` or `attributes=` to overwrite.
 
+To see examples of many of these configuration options used in practice, refer to the http://asciidoctor.github.io/asciidoctor-gradle-examples[Asciidoctor Gradle Examples] project.
+
 === Defining Sources
 
-By default the plugin will search for sources under `sourceDir`. Sources may have any of the following extensions in
-order to be discovered:
+By default, this plugin scans for and processes AsciiDoc files located under the source directory, as defined by `sourceDir` property, default: `src/docs/asciidoc`. However, files or directories that begin with `_` are ignored. The plugin looks for AsciiDoc files with any of the following extensions:
 
+* .adoc _(preferred)_
 * .asciidoc
-* .adoc
-* .asc
 * .ad
+* .asc
 
-To select only certain files use the `sources` method. This takes a closure which in turn configures an internal
-http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.html[PatternSet]
+To select only certain files, use the `sources` method. This method takes a closure as an argument, which in turn configures an internal
+http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.html[PatternSet].
 
 [source,groovy]
 .build.gradle
@@ -133,7 +135,7 @@ sources {
 }
 ----
 
-Source files are resolved relative to `sourceDir`.  Source files are also not allowed to start with an underscore.
+Paths defined in this PatternSet are resolved relative to the `sourceDir`.
 
 === Processing Auxiliary Files
 
@@ -154,7 +156,7 @@ resources {
     include 'deck.js/**'
   }
   
-  into "./images"
+  into './images'
 }
 ----
 
