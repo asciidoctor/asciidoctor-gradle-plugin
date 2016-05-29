@@ -114,7 +114,7 @@ attributes:: a Map specifying various document attributes that can be sent to As
 
 === Defining Sources
 
-By default the plugin will search for sources under `sourceDir`. Sources may have any of the following extensions in
+The plugin will search for sources under `sourceDir`. Sources may have any of the following extensions in
 order to be discovered:
 
 * .asciidoc
@@ -123,13 +123,19 @@ order to be discovered:
 * .ad
 
 To select only certain files use the `sources` method. This takes a closure which in turn configures an internal
-http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.html[PatternSet]
+http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.html[PatternSet].
+
+To specify a custom output folder, use the `outputDir` method.
 
 [source,groovy]
 .build.gradle
 ----
-sources {
-  include 'toplevel.adoc'
+asciidoctor {
+  sourceDir = file('docs')
+  sources {
+    include 'toplevel.adoc', 'another.adoc', 'third.adoc'
+  }
+  outputDir = file('build/docs')
 }
 ----
 
@@ -468,3 +474,45 @@ IMPORTANT: Do not forget to transform Groovy strings into Strings (by explicitly
 used as option values, otherwise the Ruby runtime will throw an exception.
 
 Notice how spaces are escaped in the last key/value pair.
+
+[appendix]
+== Tips & Tricks
+
+=== Pre-process and post-process
+
+To make your own custom actions before or after asciidoctor processing, use `doFirst` and `doLast`. Check out chapters https://docs.gradle.org/current/userguide/tutorial_using_tasks.html[14] and https://docs.gradle.org/current/userguide/more_about_tasks.html[17] in the Gradle docs to learn about the various actions you can perform.
+
+[source,groovy]
+.build.gradle
+----
+asciidoctor.doFirst {
+  // pre-process
+}
+asciidoctor.doLast {
+  // post-process
+}
+----
+
+As an example, here's how to copy the generated `index.html` file to the root of the project. This is useful in Windows systems where asciidoctor can't output directly to the root.
+
+[source,groovy]
+.build.gradle
+----
+asciidoctor.doLast {
+    copy {
+        from 'build/docs/html5'
+        into "$projectDir"
+        include 'index.html'
+    }
+}
+----
+
+=== Force processing
+
+If Gradle detects that there were no changes, asciidoctor processing will be skipped as `UP-TO-DATE`. To force asciidoctor processing even if there were no changes:
+
+[source,groovy]
+.build.gradle
+----
+asciidoctor.outputs.upToDateWhen { false }
+----
