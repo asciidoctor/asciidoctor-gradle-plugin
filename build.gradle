@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2013-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,155 +14,131 @@
  * limitations under the License.
  */
 
-buildscript {
-    repositories {
-        jcenter()
-        maven { url 'https://plugins.gradle.org/m2/' }
-    }
+plugins {
+    id 'groovy'
+    id 'idea'
+    id 'maven-publish'
+    id 'jacoco'
+    id 'codenarc'
+    id 'java-gradle-plugin'
+    id 'com.jfrog.bintray'              version '1.7.3'
+    id 'net.nemerosa.versioning'        version '2.6.0'
+    id 'com.github.ben-manes.versions'  version '0.14.0'
+    id 'com.gradle.plugin-publish'      version '0.9.7'
+    id 'com.github.hierynomus.license'  version '0.14.0'
+    id 'com.github.kt3k.coveralls'      version '2.8.1'
+    id 'net.ossindex.audit'             version '0.1.1'
+    id 'org.kordamp.jdeps'              version '0.1.0'
+}
 
-    dependencies {
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.1'
-        classpath "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.14.0"
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.14.0'
-        classpath 'nu.studer:gradle-plugindev-plugin:1.0.6'
-        classpath 'com.gradle.publish:plugin-publish-plugin:0.9.7'
+apply from: 'gradle/credentials.gradle'
+apply from: 'gradle/publishing.gradle'
+apply from: 'gradle/code-quality.gradle'
+
+gradlePlugin {
+    plugins {
+        asciidoctorPlugin {
+            id = project_pluginId
+            implementationClass = 'org.asciidoctor.gradle.AsciidoctorPlugin'
+        }
     }
 }
 
-apply plugin: 'idea'
-apply plugin: 'groovy'
-apply plugin: 'nu.studer.plugindev'
-apply plugin: 'com.gradle.plugin-publish'
-apply plugin: 'com.github.kt3k.coveralls'
-apply plugin: 'com.github.ben-manes.versions'
-apply from: 'gradle/code-coverage.gradle'
-apply from: 'gradle/code-quality.gradle'
-
 repositories {
     jcenter()
-    maven { url 'http://dl.bintray.com/lordofthejars/maven'}
+    // maven { url 'http://dl.bintray.com/lordofthejars/maven'}
+}
+
+dependencyUpdates.resolutionStrategy = {
+    componentSelection { rules ->
+        rules.all { selection ->
+            boolean rejected = ['beta', 'rc', 'cr', 'm'].any { qualifier ->
+                selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+            }
+            if (rejected) {
+                selection.reject('Release candidate')
+            }
+        }
+    }
+}
+
+audit {
+    failOnError = false
 }
 
 dependencies {
     compile gradleApi()
-    testCompile 'org.asciidoctor:asciidoctorj:1.5.3.2'
-    testCompile('org.asciidoctor:asciidoctorj-groovy-dsl:1.0.0.Alpha1') {
+    testCompile "org.asciidoctor:asciidoctorj:$asciidoctorjVersion"
+    testCompile("org.asciidoctor:asciidoctorj-groovy-dsl:$asciidoctorjDslVersion") {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
         exclude group: 'org.asciidoctor', module: 'asciidoctorj'
     }
-    testCompile('org.spockframework:spock-core:1.0-groovy-2.4') {
-        exclude group: 'org.codehaus.groovy', module: 'groovy-all'
-        exclude group: 'org.hamcrest', module: 'hamcrest-core'
+    testCompile("org.spockframework:spock-core:$spockVersion") {
+        exclude group:'org.codehaus.groovy'
     }
-    testCompile 'org.jsoup:jsoup:1.8.3'
-    testCompile 'cglib:cglib-nodep:3.2.0'
+    testCompile "org.jsoup:jsoup:$jsoupVersion"
+    testCompile "cglib:cglib-nodep:$cglibVersion"
 }
 
-pluginBundle {
-    website = 'https://github.com/asciidoctor/asciidoctor-gradle-plugin'
-    vcsUrl  = 'https://github.com/asciidoctor/asciidoctor-gradle-plugin'
-
-    description = 'A Gradle plugin that uses Asciidoctor via JRuby to process AsciiDoc source files within the project.'
-
-    plugins {
-        asciidoctorPlugin {
-            id = 'org.asciidoctor.convert'
-            displayName = 'Gradle Asciidoctor plugin'
-            tags = ['gradle', 'plugin', 'asciidoctor']
-        }
-    }
-
-    mavenCoordinates {
-        groupId    = 'org.asciidoctor'
-        artifactId = 'asciidoctor-gradle-plugin'
-    }
+compileGroovy {
+    sourceCompatibility = project.sourceCompatibility
+    targetCompatibility = project.targetCompatibility
 }
 
-plugindev {
-    pluginId = 'org.asciidoctor.convert'
-    pluginImplementationClass 'org.asciidoctor.gradle.AsciidoctorPlugin'
-    pluginDescription 'A Gradle plugin that uses Asciidoctor via JRuby to process AsciiDoc source files within the project.'
-    pluginLicenses 'Apache-2.0'
-    pluginTags 'gradle', 'plugin', 'asciidoctor'
-    authorId 'aalmiray'
-    authorName 'Andres Almiray'
-    authorEmail 'aalmiray@yahoo.com'
-    projectUrl 'https://github.com/asciidoctor/asciidoctor-gradle-plugin'
-    projectInceptionYear '2013'
-    pomConfiguration {
-        name 'asciidoctor-gradle-plugin'
-        description 'A Gradle plugin that uses Asciidoctor via JRuby to process AsciiDoc source files within the project'
-        url 'http://asciidoctor.org'
-        inceptionYear '2013'
-        licenses {
-            license([:]) {
-                name 'The Apache Software License, Version 2.0'
-                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                distribution 'repo'
-            }
-        }
-        scm {
-            url 'https://github.com/asciidoctor/asciidoctor-gradle-plugin'
-        }
-        developers {
-            developer {
-                id 'mojavelinux'
-                name 'Dan Allen'
-                roles {
-                    role 'Asciidoctor Founder and Benevolent Dictator'
-                    role 'Open Source Hero'
-                }
-            }
-            [
-                aalmiray: 'Andres Almiray',
-                noamt   : 'Noam Tenne',
-                bmuschko: 'Benjamin Muschko'
-            ].each { devId, devName ->
-                developer {
-                    id devId
-                    name devName
-                    roles {
-                        role 'Developer'
-                    }
-                }
-            }
-        }
-        contributors {
-            [
-                tombujok   : 'Tom Bujok',
-                jlupi      : 'Lukasz Pielak',
-                dvyazelenko: 'Dmitri Vyazelenko',
-                rwinch     : 'Rob Winch',
-                Skyr       : 'Stefan Schlott',
-                sclassen   : 'Stephan Classen',
-                McPringle  : 'Marcus Fihlon',
-                msgilligan : 'Sean Gilligan',
-                afolmert   : 'Adam Folmert',
-                mrhaki     : 'Hubert Klein Ikkink',
-                bobbytank42: 'Robert Panzer',
-                oti        : 'Otmar Humbel',
-                anschmi    : 'Andreas Schmidt'
-            ].each { devId, devName ->
-                contributor {
-                    name devName
-                    roles {
-                        role 'contributor'
-                    }
-                }
-            }
-        }
-    }
-    done()
+groovydoc {
+    use             = true
+    source          = project.sourceSets.main.allSource
+    classpath       = javadoc.classpath
+    ext.windowtitle = "$project.name $project.version API"
+    ext.doctitle    = "$project.name $project.version API"
+    header          = "$project.name $project.version API"
+    footer          = "Copyright &copy; ${copyrightYear} the original author or authors. All rights reserved."
+    includePrivate  = false
+    link 'https://docs.gradle.org/3.5/javadoc/', 'org.gradle.'
+    link 'http://docs.oracle.com/javase/7/docs/api/', 'java.', 'org.xml.', 'javax.', 'org.w3c.'
 }
 
-apply from: 'gradle/publishing.gradle'
+task sourcesJar(type: Jar) {
+    group 'Build'
+    description 'An archive of the source code'
+    classifier 'sources'
+    from sourceSets.main.allSource
+}
 
-test {
+task javadocJar(type: Jar, dependsOn: groovydoc) {
+    group 'Build'
+    description 'An archive of the javadoc'
+    classifier 'javadoc'
+    from groovydoc.destinationDir
+}
+
+jar.finalizedBy sourcesJar
+jar.finalizedBy javadocJar
+
+artifacts {
+    sourcesJar
+    javadocJar
+}
+
+task publishRelease(dependsOn: [bintrayUpload, publishPlugins]) {}
+
+project.tasks.withType(Test) {
     testLogging {
         afterSuite { desc, result ->
             if (!desc.parent) {
-                println "Test results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} passed, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)"
+                println "Test results ${project.name}: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} passed, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)"
             }
         }
+    }
+}
+
+jacoco {
+    toolVersion = jacocoVersion
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true // coveralls plugin depends on xml format report
+        html.enabled = true
     }
 }

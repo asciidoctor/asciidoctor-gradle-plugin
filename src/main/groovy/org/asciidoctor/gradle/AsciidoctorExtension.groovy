@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2013-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@ import org.gradle.api.Project
  * @author Andres Almiray
  */
 class AsciidoctorExtension {
-    String version = '1.5.3.2'
+    String version = '1.5.5'
 
-    String groovyDslVersion = '1.0.0.preview2'
+    String groovyDslVersion = '1.6.0-alpha.1'
 
     /**
      * By default the plugin will try to add a default repository to find AsciidoctorJ.

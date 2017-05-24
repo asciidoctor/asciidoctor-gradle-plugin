@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2013-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-apply plugin: 'codenarc'
-apply plugin: 'com.github.hierynomus.license'
-
 license {
     header = rootProject.file('config/HEADER')
     strictCheck = true
     ignoreFailures = false
     mapping {
-        java ='SLASHSTAR_STYLE'
-        groovy ='SLASHSTAR_STYLE'
+        java   = 'SLASHSTAR_STYLE'
+        groovy = 'SLASHSTAR_STYLE'
     }
-    ext.year = '2013-2014'
+    ext.year = project.copyrightYear
     excludes(['**/*.ad', '**/*.asciidoc', '**/*.adoc', '**/fake.txt'])
 }
 
