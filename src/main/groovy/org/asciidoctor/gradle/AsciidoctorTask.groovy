@@ -646,6 +646,9 @@ class AsciidoctorTask extends DefaultTask {
     @SuppressWarnings('DuplicateStringLiteral')
     private void processDocumentsAndResources(final String backend) {
         try {
+            resourceCopyProxy.copy(outputBackendDir(outputDir, backend), resourceCopySpec)
+            // TODO: Might have to copy specific per backend in a future update
+
             sourceFileTree.files.each { File file ->
                 if (file.name.startsWith('_')) {
                     throw new InvalidUserDataException('Source documents may not start with an underscore')
@@ -653,9 +656,6 @@ class AsciidoctorTask extends DefaultTask {
                 File destinationParentDir = owner.outputDirFor(file, sourceDir.absolutePath, outputDir, backend)
                 processSingleFile(backend, destinationParentDir, file)
             }
-
-            resourceCopyProxy.copy(outputBackendDir(outputDir, backend), resourceCopySpec)
-            // TODO: Might have to copy specific per backend in a future update
 
         } catch (Exception e) {
             throw new GradleException('Error running Asciidoctor', e)
