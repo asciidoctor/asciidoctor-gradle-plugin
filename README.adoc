@@ -292,6 +292,10 @@ asciidoctorj {
 }
 ----
 
+== Development
+
+See link:HACKING.adoc[HACKING].
+
 == Adding Custom Extensions
 
 Starting with version 1.5.0 you'll be able to write your own Asciidoctor extensions in Groovy, or any other JVM language

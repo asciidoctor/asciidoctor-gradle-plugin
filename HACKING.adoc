@@ -2,7 +2,7 @@
 :version: 1.6.0-SNAPSHOT
 :project-name: asciidoctor-gradle-plugin
 
-This is a guide to contributing to the Aciidoctor plugin for Gradle. (It is still very much work-in-progress)
+This is a guide to developing locally and contributing to the Aciidoctor plugin for Gradle. (It is still very much work-in-progress)
 
 == Branches
 
@@ -17,8 +17,10 @@ the responsibility of building said snapshot. In this way they can be sure it's 
 which might bring incompatibility problems.
 
 If you need to work with snapshots consider building locally and publishing to your local `~/.m2`. This can be achieved
-by running `./gradlew build install`.
+by running `./gradlew publishToMavenLocal`.
 You can then use the snapshot in your Gradle build as follows:
+
+If you want to change the version, you can edit it in `gradle.properties`.
 
 [source,groovy]
 [subs="attributes,specialcharacters"]
@@ -36,3 +38,7 @@ buildscript {
 
 apply plugin: 'org.asciidoctor.convert'
 ----
+
+== Developing
+* './gradlew build' - run tests and checks that everything is ok.
+* './gradlew test' - run tests.
