@@ -78,6 +78,7 @@ dependencies {
     }
     testCompile "org.jsoup:jsoup:$jsoupVersion"
     testCompile "cglib:cglib-nodep:$cglibVersion"
+    testCompile gradleTestKit()
 }
 
 compileGroovy {
@@ -123,6 +124,7 @@ artifacts {
 task publishRelease(dependsOn: [bintrayUpload, publishPlugins]) {}
 
 project.tasks.withType(Test) {
+    systemProperty "asciidoctorjVersion", asciidoctorjVersion
     testLogging {
         afterSuite { desc, result ->
             if (!desc.parent) {
