@@ -51,7 +51,6 @@ class AsciidoctorTaskInlineExtensionsSpec extends Specification {
         outDir = new File(project.projectDir, ASCIIDOC_BUILD_DIR)
     }
 
-
     def "Should apply inline BlockProcessor"() {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
@@ -105,18 +104,17 @@ class AsciidoctorTaskInlineExtensionsSpec extends Specification {
             resultFile.getText().contains("and write this in lowercase")
     }
 
-
     def "Should apply inline Postprocessor"() {
         given:
-            String copyright = "Copyright Acme, Inc." + System.currentTimeMillis()
-            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                sourceDir = srcDir
-                sourceDocumentNames = [ASCIIDOC_INLINE_EXTENSIONS_FILE]
-                outputDir = outDir
-                extensions {
-                    postprocessor {
-                        document, String output ->
-                        if(document.basebackend("html")) {
+        String copyright = "Copyright Acme, Inc." + System.currentTimeMillis()
+        Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+            sourceDir = srcDir
+            sourceDocumentNames = [ASCIIDOC_INLINE_EXTENSIONS_FILE]
+            outputDir = outDir
+            extensions {
+                postprocessor {
+                    document, String output ->
+                        if (document.basebackend("html")) {
                             Document doc = Jsoup.parse(output, "UTF-8")
 
                             Element contentElement = doc.getElementById("footer-text")
@@ -126,80 +124,80 @@ class AsciidoctorTaskInlineExtensionsSpec extends Specification {
                         } else {
                             throw new IllegalArgumentException("Expected html!")
                         }
-                    }
                 }
             }
-            File resultFile = new File(outDir, 'html5' + File.separator + ASCIIDOC_INLINE_EXTENSIONS_RESULT_FILE)
+        }
+        File resultFile = new File(outDir, 'html5' + File.separator + ASCIIDOC_INLINE_EXTENSIONS_RESULT_FILE)
         when:
-            task.processAsciidocSources()
+        task.processAsciidocSources()
         then:
-            resultFile.exists()
-            resultFile.getText().contains(copyright)
-            resultFile.getText().contains("Inline Extension Test document")
+        resultFile.exists()
+        resultFile.getText().contains(copyright)
+        resultFile.getText().contains("Inline Extension Test document")
     }
 
     def "Should fail if inline Postprocessor fails"() {
         given:
-            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                sourceDir = srcDir
-                sourceDocumentNames = [ASCIIDOC_INLINE_EXTENSIONS_FILE]
-                outputDir = outDir
-                extensions {
-                    postprocessor {
-                        document, output ->
+        Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+            sourceDir = srcDir
+            sourceDocumentNames = [ASCIIDOC_INLINE_EXTENSIONS_FILE]
+            outputDir = outDir
+            extensions {
+                postprocessor {
+                    document, output ->
                         if (output.contains("blacklisted")) {
                             throw new IllegalArgumentException("Document contains a blacklisted word")
                         }
-                    }
                 }
             }
+        }
         when:
-            task.processAsciidocSources()
+        task.processAsciidocSources()
         then:
-            thrown(GradleException)
+        thrown(GradleException)
     }
 
     def "Should apply inline Preprocessor"() {
         given:
-            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                sourceDir = srcDir
-                sourceDocumentNames = [ASCIIDOC_INLINE_EXTENSIONS_FILE]
-                outputDir = outDir
-                extensions {
-                    preprocessor {
-                        document, reader ->
+        Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+            sourceDir = srcDir
+            sourceDocumentNames = [ASCIIDOC_INLINE_EXTENSIONS_FILE]
+            outputDir = outDir
+            extensions {
+                preprocessor {
+                    document, reader ->
                         reader.advance()
                         reader
-                    }
                 }
             }
-            File resultFile = new File(outDir, 'html5' + File.separator + ASCIIDOC_INLINE_EXTENSIONS_RESULT_FILE)
+        }
+        File resultFile = new File(outDir, 'html5' + File.separator + ASCIIDOC_INLINE_EXTENSIONS_RESULT_FILE)
         when:
-            task.processAsciidocSources()
+        task.processAsciidocSources()
         then:
-            resultFile.exists()
-            !resultFile.getText().contains("Inline Extension Test document")
+        resultFile.exists()
+        !resultFile.getText().contains("Inline Extension Test document")
     }
 
     def "Should apply inline Includeprocessor"() {
         given:
-            String content = "The content of the URL " + System.currentTimeMillis()
-            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                sourceDir = srcDir
-                sourceDocumentNames = [ASCIIDOC_INLINE_EXTENSIONS_FILE]
-                outputDir = outDir
-                extensions {
-                    include_processor (filter: {it.startsWith('http')}) {
-                        document, reader, target, attributes ->
+        String content = "The content of the URL " + System.currentTimeMillis()
+        Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+            sourceDir = srcDir
+            sourceDocumentNames = [ASCIIDOC_INLINE_EXTENSIONS_FILE]
+            outputDir = outDir
+            extensions {
+                include_processor(filter: { it.startsWith('http') }) {
+                    document, reader, target, attributes ->
                         reader.push_include(content, target, target, 1, attributes);
-                    }
                 }
             }
-            File resultFile = new File(outDir, 'html5' + File.separator + ASCIIDOC_INLINE_EXTENSIONS_RESULT_FILE)
+        }
+        File resultFile = new File(outDir, 'html5' + File.separator + ASCIIDOC_INLINE_EXTENSIONS_RESULT_FILE)
         when:
-            task.processAsciidocSources()
+        task.processAsciidocSources()
         then:
-            resultFile.exists()
-            resultFile.getText().contains(content)
+        resultFile.exists()
+        resultFile.getText().contains(content)
     }
 }
