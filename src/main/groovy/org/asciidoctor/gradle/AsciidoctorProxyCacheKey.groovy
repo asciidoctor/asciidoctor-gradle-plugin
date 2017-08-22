@@ -13,20 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle;
+package org.asciidoctor.gradle
 
-import java.io.File;
-import java.util.List;
-import java.util.Map;
+import groovy.transform.Immutable
 
 /**
- * @author andres Almiray
- */
-public interface AsciidoctorProxy {
-    String renderFile(File filename, Map<String, Object> options);
-
-    void requireLibrary(String... requiredLibraries);
-
-    void registerExtensions(List<Object> extensions);
-    void unregisterAllExtensions();
+ * @author Rene Groeschke
+ * */
+@Immutable
+class AsciidoctorProxyCacheKey {
+    final List<File> classpath
+    final String gemPath
+//    final List<Object> extensions
 }

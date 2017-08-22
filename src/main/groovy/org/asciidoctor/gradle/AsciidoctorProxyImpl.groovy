@@ -20,6 +20,7 @@ package org.asciidoctor.gradle
  */
 class AsciidoctorProxyImpl implements AsciidoctorProxy {
     def delegate
+    def extensionRegistry
 
     @Override
     String renderFile(File filename, Map<String, Object> options) {
@@ -29,5 +30,16 @@ class AsciidoctorProxyImpl implements AsciidoctorProxy {
     @Override
     void requireLibrary(String... requiredLibraries) {
         delegate.requireLibrary(requiredLibraries)
+    }
+
+    @Override
+    void registerExtensions(List<Object> extensions) {
+        extensions.each { extensionRegistry.extensions(it) }
+        extensionRegistry.registerTo(delegate)
+    }
+
+    @Override
+    void unregisterAllExtensions() {
+        delegate.unregisterAllExtensions()
     }
 }

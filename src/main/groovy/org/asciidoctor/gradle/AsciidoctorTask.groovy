@@ -24,10 +24,10 @@ import org.gradle.api.file.FileCollection
 import org.gradle.api.file.FileTree
 import org.gradle.api.internal.file.copy.CopySpecInternal
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.InputFiles
-import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectories
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.SkipWhenEmpty
@@ -35,6 +35,9 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.internal.FileUtils
 import org.gradle.util.CollectionUtils
+
+import java.util.concurrent.locks.Lock
+import java.util.concurrent.locks.ReentrantLock
 
 /**
  * @author Noam Tenne
@@ -74,13 +77,17 @@ class AsciidoctorTask extends DefaultTask {
     private CopySpec resourceCopy
     private static ClassLoader cl
 
+    private final static Map<AsciidoctorProxyCacheKey, AsciidoctorProxy> ASCIIDOCTORS = [:]
+    private final static Lock EXEC_LOCK = new ReentrantLock()
+
     /** If set to true each backend will be output to a separate subfolder below {@code outputDir}
      * @since 1.5.1
      */
     @Input
     boolean separateOutputDirs = true
 
-    @Optional @InputDirectory
+    @Optional
+    @InputDirectory
     File baseDir
 
     /** Logs documents as they are converted
@@ -92,12 +99,16 @@ class AsciidoctorTask extends DefaultTask {
     /** Old way to set only one source document
      * @deprecated Use {@code sources} instead
      */
-    @Optional @InputFile File sourceDocumentName
+    @Optional
+    @InputFile
+    File sourceDocumentName
 
     /** Old way to define the backend to use
      * @deprecated Use {@code backends} instead
      */
-    @Optional @Input String backend
+    @Optional
+    @Input
+    String backend
 
     /**
      * Stores the extensions defined in the configuration phase
@@ -133,7 +144,7 @@ class AsciidoctorTask extends DefaultTask {
         if (!m) return // null check
         if (m.containsKey('attributes')) {
             logger.warn 'Attributes found in options. Existing attributes will be replaced due to assignment. ' +
-                'Please use \'attributes\' method instead as current behaviour will be removed in future'
+                    'Please use \'attributes\' method instead as current behaviour will be removed in future'
             attrs = coerceLegacyAttributeFormats(m.attributes)
             m.remove('attributes')
         }
@@ -154,7 +165,7 @@ class AsciidoctorTask extends DefaultTask {
         if (!m) return // null check
         if (m.containsKey('attributes')) {
             logger.warn 'Attributes found in options. These will be added to existing attributes. ' +
-                'Please use \'attributes\' method instead as current behaviour will be removed in future'
+                    'Please use \'attributes\' method instead as current behaviour will be removed in future'
             attributes coerceLegacyAttributeFormats(m.attributes)
             m.remove('attributes')
         }
@@ -311,7 +322,7 @@ class AsciidoctorTask extends DefaultTask {
         this.gemPaths.clear()
         if (path instanceof CharSequence) {
             this.gemPaths.addAll(setGemPath(path.split(PATH_SEPARATOR)))
-        } else if(path){
+        } else if (path) {
             this.gemPaths.addAll(path)
         }
     }
@@ -424,7 +435,7 @@ class AsciidoctorTask extends DefaultTask {
     @SuppressWarnings('DuplicateStringLiteral')
     void setSourceDocumentNames(Object... src) {
         deprecated 'setSourceDocumentNames', 'setIncludes', 'Files are converted to patterns. Some might not convert correctly. ' +
-            'FileCollections will not convert'
+                'FileCollections will not convert'
         File base = sourceDir.absoluteFile
         def patterns = CollectionUtils.stringize(src as List).collect { String it ->
             def tmpFile = new File(it)
@@ -469,7 +480,7 @@ class AsciidoctorTask extends DefaultTask {
     @SkipWhenEmpty
     FileTree getSourceFileTree() {
         project.fileTree(sourceDir).
-            matching(this.sourceDocumentPattern ?: defaultSourceDocumentPattern)
+                matching(this.sourceDocumentPattern ?: defaultSourceDocumentPattern)
     }
 
     /** Add patterns for source files or source files via a closure
@@ -550,7 +561,9 @@ class AsciidoctorTask extends DefaultTask {
      * @return A {@code FileCollection}, never null
      * @since 1.5.2
      */
-    @InputFiles @SkipWhenEmpty @Optional
+    @InputFiles
+    @SkipWhenEmpty
+    @Optional
     FileCollection getResourceFileCollection() {
         (resourceCopySpec as CopySpecInternal).buildRootResolver().allSource
     }
@@ -568,30 +581,30 @@ class AsciidoctorTask extends DefaultTask {
 
         setupClassLoader()
 
-        if (!asciidoctorExtensions?.empty) {
-            Class asciidoctorExtensionsDslRegistry = loadClass('org.asciidoctor.groovydsl.AsciidoctorExtensions')
-            asciidoctorExtensions.each { asciidoctorExtensionsDslRegistry.extensions(it) }
-        }
+        withAsciidoctor {
+            asciidoctor = it
 
-        if (!asciidoctor) {
-            instantiateAsciidoctor()
-        }
+            if (!asciidoctorExtensions?.empty) {
+                asciidoctor.registerExtensions(asciidoctorExtensions)
 
-        if (resourceCopyProxy == null) {
-            resourceCopyProxy = new ResourceCopyProxyImpl(project)
-        }
-
-        if (requires) {
-            for (require in requires) {
-                asciidoctor.requireLibrary(require)
             }
-        }
 
-        for (activeBackend in activeBackends()) {
-            if (!AsciidoctorBackend.isBuiltIn(activeBackend)) {
-                logger.lifecycle("Passing through unknown backend: $activeBackend")
+            if (resourceCopyProxy == null) {
+                resourceCopyProxy = new ResourceCopyProxyImpl(project)
             }
-            processDocumentsAndResources(activeBackend)
+
+            if (requires) {
+                for (require in requires) {
+                    asciidoctor.requireLibrary(require)
+                }
+            }
+
+            for (activeBackend in activeBackends()) {
+                if (!AsciidoctorBackend.isBuiltIn(activeBackend)) {
+                    logger.lifecycle("Passing through unknown backend: $activeBackend")
+                }
+                processDocumentsAndResources(activeBackend)
+            }
         }
     }
 
@@ -619,21 +632,7 @@ class AsciidoctorTask extends DefaultTask {
         path
     }
 
-    @SuppressWarnings('CatchException')
-    private void instantiateAsciidoctor() {
-        if (gemPaths.size()) {
-            asciidoctor = new AsciidoctorProxyImpl(delegate: loadClass(ASCIIDOCTOR_FACTORY_CLASSNAME).create(asGemPath()))
-        } else {
-            try {
-                asciidoctor = new AsciidoctorProxyImpl(delegate: loadClass(ASCIIDOCTOR_FACTORY_CLASSNAME).create(null as String))
-            } catch (Exception e) {
-                // Asciidoctor < 1.5.1 can't handle a null gemPath, so fallback to default create() method
-                asciidoctor = new AsciidoctorProxyImpl(delegate: loadClass(ASCIIDOCTOR_FACTORY_CLASSNAME).create())
-            }
-        }
-    }
-
-    private Set<String> activeBackends() {
+    protected Set<String> activeBackends() {
         if (this.backends) {
             return this.backends
         } else if (backend) {
@@ -644,7 +643,7 @@ class AsciidoctorTask extends DefaultTask {
 
     @SuppressWarnings('CatchException')
     @SuppressWarnings('DuplicateStringLiteral')
-    private void processDocumentsAndResources(final String backend) {
+    protected void processDocumentsAndResources(final String backend) {
         try {
             resourceCopyProxy.copy(outputBackendDir(outputDir, backend), resourceCopySpec)
             // TODO: Might have to copy specific per backend in a future update
@@ -667,15 +666,15 @@ class AsciidoctorTask extends DefaultTask {
             logger.lifecycle("Converting $file")
         }
         asciidoctor.renderFile(file, mergedOptions(file,
-            [
-                project   : project,
-                options   : options,
-                attributes: attrs,
-                baseDir   : !baseDir && !baseDirSetToNull ? file.parentFile : baseDir,
-                projectDir: project.projectDir,
-                rootDir   : project.rootDir,
-                outputDir : destinationParentDir,
-                backend   : backend]))
+                [
+                        project   : project,
+                        options   : options,
+                        attributes: attrs,
+                        baseDir   : !baseDir && !baseDirSetToNull ? file.parentFile : baseDir,
+                        projectDir: project.projectDir,
+                        rootDir   : project.rootDir,
+                        outputDir : destinationParentDir,
+                        backend   : backend]))
     }
 
     @SuppressWarnings('AbcMetric')
@@ -731,10 +730,10 @@ class AsciidoctorTask extends DefaultTask {
             if (element instanceof CharSequence) {
                 element.toString()
             } else if (element instanceof List) {
-               stringifyList(element)
+                stringifyList(element)
             } else if (element instanceof Map) {
                 stringifyMap(element)
-            } else if(element instanceof File) {
+            } else if (element instanceof File) {
                 element.absolutePath
             } else {
                 element
@@ -751,7 +750,7 @@ class AsciidoctorTask extends DefaultTask {
                 output[key] = stringifyList(value)
             } else if (value instanceof Map) {
                 output[key] = stringifyMap(value)
-            } else if(value instanceof File) {
+            } else if (value instanceof File) {
                 output[key] = value.absolutePath
             } else {
                 output[key] = value
@@ -835,7 +834,7 @@ class AsciidoctorTask extends DefaultTask {
         }
     }
 
-    private static Class loadClass(String className) {
+    static Class loadClass(String className) {
         cl.loadClass(className)
     }
 
@@ -852,6 +851,40 @@ class AsciidoctorTask extends DefaultTask {
 
     private void deprecated(final String method, final String alternative, final String msg = '') {
         logger.lifecycle "Asciidoctor: ${method} is deprecated and will be removed in a future version. " +
-            "Use ${alternative} instead. ${msg}"
+                "Use ${alternative} instead. ${msg}"
     }
+
+    @SuppressWarnings('CatchException')
+    private withAsciidoctor(Closure<?> cl) {
+        EXEC_LOCK.lock()
+        try {
+            def key = new AsciidoctorProxyCacheKey(
+                    classpath?.files?.toList(),
+                    asGemPath()
+            )
+            def asciidoctor = ASCIIDOCTORS.computeIfAbsent(key) { k ->
+                def clazz = loadClass(ASCIIDOCTOR_FACTORY_CLASSNAME)
+                Class asciidoctorExtensionsDslRegistry = loadClass('org.asciidoctor.groovydsl.AsciidoctorExtensions')
+
+                if (k.gemPath) {
+                    new AsciidoctorProxyImpl(delegate: clazz.create(k.gemPath), extensionRegistry: asciidoctorExtensionsDslRegistry)
+                } else {
+                    try {
+                        new AsciidoctorProxyImpl(delegate: clazz.create(null as String), extensionRegistry: asciidoctorExtensionsDslRegistry)
+                    } catch (Exception e) {
+                        // Asciidoctor < 1.5.1 can't handle a null gemPath, so fallback to default create() method
+                        new AsciidoctorProxyImpl(delegate: clazz.create(), extensionRegistry: asciidoctorExtensionsDslRegistry)
+                    }
+                }
+            }
+            cl.call(asciidoctor)
+        } finally {
+            if (asciidoctor) {
+                asciidoctor.unregisterAllExtensions()
+            }
+            EXEC_LOCK.unlock()
+        }
+    }
+
 }
+
