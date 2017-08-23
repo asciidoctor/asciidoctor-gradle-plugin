@@ -24,5 +24,4 @@ import groovy.transform.Immutable
 class AsciidoctorProxyCacheKey {
     final List<File> classpath
     final String gemPath
-//    final List<Object> extensions
 }
