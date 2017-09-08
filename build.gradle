@@ -22,7 +22,7 @@ plugins {
     id 'codenarc'
     id 'java-gradle-plugin'
     id 'com.jfrog.bintray'              version '1.7.3'
-    id 'net.nemerosa.versioning'        version '2.6.0'
+    id 'net.nemerosa.versioning'        version '2.6.1'
     id 'com.github.ben-manes.versions'  version '0.15.0'
     id 'com.gradle.plugin-publish'      version '0.9.7'
     id 'com.github.hierynomus.license'  version '0.14.0'
