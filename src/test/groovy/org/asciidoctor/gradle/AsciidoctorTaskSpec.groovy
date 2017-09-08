@@ -51,6 +51,8 @@ class AsciidoctorTaskSpec extends Specification {
     File outDir
     ByteArrayOutputStream systemOut
 
+    PrintStream originSystemOut
+
     def setup() {
         project = ProjectBuilder.builder().withName('test').build()
         project.configurations.create(ASCIIDOCTOR)
@@ -60,7 +62,14 @@ class AsciidoctorTaskSpec extends Specification {
         srcDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR).absoluteFile
         outDir = new File(project.projectDir, ASCIIDOC_BUILD_DIR)
         systemOut = new ByteArrayOutputStream()
+        originSystemOut = System.out;
         System.out = new PrintStream(systemOut)
+        AsciidoctorTask.ASCIIDOCTORS.put(new AsciidoctorProxyCacheKey(gemPath:"", classpath: []), mockAsciidoctor)
+    }
+
+    def cleanup(){
+        System.out = originSystemOut
+        AsciidoctorTask.ASCIIDOCTORS.clear()
     }
 
     @SuppressWarnings('MethodName')
@@ -423,7 +432,6 @@ class AsciidoctorTaskSpec extends Specification {
     def "Add asciidoctor task with multiple backends"() {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
@@ -441,7 +449,6 @@ class AsciidoctorTaskSpec extends Specification {
     def "Adds asciidoctor task with multiple backends and single backend"() {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
@@ -464,7 +471,6 @@ class AsciidoctorTaskSpec extends Specification {
             project.tasks.findByName(ASCIIDOCTOR) == null
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
                 sourceDir srcDir
                 outputDir = outDir
@@ -483,7 +489,6 @@ class AsciidoctorTaskSpec extends Specification {
             project.tasks.findByName(ASCIIDOCTOR) == null
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
@@ -503,7 +508,6 @@ class AsciidoctorTaskSpec extends Specification {
             project.tasks.findByName(ASCIIDOCTOR) == null
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
@@ -517,11 +521,8 @@ class AsciidoctorTaskSpec extends Specification {
 
     @SuppressWarnings('MethodName')
     def "Processes a single document given a value for sourceDocumentName"() {
-        expect:
-            project.tasks.findByName(ASCIIDOCTOR) == null
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
@@ -533,13 +534,34 @@ class AsciidoctorTaskSpec extends Specification {
             1 * mockAsciidoctor.renderFile(_, _)
     }
 
+    @SuppressWarnings('MethodName')
+    def "Reuses asciidoctor instance for multiple tasks"() {
+        when:
+        (1..2).collect {
+            project.tasks.create(name: "asciidoctor$it", type: AsciidoctorTask) {
+                resourceCopyProxy = mockCopyProxy
+                sourceDir = srcDir
+                outputDir = new File(outDir, "dir$it")
+                sourceDocumentName = new File(srcDir, ASCIIDOC_SAMPLE_FILE)
+                extensions {}
+            }
+
+        }.each {
+            it.processAsciidocSources()
+        }
+
+        then:
+        2 * mockAsciidoctor.unregisterAllExtensions()
+        2 * mockAsciidoctor.renderFile(_, _)
+        2 * mockAsciidoctor.registerExtensions(_)
+    }
+
 
     @Ignore('Wrong sysout capture')
     @SuppressWarnings('MethodName')
     def "Output warning when a sourceDocumentName was given"() {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
@@ -556,7 +578,6 @@ class AsciidoctorTaskSpec extends Specification {
     def "Output error when sourceDocumentName and sourceDocumentNames are given"() {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
@@ -573,7 +594,6 @@ class AsciidoctorTaskSpec extends Specification {
     def "Source documents in directories end up in the corresponding output directory"() {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
@@ -592,7 +612,6 @@ class AsciidoctorTaskSpec extends Specification {
     def "Should support String value for attributes option"() {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
@@ -612,7 +631,6 @@ class AsciidoctorTaskSpec extends Specification {
     def "Should support GString value for attributes option"() {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
@@ -653,7 +671,6 @@ class AsciidoctorTaskSpec extends Specification {
     def "Throws exception when attributes embedded in options is an unsupported type"() {
         when:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
@@ -672,7 +689,6 @@ class AsciidoctorTaskSpec extends Specification {
         given:
             File basedir = new File(testRootDir, 'my_base_dir')
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
@@ -704,7 +720,6 @@ class AsciidoctorTaskSpec extends Specification {
     def "Setting baseDir to null results in no value being sent to Asciidoctor"() {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
@@ -720,7 +735,6 @@ class AsciidoctorTaskSpec extends Specification {
     def "Safe mode option is equal to level of SafeMode.UNSAFE by default"() {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
@@ -737,7 +751,6 @@ class AsciidoctorTaskSpec extends Specification {
     def "Safe mode configuration option as integer is honored"() {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
@@ -757,7 +770,6 @@ class AsciidoctorTaskSpec extends Specification {
     def "Safe mode configuration option as string is honored"() {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
@@ -777,7 +789,6 @@ class AsciidoctorTaskSpec extends Specification {
     def "Safe mode configuration option as enum is honored"() {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
@@ -797,7 +808,6 @@ class AsciidoctorTaskSpec extends Specification {
     def "Attributes projectdir and rootdir are always set to relative dirs of the processed file"() {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
@@ -833,7 +843,6 @@ class AsciidoctorTaskSpec extends Specification {
             project.version = '1.0.0-SNAPSHOT'
             project.group = 'com.acme'
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
@@ -854,7 +863,6 @@ class AsciidoctorTaskSpec extends Specification {
             project.version = '1.0.0-SNAPSHOT'
             project.group = 'com.acme'
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
@@ -880,7 +888,6 @@ class AsciidoctorTaskSpec extends Specification {
     def "Should support a single source document if a name is given"() {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
@@ -896,7 +903,6 @@ class AsciidoctorTaskSpec extends Specification {
     def "Should support multiple source documents if names are given"() {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
@@ -915,7 +921,6 @@ class AsciidoctorTaskSpec extends Specification {
     def "Should throw exception if the file sourceDocumentName starts with underscore"() {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
                 sourceDir = srcDir
                 outputDir = outDir
@@ -932,7 +937,6 @@ class AsciidoctorTaskSpec extends Specification {
     def "Should throw exception if a file in sourceDocumentNames starts with underscore"() {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
                 sourceDir srcDir
                 outputDir outDir
@@ -948,7 +952,6 @@ class AsciidoctorTaskSpec extends Specification {
     def "When 'resources' not specified, then copy all images to backend"() {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
 
                 sourceDir srcDir
@@ -969,7 +972,6 @@ class AsciidoctorTaskSpec extends Specification {
     def "When 'resources' not specified and more than one backend, then copy all images to every backend"() {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
 
                 sourceDir srcDir
@@ -991,7 +993,6 @@ class AsciidoctorTaskSpec extends Specification {
     def "When 'resources' are specified, then copy according to all patterns"() {
         given:
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
 
                 sourceDir srcDir
@@ -1018,8 +1019,7 @@ class AsciidoctorTaskSpec extends Specification {
 
     def "sanity test for default configuration" () {
         when:
-            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-            }
+            Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask)
 
         then:
             task.sourceDir.absolutePath.replace('\\', '/').endsWith('src/docs/asciidoc')
@@ -1054,7 +1054,6 @@ class AsciidoctorTaskSpec extends Specification {
             imageFile.text = 'foo'
 
             Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
 
                 sourceDir srcDir
@@ -1090,7 +1089,6 @@ class AsciidoctorTaskSpec extends Specification {
                 attributes = [
                     foo: "${variable}"
                 ]
-                asciidoctor = mockAsciidoctor
                 resourceCopyProxy = mockCopyProxy
                 sourceDir srcDir
                 outputDir = outDir
@@ -1112,7 +1110,6 @@ class AsciidoctorTaskSpec extends Specification {
         project.tasks.findByName(ASCIIDOCTOR) == null
         when:
         Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-            asciidoctor = mockAsciidoctor
             resourceCopyProxy = mockCopyProxy
             sourceDir = srcDir
             outputDir = outDir
