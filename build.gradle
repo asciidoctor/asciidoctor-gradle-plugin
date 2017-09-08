@@ -23,12 +23,12 @@ plugins {
     id 'java-gradle-plugin'
     id 'com.jfrog.bintray'              version '1.7.3'
     id 'net.nemerosa.versioning'        version '2.6.0'
-    id 'com.github.ben-manes.versions'  version '0.14.0'
+    id 'com.github.ben-manes.versions'  version '0.15.0'
     id 'com.gradle.plugin-publish'      version '0.9.7'
     id 'com.github.hierynomus.license'  version '0.14.0'
     id 'com.github.kt3k.coveralls'      version '2.8.1'
     id 'net.ossindex.audit'             version '0.1.1'
-    id 'org.kordamp.jdeps'              version '0.1.0'
+    id 'org.kordamp.jdeps'              version '0.2.0'
 }
 
 apply from: 'gradle/credentials.gradle'
