@@ -23,6 +23,7 @@ import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.FileTree
 import org.gradle.api.internal.file.copy.CopySpecInternal
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.InputDirectory
@@ -55,6 +56,7 @@ import java.util.concurrent.locks.ReentrantLock
  * @author Robert Panzer
  */
 @SuppressWarnings(['MethodCount', 'Instanceof'])
+@CacheableTask
 class AsciidoctorTask extends DefaultTask {
     private static final boolean IS_WINDOWS = System.getProperty('os.name').contains('Windows')
     private static final String PATH_SEPARATOR = System.getProperty('path.separator')
@@ -462,11 +464,11 @@ class AsciidoctorTask extends DefaultTask {
      * @since 1.5.1
      */
     @OutputDirectories
-    Set<File> getOutputDirectories() {
+    Map<String, File> getOutputDirectories() {
         if (separateOutputDirs) {
-            backends.collect { new File(outputDir, it) } as Set
+            backends.collectEntries { [(it): new File(outputDir, it)] }
         } else {
-            [outputDir] as Set
+            [(outputDir.name): outputDir]
         }
     }
 
