@@ -860,23 +860,26 @@ class AsciidoctorTask extends DefaultTask {
         try {
             def key = new AsciidoctorProxyCacheKey(
                     classpath?.files?.toList(),
-                    asGemPath()
-            )
-            def asciidoctor = ASCIIDOCTORS.computeIfAbsent(key) { k ->
+                    asGemPath())
+
+            def asciidoctor = ASCIIDOCTORS.get(key)
+            if (asciidoctor == null) {
                 def clazz = loadClass(ASCIIDOCTOR_FACTORY_CLASSNAME)
                 Class asciidoctorExtensionsDslRegistry = loadClass('org.asciidoctor.groovydsl.AsciidoctorExtensions')
 
-                if (k.gemPath) {
-                    new AsciidoctorProxyImpl(delegate: clazz.create(k.gemPath), extensionRegistry: asciidoctorExtensionsDslRegistry)
+                if (key.gemPath) {
+                    asciidoctor = new AsciidoctorProxyImpl(delegate: clazz.create(key.gemPath), extensionRegistry: asciidoctorExtensionsDslRegistry)
                 } else {
                     try {
-                        new AsciidoctorProxyImpl(delegate: clazz.create(null as String), extensionRegistry: asciidoctorExtensionsDslRegistry)
+                        asciidoctor = new AsciidoctorProxyImpl(delegate: clazz.create(null as String), extensionRegistry: asciidoctorExtensionsDslRegistry)
                     } catch (Exception e) {
                         // Asciidoctor < 1.5.1 can't handle a null gemPath, so fallback to default create() method
-                        new AsciidoctorProxyImpl(delegate: clazz.create(), extensionRegistry: asciidoctorExtensionsDslRegistry)
+                        asciidoctor = new AsciidoctorProxyImpl(delegate: clazz.create(), extensionRegistry: asciidoctorExtensionsDslRegistry)
                     }
                 }
+                ASCIIDOCTORS.put(key, asciidoctor)
             }
+
             cl.call(asciidoctor)
         } finally {
             if (asciidoctor) {
