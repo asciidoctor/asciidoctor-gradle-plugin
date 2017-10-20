@@ -37,6 +37,11 @@ apply from: 'gradle/publishing.gradle'
 apply from: 'gradle/code-quality.gradle'
 apply from: 'gradle/integration-tests.gradle'
 
+tasks.withType(AbstractCompile) {
+    sourceCompatibility = project.sourceCompatibility
+    targetCompatibility = project.targetCompatibility
+}
+
 gradlePlugin {
     plugins {
         asciidoctorPlugin {
