@@ -90,5 +90,70 @@ class AsciidoctorFunctionalSpec extends Specification {
         new File(buildDir, "asciidoc/html5/subdir/sample2.html").exists()
     }
 
+    @SuppressWarnings('MethodName')
+    def "Task should be up-to-date when executed a second time"() {
+        given: "A minimal build file"
+        def buildFile = testProjectDir.newFile("build.gradle")
+        buildFile << """\
+        plugins {
+            id "org.asciidoctor.convert"
+        }
+        """
+
+        and: "Some source files"
+        FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, "normal"), testProjectDir.root)
+        final buildDir = new File(testProjectDir.root, "build")
+
+        when:
+        GradleRunner.create()
+                .withProjectDir(testProjectDir.getRoot())
+                .withArguments("asciidoctor")
+                .withPluginClasspath(pluginClasspath)
+                .build()
+        final result = GradleRunner.create()
+                .withProjectDir(testProjectDir.getRoot())
+                .withArguments("asciidoctor")
+                .withPluginClasspath(pluginClasspath)
+                .build()
+
+        then:
+        result.task(":asciidoctor").outcome == TaskOutcome.UP_TO_DATE
+    }
+
+        @SuppressWarnings('MethodName')
+    def "Task should not be up-to-date when classpath is changed"() {
+        given: "A minimal build file"
+        def buildFile = testProjectDir.newFile("build.gradle")
+        buildFile << """\
+        plugins {
+            id "org.asciidoctor.convert"
+        }
+        if (project.hasProperty('modifyClasspath')) {
+            dependencies {
+                asciidoctor 'org.hibernate.infra:hibernate-asciidoctor-extensions:1.0.3.Final'
+            }
+        }
+        """
+
+        and: "Some source files"
+        FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, "normal"), testProjectDir.root)
+        final buildDir = new File(testProjectDir.root, "build")
+
+        when:
+        GradleRunner.create()
+                .withProjectDir(testProjectDir.getRoot())
+                .withArguments("asciidoctor")
+                .withPluginClasspath(pluginClasspath)
+                .build()
+        final result = GradleRunner.create()
+                .withProjectDir(testProjectDir.getRoot())
+                .withArguments("asciidoctor", "-PmodifyClasspath")
+                .withPluginClasspath(pluginClasspath)
+                .build()
+
+        then:
+        result.task(":asciidoctor").outcome == TaskOutcome.SUCCESS
+    }
+
 }
 
