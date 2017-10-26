@@ -118,6 +118,9 @@ class AsciidoctorTask extends DefaultTask {
 
     AsciidoctorProxy asciidoctor
     ResourceCopyProxy resourceCopyProxy
+
+    @Optional
+    @InputFiles
     Configuration classpath
 
     AsciidoctorTask() {
