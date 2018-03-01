@@ -40,6 +40,8 @@ The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to 
 
 NOTE: This is a port of the {asciidoctor-maven-plugin}[Asciidoctor Maven Plugin] project founded by {lightguard}[@LightGuard] and relies on {asciidoctorj}[AsciidoctorJ] founded by {lordofthejars}[@lordofthejars].
 
+NOTE: The https://github.com/gradle/kotlin-dsl[Gradle Kotlin DSL] is not properly supported by this plugin yet but it can be used with the GKD. Examples and workarounds are described below.
+
 ifndef::env-site[]
 == Contributing
 
@@ -66,6 +68,17 @@ buildscript {
 }
 
 apply plugin: 'org.asciidoctor.convert'
+----
+
+Use the following snippet with the https://github.com/gradle/kotlin-dsl[Gradle Kotlin DSL]:
+
+[source,kotlin]
+[subs=attributes+]
+.build.gradle.kts
+----
+plugins {
+    id("org.asciidoctor.convert") version "{version-published}"
+}
 ----
 
 == Usage
@@ -144,6 +157,22 @@ asciidoctor {
 
 Paths defined in this PatternSet are resolved relative to the `sourceDir`.
 
+For the Gradle Kotlin DSL a workaround is needed:footnoteref:[kotlin-delegate,The method delegates to a type that Kotlin cannot infer that from the byte-code. The function `delegateClosureOf<T>()` from the GKD is used to provide the information to Kotlin.]
+
+[source,kotlin]
+.build.gradle.kts
+----
+tasks {
+  "asciidoctor"(AsciidoctorTask::class) {
+    sourceDir = file("docs")
+    sources(delegateClosureOf<PatternSet> {
+      include("toplevel.adoc", "another.adoc", "third.adoc")
+    })
+    outputDir = file("build/docs")
+  }
+}
+----
+
 === Processing Auxiliary Files
 
 Some backends require that additional files be copied across. The most common example are images for HTML backends. For
@@ -170,6 +199,24 @@ resources {
 Files will be copied to below `+${outputDir}/${backend}+` (or just `+${outputDir}+` if `separateOutputDirs=false`)
 
 Unlike `sourceDir` files can be copied from anywhere in the filesystem.
+
+For the Gradle Kotlin DSL, the example above looks like this:footnoteref:[kotlin-delegate]
+[source,kotlin]
+.build.gradle.kts
+----
+resources(delegateClosureOf<CopySpec> {
+  from("src/resources/images") {
+    include("images/**/*.png")
+    exclude("images/**/notThisOne.png")
+  }
+
+  from("$buildDir/downloads") {
+    include("deck.js/**")
+  }
+
+  into("./images")
+})
+----
 
 If `resources` is never set, the default behaviour is as if the following was called
 [source,groovy]
@@ -212,6 +259,28 @@ asciidoctor { <1>
                 toc                 : '',
                 idprefix            : '',
                 idseparator         : '-'
+}
+----
+
+Or in the Gradle Kotlin DSL:
+
+[source,kotlin]
+.build.gradle.kts
+----
+tasks {
+  "asciidoctor"(AsciidoctorTask::class) { <1>
+    outputDir = file("$buildDir/docs")
+    options(mapOf("doctype" to "book", "ruby" to "erubis"))
+
+    attributes(
+      mapOf(
+        "source-highlighter" to "coderay",
+        "toc"                to "",
+        "idprefix            to "",
+        "idseparator"        to "-"
+      )
+    )
+  }
 }
 ----
 <1> append below the line: `apply plugin: 'org.asciidoctor.convert'`
