@@ -15,6 +15,7 @@
  */
 package org.asciidoctor.gradle
 
+import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
@@ -492,9 +493,20 @@ class AsciidoctorTask extends DefaultTask {
         if (sourceDocumentPattern == null) {
             sourceDocumentPattern = new PatternSet()
         }
-        def configuration = cfg.clone()
+        def configuration = cfg.clone() as Closure
         configuration.delegate = sourceDocumentPattern
         configuration()
+    }
+
+    /**
+     * Define a pattern set for source files.
+     *
+     * @param action A closure that constructs a pattern.
+     * @since 1.5.6
+     */
+    void sources(Action<? super PatternSet> action) {
+        sourceDocumentPattern = sourceDocumentPattern ?: new PatternSet()
+        action.execute(sourceDocumentPattern)
     }
 
     /** Add to the CopySpec for extra files. The destination of these files will always have a parent directory
@@ -507,9 +519,23 @@ class AsciidoctorTask extends DefaultTask {
         if (this.resourceCopy == null) {
             this.resourceCopy = project.copySpec(cfg)
         } else {
-            def configuration = cfg.clone()
+            def configuration = cfg.clone() as Closure
             configuration.delegate = this.resourceCopy
             configuration()
+        }
+    }
+
+    /**
+     * Add extra resources to copy to the build directory.
+     *
+     * @param action An {@code Action} that configures the {@code CopySpec}.
+     * @since 1.5.6
+     */
+    void resources(Action<? super CopySpec> action) {
+        if (resourceCopy == null) {
+            resourceCopy = project.copySpec(action)
+        } else {
+            action.execute(resourceCopy)
         }
     }
 
