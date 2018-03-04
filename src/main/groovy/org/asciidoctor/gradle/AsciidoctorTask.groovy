@@ -318,6 +318,7 @@ class AsciidoctorTask extends DefaultTask {
      *
      * @param s
      */
+    @SuppressWarnings('UnnecessarySetter')
     void setGemPath(Object path) {
         this.gemPaths.clear()
         if (path instanceof CharSequence) {
@@ -419,6 +420,7 @@ class AsciidoctorTask extends DefaultTask {
      * @param f A file that is relative to {@code sourceDir}
      * @deprecated
      */
+    @SuppressWarnings('UnnecessarySetter')
     void setSourceDocumentName(File f) {
         deprecated 'setSourceDocumentName', 'setIncludes', 'File will be converted to a pattern.'
         sources {
@@ -432,7 +434,7 @@ class AsciidoctorTask extends DefaultTask {
      * @since 1.5.0
      * @deprecated
      */
-    @SuppressWarnings('DuplicateStringLiteral')
+    @SuppressWarnings(['DuplicateStringLiteral', 'UnnecessarySetter'])
     void setSourceDocumentNames(Object... src) {
         deprecated 'setSourceDocumentNames', 'setIncludes', 'Files are converted to patterns. Some might not convert correctly. ' +
                 'FileCollections will not convert'
