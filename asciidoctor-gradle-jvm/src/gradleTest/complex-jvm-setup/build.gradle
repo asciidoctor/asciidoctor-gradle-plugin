@@ -1,0 +1,82 @@
+plugins {
+    id 'org.asciidoctor.jvm.convert'
+    id 'org.asciidoctor.jvm.pdf'
+
+    // id 'jruby-gradle.base' version '...'
+}
+
+repositories {
+    jcenter()
+}
+
+asciidoctorj {
+
+    // options
+    // attributes
+
+    // extensions
+
+    // gemPaths
+
+    diagramVersion = '1.5.4.1'
+}
+
+configurations {
+    asciidoctorLeanpub
+}
+
+dependencies {
+    // asciidoctorLeanpub
+     //gems
+}
+
+asciidoctor {
+
+    outputOptions {
+        backends 'html5', 'docbook'
+    }
+
+    sources {
+        include 'sample.asciidoc'
+    }
+
+    resources {
+        include 'images/**'
+    }
+
+    asciidoctorj {
+        // requires
+    }
+
+    copyResourcesOnlyIf 'html5'
+    useIntermediateWorkDir()
+}
+
+asciidoctorPdf {
+    inProcess OUT_OF_PROCESS
+    logDocuments true
+    sourceDir 'src/docs/asciidoc'
+
+    sources {
+        include 'subdir/sample2.ad'
+    }
+
+    asciidoctorj {
+        verboseMode true
+    }
+}
+
+//task asciidoctorLeanpub ( type : org.asciidoctor.gradle.jvm.AsciidoctorTask ) {
+//    sourceDir 'src/docs/asciidoc'
+//    configurations 'asciidoctorLeanpub'
+//    copyNoResources()
+//
+//    asciidoctorj {
+//        version = '1.6.0-alpha-1'
+//        safeMode 'unsafe'
+//    }
+//}
+
+task runGradleTest {
+    dependsOn asciidoctor, asciidoctorPdf
+}

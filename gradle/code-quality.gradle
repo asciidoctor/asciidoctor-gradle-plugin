@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+apply plugin : 'codenarc'
+apply plugin : 'com.github.hierynomus.license'
+
 license {
     header = rootProject.file('config/HEADER')
     strictCheck = true
@@ -27,7 +30,7 @@ license {
 }
 
 codenarc {
-    configFile = file('config/codenarc/codenarc.groovy')
+    configFile = file("${rootProject.projectDir}/config/codenarc/codenarc.groovy")
     // run codenarc on production sources only
     sourceSets = [project.sourceSets.main]
 }

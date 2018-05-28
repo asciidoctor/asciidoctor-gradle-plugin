@@ -1,16 +1,21 @@
 = Asciidoctor Gradle Plugin
 Andres Almiray <https://github.com/aalmiray[@aalmiray]>
 :version: 1.6.0-SNAPSHOT
-:version-published: 1.5.3
+:version-published: 2.0.0-alpha.1
 :asciidoc-url: http://asciidoc.org
 :asciidoctor-url: http://asciidoctor.org
 :issues: https://github.com/asciidoctor/asciidoctor-maven-plugin/issues
 :gradle-url: http://gradle.org/
 :asciidoctor-maven-plugin: https://github.com/asciidoctor/asciidoctor-maven-plugin
+:kotlindsl: https://github.com/gradle/kotlin-dsl[Gradle Kotlin DSL]
 :lightguard: https://github.com/LightGuard
 :asciidoctorj: https://github.com/asciidoctor/asciidoctorj
+:asciidoctorj-name: AsciidoctorJ
+:asciidoctorj-epub-name: Asciidoctorj-EPUB
+:asciidoctorj-pdf-name: Asciidoctorj-PDF
 :lordofthejars: https://github.com/lordofthejars
 :asciidoctor-docs: http://asciidoctor.org/docs/
+:plugin-name: Asciidoctor Gradle plugin
 :project-name: asciidoctor-gradle-plugin
 :project-full-path: asciidoctor/asciidoctor-gradle-plugin
 :github-branch: development
@@ -38,9 +43,21 @@ endif::[]
 
 The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to convert all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
 
-NOTE: This is a port of the {asciidoctor-maven-plugin}[Asciidoctor Maven Plugin] project founded by {lightguard}[@LightGuard] and relies on {asciidoctorj}[AsciidoctorJ] founded by {lordofthejars}[@lordofthejars].
+NOTE: This is a port of the {asciidoctor-maven-plugin}[Asciidoctor Maven Plugin] project founded by {lightguard}[@LightGuard] and relies on {asciidoctorj}[{asciidoctorj-name}] founded by {lordofthejars}[@lordofthejars].
 
 NOTE: The https://github.com/gradle/kotlin-dsl[Gradle Kotlin DSL] is not properly supported by this plugin yet but it can be used with the GKD. Examples and workarounds are described below.
+
+NOTE: This collection of plugins requires at least Gradle 4.0 & JDK 8.0 to run. If you need prior Gradle or JDK support please use a plugin from the 1.5.x release series.
+
+== Known Issues
+
+This is still an alpha development, so expect some issues. These are the main ones we know about:
+
+* EPUB3 + KF8 in one task. Both formats in one task is currently failing. The exact failure message depends on which order
+  (KF8+EPUB3 or EPUB3+KF8) the conversion takes place in.
+* KF8 conversions fails under Windows. (Related to asciidoctor/asciidoctorj#659 & jruby/jruby#4943)
+* Extensions only work with AsciidoctorJ 1.5.x. It needs a version of the Groovy DSL extensions that will work for 1.6.0+ (asciidoctor/asciidoctorj-groovy-dsl#20). If you need to experiment with extensions then you mneed to set `asciidoctorj.version = '1.5.6'` (or a later 1.5.x if available).
+* Does not work with JDK9 (but does with JDK10).
 
 ifndef::env-site[]
 == Contributing
@@ -51,26 +68,18 @@ endif::[]
 
 == Installation
 
-Use the following snippet inside a Gradle build file:
+To start you need to use one of the plugins from the following Gradle snipper
 
 [source,groovy]
 [subs=attributes+]
 .build.gradle
 ----
-buildscript {
-    repositories {
-        jcenter()
-    }
-
-    dependencies {
-        classpath 'org.asciidoctor:{project-name}:{version-published}'
-    }
+plugins {
+    id 'org.asciidoctor.jvm.convert' version '{version-published}'
 }
-
-apply plugin: 'org.asciidoctor.convert'
 ----
 
-Use the following snippet with the https://github.com/gradle/kotlin-dsl[Gradle Kotlin DSL]:
+For the {kotlindsl} the format is slightly different:
 
 [source,kotlin]
 [subs=attributes+]
@@ -81,7 +90,436 @@ plugins {
 }
 ----
 
-== Usage
+There are also a of other plugins that could use depending on your context.
+
+[source,groovy]
+[subs=attributes+]
+.build.gradle
+----
+plugins {
+    id 'org.asciidoctor.jvm.base' version '{version-published}' // <1>
+    id 'org.asciidoctor.jvm.convert' version '{version-published}' // <2>
+    id 'org.asciidoctor.jvm.pdf' version '{version-published}' // <3>
+    id 'org.asciidoctor.jvm.epub' version '{version-published}' // <4>
+    id 'org.asciidoctor.convert' version '{version-published}' // <5>
+}
+----
+<1> Use {asciidoctorj-name} but without any predefined tasks.
+<2> A generic `asciidoctor` task which can be configured for multiple backends. (use this if you are  HTML and Docbook conversions).
+<3> Adds a convention task `asciidoctorPdf` - implies `org.asciidoctor.jvm.base`
+<4> Adds a convention task `asciidoctorEpub` - implies `org.asciidoctor.jvm.base`
+<5> If you upgraded from a 1.5.x version of the plugin you might want to use this first. It is a compatibility plugin with the older versions.
+// <2> Use AsciidoctorJS instead of AsciidoctorJ with predefined tasks and conventions.
+// <3> Use AsciidoctorJS without any predefined tasks.
+
+If you use {kotlindsl} just change the above format slightly as shown earlier.
+
+== AsciidoctorJ Base Plugin
+
+Adds an extension for configuring which version of {asciidoctorj-name} and various other {asciidoctorj-name} backends.
+
+This is very much similar to the one used in older versions of the {plugin-name}, but now it also offers the ability to add the same functionality to a task thus allowing a task to override the default versions that has been set.
+
+[source,groovy]
+----
+asciidoctorj {
+  version = '1.5.6' // <1>
+  groovyDslVersion = '1.0.0.Alpha2' // <2>
+
+  options doctype: 'book', ruby: 'erubis' // <3>
+
+  attributes toclevel : 2 // <4>
+}
+----
+<1> Set the default version of {asciidoctorj-name} for all Asciidoctor tasks in a project.
+<2> Set the default version of the Groovy extensions DSL for all Asciidoctor tasks in a project.
+<3> Add options for all Asciidoctor tasks
+<4> Add attributes for all Asciidoctor tasks
+
+You can also override or extend select settings within a task using the same extension i.e.
+
+[source,groovy]
+----
+asciidoctor {
+  asciidoctorj {
+
+      setOptions = [ doctype: 'article' ] // <1>
+
+      attributes toc : left // <2>
+  }
+}
+----
+<1> Override any global options
+<2> Use these attributes in addition to the globally specified ones.
+
+The entities that can be set are:
+
+[horizontal]
+attributes:: {asciidoctorj-epub-name} attributes.
+  Use `attributes` to append and `setAttributes` to replace any current attributes with a new set.
+  Attribute values are lazy-evaluated to strings.
+epubVersion:: {asciidoctorj-epub-name} version.
+  If not specified asciidoctork-epub will not be on the classpath. If you plan to use the EPUB backend, then you need to set a version here.
+extensions:: Groovy DSL extensions.
+  Use `extensions` to add one or more extensions. Use `setExtensions` to replace the current set of extensions with a new set.
+  Extensions can be any kind of object that is serialisable, although in most cases they will be strings or files.
+  If extensiosn are detached dependencies, theu will nto be serialised, but rather will be placed on the classpath so that
+  {asciidoctorj-name} can pick them up automatically.
+jrubyVersion:: Minimum version of JRuby to be used.
+  The exact version that will be used could be higher due to {asciidoctorj-name} having a transitive dependency that is newer.
+gemPaths:: One or more gem installation directories (separated by the system path separator).
+  Use `gemPaths` to append. Use `setGemPaths` or `gemPaths=['path1','path2']` to overwrite.
+  Use `asGemPath` to obtain a path string, separated by platform-specific separator.
+  Type: FileCollection, but any collection of objects convertible with `project.files` can be passed
+  Default: empty
+groovyDslVersion:: Version of Groovy Extensions DSL.
+  If not specified and no extensions are specified, Groovy DSL will not be used. However, if any extensions are added without setting an explicit version and default version will be used.
+options: {asciidoctorj-name} options.
+  Use `options` to append and `setOptions` to replace any current options with a new set.
+  Options are evaluated as late as possible.
+pdfVersion:: {asciidoctorj-pdf-name} version.
+  If not specified asciidoctorj-pdf will not be on the classpath. If you plan to use the PDF backend, then you need to set a version here.
+requires:: The set of Ruby modules to be included.
+  Use `requires` to append. Use `setRequires` or `requires=['name']` to overwrite.
+  Default: empty.
+resolutionStrategy:: Strategies for resolving Asciidoctorj-related dependencies.
+  Asciidoctor dependencies are held in a detached configuration. If for some special reason, you need to modify the way the dependency set is resolved, you can modify the behaviour by adding one or more strategies.
+safeMode: {asciidoctorj-name} safe mode.
+  Set the Safe mode as either `UNSAFE`, `SAFE`, `SERVER`, `SECURE`.
+  Can be a number (0, 1, 10, 20), a string, or the entity name
+verboseMode:: Asciidoctor verbose mode.
+  Default is `false`.
+version:: Asciidoctorj version.
+  If not specified a version will be used.
+
+=== Options & Attributes
+
+The following options may be set using the extensions' `options` property
+
+ * header_footer - boolean
+ * template_dirs - List<String>
+ * template_engine - String
+ * doctype - String
+
+Any key/values set on `attributes` is sent as is to Asciidoctor. You may use this Map to specify
+a stylesheet for example. The following snippet shows a sample configuration defining attributes.
+
+[source,groovy]
+.build.gradle
+----
+asciidoctorj { <1>
+    options doctype: 'book', ruby: 'erubis'
+
+    attributes 'source-highlighter': 'coderay',
+                toc                 : '',
+                idprefix            : '',
+                idseparator         : '-'
+}
+----
+<1> This can be globally on the project extension or locally on the task's extension.
+
+Or in the Gradle Kotlin DSL:
+
+[source,kotlin]
+.build.gradle.kts
+----
+tasks {
+  "asciidoctor"(AsciidoctorTask::class) { <1>
+    options(mapOf("doctype" to "book", "ruby" to "erubis"))
+
+    attributes(
+      mapOf(
+        "source-highlighter" to "coderay",
+        "toc"                to "",
+        "idprefix            to "",
+        "idseparator"        to "-"
+      )
+    )
+  }
+}
+----
+<1> This is an example of setting ti on the task extension in Kotlin.
+
+The following attributes are automatically set by the `asciidoctorj` extension:
+
+ * project-name : matches `$project.name`
+ * project-version: matches `$project.version` (if defined). Empty String value if undefined
+ * project-group: matches `$project.group` (if defined). Empty String value if undefined
+
+These attributes may be overridden by explicit user input.
+
+You may need to include extra content into the head of the exported document.
+For example, you might want to include jQuery inside the `<head>` element of the HTML export.
+To do so, first create a docinfo file `src/docs/asciidoc/docinfo.html` containing the content to include, in this case the `<script>` tag to load jQuery.
+
+[source,html]
+.src/docs/asciidoc/docinfo.html
+----
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.js"></script>
+----
+
+Then, add the `docinfo1` attribute to the attributes list in the previous example:
+
+[source,groovy]
+.build.gradle
+----
+attributes docinfo1: ''
+----
+
+Refer to the {asciidoctor-docs}[Asciidoctor documentation] to learn more about these options and attributes.
+
+.Note
+
+Attribute values defined on the build file will win over values defined on the documents themselves. You can change
+this behavior by appending an `@` at the end of the value when defined in the build file. Please refer to
+link:http://asciidoctor.org/docs/user-manual/#attribute-assignment-precedence[Attribute assignment precedence, window="_blank"]
+for more information.
+
+== AsciidoctorJ tasks
+
+All Asciidoctor tasks will have the following methods and properties:
+
+.Properties and methods common all {asciidoctorj-name} tasks
+[horizontal]
+asciidoctorj:: a task extension which allows a task to extend of override global configuration for Asciidoctor tasks.
+  This allow extensive flexibility. Any thing that can be configured in the global `asciidoctorj` extension can also be configured here.
+attributes:: A shortcut for `asciidoctorj.attributes`.
+configurations:: Specify additional configurations
+  These configurations will be added to the classpath when the task is executed.
+copyAllResources:: Copy all resources to the output directory
+copyNoResources:: Do not copy any resources to the output directory
+copyResourcesOnlyIf:: Only copy resources if the backend matches the listed backend.
+inProcess:: Specifies whether Asciidoctor conversions should be run in-process or out-of-process. Default: `true` (in-process).
+logDocuments:: Specifies if documents being processed should be logged on console. Type: boolean. Default: `false`.
+options:: A shortcut to`asciidoctorj.options`.
+outputDir:: where generated docs go.
+  Use either `outputDir path`, `setOutputDir path` or `outputDir=path`
+  Type: File, but any object convertible with `project.file` can be passed.
+  Default: `$buildDir/asciidoc`.
+parallelMode:: Specifies whether each backend or other variant of a converting tasks huodl be run in parallel or sequential.
+  Sequential conversions might have less initialisation overhead, but may suffer from `gemPath` and extension pollution. Default: `true` (parallel).
+resources:: specify which additional files (image etc.) must be copied to output directory using a
+  http://www.gradle.org/docs/current/javadoc/org/gradle/api/file/CopySpec.html[CopySpec].
+secondarySources: Specify which source files should be monitor for change. These are typically files which are included by top-level files as well as doctype files.
+  Default: All files in sourceDir which matches `getDefaultSourceDocumentPattern()` as well as doctype files.
+sourceDir:: where the asciidoc sources are.
+  Use either `sourceDir path`, `setSourceDir path` or `sourceDir=path`
+  Type: File, but any object convertible with `project.file` can be passed.
+  Default: `src/docs/asciidoc`.
+sources:: Specify which Asciidoctor source files to include as toplevel documents. It uses an
+  http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.html[Ant-style PatternSet].
+useIntermediateWorkDir:: Use an intermediate work directory for sources ances.
+  Some extensions such as `ditaa` will write content into the source directory. In order to keep the project source directory pristine an intermediate work directory can be used. All sources and resources will be copied there prior the executing Asciidoctor.
+
+The `org.asciidoctor.jvm.convert` plugin has a conversion task type of `org.asciidoctor.gradle.jvm.AsciidoctorTask` which, in addition the aforementioned will also have the following properties and methods which are configured via an `outputOptions` closure or action:
+
+.Properties & methods for configuring generic `AsciidoctorTask`
+[horizontal]
+backends:: the backends to use.
+  Use `backends` to append. Use `setBackends` or `backends=[]` to overwrite
+  Type: Set<String>, but any type can be converted to String can be used.
+  Default: [`html5`].
+separateOutputDirs:: specifies whether each backend should use a separate subfolder under `outputDir`.
+  Default: `true`
+
+
+=== Defining Sources
+
+The plugin will search for sources under `sourceDir`. Sources may have any of the following extensions in
+order to be discovered:
+
+* .adoc _(preferred)_
+* .asciidoc
+* .ad
+* .asc
+
+To select only certain files, use the `sources` method. This method takes a closure or an `Action` as an argument, which in turn configures an org.asciidoctor.gradle.jvm.epub.internal
+http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.html[PatternSet].
+
+To specify a custom output folder, use the `outputDir` method.
+
+[source,groovy]
+.build.gradle
+----
+asciidoctor {
+  sourceDir  file('docs')
+  sources {
+    include 'toplevel.adoc', 'another.adoc', 'third.adoc'
+  }
+  outputDir  file('build/docs')
+}
+----
+
+Paths defined in this PatternSet are resolved relative to the `sourceDir`.
+
+For the Gradle Kotlin DSL a workaround is needed:footnoteref:[kotlin-delegate,The method delegates to a type that Kotlin cannot infer that from the byte-code. The function `delegateClosureOf<T>()` from the GKD is used to provide the information to Kotlin.]
+
+[source,kotlin]
+.build.gradle.kts
+----
+tasks {
+  "asciidoctor"(AsciidoctorTask::class) {
+    sourceDir = file("docs")
+    sources(delegateClosureOf<PatternSet> {
+      include("toplevel.adoc", "another.adoc", "third.adoc")
+    })
+    outputDir = file("build/docs")
+  }
+}
+----
+
+=== Processing Auxiliary Files
+
+Some backends require that additional files be copied across. The most common example are images for HTML backends. For
+this the `resources` method is used. It is provided with a closure that configures an org.asciidoctor.gradle.jvm.epub.internal
+http://www.gradle.org/docs/current/javadoc/org/gradle/api/file/CopySpec.html[CopySpec]
+
+[source,groovy]
+.build.gradle
+----
+resources {
+  from('src/resources/images') {
+    include 'images/**/*.png'
+    exclude 'images/**/notThisOne.png'
+  }
+
+  from( "${buildDir}/downloads" ) {
+    include 'deck.js/**'
+  }
+
+  into './images'
+}
+----
+
+Files will be copied to below `+${outputDir}/${backend}+` (or just `+${outputDir}+` if `separateOutputDirs=false`)
+
+Unlike `sourceDir` files can be copied from anywhere in the filesystem.
+
+For the Gradle Kotlin DSL, the example above looks like this:footnoteref:[kotlin-delegate]
+[source,kotlin]
+.build.gradle.kts
+----
+resources(delegateClosureOf<CopySpec> {
+  from("src/resources/images") {
+    include("images/**/*.png")
+    exclude("images/**/notThisOne.png")
+  }
+
+  from("$buildDir/downloads") {
+    include("deck.js/**")
+  }
+
+  into("./images")
+})
+----
+
+If `resources` is never set, the default behaviour is as if the following was called
+[source,groovy]
+.build.gradle
+----
+resources {
+  from(sourceDir) {
+    include 'images/**'
+  }
+}
+----
+
+If you do not want this behaviour, then it can be turned off by doing
+
+[source,groovy]
+.build.gradle
+----
+copyNoResources()
+----
+
+== The New AsciidoctorJ Plugin
+
+When applying `org.asciidoctor.jvm.convert` it creates a single task of type `org.asciidoctor.gradle.jvm.AsciidoctorTask` called `asciidoctor`.
+
+By convention it sets the
+* `sourceDir` to `src/docs/asciidoc`
+* `outputDir` to `${buildDir}/docs/asciidoc`
+
+== The AsciidoctorPdf Plugin
+
+When applying `org.asciidoctor.jvm.pdf` it creates a single task of type `org.asciidoctor.gradle.jvm.AsciidoctorPdfTask` which is then configured to:
+
+* Output source to "${buildDir}/docs/asciidocPdf"
+* Not to copy any resources to the output directory
+* It will set also a default version for `asciidoctorj-pdf` artifact. To override set `asciidoctorj.pdfVersion` or `asciidoctorPdf.asciidoctorj.pdfVersion`.
+
+== The AsciidoctorEpub Plugin
+
+When applying `org.asciidoctor.jvm.epub` it creates a single task of type `org.asciidoctor.gradle.jvm.epub.AsciidoctorEpubTask` which is then configured to:
+
+* Output source to "${buildDir}/docs/asciidocEpub"
+* Not to copy any resources to the output directory
+* It will set also a default version for `asciidoctorj-epub` artifact. To override set `asciidoctorj.epubVersion` or `asciidoctorPdf.asciidoctorj.epubVersion`.
+
+The `AsciidoctorEpubTask` task type has the following additional methods:
+
+[horizontal]
+ebookFormats:: The epub formats to generate.
+  Specify one of more strings. Anything that is supported by the Asciidoctor EPUB backend can be used. Constants `EPUB3` and `KF8` are available for convenience. To override any previous set fomrats use `setEbookFormats`. To add to the existing list use `eBookFormats`.
+
+NOTE: KF8 formats cannot be generated under Windows at present.
+
+== Using AsciidoctorJ Diagram
+
+The new plugins have built-in support for `asciidoctorj-diagram`. Simply add the following to the project or task extension and
+diagramming will be available. If it is not set the `asciidoctorj-diagram` JAR will nto be added to the classpath.
+
+[source,groovy]
+----
+asciidoctorj {
+    diagramVersion '1.5.4.1'
+}
+----
+
+With this enhancement, there is also no longer a need to add `requires 'asciidoctor-diagram'`.
+
+NOTE: If you using OpenJDK 9/10 on MacOS you might find an error such as below
+
+----
+Caused by: java.lang.UnsatisfiedLinkError: /path/to/openjdk10/lib/libfontmanager.dylib: dlopen(/path/to/openjdk10/lib/libfontmanager.dylib, 1): Library not loaded: /Users/jenkins/workspace/openjdk10_build_x86-64_macos/openjdk/installedfreetype/lib/libfreetype.6.dylib
+  Referenced from: /path/to/openjdk10/lib/libfontmanager.dylib
+  Reason: image not found
+----
+
+The solutionn is to install `freetype` via HomeBrew or MacPorts. You might also need to do something (ridiculous) such as
+
+]source,bash]
+----
+$ sudo mkdir -p /Users/jenkins/workspace/openjdk10_build_x86-64_macos/openjdk/installedfreetype
+$ sudo ln -s /opt/local/lib /Users/jenkins/workspace/openjdk10_build_x86-64_macos/openjdk/installedfreetype/lib <1>
+----
+<1> `opt/local/lib` is the location for MacPorts. Change it accordingly for HomeBrew.
+
+== Upgrading From Older Versions of Asciidoctor
+
+NOTE: To help with migration the old plugin will print a number of messages to help with a conversion. The amount of text is controlled via `--warnings-mode` in Gradle 4.5+. For Gradle 4.0-4.4 use `--info` to get the full list of recommendations. Use of `--warnings-mode=none`  (Gradle 4.5+) or `--quiet` (Gradle 4.0-4.4) will produce migration information.
+
+Firstly replace plugin `org.asciidoctor.convert` with `org.asciidoctor.jvm.convert`.
+
+If you have more than one Asciidoctor task, decide which `options`, `attributes` and `requires` should go in the `asciidoctorj` global project extension block and which should be customised within the tasks `asciidoctor` extension block.
+
+Gradle injected a number of attributes into the build. THese names have now been changed to indicate that they are injected:
+
+[cols="3*"]
+|===
+| *Old name* | *New name* | *Usage*
+| `projectdir` | `gradle-projectdir` | The Gradle project directory which is running the Asciidoctor task.
+| `rootdir` | `gradle-rootdir` | The rootproject directory in a multi-project build.
+| `project-group` | `gradle-project-group` | The project/artifact group if it is defined.
+| `project-version` | `gradle-project-version` | The project version if it is defined.
+|===
+
+the `asciidoctor` configuration is no longer available. If you used that before to make artifacts available on the classpath you should use the `configurations` method on the task to add them. If you used it to manipulate versions of {asciidoctorj-name} and JRuby then you should rather use the explicit versions settings on `asciidoctorj`.
+
+== Asciidoctor Compatibility Plugin
+
+In order to help people upgrade a compatiblity plugin has been kept which mostly behaves in the same way as the AsciidoctorJ plugins in the 1.5.x series of releases.
+
 
 The plugin adds a new task named *asciidoctor*.
 You can configure this task using the following configuration properties and methods.
@@ -126,240 +564,27 @@ options:: a Map specifying different options that can be sent to Asciidoctor.
 attributes:: a Map specifying various document attributes that can be sent to Asciidoctor
   Use `attributes` to append, Use `setAttributes` or `attributes=` to overwrite.
 
+////
 To see examples of many of these configuration options used in practice, refer to the http://asciidoctor.github.io/asciidoctor-gradle-examples[Asciidoctor Gradle Examples] project.
+////
 
-=== Defining Sources
+== Kindlegen plugin
 
-The plugin will search for sources under `sourceDir`. Sources may have any of the following extensions in
-order to be discovered:
+Producing KF* formats via the EPUB extension requires `kindlegen` to be installed. This plugin provides the capability of bootstrapping `kindlegen` on Windows, MAx & Linux without the user having to do anything.
 
-* .adoc _(preferred)_
-* .asciidoc
-* .ad
-* .asc
-
-To select only certain files, use the `sources` method. This method takes a closure as an argument, which in turn configures an internal
-http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.html[PatternSet].
-
-To specify a custom output folder, use the `outputDir` method.
-
-[source,groovy]
-.build.gradle
-----
-asciidoctor {
-  sourceDir = file('docs')
-  sources {
-    include 'toplevel.adoc', 'another.adoc', 'third.adoc'
-  }
-  outputDir = file('build/docs')
-}
-----
-
-Paths defined in this PatternSet are resolved relative to the `sourceDir`.
-
-For the Gradle Kotlin DSL a workaround is needed:footnoteref:[kotlin-delegate,The method delegates to a type that Kotlin cannot infer that from the byte-code. The function `delegateClosureOf<T>()` from the GKD is used to provide the information to Kotlin.]
-
-[source,kotlin]
-.build.gradle.kts
-----
-tasks {
-  "asciidoctor"(AsciidoctorTask::class) {
-    sourceDir = file("docs")
-    sources(delegateClosureOf<PatternSet> {
-      include("toplevel.adoc", "another.adoc", "third.adoc")
-    })
-    outputDir = file("build/docs")
-  }
-}
-----
-
-=== Processing Auxiliary Files
-
-Some backends require that additional files be copied across. The most common example are images for HTML backends. For
-this the `resources` method is used. It is provided with a closure that configures an internal
-http://www.gradle.org/docs/current/javadoc/org/gradle/api/file/CopySpec.html[CopySpec]
-
-[source,groovy]
-.build.gradle
-----
-resources {
-  from('src/resources/images') {
-    include 'images/**/*.png'
-    exclude 'images/**/notThisOne.png'
-  }
-
-  from( "${buildDir}/downloads" ) {
-    include 'deck.js/**'
-  }
-  
-  into './images'
-}
-----
-
-Files will be copied to below `+${outputDir}/${backend}+` (or just `+${outputDir}+` if `separateOutputDirs=false`)
-
-Unlike `sourceDir` files can be copied from anywhere in the filesystem.
-
-For the Gradle Kotlin DSL, the example above looks like this:footnoteref:[kotlin-delegate]
-[source,kotlin]
-.build.gradle.kts
-----
-resources(delegateClosureOf<CopySpec> {
-  from("src/resources/images") {
-    include("images/**/*.png")
-    exclude("images/**/notThisOne.png")
-  }
-
-  from("$buildDir/downloads") {
-    include("deck.js/**")
-  }
-
-  into("./images")
-})
-----
-
-If `resources` is never set, the default behaviour is as if the following was called
-[source,groovy]
-.build.gradle
-----
-resources {
-  from(sourceDir) {
-    include 'images/**'
-  }
-}
-----
-
-If you do not want this behaviour, then it can be turned off by doing
-[source,groovy]
-.build.gradle
-----
-resources {}
-----
-
-=== Options & Attributes
-
-The following options may be set using the task's `options` property
-
- * header_footer - boolean
- * template_dirs - List<String>
- * template_engine - String
- * doctype - String
-
-Any key/values set on `attributes` is sent as is to Asciidoctor. You may use this Map to specify
-a stylesheet for example. The following snippet shows a sample configuration defining attributes.
-
-[source,groovy]
-.build.gradle
-----
-asciidoctor { <1>
-    outputDir "${buildDir}/docs"
-    options doctype: 'book', ruby: 'erubis'
-
-    attributes 'source-highlighter': 'coderay',
-                toc                 : '',
-                idprefix            : '',
-                idseparator         : '-'
-}
-----
-
-Or in the Gradle Kotlin DSL:
-
-[source,kotlin]
-.build.gradle.kts
-----
-tasks {
-  "asciidoctor"(AsciidoctorTask::class) { <1>
-    outputDir = file("$buildDir/docs")
-    options(mapOf("doctype" to "book", "ruby" to "erubis"))
-
-    attributes(
-      mapOf(
-        "source-highlighter" to "coderay",
-        "toc"                to "",
-        "idprefix            to "",
-        "idseparator"        to "-"
-      )
-    )
-  }
-}
-----
-<1> append below the line: `apply plugin: 'org.asciidoctor.convert'`
-
-The following attributes are automatically set by the `asciidoctor` task:
-
- * project-name : matches `$project.name`
- * project-version: matches `$project.version` (if defined). Empty String value if undefined
- * project-group: matches `$project.group` (if defined). Empty String value if undefined
-
-These attributes may be overridden by explicit user input.
-
-You may need to include extra content into the head of the exported document.
-For example, you might want to include jQuery inside the `<head>` element of the HTML export.
-To do so, first create a docinfo file `src/docs/asciidoc/docinfo.html` containing the content to include, in this case the `<script>` tag to load jQuery.
-
-[source,html]
-.src/docs/asciidoc/docinfo.html
-----
-<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.js"></script>
-----
-
-Then, add the `docinfo1` attribute to the attributes list in the previous example:
-
-[source,groovy]
-.build.gradle
-----
-attributes docinfo1: ''
-----
-
-Refer to the {asciidoctor-docs}[Asciidoctor documentation] to learn more about these options and attributes.
-
-.Note
-
-Attribute values defined on the build file will win over values defined on the documents themselves. You can change
-this behavior by appending an `@` at the end of the value when defined in the build file. Please refer to
-link:http://asciidoctor.org/docs/user-manual/#attribute-assignment-precedence[Attribute assignment precedence, window="_blank"]
-for more information.
-
-== Configuration
-
-This plugin uses `asciidoctorj-1.5.3.2` by default, however, you can change this by
-defining a value on the `asciidoctorj` extension, like so
-
-[source,groovy]
-.build.gradle
-----
-asciidoctorj {
-    version = '1.6.0-SNAPSHOT'
-}
-----
-
-Do not forget to add an entry to the `repositories` block pointing to Maven local if you'd like to run a local version
-of Asciidoctorj (such as an snapshot build for testing bleeding edge features). The following snippet is all you need.
-
-[source,groovy]
-.build.gradle
-----
-repositories {
-    mavenLocal() // <1>
-    jcenter()    // <2>
-}
-
-asciidoctorj {
-    version = '1.6.0-MY_SNAPSHOT'
-}
-----
-<1> resolves artifacts in your local Maven repository
-<2> resolves artifacts in Bintray's jcenter (where all other dependencies are found)
-
-The plugin also adds Bintray's JCenter as a default repository as the place to looks for `asciidocotorj`. In some contexts
-this behaviour can be considered detrimental or unwanted. In such cases this behaviour can be turned off by doing
+There is a base plugin `org.asciidoctor.kindlegen.base` which just provides a `kindlegen` extension. In order to use it
+you will need to agree to the Amazon terms of usage. To confirm this you need to configure
 
 [source,groovy]
 ----
-asciidoctorj {
-  noDefaultRepositories = true
+kindlegen {
+  agreeTotermsOfUse = true
 }
 ----
+
+If you do not them the plugin will refuse to botostrap `kindlegen`.
+
+NOTE: The base plugin is automatically applied by the EPUB plugin. If you only produce EPUB3 formats with the EPUB plugin you do not have to agree to usage of `kindlegen`.
 
 ifndef::env-site[]
 == Development
@@ -369,8 +594,8 @@ endif::[]
 
 == Adding Custom Extensions
 
-Starting with version 1.5.0 you'll be able to write your own Asciidoctor extensions in Groovy, or any other JVM language
-for that matter. There are several options for you to make it happen.
+Starting with version 1.5.0 you were able to write your own Asciidoctor extensions in Groovy, or any other JVM language
+for that matter. Now with the 2.0.0 you are even more flixibility in allowsin extensions to be applied on a per task basis on globally. There are several options for you to make it happen.
 
 === As External Library
 
@@ -425,25 +650,26 @@ The `extension` project is a sibling for `core`. The build file for the latter l
 [subs=attributes+]
 .build.gradle
 ----
-buildscript {
-    repositories {
-        jcenter()
-    }
-
-    dependencies {
-        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:{version-published}'
-    }
+plugins {
+   id 'org.asciidoctor.jvm.convert' version '{version-published}'
 }
-
-apply plugin: 'org.asciidoctor.convert'
 
 repositories {
     jcenter()
 }
 
-dependencies {
-    asciidoctor project(':extension')
+configuration {
+    asciidoctorExtensions
 }
+
+dependencies {
+    asciidoctorExtensions project(':extension')
+}
+
+asciidoctor {
+    configurations 'asciidoctorExtensions'
+}
+
 ----
 
 === As Inline Script
@@ -455,7 +681,7 @@ An extension is registered via the `extensions` element.
 [source,groovy]
 .build.gradle
 ----
-asciidoctor {
+asciidoctorj {
     extensions {
         block(name: "BIG", contexts: [":paragraph"]) {
             parent, reader, attributes ->
@@ -476,8 +702,8 @@ Groovy extensions can also be included as files.
 [source,groovy]
 .build.gradle
 ----
-asciidoctor {
-    extensions new File('big.groovy')
+asciidoctorj {
+    extensions file('big.groovy')
 }
 ----
 
@@ -493,65 +719,6 @@ block(name: "BIG", contexts: [":paragraph"]) {
     createBlock(parent, "paragraph", [upperLines], attributes, [:])
 }
 ----
-
-=== As Build Dependency
-
-The last option is to move the `extension` project into Gradle's `buildSrc` directory. There are no additional dependencies
-to be defined on the consuming projects, as the extension will be automatically picked up by the `asciidoctor` task,
-as the compiled extension is already in the task's classpath.
-
-[appendix]
-== Compatibility With Previous Releases
-
-=== Task Properties
-
-The following properties have been marked as deprecated. Developers are encouraged to migrate ASAP to the alternate
-properties.
-
-[horizontal]
-sourceDocumentNames:: an override to process multiple source files, which are relative to `sourceDir`.
-  Use `sources { include 'name' }` instead.
-sourceDocumentName:: an override to process a single source file. Use `sources { include 'name' }` instead.
-backend:: the backend to use. Use `backends` instead.
-
-=== Behavior
-
-* The default value for `sourceDir` has changed from `src/asciidoc` to `src/docs/asciidoc`.
-* Files specified in `sourceDocumentNames` must be relative to `sourceDir` and fully contained in `sourceDir`, in other words,
-it's no longer possible to process documents placed outside of the project's sources. Attempts will be made to convert absolute paths
-to relative paths  but conversion will not be guaranteed. Do not pass FileCollections as they will not convert correctly.
-* Source files that are not reachable from `sourceDir`, will no longer cause a build exception, they will just be silently ignored.
-* For backwards compatibility with older version, embedding `attributes` within `options` are still allowed, including legacy forms.
-* Non-source files are no longer automatically copied, unless they are in the `images` folder and `resources` was never
-called.
-* Each backend will now write to a separate subfolder under `outputDir`. To have the old behaviour use
-`separateOutputDirs = false`.
-
-=== Options & Attributes
-
-[source,groovy]
-.build.gradle
-----
-// Map notation
-attributes: toc: 'right',
-            'source-highlighter': 'coderay',
-            'toc-title': 'Table of Contents'
-
-// List notation
-attributes: [
-    'toc=right',
-    'source-highlighter=coderay',
-    'toc-title=Table of Contents'
-]
-
-// String notation
-attributes: 'toc=right source-highlighter=coderay toc-title=Table\\ of\\ Contents'
-----
-
-IMPORTANT: Do not forget to transform Groovy strings into Strings (by explicitly invoking `.toString()` on them) when
-used as option values, otherwise the Ruby runtime will throw an exception.
-
-Notice how spaces are escaped in the last key/value pair.
 
 [appendix]
 == Tips & Tricks
@@ -585,12 +752,3 @@ asciidoctor.doLast {
 }
 ----
 
-=== Force processing
-
-If Gradle detects that there were no changes, asciidoctor processing will be skipped as `UP-TO-DATE`. To force asciidoctor processing even if there were no changes:
-
-[source,groovy]
-.build.gradle
-----
-asciidoctor.outputs.upToDateWhen { false }
-----

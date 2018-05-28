@@ -1,0 +1,6 @@
+repositories {
+    jcenter()
+    if(version.endsWith('-SNAPSHOT')) {
+        mavenLocal()
+    }
+}

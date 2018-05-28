@@ -1,0 +1,90 @@
+import fi.linuxbox.gradle.download.worker.DownloadWorkerTask
+
+apply plugin : 'base'
+apply plugin : 'fi.linuxbox.download.worker'
+apply plugin : 'org.ysb33r.os'
+apply plugin : 'org.ysb33r.ivypot'
+
+apply from : "${rootProject.projectDir}/gradle/kindlegen-versions.gradle"
+
+syncRemoteRepositories {
+
+    group 'Off-line repository'
+    description 'Build Ivy repository from configurations'
+
+    repoRoot project.ext.offlineRepoRoot
+
+    outputs.files project.ext.offlineRepoDescriptionFile
+
+    repositories {
+        // Put this first as sometimes Ivy hits a hiccup on JCenter()
+        mavenCentral()
+        jcenter()
+
+        if (version.endsWith('-SNAPSHOT')) {
+            mavenLocal()
+        }
+    }
+
+    addAllProjects()
+
+    doLast {
+        project.ext.offlineRepoDescriptionFile.withWriter { w ->
+            w.println 'repositories {'
+            w.print ' ' * 4
+            w.println 'ivy {'
+            w.print ' ' * 8
+            w.println "name 'OfflineRepo'"
+            w.print ' ' * 8
+            w.println "layout 'gradle'"
+            w.print ' ' * 8
+            w.println "url '${file(repoRoot).absoluteFile.toURI()}'"
+            w.print ' ' * 4
+            w.println '}'
+            w.println '}'
+        }
+    }
+
+    onlyIf { ! gradle.startParameter.offline }
+}
+
+ext {
+    kindleGenPackageName = { ->
+        String fileName = OS.macOsX ? 'KindleGen' : 'kindlegen'
+        String fileExt = OS.linux ? 'tar.gz' : 'zip'
+        String fileOs = OS.linux ? 'linux_2.6_i386' : (OS.windows ? 'win32' : 'Mac_i386')
+
+        "${fileName}_${fileOs}_v${kindleGenVer}.${fileExt}"
+    }.call()
+
+    kindleGenBinaryUrl = "http://kindlegen.s3.amazonaws.com/${kindleGenPackageName}"
+}
+
+task cacheKindleGenBinary( type : DownloadWorkerTask ) {
+    group 'Off-line repository'
+    description 'Cache kindlegen archive off-line for testing'
+
+    from kindleGenBinaryUrl
+    to "${offlineRepoBinariesRoot}/${kindleGenPackageName}"
+
+    doFirst {
+        logger.info("Caching ${kindleGenBinaryUrl}")
+    }
+
+    enabled = OS.windows || OS.linux || OS.macOsX
+    onlyIf { ! gradle.startParameter.offline }
+}
+
+task buildOfflineRepositories {
+    group 'Off-line repository'
+    description 'Cache dependencies off-line for testing'
+
+    dependsOn syncRemoteRepositories, cacheKindleGenBinary
+}
+
+task cleanRepo( type : Delete ) {
+    delete project.ext.offlineRepoRoot
+}
+
+clean.delete = []
+build.dependsOn buildOfflineRepositories

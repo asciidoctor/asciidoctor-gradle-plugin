@@ -1,0 +1,60 @@
+ext {
+    pluginExtraText = (version.contains('-alpha') || version.contains('-beta')) ?
+        " (If you need a production-ready version of the AsciidoctorJ plugin for Gradle use a 1.5.x release of 'org.asciidoctor.convert' instead)"
+        : ''
+
+    extensionFileContent = file("${project(':asciidoctor-gradle-jvm').projectDir}/src/main/groovy/org/asciidoctor/gradle/jvm/AsciidoctorJExtension.groovy").readLines()
+    asciidoctorjFixtureFileContent = file("${project(':testfixtures-jvm').projectDir}/src/main/groovy/org/asciidoctor/gradle/testfixtures/jvm/AsciidoctorjTestVersions.groovy").readLines()
+
+    readAsciidoctorjVersionsFromContent = { itemName, content ->
+        (content.grep {
+            it =~ $/final\s+static\s+String\s+${itemName}\s+=/$
+        })[0].replaceFirst(~/^(.+?["'])/, '').replaceFirst(~/(["'].*)$/, '')
+    }
+
+    readAsciidoctorjExtVersion = { itemName ->
+        readAsciidoctorjVersionsFromContent itemName, extensionFileContent
+    }
+
+    readAsciidoctorjTestVersion = { itemName ->
+        readAsciidoctorjVersionsFromContent itemName, asciidoctorjFixtureFileContent
+    }
+
+    compileOnlyAsciidoctorJVersion = readAsciidoctorjExtVersion('DEFAULT_ASCIIDOCTORJ_VERSION')
+    compileOnlyGroovyDslVersion = readAsciidoctorjExtVersion('DEFAULT_GROOVYDSL_VERSION')
+    downloadOnlyPdfVersion = readAsciidoctorjExtVersion('DEFAULT_PDF_VERSION')
+    downloadOnlyEpubVersion = readAsciidoctorjExtVersion('DEFAULT_EPUB_VERSION')
+
+    // TODO: This logic can go once we dump the 1.5 series and get 1.6 out of alpha
+    asciidoctorjHasApiJar = { ver ->
+        !( ver.startsWith('1.5') || ver ==~ /1\.6\.0-alpha\.[123456]/ )
+    }
+
+    asciidoctorjTestVersion = [
+        series15: readAsciidoctorjTestVersion('SERIES_15'),
+        series16: readAsciidoctorjTestVersion('SERIES_16')
+    ]
+
+    groovyDslTestVersion = [
+        series15: readAsciidoctorjTestVersion('GROOVYDSL_SERIES_15'),
+        series16: readAsciidoctorjTestVersion('GROOVYDSL_SERIES_16')
+    ]
+
+    diagramTestVersion = [
+        series15: readAsciidoctorjTestVersion('DIAGRAM_SERIES_15'),
+        series16: readAsciidoctorjTestVersion('DIAGRAM_SERIES_16'),
+    ]
+}
+
+asciidoctorjTestVersion.keySet().each {
+    String config = "intTestOfflineAsciidoctorJ_${it}"
+    configurations.create(config)
+    dependencies.add(config, "org.asciidoctor:asciidoctorj:${asciidoctorjTestVersion[it]}")
+
+    if (asciidoctorjHasApiJar(asciidoctorjTestVersion[it])) {
+        dependencies.add(config, "org.asciidoctor:asciidoctorj-api:${asciidoctorjTestVersion[it]}")
+    }
+
+    dependencies.add(config, "org.asciidoctor:asciidoctorj-groovy-dsl:${groovyDslTestVersion[it]}")
+    dependencies.add(config, "org.asciidoctor:asciidoctorj-diagram:${diagramTestVersion[it]}")
+}
