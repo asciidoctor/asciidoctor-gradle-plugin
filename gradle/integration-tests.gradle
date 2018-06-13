@@ -37,4 +37,11 @@ task intTest(type: Test) {
     exclude "**/Abstract*Spec*"
 }
 
+idea {
+    module {
+        testSourceDirs += sourceSets.intTest.allSource.srcDirs
+        scopes.TEST.plus += [ configurations.intTestRuntime ]
+    }
+}
+
 check.dependsOn intTest
