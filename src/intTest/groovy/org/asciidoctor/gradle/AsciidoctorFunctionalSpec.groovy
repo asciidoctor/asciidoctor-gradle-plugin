@@ -20,6 +20,7 @@ import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
+import spock.lang.IgnoreRest
 import spock.lang.Specification
 
 /**
@@ -50,6 +51,7 @@ class AsciidoctorFunctionalSpec extends Specification {
         plugins {
             id "org.asciidoctor.convert"
         }
+        
         """
 
         when:
@@ -127,6 +129,9 @@ class AsciidoctorFunctionalSpec extends Specification {
         buildFile << """\
         plugins {
             id "org.asciidoctor.convert"
+        }
+        repositories {
+            jcenter()
         }
         if (project.hasProperty('modifyClasspath')) {
             dependencies {
