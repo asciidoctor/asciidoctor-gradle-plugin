@@ -72,6 +72,8 @@ asciidoctorPdf {
         getBuildFile("""
 asciidoctorPdf {
 
+    ${defaultProcessModeForAppveyor}
+
     asciidoctorj {
         version = '${asciidoctorjVer}'  
         jrubyVersion = '${jrubyVer}'

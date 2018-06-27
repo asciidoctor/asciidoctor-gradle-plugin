@@ -1,3 +1,4 @@
+image: Visual Studio 2017
 version: '{build}'
 skip_tags: true
 skip_commits:
@@ -15,13 +16,13 @@ install:
 build_script:
   - gradlew.bat --console=plain --warning-mode=all -s clean assemble
 test_script:
-  - gradlew.bat --console=plain --warning-mode=all -s check --no-parallel
+  - gradlew.bat --console=plain --warning-mode=all -s check --no-parallel -Djava.net.preferIPv4Stack=true
 after_test:
   - gradlew.bat --stop
 cache:
   - .gradle
   - C:\Users\appveyor\.gradle
-  - testfixtures\offline-repo\build\root
+  - testfixtures\offline-repo\build\repo
 
 on_failure:
   - echo Somebody setup us the bomb

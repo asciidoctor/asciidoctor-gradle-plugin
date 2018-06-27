@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.jvm
 import org.asciidoctor.gradle.internal.FunctionalSpecification
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
+import spock.lang.Timeout
 
 import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.DIAGRAM_SERIES_15
 
@@ -35,6 +36,7 @@ class RequiresFunctionalSpec extends FunctionalSpecification {
         createTestProject('requires')
     }
 
+    @Timeout(value=360)
     def 'Asciidoctorj-diagram is registered and re-used across across multiple builds'() {
         given:
         final String imageFileExt = '.png'
@@ -60,6 +62,7 @@ class RequiresFunctionalSpec extends FunctionalSpecification {
         outputFolder.listFiles().findAll { it.name.endsWith(imageFileExt) }.size() == 1
     }
 
+    @Timeout(value=360)
     def 'Use asciidoctorj-diagram the old way way with `requires` still works'() {
         given:
         final String imageFileExt = '.png'
@@ -108,20 +111,21 @@ class RequiresFunctionalSpec extends FunctionalSpecification {
 
     File getBuildFile(String sourceName, String extraContent) {
         getJvmConvertBuildFile("""
-
-asciidoctorj {
-    diagramVersion = '${DIAGRAM_SERIES_15}'
-}
-
-asciidoctor {
-    sourceDir = 'src/docs/asciidoc'
-    
-    sources {
-        include '${sourceName}'
-    }
-}
-
-${extraContent}
-""")
+            asciidoctorj {
+                diagramVersion = '${DIAGRAM_SERIES_15}'
+            }
+            
+            asciidoctor {
+                ${defaultProcessModeForAppveyor}
+            
+                sourceDir = 'src/docs/asciidoc'
+                
+                sources {
+                    include '${sourceName}'
+                }
+            }
+            
+            ${extraContent}
+        """)
     }
 }

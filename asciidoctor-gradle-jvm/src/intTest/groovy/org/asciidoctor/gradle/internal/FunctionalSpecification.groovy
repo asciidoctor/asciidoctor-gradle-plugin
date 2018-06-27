@@ -38,8 +38,8 @@ class FunctionalSpecification extends Specification {
 
     @CompileStatic
     GradleRunner getGradleRunner(List<String> taskNames = ['asciidoctor']) {
-        FunctionalTestSetup.getGradleRunner(testProjectDir.root,pluginClasspath,taskNames)
-   }
+        FunctionalTestSetup.getGradleRunner(testProjectDir.root, pluginClasspath, taskNames)
+    }
 
     @SuppressWarnings(['FactoryMethodName', 'BuilderMethodWithSideEffects'])
     void createTestProject(String docGroup = 'normal') {
@@ -54,15 +54,23 @@ class FunctionalSpecification extends Specification {
     File getJvmConvertBuildFile(String extraContent) {
         File buildFile = testProjectDir.newFile('build.gradle')
         buildFile << """
-plugins {
-    id 'org.asciidoctor.jvm.convert'
-}
-
-${offlineRepositories}
-
-${extraContent}
-"""
+            plugins {
+                id 'org.asciidoctor.jvm.convert'
+            }
+            
+            ${offlineRepositories}
+            
+            ${extraContent}
+        """
         buildFile
+    }
+
+    String getDefaultProcessModeForAppveyor() {
+        if(System.getenv('APPVEYOR')) {
+            'inProcess = JAVA_EXEC'
+        } else {
+            ''
+        }
     }
 
 }
