@@ -1,0 +1,10 @@
+include 'asciidoctor-gradle-base'
+include 'asciidoctor-gradle-jvm'
+include 'kindlegen-gradle'
+include 'asciidoctor-gradle-jvm-epub'
+// include 'asciidoctor-gradle-js'
+
+['offline-repo', 'jvm'].each {
+    include "testfixtures/${it}"
+    project(":testfixtures/${it}").name = "testfixtures-${it}"
+}

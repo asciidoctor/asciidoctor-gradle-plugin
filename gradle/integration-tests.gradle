@@ -21,20 +21,68 @@ sourceSets {
     intTest
 }
 
+configurations {
+    intTestOfflineRepo
+}
+
+//syncRemoteRepositories {
+//
+//    repoRoot "${buildDir}/intTestOfflineRepo"
+//
+//    ext {
+//        repDescriptionFile = file("${repoRoot}/repositories.gradle")
+//    }
+//
+//    outputs.files repDescriptionFile
+//    inputs.file "${rootProject.projectDir}/gradle/integration-tests.gradle"
+//
+//    repositories {
+//        // Put this first as sometimes Ivy hits a hiccup on JCenter()
+//        mavenCentral()
+//        jcenter()
+//
+//        if (version.endsWith('-SNAPSHOT')) {
+//            mavenLocal()
+//        }
+//    }
+//
+//    configurations 'intTestOfflineRepo'
+//
+//    doLast {
+//        repDescriptionFile.withWriter { w ->
+//            w.println 'repositories {'
+//            w.print ' ' * 4
+//            w.println 'ivy {'
+//            w.print ' ' * 8
+//            w.println "name 'OfflineRepo'"
+//            w.print ' ' * 8
+//            w.println "layout 'gradle'"
+//            w.print ' ' * 8
+//            w.println "url '${file(repoRoot).toURI()}'"
+//            w.print ' ' * 4
+//            w.println '}'
+//            w.println '}'
+//        }
+//    }
+//
+//}
+
 // For a single test, you can run "gradle -DintTest.single=<test name> intTest"
 task intTest(type: Test) {
     description = "Runs the plugin's integration tests"
     group = "verification"
 
     mustRunAfter "test"
-    inputs.dir sourceSets.main.output.classesDir
-    inputs.dir sourceSets.main.output.resourcesDir
+    inputs.files sourceSets.main.output.classesDirs
+    inputs.files sourceSets.main.output.resourcesDir
 
-    testClassesDir = sourceSets.intTest.output.classesDir
+    testClassesDirs = sourceSets.intTest.output.classesDirs
     classpath = sourceSets.intTest.runtimeClasspath
 
-    include "**/*Spec*"
-    exclude "**/Abstract*Spec*"
+    dependsOn ':testfixtures-offline-repo:buildOfflineRepositories'
+    systemProperties OFFLINE_REPO: offlineRepoRoot.absolutePath
 }
 
-check.dependsOn intTest
+check {
+    dependsOn intTest
+}

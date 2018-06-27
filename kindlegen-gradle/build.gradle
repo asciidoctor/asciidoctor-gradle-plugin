@@ -1,0 +1,18 @@
+apply from : "${rootProject.projectDir}/gradle/kindlegen-versions.gradle"
+
+ext {
+    kindleGenCacheDir = offlineRepoBinariesRoot
+}
+
+dependencies {
+    testRuntimeClasspath files(createClasspathManifest)
+}
+
+test {
+    systemProperties 'org.asciidoctor.gradle.kindlegen.uri' : kindleGenCacheDir.toURI()
+
+    dependsOn createClasspathManifest
+    dependsOn ':testfixtures-offline-repo:buildOfflineRepositories'
+    systemProperties OFFLINE_REPO: offlineRepoRoot.absolutePath
+}
+

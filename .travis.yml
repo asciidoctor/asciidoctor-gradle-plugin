@@ -4,18 +4,21 @@ install: true
 
 cache:
     directories:
-        - $HOME/.m2
         - $HOME/.gradle
+        - .gradle/
+        - testfixtures/offline-repo/build/root
 
 before_script:
     - ./gradlew --version
 
 script:
-    - TERM=dumb ./gradlew build jacocoTestReport
+    - ./gradlew --console=plain --warning-mode=all build jacocoTestReport
 
 jdk:
-    - oraclejdk8
-    - oraclejdk9
+    - openjdk8
+    - oraclejdk10
+#    - openjdk9
+#    - oraclejdk9
 
 after_success:
     - ./gradlew coveralls

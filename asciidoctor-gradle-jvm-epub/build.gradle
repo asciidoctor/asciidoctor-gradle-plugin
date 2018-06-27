@@ -1,0 +1,23 @@
+
+dependencies {
+    compile project(':asciidoctor-gradle-jvm')
+    compile project(':kindlegen-gradle')
+
+    intTestOfflineRepo "org.asciidoctor:asciidoctorj:${compileOnlyAsciidoctorJVersion}"
+    intTestOfflineRepo "org.asciidoctor:asciidoctorj-epub3:${downloadOnlyEpubVersion}"
+}
+
+intTest {
+    systemProperties 'org.asciidoctor.gradle.kindlegen.uri' : offlineRepoBinariesRoot.toURI()
+    systemProperties TEST_PROJECTS_DIR : file('src/intTest/projects')
+}
+
+gradlePlugin {
+    plugins {
+        AsciidoctorEpubPlugin {
+            id = 'org.asciidoctor.org.asciidoctor.jvm.epub'
+            implementationClass = 'org.asciidoctor.gradle.jvm.epub.AsciidoctorJEpubPlugin'
+            description = "Converts Asciidoctor documents to EPUB3/KF8 using AsciidoctorJ${pluginExtraText}"
+        }
+    }
+}

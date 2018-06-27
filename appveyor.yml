@@ -13,11 +13,15 @@ install:
   - echo %PATH%
   - gradlew.bat --version
 build_script:
-  - gradlew.bat -u -i clean assemble
+  - gradlew.bat --console=plain --warning-mode=all -s clean assemble
 test_script:
-  - gradlew.bat -u -i -S check
+  - gradlew.bat --console=plain --warning-mode=all -s check --no-parallel
+after_test:
+  - gradlew.bat --stop
 cache:
   - .gradle
   - C:\Users\appveyor\.gradle
+  - testfixtures\offline-repo\build\root
+
 on_failure:
   - echo Somebody setup us the bomb

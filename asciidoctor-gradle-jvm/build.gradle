@@ -1,0 +1,78 @@
+
+/*
+ * Copyright 2013-2018 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+configurations {
+    intTestOfflineRepo.extendsFrom compileOnly
+    intTestOfflineRepo2
+}
+
+dependencies {
+    compileOnly "org.asciidoctor:asciidoctorj:${compileOnlyAsciidoctorJVersion}"
+    compileOnly "org.asciidoctor:asciidoctorj-groovy-dsl:${compileOnlyGroovyDslVersion}", {
+        exclude module: 'groovy-all'
+    }
+
+    compile project(':asciidoctor-gradle-base')
+
+    // This the default jruby-complete version for whichever the default AsciidoctorJ version is
+    // If the tests start failing becasue the default was changed, then consider changing this.
+    // It is necessary to have this here as we need tests that simply assume the defaults and we
+    // need to cater for those offline dependencies.
+    intTestOfflineRepo "org.jruby:jruby-complete:9.1.12.0", {
+        transitive = false
+    }
+
+    intTestOfflineRepo "org.asciidoctor:asciidoctorj-pdf:${downloadOnlyPdfVersion}"
+    intTestOfflineRepo "org.asciidoctor:asciidoctorj-epub3:${downloadOnlyEpubVersion}"
+    intTestOfflineRepo "org.yaml:snakeyaml:${snakeYamlForJRubyVersion}"
+
+    // This is here for extension testing on the compatibility plugin. It will be deleted
+    // when compatibility mode is removed.
+    testRuntimeOnly "org.asciidoctor:asciidoctorj-groovy-dsl:${compileOnlyGroovyDslVersion}", {
+        exclude module : 'groovy-all'
+    }
+}
+
+gradlePlugin {
+    plugins {
+        asciidoctorBasePlugin {
+            id = 'org.asciidoctor.org.asciidoctor.jvm.base'
+            implementationClass = 'org.asciidoctor.gradle.jvm.AsciidoctorJBasePlugin'
+            description = "Base plugin for running AsciidoctorJ${pluginExtraText}"
+        }
+        asciidoctorCompatibilityPlugin {
+            id = 'org.asciidoctor.convert'
+            implementationClass = 'org.asciidoctor.gradle.AsciidoctorCompatibilityPlugin'
+            description = "Compatibility AsciidoctorJ plugin for those upgrading from 1.5.x${pluginExtraText}"
+        }
+        asciidoctorPlugin {
+            id = 'org.asciidoctor.org.asciidoctor.jvm.convert'
+            implementationClass = 'org.asciidoctor.gradle.jvm.AsciidoctorJPlugin'
+            description = "Converts Asciidoctor documents using AsciidoctorJ${pluginExtraText}"
+        }
+        asciidoctorPdfPlugin {
+            id = 'org.asciidoctor.org.asciidoctor.jvm.pdf'
+            implementationClass = 'org.asciidoctor.gradle.jvm.AsciidoctorJPdfPlugin'
+            description = "Converts Asciidoctor documents to PDF using AsciidoctorJ${pluginExtraText}"
+        }
+    }
+}
+
+intTest {
+    systemProperties TEST_PROJECTS_DIR : file('src/intTest/projects')
+}
+
