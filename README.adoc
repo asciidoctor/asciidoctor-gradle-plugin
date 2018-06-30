@@ -174,6 +174,9 @@ gemPaths:: One or more gem installation directories (separated by the system pat
   Default: empty
 groovyDslVersion:: Version of Groovy Extensions DSL.
   If not specified and no extensions are specified, Groovy DSL will not be used. However, if any extensions are added without setting an explicit version and default version will be used.
+logLevel:: The log level at which AsciidoctorJ will log.
+  This is specified as a GRadle loggin glevel. The plugin will translate it to the appropriate AsciidoctorJ logging level.
+  Default is `project.logger.level`.
 options: {asciidoctorj-name} options.
   Use `options` to append and `setOptions` to replace any current options with a new set.
   Options are evaluated as late as possible.
@@ -187,8 +190,6 @@ resolutionStrategy:: Strategies for resolving Asciidoctorj-related dependencies.
 safeMode: {asciidoctorj-name} safe mode.
   Set the Safe mode as either `UNSAFE`, `SAFE`, `SERVER`, `SECURE`.
   Can be a number (0, 1, 10, 20), a string, or the entity name
-verboseMode:: Asciidoctor verbose mode.
-  Default is `false`.
 version:: Asciidoctorj version.
   If not specified a version will be used.
 
@@ -431,6 +432,15 @@ If you do not want this behaviour, then it can be turned off by doing
 ----
 copyNoResources()
 ----
+
+=== Choosing a Process Mode
+
+All tasks can control how Asciidoctor conversions are being run via the `inProcess` property. This is early days, an choose for your build will depend very much on your context, but the following has already become clear:
+
+* `IN_PROCESS` and `OUT_OF_PROCESS` shuold theoretically run faster, especially if you continuously rebuild the same documentation. Gradle workers are the underlying implementation for these two options
+* The safe option is always `JAVA_EXEC`. For lower memory consumption this is by far the safer option. It is also the only way we can get the Windows-based tests for tjhis plugin completed on Appveyor. It you run a lot of builds the penalty statr-up time might become an issue for you.
+
+NOTE: In certain cases the plugin will overrule your choice as it has some built-in rules for special cases. In such cases it will log a warning that it has done that.
 
 == The New AsciidoctorJ Plugin
 

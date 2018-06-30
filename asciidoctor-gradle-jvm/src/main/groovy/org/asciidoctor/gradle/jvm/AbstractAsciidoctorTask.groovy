@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.jvm
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.internal.AsciidoctorUtils
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
 import org.asciidoctor.gradle.remote.AsciidoctorJExecuter
@@ -48,7 +49,8 @@ import static groovy.lang.Closure.DELEGATE_FIRST
 import static org.gradle.workers.IsolationMode.CLASSLOADER
 import static org.gradle.workers.IsolationMode.PROCESS
 
-/**
+/** Base class for all AsciidoctorJ tasks.
+ *
  * @since 2.0.0
  * @author Schalk W. Cronjé
  */
@@ -69,7 +71,8 @@ class AbstractAsciidoctorTask extends DefaultTask {
     private final AsciidoctorJExtension asciidoctorj
     private final WorkerExecutor worker
     private final List<Object> asciidocConfigurations = []
-    private final org.ysb33r.grolifant.api.JavaForkOptions javaForkOptions = new org.ysb33r.grolifant.api.JavaForkOptions()
+    private
+    final org.ysb33r.grolifant.api.JavaForkOptions javaForkOptions = new org.ysb33r.grolifant.api.JavaForkOptions()
 
     private Object baseDir
     private Object srcDir
@@ -81,7 +84,6 @@ class AbstractAsciidoctorTask extends DefaultTask {
     private List<String> copyResourcesForBackends
     private boolean withIntermediateWorkDir = false
 
-
     /** Logs documents as they are converted
      *
      */
@@ -91,12 +93,10 @@ class AbstractAsciidoctorTask extends DefaultTask {
     /** Run Asciidoctor conversions in or out of process
      *
      * Valid options are {@link #IN_PROCESS}, {@link #OUT_OF_PROCESS} and {@link #JAVA_EXEC}.
-     * {@code JAVA_EXEC} should only be used as a last resort ans it runs less effective than the
-     * other options. It does provide completion isolation and is a workaround when Gradle's
-     * logic for classpath isolation is not enough.
+     *
      */
     @Internal
-    ProcessMode inProcess = IN_PROCESS
+    ProcessMode inProcess = JAVA_EXEC
 
     /** Set the mode for running conversions sequential or in parallel.
      * For instance a task that has multiple backends can have the
@@ -113,7 +113,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      *
      * Default is parallel.
      *
-     * WHen {@link #inProcess} {@code ==} {@link JAVA_EXEC} this option is ignored.
+     * WHen {@link #inProcess} {@code ==} {@link #JAVA_EXEC} this option is ignored.
      */
     @Internal
     boolean parallelMode = true
@@ -164,7 +164,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      * @param configurator Closure that configures a {@link org.ysb33r.grolifant.api.JavaForkOptions} instance.
      */
     void forkOptions(@DelegatesTo(org.ysb33r.grolifant.api.JavaForkOptions) Closure configurator) {
-        Closure cfg = (Closure)(configurator.clone())
+        Closure cfg = (Closure) (configurator.clone())
         cfg.delegate = this.javaForkOptions
         cfg.resolveStrategy = DELEGATE_FIRST
         cfg.call()
@@ -506,12 +506,11 @@ class AbstractAsciidoctorTask extends DefaultTask {
      *   constructor of the subclass.
      */
     protected AbstractAsciidoctorTask(WorkerExecutor we) {
-        worker = we
-        asciidoctorj = extensions.create(AsciidoctorJExtension.NAME, AsciidoctorJExtension, this)
+        this.worker = we
+        this.asciidoctorj = extensions.create(AsciidoctorJExtension.NAME, AsciidoctorJExtension, this)
 
         addInputProperty 'required-ruby-modules', { asciidoctorj.requires }
         addInputProperty 'gemPath', { asciidoctorj.asGemPath() }
-        addInputProperty 'verboseMode', { asciidoctorj.verboseMode }
         addInputProperty 'trackBaseDir', { getBaseDir().absolutePath }
 
         inputs.files { asciidoctorj.gemPaths }
@@ -564,6 +563,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
             asciidoctorExtensions: (asciidoctorJExtensions.findAll { !(it instanceof Dependency) }),
             requires: requires,
             copyResources: this.copyResourcesForBackends != null && (this.copyResourcesForBackends.empty || backendName in this.copyResourcesForBackends),
+            executorLogLevel: AsciidoctorUtils.getExecutorLogLevel(asciidoctorj.logLevel),
             safeModeLevel: asciidoctorj.safeMode.level
         )
     }
@@ -694,17 +694,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      */
     @Internal
     protected Set<String> getRequires() {
-        if (asciidoctorj.verboseMode) {
-            File verbose = verboseScriptModule
-            verbose.parentFile.mkdirs()
-            verbose.text = '$VERBOSE = true'
-            Set<String> newRequires = []
-            newRequires.addAll(asciidoctorj.requires)
-            newRequires.add(project.file(verbose).absolutePath)
-            newRequires
-        } else {
-            asciidoctorj.requires
-        }
+        asciidoctorj.requires
     }
 
     /** Selects a final process mode.
@@ -764,10 +754,6 @@ class AbstractAsciidoctorTask extends DefaultTask {
         if (sourceRoot != baseRoot || outputRoot != baseRoot) {
             throw new AsciidoctorExecutionException('sourceDir, outputDir and baseDir needs to have the same root filesystem for AsciidoctorJ to function correctly. This is typically caused on Winwdows where everything is not on the same drive letter.')
         }
-    }
-
-    private File getVerboseScriptModule() {
-        project.file("${project.buildDir}/tmp/${FileUtils.toSafeFileName(name)}/${FileUtils.toSafeFileName(name)}-verbose-mode.rb")
     }
 
     private String getGemPath() {

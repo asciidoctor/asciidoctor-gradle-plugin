@@ -20,9 +20,9 @@ test_script:
 after_test:
   - gradlew.bat --stop
 cache:
-  - .gradle
   - C:\Users\appveyor\.gradle
   - testfixtures\offline-repo\build\repo
+  - .gradle
 
 on_failure:
   - echo Somebody setup us the bomb

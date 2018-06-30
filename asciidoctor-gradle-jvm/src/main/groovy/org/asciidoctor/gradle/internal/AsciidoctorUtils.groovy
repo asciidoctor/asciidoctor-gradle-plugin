@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle.internal
 
 import groovy.transform.CompileStatic
+import org.gradle.api.logging.LogLevel
 import org.ysb33r.grolifant.api.OperatingSystem
 
 @CompileStatic
@@ -51,4 +52,24 @@ class AsciidoctorUtils {
         base.toPath().relativize(target.toPath()).toFile().toString()
     }
 
+    /** Determines an executor logging level from the current Gradle logging level
+     *
+     * @param level
+     * @return
+     */
+    static ExecutorLogLevel getExecutorLogLevel(LogLevel level) {
+        switch(level) {
+            case LogLevel.DEBUG:
+                return ExecutorLogLevel.DEBUG
+            case LogLevel.LIFECYCLE:
+            case LogLevel.WARN:
+                return ExecutorLogLevel.WARN
+            case LogLevel.INFO:
+                return ExecutorLogLevel.INFO
+            case LogLevel.QUIET:
+                return ExecutorLogLevel.QUIET
+            default:
+                return ExecutorLogLevel.ERROR
+        }
+    }
 }

@@ -18,9 +18,13 @@ package org.asciidoctor.gradle.remote
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.asciidoctor.Asciidoctor
+import org.asciidoctor.ast.Cursor
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
+import org.asciidoctor.gradle.internal.ExecutorLogLevel
 import org.asciidoctor.groovydsl.AsciidoctorExtensions
+import org.asciidoctor.log.LogHandler
+import org.asciidoctor.log.LogRecord
 
 /** Runs Asciidoctor as an externally invoked Java process.
  *
@@ -41,6 +45,8 @@ class AsciidoctorJavaExec extends ExecutorBase {
 
         runConfigurations.each { runConfiguration ->
 
+            LogHandler lh = getLogHandler(runConfiguration.executorLogLevel)
+            asciidoctor.registerLogHandler(lh)
             if (runConfiguration.asciidoctorExtensions?.size()) {
                 registerExtensions(asciidoctor, runConfiguration.asciidoctorExtensions)
             }
@@ -48,6 +54,7 @@ class AsciidoctorJavaExec extends ExecutorBase {
             runConfiguration.outputDir.mkdirs()
             convertFiles(asciidoctor, runConfiguration)
             asciidoctor.unregisterAllExtensions()
+            asciidoctor.unregisterLogHandler(lh)
         }
     }
 
@@ -83,12 +90,37 @@ class AsciidoctorJavaExec extends ExecutorBase {
         }
     }
 
+    @SuppressWarnings('Println')
+    LogHandler getLogHandler(ExecutorLogLevel required) {
+        int requiredLevel = required.level
+        new LogHandler() {
+            @Override
+            void log(LogRecord logRecord) {
+                int level = LogSeverityMapper.getSeverity(logRecord.severity).level
+
+                if (level >= requiredLevel) {
+
+                    String msg = logRecord.message
+                    Cursor cursor = logRecord.cursor
+                    if (cursor) {
+                        msg = "${msg} :: ${cursor.path ?: ''} :: ${cursor.dir ?: ''}/${cursor.file ?: ''}:${cursor.lineNumber >= 0 ? cursor.lineNumber.toString() : ''}"
+                    }
+                    if (logRecord.sourceFileName) {
+                        msg = "${msg} (${logRecord.sourceFileName}${logRecord.sourceMethodName ? (':' + logRecord.sourceMethodName) : ''})"
+                    }
+
+                    println msg
+                }
+            }
+        }
+    }
+
     @CompileDynamic
     private void registerExtensions(Asciidoctor asciidoctor, List<Object> exts) {
 
         AsciidoctorExtensions extensionRegistry = new AsciidoctorExtensions()
 
-        for (Object ext in rehydrateExtensions(extensionRegistry,exts)) {
+        for (Object ext in rehydrateExtensions(extensionRegistry, exts)) {
             extensionRegistry.addExtension(ext)
         }
 

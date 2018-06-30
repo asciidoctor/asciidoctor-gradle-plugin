@@ -20,8 +20,6 @@ import org.asciidoctor.Options
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
 
-import static groovy.lang.Closure.DELEGATE_ONLY
-
 /** Base class for building claspath-isolated executors for Asciidoctor.
  *
  * @since 2.0.0
@@ -90,8 +88,8 @@ class ExecutorBase {
             switch (it) {
                 case Closure:
                     Closure rehydrated = ((Closure) it).rehydrate(registry, null, null)
-                    rehydrated.resolveStrategy = DELEGATE_ONLY
-                    (Object)rehydrated
+                    rehydrated.resolveStrategy = Closure.DELEGATE_ONLY
+                    (Object) rehydrated
                     break
                 default:
                     it

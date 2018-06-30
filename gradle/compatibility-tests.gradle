@@ -2,6 +2,8 @@ apply plugin : 'org.ysb33r.gradletest'
 
 gradleTest {
 
+    versions '4.8.1'
+
     if(JavaVersion.current().java10) {
         versions '4.7'
     } else {

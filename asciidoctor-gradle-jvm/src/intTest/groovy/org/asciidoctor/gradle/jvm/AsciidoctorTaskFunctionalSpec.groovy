@@ -30,8 +30,6 @@ import static org.asciidoctor.gradle.testfixtures.jvm.JRubyTestVersions.*
 class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
 
     static final List<String> DEFAULT_ARGS = ['asciidoctor', '-s', '-i']
-    static final String VERBOSITY_FILE = 'build/tmp/asciidoctor/asciidoctor-verbose-mode.rb'
-    static final String VERBOSITY_CONTENT = '$VERBOSE = true'
 
     void setup() {
         createTestProject()
@@ -39,7 +37,7 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
 
     @Issue('https://github.com/gradle/gradle/issues/3698')
     @Unroll
-    @Timeout(value=90)
+    @Timeout(value = 90)
     void 'Built-in backends (parallelMode=#parallelMode, asciidoctorj=#asciidoctorjVer, min jRuby=#jrubyVer, compatible=#compatible)'() {
         given:
         getBuildFile("""
@@ -94,7 +92,7 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         false        | AJ16_ABSOLUTE_MAXIMUM | SERIES_16       | true
     }
 
-    @Timeout(value=90)
+    @Timeout(value = 90)
     void 'Support attributes in various formats'() {
         given:
         getBuildFile("""
@@ -127,37 +125,11 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         noExceptionThrown()
     }
 
-    @Timeout(value=90)
-    void 'Run verbose mode'() {
-        given:
-        getBuildFile("""
-            asciidoctorj {
-                verboseMode = true
-            }
-                    
-            asciidoctor {
-                ${defaultProcessModeForAppveyor}
-            
-            
-                outputOptions {
-                    backends 'html5'
-                }
-                sourceDir 'src/docs/asciidoc'
-            }
-        """)
-
-        when:
-        getGradleRunner(DEFAULT_ARGS).build()
-
-        then:
-        new File(testProjectDir.root, VERBOSITY_FILE).text.contains(VERBOSITY_CONTENT)
-    }
-
     void 'Can run in JAVA_EXEC process mode'() {
         given:
         getBuildFile('''
             asciidoctorj {
-                verboseMode = true
+                logLevel = 'INFO'
             }
                     
             asciidoctor {
@@ -175,7 +147,7 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         getGradleRunner(DEFAULT_ARGS).build()
 
         then:
-        new File(testProjectDir.root, VERBOSITY_FILE).text.contains(VERBOSITY_CONTENT)
+        noExceptionThrown()
     }
 
     File getBuildFile(String extraContent) {

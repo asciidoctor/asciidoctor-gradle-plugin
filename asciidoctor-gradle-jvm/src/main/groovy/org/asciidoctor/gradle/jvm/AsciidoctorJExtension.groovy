@@ -27,6 +27,7 @@ import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.DependencyResolveDetails
 import org.gradle.api.artifacts.ResolutionStrategy
 import org.gradle.api.file.FileCollection
+import org.gradle.api.logging.LogLevel
 import org.ysb33r.grolifant.api.AbstractCombinedProjectTaskExtension
 import org.ysb33r.grolifant.api.OperatingSystem
 
@@ -90,7 +91,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     private boolean onlyTaskExtensions = false
     private boolean onlyTaskGems = false
 
-    private Boolean verboseMode
+    private LogLevel logLevel
 
     private SafeMode safeMode
 
@@ -106,7 +107,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         this.attributes['gradle-project-version'] = { project.version ?: '' }
 
         this.safeMode = SafeMode.SAFE
-        this.verboseMode = false
         this.groovyDslVersion = Optional.empty()
     }
 
@@ -131,7 +131,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
 
     /** Set a new version to use.
      *
-     * @param v New version to be used. Can be of anything that be be resolved by {@link stringize ( Object o }
+     * @param v New version to be used. Can be of anything that be be resolved by {@link stringize(Object o)}
      */
     void setVersion(Object v) {
         this.version = v
@@ -563,16 +563,33 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         onlyTaskExtensions = true
     }
 
-    void setVerboseMode(boolean mode) {
-        this.verboseMode = mode
+
+    /** The level at which the AsciidoctorJ process should be logging.
+     *
+     * @return The currently configured log level. By default this is {@code project.logging.level}.
+     */
+    LogLevel getLogLevel() {
+        if(task) {
+            this.logLevel == null ? extFromProject.logLevel : this.logLevel
+        } else {
+            this.logLevel ?: project.logging.level
+        }
     }
 
-    boolean getVerboseMode() {
-        if (task) {
-            this.verboseMode == null ? extFromProject.verboseMode : this.verboseMode
-        } else {
-            this.verboseMode
-        }
+    /** Set the level at which the AsciidoctorJ process should be logging.
+     *
+     * @param logLevel LogLevel to use
+     */
+    void setLogLevel(LogLevel logLevel) {
+        this.logLevel = logLevel
+    }
+
+    /** Set the level at which the AsciidoctorJ process should be logging.
+     *
+     * @param logLevel LogLevel to use
+     */
+    void setLogLevel(String logLevel) {
+        this.logLevel = LogLevel.valueOf(logLevel.toUpperCase())
     }
 
     /** Clears the current list of resolution strategies.

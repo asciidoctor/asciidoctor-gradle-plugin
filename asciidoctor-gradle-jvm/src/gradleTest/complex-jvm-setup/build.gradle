@@ -19,6 +19,8 @@ asciidoctorj {
     // gemPaths
 
     diagramVersion = '1.5.4.1'
+
+    logLevel = 'INFO'
 }
 
 configurations {
@@ -59,10 +61,6 @@ asciidoctorPdf {
 
     sources {
         include 'subdir/sample2.ad'
-    }
-
-    asciidoctorj {
-        verboseMode true
     }
 }
 
