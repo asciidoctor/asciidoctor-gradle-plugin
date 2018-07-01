@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2017 the original author or authors.
+ * Copyright 2013-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
+import spock.lang.IgnoreRest
 import spock.lang.Specification
 
 /**
@@ -50,6 +51,7 @@ class AsciidoctorFunctionalSpec extends Specification {
         plugins {
             id "org.asciidoctor.convert"
         }
+        
         """
 
         when:
@@ -88,6 +90,74 @@ class AsciidoctorFunctionalSpec extends Specification {
         result.task(":asciidoctor").outcome == TaskOutcome.SUCCESS
         new File(buildDir, "asciidoc/html5/sample.html").exists()
         new File(buildDir, "asciidoc/html5/subdir/sample2.html").exists()
+    }
+
+    @SuppressWarnings('MethodName')
+    def "Task should be up-to-date when executed a second time"() {
+        given: "A minimal build file"
+        def buildFile = testProjectDir.newFile("build.gradle")
+        buildFile << """\
+        plugins {
+            id "org.asciidoctor.convert"
+        }
+        """
+
+        and: "Some source files"
+        FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, "normal"), testProjectDir.root)
+        final buildDir = new File(testProjectDir.root, "build")
+
+        when:
+        GradleRunner.create()
+                .withProjectDir(testProjectDir.getRoot())
+                .withArguments("asciidoctor")
+                .withPluginClasspath(pluginClasspath)
+                .build()
+        final result = GradleRunner.create()
+                .withProjectDir(testProjectDir.getRoot())
+                .withArguments("asciidoctor")
+                .withPluginClasspath(pluginClasspath)
+                .build()
+
+        then:
+        result.task(":asciidoctor").outcome == TaskOutcome.UP_TO_DATE
+    }
+
+        @SuppressWarnings('MethodName')
+    def "Task should not be up-to-date when classpath is changed"() {
+        given: "A minimal build file"
+        def buildFile = testProjectDir.newFile("build.gradle")
+        buildFile << """\
+        plugins {
+            id "org.asciidoctor.convert"
+        }
+        repositories {
+            jcenter()
+        }
+        if (project.hasProperty('modifyClasspath')) {
+            dependencies {
+                asciidoctor 'org.hibernate.infra:hibernate-asciidoctor-extensions:1.0.3.Final'
+            }
+        }
+        """
+
+        and: "Some source files"
+        FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, "normal"), testProjectDir.root)
+        final buildDir = new File(testProjectDir.root, "build")
+
+        when:
+        GradleRunner.create()
+                .withProjectDir(testProjectDir.getRoot())
+                .withArguments("asciidoctor")
+                .withPluginClasspath(pluginClasspath)
+                .build()
+        final result = GradleRunner.create()
+                .withProjectDir(testProjectDir.getRoot())
+                .withArguments("asciidoctor", "-PmodifyClasspath")
+                .withPluginClasspath(pluginClasspath)
+                .build()
+
+        then:
+        result.task(":asciidoctor").outcome == TaskOutcome.SUCCESS
     }
 
 }

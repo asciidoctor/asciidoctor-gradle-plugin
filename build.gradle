@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2013-2017 the original author or authors.
+ * Copyright 2013-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,12 @@ plugins {
     id 'jacoco'
     id 'codenarc'
     id 'java-gradle-plugin'
-    id 'com.jfrog.bintray'              version '1.7.3'
+    id 'com.jfrog.bintray'              version '1.8.0'
     id 'net.nemerosa.versioning'        version '2.6.1'
-    id 'com.github.ben-manes.versions'  version '0.15.0'
-    id 'com.gradle.plugin-publish'      version '0.9.7'
+    id 'com.github.ben-manes.versions'  version '0.17.0'
+    id 'com.gradle.plugin-publish'      version '0.9.10'
     id 'com.github.hierynomus.license'  version '0.14.0'
-    id 'com.github.kt3k.coveralls'      version '2.8.1'
+    id 'com.github.kt3k.coveralls'      version '2.8.2'
     id 'net.ossindex.audit'             version '0.1.1'
     id 'org.kordamp.jdeps'              version '0.2.0'
 }
@@ -88,7 +88,7 @@ dependencies {
     intTestCompile gradleApi()
     intTestCompile gradleTestKit()
     intTestCompile 'junit:junit:4.12'
-    intTestCompile 'commons-io:commons-io:2.4'
+    intTestCompile 'commons-io:commons-io:2.6'
     intTestCompile ("org.spockframework:spock-core:$spockVersion") {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
         exclude group: 'org.hamcrest', module: 'hamcrest-core'
