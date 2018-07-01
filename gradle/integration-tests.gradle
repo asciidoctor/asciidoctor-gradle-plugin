@@ -27,14 +27,18 @@ task intTest(type: Test) {
     group = "verification"
 
     mustRunAfter "test"
-    inputs.dir sourceSets.main.output.classesDir
-    inputs.dir sourceSets.main.output.resourcesDir
-
-    testClassesDir = sourceSets.intTest.output.classesDir
+    testClassesDirs = sourceSets.intTest.output.classesDirs
     classpath = sourceSets.intTest.runtimeClasspath
 
     include "**/*Spec*"
     exclude "**/Abstract*Spec*"
+}
+
+idea {
+    module {
+        testSourceDirs += sourceSets.intTest.allSource.srcDirs
+        scopes.TEST.plus += [ configurations.intTestRuntime ]
+    }
 }
 
 check.dependsOn intTest
