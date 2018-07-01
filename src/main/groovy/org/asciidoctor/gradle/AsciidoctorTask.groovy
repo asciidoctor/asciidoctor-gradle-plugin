@@ -881,13 +881,13 @@ class AsciidoctorTask extends DefaultTask {
                 Class asciidoctorExtensionsDslRegistry = loadClass('org.asciidoctor.groovydsl.AsciidoctorExtensions')
 
                 if (key.gemPath) {
-                    asciidoctor = new AsciidoctorProxyImpl(delegate: clazz.create(key.gemPath), extensionRegistry: asciidoctorExtensionsDslRegistry)
+                    asciidoctor = new AsciidoctorProxyImpl(delegate: clazz.create(key.gemPath), extensionRegistry: asciidoctorExtensionsDslRegistry.newInstance())
                 } else {
                     try {
-                        asciidoctor = new AsciidoctorProxyImpl(delegate: clazz.create(null as String), extensionRegistry: asciidoctorExtensionsDslRegistry)
+                        asciidoctor = new AsciidoctorProxyImpl(delegate: clazz.create(null as String), extensionRegistry: asciidoctorExtensionsDslRegistry.newInstance())
                     } catch (Exception e) {
                         // Asciidoctor < 1.5.1 can't handle a null gemPath, so fallback to default create() method
-                        asciidoctor = new AsciidoctorProxyImpl(delegate: clazz.create(), extensionRegistry: asciidoctorExtensionsDslRegistry)
+                        asciidoctor = new AsciidoctorProxyImpl(delegate: clazz.create(), extensionRegistry: asciidoctorExtensionsDslRegistry.newInstance())
                     }
                 }
                 ASCIIDOCTORS.put(key, asciidoctor)
