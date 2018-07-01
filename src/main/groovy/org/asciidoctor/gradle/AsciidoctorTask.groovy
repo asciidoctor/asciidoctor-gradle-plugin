@@ -24,6 +24,7 @@ import org.gradle.api.file.FileCollection
 import org.gradle.api.file.FileTree
 import org.gradle.api.internal.file.copy.CopySpecInternal
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
@@ -93,7 +94,7 @@ class AsciidoctorTask extends DefaultTask {
     /** Logs documents as they are converted
      *
      */
-    @Optional
+    @Internal
     boolean logDocuments = false
 
     /** Old way to set only one source document
@@ -114,9 +115,12 @@ class AsciidoctorTask extends DefaultTask {
      * Stores the extensions defined in the configuration phase
      * to register them in the execution phase.
      */
+    @Internal
     List<Object> asciidoctorExtensions = []
 
+    @Internal
     AsciidoctorProxy asciidoctor
+    @Internal
     ResourceCopyProxy resourceCopyProxy
 
     @Optional
@@ -336,7 +340,7 @@ class AsciidoctorTask extends DefaultTask {
      * @since 1.5.0
      */
     @Optional
-    @Input
+    @InputFiles
     FileCollection getGemPath() {
         project.files(this.gemPaths)
     }
@@ -413,6 +417,7 @@ class AsciidoctorTask extends DefaultTask {
      * @since 1.5.0
      * @deprecated
      */
+    @Internal
     FileCollection getSourceDocumentNames() {
         deprecated 'getSourceDocumentNames', 'getSourceFileTree'
         sourceFileTree
@@ -524,6 +529,7 @@ class AsciidoctorTask extends DefaultTask {
      *
      * @since 1.5.1
      */
+    @Internal
     PatternSet getDefaultSourceDocumentPattern() {
         PatternSet ps = new PatternSet()
         ps.include '**/*.adoc'
@@ -540,6 +546,7 @@ class AsciidoctorTask extends DefaultTask {
      * @return A {@code CopySpec}, never null
      * @since 1.5.1
      */
+    @Internal
     CopySpec getDefaultResourceCopySpec() {
         project.copySpec {
             from(sourceDir) {
@@ -555,6 +562,7 @@ class AsciidoctorTask extends DefaultTask {
      * @return A {@code CopySpec}, never null
      * @since 1.5.1
      */
+    @Internal
     CopySpec getResourceCopySpec() {
         this.resourceCopy ?: defaultResourceCopySpec
     }
