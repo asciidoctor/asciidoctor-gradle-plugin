@@ -1,17 +1,19 @@
 apply plugin : 'org.ysb33r.cloudci'
 
-cloudci {
-    travisci {
+cloudci.any {
         ext {
             logBeforeTest = { desc ->
                 project.logger.lifecycle "Running: ${desc.name} (${desc.className})"
             }
-            logAfterTest = { testTracker, desc, result ->
+            logAfterTest = { testTracker, descriptor, result ->
+                String key = "${descriptor.name} (${descriptor.className})"
+                long time = result.endTime - result.startTime
                 if(result.resultType == org.gradle.api.tasks.testing.TestResult.ResultType.FAILURE) {
-                    String key = "${descriptor.name} (${descriptor.className})"
-                    project.logger.lifecycle "FAILED: ${key}",
+                    project.logger.lifecycle "FAILED (${time}s): ${key}",
                         result.exceptions,
                         testTracker.containsKey(key) ? testTracker[key] : ''
+                } else {
+                    project.logger.lifecycle "Completed (${time}s): ${key}"
                 }
             }
 
@@ -37,4 +39,4 @@ cloudci {
             }
         }
     }
-}
+

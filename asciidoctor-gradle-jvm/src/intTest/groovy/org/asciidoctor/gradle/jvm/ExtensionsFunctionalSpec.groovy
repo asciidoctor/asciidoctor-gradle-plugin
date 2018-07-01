@@ -16,10 +16,12 @@
 package org.asciidoctor.gradle.jvm
 
 import org.asciidoctor.gradle.internal.FunctionalSpecification
+import org.asciidoctor.gradle.testfixtures.jvm.generators.VersionProcessModeGenerator
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import spock.lang.Issue
+import spock.lang.Timeout
 import spock.lang.Unroll
 
 @java.lang.SuppressWarnings('NoWildcardImports')
@@ -38,11 +40,12 @@ class ExtensionsFunctionalSpec extends FunctionalSpecification {
         createTestProject('extensions')
     }
 
+    @Timeout(value = 90)
     @Unroll
-    void 'Extension can be applied via closure (Asciidoctorj=#version,mode=#processMode)'() {
+    void 'Extension can be applied via closure (#model)'() {
         given:
         getBuildFile(
-            processMode, version, """
+            model.processMode, model.version, """
 asciidoctor {
     asciidoctorj {
          extensions {
@@ -77,20 +80,15 @@ asciidoctor {
         resultFile.text.contains('and write this in lowercase')
 
         where:
-        version   | processMode
-        SERIES_15 | 'JAVA_EXEC'
-        SERIES_16 | 'JAVA_EXEC'
-        SERIES_15 | 'IN_PROCESS'
-        SERIES_16 | 'IN_PROCESS'
-        SERIES_15 | 'OUT_OF_PROCESS'
-        SERIES_16 | 'OUT_OF_PROCESS'
+        model << VersionProcessModeGenerator.get()
     }
 
     @Unroll
-    void 'Extension can be applied from a string (Asciidoctorj=#version)'() {
+    @Timeout(value = 90)
+    void 'Extension can be applied from a string (#model)'() {
         given:
         getBuildFile(
-            'IN_PROCESS', version, """
+            model.processMode, model.version, """
 asciidoctor {
 
     asciidoctorj {
@@ -127,14 +125,15 @@ block('small') {
         resultFile.text.contains('and write this in lowercase')
 
         where:
-        version << [SERIES_15, SERIES_16]
+        model << VersionProcessModeGenerator.get()
     }
 
+    @Timeout(value = 90)
     @Unroll
-    void 'Extension can be applied from file (Asciidoctorj=#version)'() {
+    void 'Extension can be applied from file (#model)'() {
         given:
         getBuildFile(
-            'OUT_OF_PROCESS', version, """
+            model.processMode, model.version, """
 asciidoctor {
     asciidoctorj {
         extensions file('src/docs/asciidoc/blockMacro.groovy')
@@ -153,14 +152,55 @@ asciidoctor {
         resultFile.text.contains('and write this in lowercase')
 
         where:
-        version << [SERIES_15, SERIES_16]
+        model << VersionProcessModeGenerator.get()
     }
 
+    @Timeout(value = 90)
     @Unroll
-    void 'Fail build if extension fails to compile (Asciidoctorj=#version)'() {
+    @Issue('This test was forward-ported from https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/238 - a PR by Rene Groeschke')
+    def "Extensions are preserved across multiple builds (#model)"() {
+        given: 'A build file that declares extensions'
+
+        getBuildFile(
+            model.processMode, model.version, '''
+        asciidoctorj {
+            extensions {
+                postprocessor { document, output ->
+                    return "Hi, Mom" + output 
+                }
+            }
+        }
+        ''')
+
+        GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
+        File outputFile = new File(testProjectDir.root, 'build/docs/asciidoc/inlineextensions.html')
+
+        when:
+        BuildResult firstInvocationResult = runner.build()
+
+        then:
+        firstInvocationResult.task(':asciidoctor').outcome == TaskOutcome.SUCCESS
+        outputFile.exists()
+        outputFile.text.startsWith('Hi, Mom')
+
+        when:
+        new File(testProjectDir.root, 'src/docs/asciidoc/inlineextensions.asciidoc') << 'changes'
+        final BuildResult secondInvocationResult = getGradleRunner(DEFAULT_ARGS).build()
+
+        then:
+        secondInvocationResult.task(':asciidoctor').outcome == TaskOutcome.SUCCESS
+        outputFile.text.startsWith('Hi, Mom')
+
+        where:
+        model << VersionProcessModeGenerator.get()
+    }
+
+    @Timeout(value = 90)
+    @Unroll
+    void 'Fail build if extension fails to compile (#model)'() {
         given:
         getBuildFile(
-            'IN_PROCESS', version, """
+            model.processMode, model.version, """
 asciidoctor {
     asciidoctorj {
         extensions '''
@@ -184,21 +224,24 @@ asciidoctor {
         result.output.contains('org.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed')
 
         where:
-        version << [SERIES_15, SERIES_16]
+        model << VersionProcessModeGenerator.get()
     }
 
+    @Timeout(value = 90)
     @Unroll
     void 'Asciidoctor extension is defined in #extScope, version config is on #verScope'() {
         given:
         String extDSL = '''asciidoctorj.extensions file('src/docs/asciidoc/blockMacro.groovy')'''
         getBuildFile(
-            'IN_PROCESS', version, """
-${extScope == GLOBAL ? extDSL : ''}
-
-asciidoctor {
-    ${extScope == LOCAL ? extDSL : ''}
-}
-""", verScope == GLOBAL)
+            processMode, version, """
+                ${extScope == GLOBAL ? extDSL : ''}
+                
+                asciidoctor {
+                    ${extScope == LOCAL ? extDSL : ''}
+                }
+            """,
+            verScope == GLOBAL
+        )
         GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
 
         when:
@@ -212,6 +255,7 @@ asciidoctor {
 
         where:
         version = SERIES_16
+        processMode = 'JAVA_EXEC'
 
         and:
         extScope | verScope
@@ -221,73 +265,33 @@ asciidoctor {
         GLOBAL   | GLOBAL
     }
 
-    @Unroll
-    @Issue('This test was forward-ported from https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/238 - a PR by Rene Groeschke')
-    def "Postprocessor extensions are registered and preserved across multiple builds (Asciidoctorj=#version)"() {
-        given: 'A build file that declares extensions'
-
-        getBuildFile('IN_PROCESS', version, """
-        asciidoctorj {
-            extensions {
-                postprocessor { document, output ->
-                    return "Hi, Mom" + output 
-                }
-            }
-        }
-        """)
-
-        GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
-        File outputFile = new File(testProjectDir.root, 'build/docs/asciidoc/inlineextensions.html')
-
-        when:
-        BuildResult firstInvocationResult = runner.build()
-
-        then:
-        firstInvocationResult.task(':asciidoctor').outcome == TaskOutcome.SUCCESS
-        outputFile.exists()
-        outputFile.text.startsWith('Hi, Mom')
-
-        when:
-        new File(testProjectDir.root, 'src/docs/asciidoc/inlineextensions.asciidoc') << 'changes'
-        final BuildResult secondInvocationResult = getGradleRunner(DEFAULT_ARGS).build()
-
-        then:
-        secondInvocationResult.task(':asciidoctor').outcome == TaskOutcome.SUCCESS
-        outputFile.text.startsWith('Hi, Mom')
-
-        where:
-        version << [SERIES_15, SERIES_16]
-    }
 
     File getBuildFile(
         final String processMode, final String version, final String extraContent, boolean configureGlobally = false) {
 
         String versionConfig = """
-asciidoctorj {
-    version = '${version}'
-    groovyDslVersion = '${version == SERIES_15 ? GROOVYDSL_SERIES_15 : GROOVYDSL_SERIES_16}'
-}
-"""
+            asciidoctorj {
+                version = '${version}'
+                groovyDslVersion = '${version == SERIES_15 ? GROOVYDSL_SERIES_15 : GROOVYDSL_SERIES_16}'
+            }
+        """
 
         getJvmConvertBuildFile("""
-
-${configureGlobally ? versionConfig : ''}
-
-asciidoctor {
-    inProcess ${processMode}
-    sourceDir 'src/docs/asciidoc'
-    sources {
-        include '${ASCIIDOC_INLINE_EXTENSIONS_FILE}'
-    }
-
-${configureGlobally ? '' : versionConfig}
-
-}
-
-${extraContent}
-"""
+            ${configureGlobally ? versionConfig : ''}
+            
+            asciidoctor {
+                inProcess ${processMode}
+                sourceDir 'src/docs/asciidoc'
+                sources {
+                    include '${ASCIIDOC_INLINE_EXTENSIONS_FILE}'
+                }
+            
+            ${configureGlobally ? '' : versionConfig}
+            
+            }
+            
+            ${extraContent}
+        """
         )
     }
-
-
 }

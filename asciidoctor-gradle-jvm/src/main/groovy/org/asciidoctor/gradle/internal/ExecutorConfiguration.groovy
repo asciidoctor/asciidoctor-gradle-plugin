@@ -48,6 +48,8 @@ class ExecutorConfiguration implements Serializable, Cloneable {
 
     List<Object> asciidoctorExtensions
 
+    ExecutorLogLevel executorLogLevel
+
     String toString() {
         """backend(s) = ${backendName}
 

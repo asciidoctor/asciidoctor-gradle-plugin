@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.jvm
 import org.asciidoctor.gradle.internal.FunctionalSpecification
 import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Issue
+import spock.lang.Timeout
 import spock.lang.Unroll
 
 import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.SERIES_15
@@ -29,8 +30,6 @@ import static org.asciidoctor.gradle.testfixtures.jvm.JRubyTestVersions.*
 class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
 
     static final List<String> DEFAULT_ARGS = ['asciidoctor', '-s', '-i']
-    static final String VERBOSITY_FILE = 'build/tmp/asciidoctor/asciidoctor-verbose-mode.rb'
-    static final String VERBOSITY_CONTENT = '$VERBOSE = true'
 
     void setup() {
         createTestProject()
@@ -38,27 +37,32 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
 
     @Issue('https://github.com/gradle/gradle/issues/3698')
     @Unroll
+    @Timeout(value = 90)
     void 'Built-in backends (parallelMode=#parallelMode, asciidoctorj=#asciidoctorjVer, min jRuby=#jrubyVer, compatible=#compatible)'() {
         given:
         getBuildFile("""
-asciidoctor {
-    outputOptions {
-        backends 'html5', 'docbook'
-    }
+            asciidoctor {
 
-    asciidoctorj {
-        version = '${asciidoctorjVer}' 
-        jrubyVersion = '${jrubyVer}'
-    }
-    logDocuments = true
-    sourceDir 'src/docs/asciidoc'
-    parallelMode ${parallelMode}
+                ${defaultProcessModeForAppveyor}
 
-    doFirst {
-        logger.lifecycle 'Requested: asciidoctorj=${asciidoctorjVer}, jrubyVer=${jrubyVer}. Got configuration: ' + asciidoctorj.configuration.files*.name.join(' ')
-    }
-}
-""")
+                outputOptions {
+                    backends 'html5', 'docbook'
+                }
+            
+                asciidoctorj {
+                    version = '${asciidoctorjVer}' 
+                    jrubyVersion = '${jrubyVer}'
+                }
+                logDocuments = true
+                sourceDir 'src/docs/asciidoc'
+                parallelMode ${parallelMode}
+            
+                doFirst {
+                    logger.lifecycle 'Requested: asciidoctorj=${asciidoctorjVer}, jrubyVer=${jrubyVer}. Got configuration: ' + asciidoctorj.configuration.files*.name.join(' ')
+                }
+            }
+        """)
+
         GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
 
         when:
@@ -75,42 +79,45 @@ asciidoctor {
         where:
         parallelMode | jrubyVer              | asciidoctorjVer | compatible
 //        true         | AJ15_ABSOLUTE_MINIMUM | SERIES_15       | true  // <- too brittle
-        true         | AJ15_ABSOLUTE_MINIMUM | SERIES_16       | true
+        true         | AJ16_ABSOLUTE_MINIMUM | SERIES_16       | true
         true         | AJ15_SAFE_MINIMUM     | SERIES_15       | true
-        true         | AJ15_SAFE_MINIMUM     | SERIES_16       | true
+        true         | AJ16_SAFE_MINIMUM     | SERIES_16       | true
         true         | AJ15_SAFE_MAXIMUM     | SERIES_15       | true
-        true         | AJ15_SAFE_MAXIMUM     | SERIES_16       | true
+        true         | AJ16_SAFE_MAXIMUM     | SERIES_16       | true
         false        | AJ15_ABSOLUTE_MINIMUM | SERIES_15       | true
         false        | AJ15_SAFE_MINIMUM     | SERIES_15       | true
         false        | AJ15_SAFE_MAXIMUM     | SERIES_15       | true
-        false        | AJ15_SAFE_MAXIMUM     | SERIES_16       | true
+        false        | AJ16_SAFE_MAXIMUM     | SERIES_16       | true
         true         | AJ15_ABSOLUTE_MAXIMUM | SERIES_15       | false
-        false        | AJ15_ABSOLUTE_MAXIMUM | SERIES_16       | true
+        false        | AJ16_ABSOLUTE_MAXIMUM | SERIES_16       | true
     }
 
+    @Timeout(value = 90)
     void 'Support attributes in various formats'() {
         given:
-        getBuildFile('''
-asciidoctorj {
-    attributes attr1 : 'a string',
-        attr2 : "A GString",
-        attr10 : [ 'a', 2, 5 ]
-}
-        
-asciidoctor {
-    outputOptions {
-        backends 'html5'
-    }
-    logDocuments = true
-    sourceDir 'src/docs/asciidoc'
-    
-    asciidoctorj {
-        attributes attr3 : new File('abc'),
-            attr4 : { 'a closure' },
-            attr20 : [ a : 1 ]            
-    }
-}
-''')
+        getBuildFile("""
+            asciidoctorj {
+                attributes attr1 : 'a string',
+                    attr2 : "A GString",
+                    attr10 : [ 'a', 2, 5 ]
+            }
+                    
+            asciidoctor {
+                ${defaultProcessModeForAppveyor}
+            
+                outputOptions {
+                    backends 'html5'
+                }
+                logDocuments = true
+                sourceDir 'src/docs/asciidoc'
+                
+                asciidoctorj {
+                    attributes attr3 : new File('abc'),
+                        attr4 : { 'a closure' },
+                        attr20 : [ a : 1 ]            
+                }
+            }
+        """)
         when:
         getGradleRunner(DEFAULT_ARGS).build()
 
@@ -118,63 +125,30 @@ asciidoctor {
         noExceptionThrown()
     }
 
-    void 'Run verbose mode'() {
-        given:
-        getBuildFile('''
-asciidoctorj {
-    verboseMode = true
-}
-        
-asciidoctor {
-    outputOptions {
-        backends 'html5'
-    }
-    sourceDir 'src/docs/asciidoc'
-}
-''')
-        when:
-        getGradleRunner(DEFAULT_ARGS).build()
-
-        then:
-        new File(testProjectDir.root, VERBOSITY_FILE).text.contains(VERBOSITY_CONTENT)
-    }
-
     void 'Can run in JAVA_EXEC process mode'() {
         given:
         getBuildFile('''
-asciidoctorj {
-    verboseMode = true
-}
-        
-asciidoctor {
+            asciidoctorj {
+                logLevel = 'INFO'
+            }
+                    
+            asciidoctor {
+            
+                inProcess = JAVA_EXEC
+                
+                outputOptions {
+                    backends 'html5'
+                }
+                sourceDir 'src/docs/asciidoc'
+            }
+        ''')
 
-    inProcess = JAVA_EXEC
-    
-    outputOptions {
-        backends 'html5'
-    }
-    sourceDir 'src/docs/asciidoc'
-}
-''')
         when:
         getGradleRunner(DEFAULT_ARGS).build()
 
         then:
-        new File(testProjectDir.root, VERBOSITY_FILE).text.contains(VERBOSITY_CONTENT)
+        noExceptionThrown()
     }
-
-//    void "When 'resources' not specified, then copy all images to backend"() {
-//    }
-//
-//    void "When 'resources' not specified and more than one backend, then copy all images to every backend"() {
-//    }
-//
-//    void "When 'resources' are specified, then copy according to all patterns"() {
-//    }
-//
-//    @SuppressWarnings('MethodName')
-//    void "Should require libraries"() {
-//    }
 
     File getBuildFile(String extraContent) {
         getJvmConvertBuildFile("""
