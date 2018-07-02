@@ -53,6 +53,7 @@ import static org.gradle.workers.IsolationMode.PROCESS
  *
  * @since 2.0.0
  * @author Schalk W. Cronjé
+ * @uathor Manuel Prinz
  */
 @SuppressWarnings('MethodCount')
 @CompileStatic
@@ -150,7 +151,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      *
      * @param cfg Configuration {@link Action}. Is passed a {@link PatternSet}.
      */
-    void sources(final Action<PatternSet> cfg) {
+    void sources(final Action<? super PatternSet> cfg) {
         if (sourceDocumentPattern == null) {
             sourceDocumentPattern = new PatternSet()
         }
@@ -218,7 +219,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      *
      * @param cfg Configuration {@link Action}. Is passed a {@link PatternSet}.
      */
-    void secondarySources(final Action<PatternSet> cfg) {
+    void secondarySources(final Action<? super PatternSet> cfg) {
         if (secondarySourceDocumentPattern == null) {
             sourceDocumentPattern = defaultSecondarySourceDocumentPattern
         }
@@ -377,7 +378,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      *
      * @param cfg {@link CopySpec} runConfiguration {@link Action}
      */
-    void resources(Action<CopySpec> cfg) {
+    void resources(Action<? super CopySpec> cfg) {
         if (this.resourceCopy == null) {
             this.resourceCopy = project.copySpec(cfg)
         } else {
@@ -446,7 +447,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
 
     /** Add additional configurations.
      *
-     * @param configs Instances of {@link Configuration} or anythign convertible to a string than can be used
+     * @param configs Instances of {@link Configuration} or anything convertible to a string than can be used
      *   as a name of a runConfiguration.
      */
     void configurations(Iterable<Object> configs) {
@@ -455,7 +456,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
 
     /** Add additional configurations.
      *
-     * @param configs Instances of {@link Configuration} or anythign convertible to a string than can be used
+     * @param configs Instances of {@link Configuration} or anything convertible to a string than can be used
      *   as a name of a runConfiguration.
      */
     void configurations(Object... configs) {
@@ -762,7 +763,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
 
     private void runWithWorkers(final File workingSourceDir, final Set<File> sourceFiles) {
         FileCollection asciidoctorClasspath = configurations
-        logger.debug "Running AsciidoctorJ with workers. Classpath = ${asciidoctorClasspath.files}"
+        logger.info "Running AsciidoctorJ with workers. Classpath = ${asciidoctorClasspath.files}"
         if (parallelMode) {
             getExecutorConfigurations(workingSourceDir, sourceFiles).each { String configName, ExecutorConfiguration executorConfiguration ->
                 worker.submit(AsciidoctorJExecuter) { WorkerConfiguration config ->
@@ -809,7 +810,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
         }
 
         logger.debug("Serialised AsciidoctorJ configuration to ${execConfigurationData}")
-        logger.debug "Running AsciidoctorJ instance with classpath ${javaExecClasspath.files}"
+        logger.info "Running AsciidoctorJ instance with classpath ${javaExecClasspath.files}"
 
         project.javaexec { JavaExecSpec jes ->
             configureForkOptions(jes)

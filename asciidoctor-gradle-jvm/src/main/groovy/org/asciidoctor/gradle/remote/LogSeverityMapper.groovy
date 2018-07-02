@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.remote
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.internal.ExecutorLogLevel
+@java.lang.SuppressWarnings('NoWildcardImports')
 import org.asciidoctor.log.Severity
 
 @java.lang.SuppressWarnings('NoWildcardImports')
@@ -29,8 +30,8 @@ import static org.asciidoctor.log.Severity.*
 @CompileStatic
 class LogSeverityMapper {
 
-    static ExecutorLogLevel getSeverity(Severity sev) {
-        switch(sev) {
+    static ExecutorLogLevel translateAsciidoctorLogLevel(Severity sev) {
+        switch (sev) {
             case DEBUG:
                 ExecutorLogLevel.DEBUG
                 break

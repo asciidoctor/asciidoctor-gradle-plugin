@@ -44,16 +44,18 @@ class AsciidoctorJavaExec extends ExecutorBase {
         addRequires(asciidoctor)
 
         runConfigurations.each { runConfiguration ->
-
-            LogHandler lh = getLogHandler(runConfiguration.executorLogLevel)
-            asciidoctor.registerLogHandler(lh)
             if (runConfiguration.asciidoctorExtensions?.size()) {
                 registerExtensions(asciidoctor, runConfiguration.asciidoctorExtensions)
             }
+        }
+
+        runConfigurations.each { runConfiguration ->
+
+            LogHandler lh = getLogHandler(runConfiguration.executorLogLevel)
+            asciidoctor.registerLogHandler(lh)
 
             runConfiguration.outputDir.mkdirs()
             convertFiles(asciidoctor, runConfiguration)
-            asciidoctor.unregisterAllExtensions()
             asciidoctor.unregisterLogHandler(lh)
         }
     }
@@ -96,7 +98,7 @@ class AsciidoctorJavaExec extends ExecutorBase {
         new LogHandler() {
             @Override
             void log(LogRecord logRecord) {
-                int level = LogSeverityMapper.getSeverity(logRecord.severity).level
+                int level = LogSeverityMapper.translateAsciidoctorLogLevel(logRecord.severity).level
 
                 if (level >= requiredLevel) {
 
@@ -123,7 +125,6 @@ class AsciidoctorJavaExec extends ExecutorBase {
         for (Object ext in rehydrateExtensions(extensionRegistry, exts)) {
             extensionRegistry.addExtension(ext)
         }
-
         extensionRegistry.registerExtensionsWith((Asciidoctor) asciidoctor)
     }
 

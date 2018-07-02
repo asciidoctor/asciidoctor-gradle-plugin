@@ -1,0 +1,20 @@
+plugins {
+    id 'org.asciidoctor.jvm.convert'
+}
+
+configurations {
+    asciidocExt
+}
+
+dependencies {
+    asciidocExt project(':extension')
+}
+
+asciidoctorj {
+    logLevel 'DEBUG'
+}
+
+asciidoctor {
+    configurations 'asciidocExt'
+    inProcess IN_PROCESS
+}
