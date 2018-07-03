@@ -1,3 +1,7 @@
+plugins {
+    id 'org.asciidoctor.jvm.convert' apply false
+}
+
 allprojects {
     apply from: "${System.getProperty('OFFLINE_REPO')}/repositories.gradle"
 
@@ -16,6 +20,7 @@ allprojects {
 
 task runGradleTest {
     dependsOn ':extension:build', ':docs-using-configuration:asciidoctor', ':docs-using-configuration-in-process:asciidoctor'
+    dependsOn ':docs-using-project-direct:asciidoctor'
 
     doLast {
         assert file("${project(':docs-using-configuration').buildDir}/docs/asciidoc/sample.html").text.contains('and write this in lowercase')

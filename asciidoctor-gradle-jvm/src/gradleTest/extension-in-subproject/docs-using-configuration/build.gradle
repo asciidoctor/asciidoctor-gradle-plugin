@@ -1,6 +1,4 @@
-plugins {
-    id 'org.asciidoctor.jvm.convert'
-}
+apply plugin : 'org.asciidoctor.jvm.convert'
 
 configurations {
     asciidocExt

@@ -28,6 +28,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
+import org.gradle.api.artifacts.DependencyResolveDetails
 import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.FileTree
@@ -843,12 +844,25 @@ class AbstractAsciidoctorTask extends DefaultTask {
         if (deps.empty && closurePaths.empty) {
             null
         } else if (closurePaths.empty) {
-            project.configurations.detachedConfiguration(deps.toArray() as Dependency[])
+            jrubyLessConfiguration(deps)
         } else if (deps.empty) {
             project.files(closurePaths)
         } else {
-            project.configurations.detachedConfiguration(deps.toArray() as Dependency[]) + project.files(closurePaths)
+            jrubyLessConfiguration(deps) + project.files(closurePaths)
         }
+    }
+
+    @CompileDynamic
+    private Configuration jrubyLessConfiguration(List<Dependency> deps) {
+        Configuration cfg = project.configurations.detachedConfiguration(deps.toArray() as Dependency[])
+        cfg.resolutionStrategy.eachDependency { DependencyResolveDetails dsr ->
+            dsr.with {
+                if (target.name == 'jruby' && target.group == 'org.jruby') {
+                    useTarget "org.jruby:jruby:${target.version}"
+                }
+            }
+        }
+        cfg
     }
 
     private File getClassLocation(Class aClass) {
