@@ -1,6 +1,8 @@
 Asciidoctor Gradle Plugin
 =========================
 
+NOTE: This file is no longer maintained. We are working on a better solution.
+
 == History
 
 === 0.7.2

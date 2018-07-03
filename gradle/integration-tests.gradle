@@ -27,6 +27,9 @@ task intTest(type: Test) {
     group = "verification"
 
     mustRunAfter "test"
+    inputs.dir sourceSets.main.output.classesDirs
+    inputs.dir sourceSets.main.output.resourcesDir
+
     testClassesDirs = sourceSets.intTest.output.classesDirs
     classpath = sourceSets.intTest.runtimeClasspath
 
