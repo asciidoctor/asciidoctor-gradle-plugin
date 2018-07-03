@@ -56,7 +56,7 @@ This is still an alpha development, so expect some issues. These are the main on
 * EPUB3 + KF8 in one task. Both formats in one task is currently failing. The exact failure message depends on which order
   (KF8+EPUB3 or EPUB3+KF8) the conversion takes place in.
 * KF8 conversions fails under Windows. (Related to asciidoctor/asciidoctorj#659 & jruby/jruby#4943)
-* Extensions only work with AsciidoctorJ 1.5.x. It needs a version of the Groovy DSL extensions that will work for 1.6.0+ (asciidoctor/asciidoctorj-groovy-dsl#20). If you need to experiment with extensions then you mneed to set `asciidoctorj.version = '1.5.6'` (or a later 1.5.x if available).
+* Extensions only work with AsciidoctorJ 1.5.x. It needs a version of the Groovy DSL extensions that will work for 1.6.0+ (asciidoctor/asciidoctorj-groovy-dsl#20). If you need to experiment with extensions then you need to set `asciidoctorj.version = '1.5.6'` (or a later 1.5.x if available).
 * Does not work with JDK9 (but does with JDK10).
 
 ifndef::env-site[]
@@ -90,7 +90,7 @@ plugins {
 }
 ----
 
-There are also a of other plugins that could use depending on your context.
+There are also a host of other plugins that could use depending on your context.
 
 [source,groovy]
 [subs=attributes+]
@@ -142,7 +142,6 @@ You can also override or extend select settings within a task using the same ext
 ----
 asciidoctor {
   asciidoctorj {
-
       setOptions = [ doctype: 'article' ] // <1>
 
       attributes toc : left // <2>
