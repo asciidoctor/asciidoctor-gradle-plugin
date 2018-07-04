@@ -63,10 +63,9 @@ subprojects {
             apply plugin: 'maven-publish'
             apply plugin: 'jacoco'
             apply plugin: 'java-gradle-plugin'
-            apply plugin: 'com.jfrog.bintray'
-            apply plugin: 'net.nemerosa.versioning'
+            // apply plugin: 'com.jfrog.bintray'
             apply plugin: 'com.github.ben-manes.versions'
-            apply plugin: 'com.gradle.plugin-publish'
+            // apply plugin: 'com.gradle.plugin-publish'
             apply plugin: 'com.github.kt3k.coveralls'
             apply plugin: 'net.ossindex.audit'
             apply plugin: 'org.kordamp.jdeps'
@@ -89,7 +88,7 @@ subprojects {
                 apply from: "${rootProject.projectDir}/gradle/ci.gradle"
             }
 
-            task publishRelease(dependsOn: [bintrayUpload, publishPlugins]) {}
+            // task publishRelease(dependsOn: [bintrayUpload, publishPlugins]) {}
 
             dependencyUpdates.resolutionStrategy = {
                 componentSelection { rules ->

@@ -116,6 +116,7 @@ publishing {
     }
 }
 
+/*
 bintray {
     user = bintrayUsername
     key = bintrayKey
@@ -157,3 +158,4 @@ pluginBundle {
         version = project.version
     }
 }
+*/
