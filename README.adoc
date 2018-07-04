@@ -678,8 +678,25 @@ dependencies {
 asciidoctor {
     configurations 'asciidoctorExtensions'
 }
-
 ----
+
+Alternatively you can add the project to the extension directly
+
+[source,groovy]
+[subs=attributes+]
+.build.gradle
+----
+plugins {
+   id 'org.asciidoctor.jvm.convert' version '{version-published}'
+}
+
+asciidoctorj {
+    extensions project(':extension')
+}
+----
+
+In the less-common case where extension is not supplied via the default configuration, he latter shortcur will not work, and you will need to use the longer method described above.
+
 
 === As Inline Script
 

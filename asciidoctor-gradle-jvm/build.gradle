@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2013-2018 the original author or authors.
  *
@@ -43,7 +42,7 @@ dependencies {
     // This is here for extension testing on the compatibility plugin. It will be deleted
     // when compatibility mode is removed.
     testRuntimeOnly "org.asciidoctor:asciidoctorj-groovy-dsl:${compileOnlyGroovyDslVersion}", {
-        exclude module : 'groovy-all'
+        exclude module: 'groovy-all'
     }
 }
 
@@ -73,6 +72,26 @@ gradlePlugin {
 }
 
 intTest {
-    systemProperties TEST_PROJECTS_DIR : file('src/intTest/projects')
+    systemProperties TEST_PROJECTS_DIR: file('src/intTest/projects')
+}
+
+// Compile the extensions compatibility test with the same version of
+// AsciidoctorJ & Groovy version that is used in the project
+gradleTest {
+    systemProperties ASCIIDOCTORJ_VERSION: compileOnlyAsciidoctorJVersion
+    systemProperties GROOVY_VERSION: GroovySystem.version
+}
+
+// This makes it easier to edit the projects in IntelliJ
+sourceSets {
+    gradleTestProjectExtension {
+        groovy {
+            srcDirs = ['src/gradleTest/extension-in-subproject/extension/src/main/groovy']
+        }
+    }
+}
+
+configurations {
+    gradleTestProjectExtensionCompileOnly.extendsFrom compileOnly
 }
 

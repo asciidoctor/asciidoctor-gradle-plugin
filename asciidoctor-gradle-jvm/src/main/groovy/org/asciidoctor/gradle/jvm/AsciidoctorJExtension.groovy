@@ -131,7 +131,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
 
     /** Set a new version to use.
      *
-     * @param v New version to be used. Can be of anything that be be resolved by {@link stringize(Object o)}
+     * @param v New version to be used. Can be of anything that be be resolved by {@link stringize ( Object o )}
      */
     void setVersion(Object v) {
         this.version = v
@@ -547,8 +547,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      * with content conforming to the Asciidoctor Groovy DSL.
      */
     void extensions(Object... exts) {
-        setDefaultGroovyDslVersionIfRequired()
-        asciidoctorExtensions.addAll(dehydrateExtensions(exts as List))
+        addExtensions(exts as List)
     }
 
     /** Clears the existing extensionRegistry and replace with a new set.
@@ -557,19 +556,17 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      * project extension will be ignored.
      */
     void setExtensions(Iterable<Object> newExtensions) {
-        setDefaultGroovyDslVersionIfRequired()
         asciidoctorExtensions.clear()
-        asciidoctorExtensions.addAll(dehydrateExtensions(newExtensions))
+        addExtensions(newExtensions)
         onlyTaskExtensions = true
     }
-
 
     /** The level at which the AsciidoctorJ process should be logging.
      *
      * @return The currently configured log level. By default this is {@code project.logging.level}.
      */
     LogLevel getLogLevel() {
-        if(task) {
+        if (task) {
             this.logLevel == null ? extFromProject.logLevel : this.logLevel
         } else {
             this.logLevel ?: project.logging.level
@@ -704,6 +701,17 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         }
     }
 
+    /** Adds extensions to the existig container.
+     *
+     * Also sets the Groovy DSL version if required.
+     *
+     * @param newExtensions List of new extensiosn to add
+     */
+    private void addExtensions(Iterable<Object> newExtensions) {
+        setDefaultGroovyDslVersionIfRequired()
+        asciidoctorExtensions.addAll(dehydrateExtensions(newExtensions))
+    }
+
     /** Prepare extensions for serialisation.
      *
      * This takes care of dehydrating any closures.
@@ -717,6 +725,9 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
             switch (it) {
                 case Closure:
                     ((Closure) it).dehydrate()
+                    break
+                case Project:
+                    project.dependencies.project(path: ((Project) it).path)
                     break
                 default:
                     it
@@ -732,8 +743,8 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     @SuppressWarnings('DuplicateStringLiteral')
     Closure excludeTransitiveAsciidoctorJ() {
         return {
-            exclude( group: ASCIIDOCTORJ_GROUP, module: 'asciidoctorj' )
-            exclude( group: ASCIIDOCTORJ_GROUP, module: 'asciidoctorj-api' )
+            exclude(group: ASCIIDOCTORJ_GROUP, module: 'asciidoctorj')
+            exclude(group: ASCIIDOCTORJ_GROUP, module: 'asciidoctorj-api')
         }
 
     }

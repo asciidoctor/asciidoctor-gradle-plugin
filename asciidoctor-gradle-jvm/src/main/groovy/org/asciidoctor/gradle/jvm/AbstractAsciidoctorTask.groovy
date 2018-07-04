@@ -28,6 +28,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
+import org.gradle.api.artifacts.DependencyResolveDetails
 import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.FileTree
@@ -53,6 +54,7 @@ import static org.gradle.workers.IsolationMode.PROCESS
  *
  * @since 2.0.0
  * @author Schalk W. Cronjé
+ * @uathor Manuel Prinz
  */
 @SuppressWarnings('MethodCount')
 @CompileStatic
@@ -150,7 +152,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      *
      * @param cfg Configuration {@link Action}. Is passed a {@link PatternSet}.
      */
-    void sources(final Action<PatternSet> cfg) {
+    void sources(final Action<? super PatternSet> cfg) {
         if (sourceDocumentPattern == null) {
             sourceDocumentPattern = new PatternSet()
         }
@@ -218,7 +220,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      *
      * @param cfg Configuration {@link Action}. Is passed a {@link PatternSet}.
      */
-    void secondarySources(final Action<PatternSet> cfg) {
+    void secondarySources(final Action<? super PatternSet> cfg) {
         if (secondarySourceDocumentPattern == null) {
             sourceDocumentPattern = defaultSecondarySourceDocumentPattern
         }
@@ -377,7 +379,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      *
      * @param cfg {@link CopySpec} runConfiguration {@link Action}
      */
-    void resources(Action<CopySpec> cfg) {
+    void resources(Action<? super CopySpec> cfg) {
         if (this.resourceCopy == null) {
             this.resourceCopy = project.copySpec(cfg)
         } else {
@@ -446,7 +448,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
 
     /** Add additional configurations.
      *
-     * @param configs Instances of {@link Configuration} or anythign convertible to a string than can be used
+     * @param configs Instances of {@link Configuration} or anything convertible to a string than can be used
      *   as a name of a runConfiguration.
      */
     void configurations(Iterable<Object> configs) {
@@ -455,7 +457,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
 
     /** Add additional configurations.
      *
-     * @param configs Instances of {@link Configuration} or anythign convertible to a string than can be used
+     * @param configs Instances of {@link Configuration} or anything convertible to a string than can be used
      *   as a name of a runConfiguration.
      */
     void configurations(Object... configs) {
@@ -762,7 +764,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
 
     private void runWithWorkers(final File workingSourceDir, final Set<File> sourceFiles) {
         FileCollection asciidoctorClasspath = configurations
-        logger.debug "Running AsciidoctorJ with workers. Classpath = ${asciidoctorClasspath.files}"
+        logger.info "Running AsciidoctorJ with workers. Classpath = ${asciidoctorClasspath.files}"
         if (parallelMode) {
             getExecutorConfigurations(workingSourceDir, sourceFiles).each { String configName, ExecutorConfiguration executorConfiguration ->
                 worker.submit(AsciidoctorJExecuter) { WorkerConfiguration config ->
@@ -809,7 +811,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
         }
 
         logger.debug("Serialised AsciidoctorJ configuration to ${execConfigurationData}")
-        logger.debug "Running AsciidoctorJ instance with classpath ${javaExecClasspath.files}"
+        logger.info "Running AsciidoctorJ instance with classpath ${javaExecClasspath.files}"
 
         project.javaexec { JavaExecSpec jes ->
             configureForkOptions(jes)
@@ -842,12 +844,25 @@ class AbstractAsciidoctorTask extends DefaultTask {
         if (deps.empty && closurePaths.empty) {
             null
         } else if (closurePaths.empty) {
-            project.configurations.detachedConfiguration(deps.toArray() as Dependency[])
+            jrubyLessConfiguration(deps)
         } else if (deps.empty) {
             project.files(closurePaths)
         } else {
-            project.configurations.detachedConfiguration(deps.toArray() as Dependency[]) + project.files(closurePaths)
+            jrubyLessConfiguration(deps) + project.files(closurePaths)
         }
+    }
+
+    @CompileDynamic
+    private Configuration jrubyLessConfiguration(List<Dependency> deps) {
+        Configuration cfg = project.configurations.detachedConfiguration(deps.toArray() as Dependency[])
+        cfg.resolutionStrategy.eachDependency { DependencyResolveDetails dsr ->
+            dsr.with {
+                if (target.name == 'jruby' && target.group == 'org.jruby') {
+                    useTarget "org.jruby:jruby:${target.version}"
+                }
+            }
+        }
+        cfg
     }
 
     private File getClassLocation(Class aClass) {

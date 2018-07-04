@@ -16,10 +16,12 @@ gradleTest {
 
     dependsOn ':testfixtures-offline-repo:buildOfflineRepositories'
     systemProperties OFFLINE_REPO: offlineRepoRoot.absolutePath
+
 }
 
 configurations {
     gradleTestRuntime.extendsFrom testRuntime
 }
+
 
 licenseGradleTest.enabled = false
