@@ -32,6 +32,18 @@ plugins {
     id 'org.ysb33r.gradletest' version '2.0-alpha-6' apply false
 }
 
+import java.text.SimpleDateFormat
+
+apply plugin: 'net.nemerosa.versioning'
+
+Date buildTimeAndDate = new Date()
+ext {
+    buildDate = new SimpleDateFormat('yyyy-MM-dd').format(buildTimeAndDate)
+    buildTime = new SimpleDateFormat('HH:mm:ss.SSSZ').format(buildTimeAndDate)
+    buildRevision = versioning.info.commit
+    buildCreatedBy = "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})".toString()
+}
+
 allprojects {
     ext {
         offlineRepoRoot = file("${project(':testfixtures-offline-repo').buildDir}/repo")
