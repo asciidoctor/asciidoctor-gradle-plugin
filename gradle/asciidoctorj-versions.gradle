@@ -1,8 +1,4 @@
 ext {
-    pluginExtraText = (version.contains('-alpha') || version.contains('-beta')) ?
-        " (If you need a production-ready version of the AsciidoctorJ plugin for Gradle use a 1.5.x release of 'org.asciidoctor.convert' instead)"
-        : ''
-
     extensionFileContent = file("${project(':asciidoctor-gradle-jvm').projectDir}/src/main/groovy/org/asciidoctor/gradle/jvm/AsciidoctorJExtension.groovy").readLines()
     asciidoctorjFixtureFileContent = file("${project(':testfixtures-jvm').projectDir}/src/main/groovy/org/asciidoctor/gradle/testfixtures/jvm/AsciidoctorjTestVersions.groovy").readLines()
 

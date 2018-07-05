@@ -15,12 +15,9 @@
  * limitations under the License.
  */
 
-gradlePlugin {
-    plugins {
-        asciidoctorBasePlugin {
-            id = 'org.asciidoctor.org.asciidoctor.base'
-            implementationClass = 'org.asciidoctor.gradle.base.AsciidoctorBasePlugin'
-            description = 'Base plugin for AsciidoctorJ & AscidoctorJS plugins'
-        }
-    }
-}
+configurePlugin 'org.asciidoctor.base',
+    'Asciidoctor Base Plugin',
+    'Base plugin for all asciidoctor document conversion plugins (AsciidoctorJ & AsciidoctorJS)',
+    [ ]
+
+

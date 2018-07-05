@@ -16,3 +16,8 @@ test {
     systemProperties OFFLINE_REPO: offlineRepoRoot.absolutePath
 }
 
+configurePlugin 'org.asciidoctor.kindlegen.base',
+    'Kindlegen Gradle Base Plugin',
+    'Provides kindlegen extension and removes need to install kindlegen manually',
+    [ 'kindlegen', 'epub', 'epub3', 'kf8']
+
