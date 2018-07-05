@@ -29,7 +29,7 @@ plugins {
     id 'org.ysb33r.os' version '0.9' apply false
     id 'org.ysb33r.cloudci' version '2.3' apply false
     id 'org.ysb33r.cloudci.appveyor.testreporter' version '2.3' apply false
-    id 'org.ysb33r.gradletest' version '2.0-alpha-6' apply false
+    id 'org.ysb33r.gradletest' version '2.0-alpha-8' apply false
 }
 
 import java.text.SimpleDateFormat
@@ -61,12 +61,14 @@ subprojects {
 
         if (!project.name.startsWith('testfixture')) {
             apply plugin: 'maven-publish'
-            apply plugin: 'jacoco'
             apply plugin: 'com.github.ben-manes.versions'
-            apply plugin: 'com.github.kt3k.coveralls'
             apply plugin: 'net.ossindex.audit'
             apply plugin: 'org.kordamp.jdeps'
-        }
+
+            if(project.name != 'asciidoctorj-gradle-base') {
+                apply plugin: 'jacoco'
+            }
+         }
 
         apply from: "${rootProject.projectDir}/gradle/standard-repositories.gradle"
         apply from: "${rootProject.projectDir}/gradle/code-quality.gradle"
@@ -98,13 +100,6 @@ subprojects {
                 }
             }
 
-            jacocoTestReport {
-                reports {
-                    xml.enabled = true // coveralls plugin depends on xml format report
-                    html.enabled = true
-                }
-            }
-
             audit {
                 failOnError = false
             }
@@ -131,4 +126,6 @@ subprojects {
         }
     }
 }
+
+apply from : 'gradle/coveralls.gradle'
 

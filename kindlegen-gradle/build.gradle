@@ -16,6 +16,14 @@ test {
     systemProperties OFFLINE_REPO: offlineRepoRoot.absolutePath
 }
 
+pluginManager.withPlugin('jacoco') {
+    jacocoTestReport {
+        executionData = (fileTree('.') { exclude '**' })
+        executionData test
+//        dependsOn test
+    }
+}
+
 configurePlugin 'org.asciidoctor.kindlegen.base',
     'Kindlegen Gradle Base Plugin',
     'Provides kindlegen extension and removes need to install kindlegen manually',

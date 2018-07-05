@@ -25,48 +25,6 @@ configurations {
     intTestOfflineRepo
 }
 
-//syncRemoteRepositories {
-//
-//    repoRoot "${buildDir}/intTestOfflineRepo"
-//
-//    ext {
-//        repDescriptionFile = file("${repoRoot}/repositories.gradle")
-//    }
-//
-//    outputs.files repDescriptionFile
-//    inputs.file "${rootProject.projectDir}/gradle/integration-tests.gradle"
-//
-//    repositories {
-//        // Put this first as sometimes Ivy hits a hiccup on JCenter()
-//        mavenCentral()
-//        jcenter()
-//
-//        if (version.endsWith('-SNAPSHOT')) {
-//            mavenLocal()
-//        }
-//    }
-//
-//    configurations 'intTestOfflineRepo'
-//
-//    doLast {
-//        repDescriptionFile.withWriter { w ->
-//            w.println 'repositories {'
-//            w.print ' ' * 4
-//            w.println 'ivy {'
-//            w.print ' ' * 8
-//            w.println "name 'OfflineRepo'"
-//            w.print ' ' * 8
-//            w.println "layout 'gradle'"
-//            w.print ' ' * 8
-//            w.println "url '${file(repoRoot).toURI()}'"
-//            w.print ' ' * 4
-//            w.println '}'
-//            w.println '}'
-//        }
-//    }
-//
-//}
-
 // For a single test, you can run "gradle -DintTest.single=<test name> intTest"
 task intTest(type: Test) {
     description = "Runs the plugin's integration tests"
@@ -85,4 +43,11 @@ task intTest(type: Test) {
 
 check {
     dependsOn intTest
+}
+
+pluginManager.withPlugin('jacoco') {
+    jacocoTestReport {
+        executionData intTest
+        dependsOn intTest
+    }
 }

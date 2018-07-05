@@ -34,3 +34,14 @@ codenarc {
     // run codenarc on production sources only
     sourceSets = [project.sourceSets.main]
 }
+
+pluginManager.withPlugin('jacoco') {
+    jacocoTestReport {
+        reports {
+            xml.enabled = true // coveralls plugin depends on xml format report
+            html.enabled = true
+        }
+        dependsOn test
+    }
+}
+

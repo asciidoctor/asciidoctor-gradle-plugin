@@ -57,6 +57,7 @@ class AsciidoctorEpubTask extends AbstractAsciidoctorTask {
         copyNoResources()
         inProcess = JAVA_EXEC
         kindleGenExtension = project.extensions.getByType(KindleGenExtension)
+        sourceDir = 'src/docs/asciidocEpub'
     }
 
     /** The eBook formats that needs to be generated.
@@ -102,7 +103,7 @@ class AsciidoctorEpubTask extends AbstractAsciidoctorTask {
         postProcessKindleGenFileOnWindows()
     }
 
-/** The default pattern set for secondary sources.
+    /** The default pattern set for secondary sources.
      *
      * @return {@link #getDefaultSourceDocumentPattern} + `*docinfo*`.
      */
