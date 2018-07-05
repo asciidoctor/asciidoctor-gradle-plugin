@@ -26,7 +26,7 @@ import spock.lang.Unroll
 @SuppressWarnings(['DuplicateStringLiteral', 'MethodName', 'DuplicateListLiteral'])
 class AsciidoctorEpubTaskFunctionalSpec extends FunctionalSpecification {
 
-    final static String JRUBY_TEST_VERSION = JRubyTestVersions.AJ15_SAFE_MAXIMUM
+    final static String JRUBY_TEST_VERSION = JRubyTestVersions.AJ16_SAFE_MAXIMUM
 
     void setup() {
         createTestProject()
@@ -84,25 +84,24 @@ class AsciidoctorEpubTaskFunctionalSpec extends FunctionalSpecification {
         given:
         getBuildFile("""
 
-asciidoctorEpub {
-    sourceDir 'src/docs/asciidoc'
-    ebookFormats ${formatOrder}
-    
-    kindlegen {
-        agreeToTermsOfUse = true
-    }
-    
-    asciidoctorj {
-        jrubyVersion = '${JRUBY_TEST_VERSION}'
-    }
-        
-    sources {
-        include 'epub3.adoc'
-    }
-    
-    attributes includedir : {getSourceDir()}
-}
-""")
+        asciidoctorEpub {
+            sourceDir 'src/docs/asciidoc'
+            ebookFormats ${formatOrder}
+            
+            kindlegen {
+                agreeToTermsOfUse = true
+            }
+            
+            asciidoctorj {
+                jrubyVersion = '${JRUBY_TEST_VERSION}'
+            }
+                
+            sources {
+                include 'epub3.adoc'
+            }
+        }
+        """)
+
         when:
         BuildResult result = getGradleRunner(['asciidoctorEpub', '-s', '-i']).build()
 
@@ -120,26 +119,23 @@ asciidoctorEpub {
     File getSingleFormatBuildFile(final String format) {
         getBuildFile( """
 
-asciidoctorEpub {
-    sourceDir 'src/docs/asciidoc'
-    ebookFormats ${format}
-    
-    kindlegen {
-        agreeToTermsOfUse = true
-    }
-    
-    asciidoctorj {
-        jrubyVersion = '${JRUBY_TEST_VERSION}'
-    }
-        
-    sources {
-        include 'epub3.adoc'
-    }
-    
-    attributes includedir : {getSourceDir()}
-}
-"""
-        )
+        asciidoctorEpub {
+            sourceDir 'src/docs/asciidoc'
+            ebookFormats ${format}
+            
+            kindlegen {
+                agreeToTermsOfUse = true
+            }
+            
+            asciidoctorj {
+                jrubyVersion = '${JRUBY_TEST_VERSION}'
+            }
+                
+            sources {
+                include 'epub3.adoc'
+            }
+        }
+        """)
     }
 
     File getBuildFile(String extraContent) {

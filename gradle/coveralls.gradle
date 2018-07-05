@@ -1,0 +1,48 @@
+repositories {
+    jcenter()
+}
+
+apply plugin: 'jacoco'
+apply plugin: 'com.github.kt3k.coveralls'
+
+ext {
+    baseJaCocoDir = "${buildDir}/reports/jacoco/test/"
+    jacocoMergeExecFile = "${baseJaCocoDir}jacocoTestReport.exec"
+    jacocoMergeReportHTMLFile = "${baseJaCocoDir}/html/"
+    jacocoMergeReportXMLFile = "${baseJaCocoDir}/jacocoTestReport.xml"
+}
+
+task jacocoRootMerge(type: JacocoMerge) {
+    destinationFile = file(jacocoMergeExecFile)
+}
+
+task jacocoRootReport(dependsOn: jacocoRootMerge, type: JacocoReport) {
+    group = 'Reporting'
+    description = 'Aggregate Jacoco coverage reports.'
+
+    executionData = files(jacocoRootMerge.destinationFile)
+
+    reports {
+        html.enabled = true
+        xml.enabled = true
+        html.destination = file(jacocoMergeReportHTMLFile)
+        xml.destination = file(jacocoMergeReportXMLFile)
+    }
+}
+
+coveralls {
+    // sourceDirs = projectsWithCoverage.sourceSets.main.allSource.srcDirs.flatten()
+     jacocoReportPath = jacocoMergeReportXMLFile
+
+}
+
+subprojects {
+    pluginManager.withPlugin('jacoco') {
+//        rootProject.jacocoRootMerge.dependsOn jacocoTestReport
+        rootProject.jacocoRootMerge.executionData jacocoTestReport.executionData
+        rootProject.jacocoRootReport.sourceSets sourceSets.main
+        rootProject.jacocoRootReport.additionalClassDirs files(sourceSets.main.output)
+
+        rootProject.coveralls.sourceDirs.addAll(sourceSets.main.allSource.srcDirs.flatten())
+    }
+}

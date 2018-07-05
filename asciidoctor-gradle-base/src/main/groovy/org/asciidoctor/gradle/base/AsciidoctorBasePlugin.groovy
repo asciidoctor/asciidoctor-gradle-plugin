@@ -19,7 +19,8 @@ import groovy.transform.CompileStatic
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
-/**
+/** Base plugin for all Asciidoctor plugins (J & JS).
+ *
  * @since 2.0.0
  * @author Schalk W. Cronjé
  */
@@ -27,8 +28,8 @@ import org.gradle.api.Project
 class AsciidoctorBasePlugin implements Plugin<Project> {
 
     void apply(Project project) {
-        project.with {
-            apply plugin : 'base'
-        }
+        project.apply plugin: 'base'
     }
 }
+
+

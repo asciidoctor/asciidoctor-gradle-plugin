@@ -1,4 +1,5 @@
 apply from : "${rootProject.projectDir}/gradle/kindlegen-versions.gradle"
+apply from: "${rootProject.projectDir}/gradle/classpath-manifest.gradle"
 
 ext {
     kindleGenCacheDir = offlineRepoBinariesRoot

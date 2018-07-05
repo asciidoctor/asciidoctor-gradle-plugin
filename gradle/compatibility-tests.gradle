@@ -16,7 +16,6 @@ gradleTest {
 
     dependsOn ':testfixtures-offline-repo:buildOfflineRepositories'
     systemProperties OFFLINE_REPO: offlineRepoRoot.absolutePath
-
 }
 
 configurations {
@@ -25,3 +24,10 @@ configurations {
 
 
 licenseGradleTest.enabled = false
+
+pluginManager.withPlugin('jacoco') {
+    jacocoTestReport {
+        executionData gradleTest
+        dependsOn gradleTest
+    }
+}

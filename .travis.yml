@@ -12,7 +12,7 @@ before_script:
     - ./gradlew --version
 
 script:
-    - ./gradlew --console=plain --warning-mode=all build jacocoTestReport
+    - ./gradlew --console=plain --warning-mode=all build jacocoRootReport
 
 jdk:
     - openjdk8
