@@ -510,7 +510,9 @@ NOTE: To help with migration the old plugin will print a number of messages to h
 
 Firstly replace plugin `org.asciidoctor.convert` with `org.asciidoctor.jvm.convert`.
 
-If you have more than one Asciidoctor task, decide which `options`, `attributes` and `requires` should go in the `asciidoctorj` global project extension block and which should be customised within the tasks `asciidoctor` extension block.
+If you used `separateOutputDirs`, yout need to change that to `outputOptions.separateOutputDirs`. If you only use one backend in the task you can delete this and it will default to `false` for single backends and `true` for multiple backends.
+
+The base directory is now set to the directory of the root project. This may influence how your includes are processed. Either set `baseDir` to specific directory or set `includedir` to `sourceDir` (This might be changed before final release depending on feedback).
 
 Gradle injected a number of attributes into the build. THese names have now been changed to indicate that they are injected:
 
@@ -523,7 +525,15 @@ Gradle injected a number of attributes into the build. THese names have now been
 | `project-version` | `gradle-project-version` | The project version if it is defined.
 |===
 
-the `asciidoctor` configuration is no longer available. If you used that before to make artifacts available on the classpath you should use the `configurations` method on the task to add them. If you used it to manipulate versions of {asciidoctorj-name} and JRuby then you should rather use the explicit versions settings on `asciidoctorj`.
+=== Configurations
+
+The `asciidoctor` configuration is no longer available. If you used that before to make artifacts available on the classpath you should use the `configurations` method on the task to add them. If you used it to manipulate versions of {asciidoctorj-name} and JRuby then you should rather use the explicit versions settings on `asciidoctorj`.
+
+=== Multiple Asciidocto tasks
+
+If you have more than one Asciidoctor task, decide which `options`, `attributes` and `requires` should go in the `asciidoctorj` global project extension block and which should be customised within the tasks `asciidoctor` extension block.
+
+Importantly, you probably did `import org.asciidoctor.gradle.AsciidoctorTask`. You will need to change that to `import org.asciidoctor.gradle.jvm.AsciidoctorTask`.
 
 == Asciidoctor Compatibility Plugin
 

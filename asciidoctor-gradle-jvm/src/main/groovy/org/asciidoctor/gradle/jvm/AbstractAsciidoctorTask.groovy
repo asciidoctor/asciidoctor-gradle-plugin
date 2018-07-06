@@ -516,11 +516,10 @@ class AbstractAsciidoctorTask extends DefaultTask {
         addInputProperty 'trackBaseDir', { getBaseDir().absolutePath }
 
         inputs.files { asciidoctorj.gemPaths }
-
         inputs.files { (resourceCopySpec as CopySpecInternal).buildRootResolver().allSource }
     }
 
-    /** Retunns all of the executor configurations for this task
+    /** Returns all of the executor configurations for this task
      *
      * @return Executor configurations
      */
@@ -549,6 +548,8 @@ class AbstractAsciidoctorTask extends DefaultTask {
         final Set<File> sourceFiles
     ) {
         File outputTo = getOutputDirFor(backendName)
+        Map<String, Object> attrs = getTaskSpecificDefaultAttributes(workingSourceDir)
+        attrs.putAll(attributes)
 
         new ExecutorConfiguration(
             sourceDir: workingSourceDir,
@@ -558,7 +559,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
             projectDir: project.projectDir,
             rootDir: project.rootProject.projectDir,
             options: options,
-            attributes: attributes,
+            attributes: attrs,
             backendName: backendName,
             logDocuments: logDocuments,
             gemPath: gemPath,
@@ -568,6 +569,20 @@ class AbstractAsciidoctorTask extends DefaultTask {
             executorLogLevel: AsciidoctorUtils.getExecutorLogLevel(asciidoctorj.logLevel),
             safeModeLevel: asciidoctorj.safeMode.level
         )
+    }
+
+    /** A task may add some default attributes.
+     *
+     * If the user specifies any of these attributes, then those attributes will not be utilised.
+     *
+     * The default implementation will add {@code includedir}
+     *
+     * @param workingSourceDit DIrectory where source files are located.
+     *
+     * @return A collection of default attributes.
+     */
+    protected Map<String, Object> getTaskSpecificDefaultAttributes(File workingSourceDir) {
+        [includedir: (Object) workingSourceDir.absolutePath]
     }
 
     /** The default PatternSet that will be used if {@code sources} was never called
