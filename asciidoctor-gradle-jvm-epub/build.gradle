@@ -12,12 +12,8 @@ intTest {
     systemProperties TEST_PROJECTS_DIR : file('src/intTest/projects')
 }
 
-gradlePlugin {
-    plugins {
-        AsciidoctorEpubPlugin {
-            id = 'org.asciidoctor.org.asciidoctor.jvm.epub'
-            implementationClass = 'org.asciidoctor.gradle.jvm.epub.AsciidoctorJEpubPlugin'
-            description = "Converts Asciidoctor documents to EPUB3/KF8 using AsciidoctorJ${pluginExtraText}"
-        }
-    }
-}
+configurePlugin 'org.asciidoctor.jvm.epub',
+    'AsciidoctorJ EPUB Plugin',
+    'Asciidoctor task for creating EPUB3 & KF8 documents',
+    [ 'asciidoctorj', 'epub', 'epub3', 'kf8']
+

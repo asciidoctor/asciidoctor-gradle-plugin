@@ -36,8 +36,8 @@ import java.text.SimpleDateFormat
 
 apply plugin: 'net.nemerosa.versioning'
 
-Date buildTimeAndDate = new Date()
 ext {
+    buildTimeAndDate = new Date()
     buildDate = new SimpleDateFormat('yyyy-MM-dd').format(buildTimeAndDate)
     buildTime = new SimpleDateFormat('HH:mm:ss.SSSZ').format(buildTimeAndDate)
     buildRevision = versioning.info.commit
@@ -62,10 +62,7 @@ subprojects {
         if (!project.name.startsWith('testfixture')) {
             apply plugin: 'maven-publish'
             apply plugin: 'jacoco'
-            apply plugin: 'java-gradle-plugin'
-            // apply plugin: 'com.jfrog.bintray'
             apply plugin: 'com.github.ben-manes.versions'
-            // apply plugin: 'com.gradle.plugin-publish'
             apply plugin: 'com.github.kt3k.coveralls'
             apply plugin: 'net.ossindex.audit'
             apply plugin: 'org.kordamp.jdeps'
@@ -87,8 +84,6 @@ subprojects {
                 apply from: "${rootProject.projectDir}/gradle/jruby-versions.gradle"
                 apply from: "${rootProject.projectDir}/gradle/ci.gradle"
             }
-
-            // task publishRelease(dependsOn: [bintrayUpload, publishPlugins]) {}
 
             dependencyUpdates.resolutionStrategy = {
                 componentSelection { rules ->

@@ -46,30 +46,25 @@ dependencies {
     }
 }
 
-gradlePlugin {
-    plugins {
-        asciidoctorBasePlugin {
-            id = 'org.asciidoctor.org.asciidoctor.jvm.base'
-            implementationClass = 'org.asciidoctor.gradle.jvm.AsciidoctorJBasePlugin'
-            description = "Base plugin for running AsciidoctorJ${pluginExtraText}"
-        }
-        asciidoctorCompatibilityPlugin {
-            id = 'org.asciidoctor.convert'
-            implementationClass = 'org.asciidoctor.gradle.AsciidoctorCompatibilityPlugin'
-            description = "Compatibility AsciidoctorJ plugin for those upgrading from 1.5.x${pluginExtraText}"
-        }
-        asciidoctorPlugin {
-            id = 'org.asciidoctor.org.asciidoctor.jvm.convert'
-            implementationClass = 'org.asciidoctor.gradle.jvm.AsciidoctorJPlugin'
-            description = "Converts Asciidoctor documents using AsciidoctorJ${pluginExtraText}"
-        }
-        asciidoctorPdfPlugin {
-            id = 'org.asciidoctor.org.asciidoctor.jvm.pdf'
-            implementationClass = 'org.asciidoctor.gradle.jvm.AsciidoctorJPdfPlugin'
-            description = "Converts Asciidoctor documents to PDF using AsciidoctorJ${pluginExtraText}"
-        }
-    }
-}
+configurePlugin 'org.asciidoctor.jvm.base',
+    'AsciidoctorJ Base Plugin',
+    'Base plugin for all AsciidoctorJ tasks & extensions. Provides the asciidoctorj project extension.',
+    [ 'asciidoctorj' ]
+
+configurePlugin 'org.asciidoctor.convert',
+    'AsciidoctorJ Compatibility Plugin',
+    'Compatibility AsciidoctorJ plugin for those upgrading from 1.5.x',
+    [ 'asciidoctorj', 'html5', 'docbook', 'pdf', 'epub3' ]
+
+configurePlugin 'org.asciidoctor.jvm.convert',
+    'AsciidoctorJ General Purpose Document Conversion Plugin',
+    'Provides asciidoctor task and conventions',
+    [ 'asciidoctorj', 'html5', 'docbook' ]
+
+configurePlugin 'org.asciidoctor.jvm.pdf',
+    'AsciidoctorJ PDF Conversion Plugin',
+    'Simplifies convesion of asciidoc documetns to PDF',
+    [ 'asciidoctorj', 'pdf' ]
 
 intTest {
     systemProperties TEST_PROJECTS_DIR: file('src/intTest/projects')
