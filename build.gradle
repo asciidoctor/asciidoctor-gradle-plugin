@@ -148,6 +148,10 @@ project.tasks.withType(Test) {
     }
 }
 
+jacoco {
+    version = jacocoVersion
+}
+
 jacocoTestReport {
     reports {
         xml.enabled = true // coveralls plugin depends on xml format report
