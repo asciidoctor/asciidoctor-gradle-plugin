@@ -83,8 +83,9 @@ class AbstractAsciidoctorTask extends DefaultTask {
     private PatternSet secondarySourceDocumentPattern
     private CopySpec resourceCopy
 
-    private List<String> copyResourcesForBackends
+    private List<String> copyResourcesForBackends = []
     private boolean withIntermediateWorkDir = false
+    private PatternSet intermediateArtifactPattern
 
     /** Logs documents as they are converted
      *
@@ -473,6 +474,43 @@ class AbstractAsciidoctorTask extends DefaultTask {
         withIntermediateWorkDir = true
     }
 
+    /** The document conversion might generate additional artifacts that could
+     * require copying to the final destination.
+     *
+     * An example is use of {@code ditaa} diagram blocks. These artifacts can be specified
+     * in this block. Use of the option implies {@link #useIntermediateWorkDir}.
+     * If {@link #copyNoResources} is set or {@link #copyResourcesOnlyIf(String ...)} does not
+     * match the backend, no copy will occur.
+     *
+     * @param cfg Configures a {@link PatternSet} with a base directory of the intermediate working
+     * directory.
+     */
+    void withIntermediateArtifacts(@DelegatesTo(PatternSet) Closure cfg) {
+        useIntermediateWorkDir()
+        Closure configurator = (Closure) cfg.clone()
+        configurator.resolveStrategy = DELEGATE_FIRST
+        if (this.intermediateArtifactPattern == null) {
+            this.intermediateArtifactPattern = new PatternSet()
+        }
+        configurator.delegate = this.intermediateArtifactPattern
+        configurator()
+//        withIntermediateArtifacts(configurator as Action<PatternSet>)
+    }
+
+    /** Additional artifacts created by Asciidoctor that might require copying.
+     *
+     * @param cfg Action that configures a {@link PatternSet}.
+     *
+     * @see {@link #withIntermediateArtifacts(Closure cfg)}
+     */
+    void withIntermediateArtifacts(final Action<PatternSet> cfg) {
+        useIntermediateWorkDir()
+        if (this.intermediateArtifactPattern == null) {
+            this.intermediateArtifactPattern = new PatternSet()
+        }
+        cfg.execute(this.intermediateArtifactPattern)
+    }
+
     @SuppressWarnings('UnnecessaryGetter')
     @TaskAction
     void processAsciidocSources() {
@@ -495,11 +533,15 @@ class AbstractAsciidoctorTask extends DefaultTask {
 
         Set<File> sourceFiles = sourceTree.files
 
+        Map<String, ExecutorConfiguration> executorConfigurations
+
         if (finalProcessMode != JAVA_EXEC) {
-            runWithWorkers(workingSourceDir, sourceFiles)
+            executorConfigurations = runWithWorkers(workingSourceDir, sourceFiles)
         } else {
-            runWithJavaExec(workingSourceDir, sourceFiles)
+            executorConfigurations = runWithJavaExec(workingSourceDir, sourceFiles)
         }
+
+        copyResourcesByBackend(executorConfigurations.values())
     }
 
     /** Initialises the core an Asciidoctor task
@@ -615,10 +657,10 @@ class AbstractAsciidoctorTask extends DefaultTask {
      *
      * By default anything below {@code $sourceDir/images} will be included.
      *
+     *
      * @return A {@link CopySpec}. Never {@code null}.
      */
     @CompileDynamic
-    @Internal
     protected CopySpec getDefaultResourceCopySpec() {
         project.copySpec {
             from(sourceDir) {
@@ -777,11 +819,12 @@ class AbstractAsciidoctorTask extends DefaultTask {
         asciidoctorj.asGemPath()
     }
 
-    private void runWithWorkers(final File workingSourceDir, final Set<File> sourceFiles) {
+    Map<String, ExecutorConfiguration> runWithWorkers(final File workingSourceDir, final Set<File> sourceFiles) {
         FileCollection asciidoctorClasspath = configurations
         logger.info "Running AsciidoctorJ with workers. Classpath = ${asciidoctorClasspath.files}"
         if (parallelMode) {
-            getExecutorConfigurations(workingSourceDir, sourceFiles).each { String configName, ExecutorConfiguration executorConfiguration ->
+            Map<String, ExecutorConfiguration> executorConfigurations = getExecutorConfigurations(workingSourceDir, sourceFiles)
+            executorConfigurations.each { String configName, ExecutorConfiguration executorConfiguration ->
                 worker.submit(AsciidoctorJExecuter) { WorkerConfiguration config ->
                     config.isolationMode = inProcess == IN_PROCESS ? CLASSLOADER : PROCESS
                     config.classpath = asciidoctorClasspath
@@ -793,6 +836,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
                     configureForkOptions(config.forkOptions)
                 }
             }
+            executorConfigurations
         } else {
             Map<String, ExecutorConfiguration> executorConfigurations = getExecutorConfigurations(workingSourceDir, sourceFiles)
             worker.submit(AsciidoctorJExecuter) { WorkerConfiguration config ->
@@ -805,10 +849,12 @@ class AbstractAsciidoctorTask extends DefaultTask {
                 )
                 configureForkOptions(config.forkOptions)
             }
+            executorConfigurations
         }
     }
 
-    private void runWithJavaExec(final File workingSourceDir, final Set<File> sourceFiles) {
+    private Map<String, ExecutorConfiguration> runWithJavaExec(
+        final File workingSourceDir, final Set<File> sourceFiles) {
         FileCollection asciidoctorClasspath = configurations
 
         File entryPoint = new File(AsciidoctorJavaExec.protectionDomain.codeSource.location.toURI()).absoluteFile
@@ -816,11 +862,13 @@ class AbstractAsciidoctorTask extends DefaultTask {
         FileCollection javaExecClasspath = project.files(entryPoint, groovyJar, asciidoctorClasspath)
 
         File execConfigurationData = project.file("${project.buildDir}/tmp/${FileUtils.toSafeFileName(this.name)}.javaexec-data")
+        Map<String, ExecutorConfiguration> executorConfigurations = getExecutorConfigurations(workingSourceDir, sourceFiles)
+
         execConfigurationData.parentFile.mkdirs()
         execConfigurationData.withOutputStream { fout ->
             new ObjectOutputStream(fout).withCloseable { oos ->
                 oos.writeObject(
-                    new ExecutorConfigurationContainer(getExecutorConfigurations(workingSourceDir, sourceFiles).values())
+                    new ExecutorConfigurationContainer(executorConfigurations.values())
                 )
             }
         }
@@ -835,6 +883,32 @@ class AbstractAsciidoctorTask extends DefaultTask {
                 main = AsciidoctorJavaExec.canonicalName
                 classpath = javaExecClasspath
                 args execConfigurationData.absolutePath
+            }
+        }
+
+        executorConfigurations
+    }
+
+    private void copyResourcesByBackend(Iterable<ExecutorConfiguration> executorConfigurations) {
+        CopySpec rcs = resourceCopySpec
+        for (ExecutorConfiguration ec : executorConfigurations) {
+            if (ec.copyResources) {
+                logger.info "Copy resources for '${ec.backendName}' to ${ec.outputDir}"
+
+                FileTree ps = this.intermediateArtifactPattern ? project.fileTree(ec.sourceDir).matching(this.intermediateArtifactPattern) : null
+                project.copy(new Action<CopySpec>() {
+                    @Override
+                    void execute(CopySpec copySpec) {
+                        copySpec.with {
+                            into ec.outputDir
+                            with rcs
+
+                            if (ps != null) {
+                                from ps
+                            }
+                        }
+                    }
+                })
             }
         }
     }

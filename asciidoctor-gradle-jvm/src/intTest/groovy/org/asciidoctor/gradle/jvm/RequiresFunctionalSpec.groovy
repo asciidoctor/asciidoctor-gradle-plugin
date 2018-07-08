@@ -60,6 +60,7 @@ class RequiresFunctionalSpec extends FunctionalSpecification {
         secondInvocationResult.task(TASK_PATH).outcome == TaskOutcome.SUCCESS
         outputFile.exists()
         outputFolder.listFiles().findAll { it.name.endsWith(imageFileExt) }.size() == 1
+        outputFolder.listFiles().findAll { it.name.endsWith(imageFileExt) && it.name.startsWith('d') }.size() == 1
     }
 
     @Timeout(value=360)
@@ -122,6 +123,10 @@ class RequiresFunctionalSpec extends FunctionalSpecification {
                 
                 sources {
                     include '${sourceName}'
+                }
+                
+                withIntermediateArtifacts {
+                    include '**/d*.png'
                 }
             }
             

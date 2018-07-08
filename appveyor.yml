@@ -20,8 +20,8 @@ test_script:
 after_test:
   - gradlew.bat --stop
 cache:
-  - C:\Users\appveyor\.gradle
   - testfixtures\offline-repo\build\repo
+  - C:\Users\appveyor\.gradle
   - .gradle
 
 on_failure:
