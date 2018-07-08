@@ -46,7 +46,7 @@ import org.ysb33r.grolifant.api.StringUtils
 
 import java.nio.file.Path
 
-import static groovy.lang.Closure.DELEGATE_FIRST
+import static org.asciidoctor.gradle.internal.AsciidoctorUtils.executeDelegatingClosure
 import static org.gradle.workers.IsolationMode.CLASSLOADER
 import static org.gradle.workers.IsolationMode.PROCESS
 
@@ -54,7 +54,7 @@ import static org.gradle.workers.IsolationMode.PROCESS
  *
  * @since 2.0.0
  * @author Schalk W. Cronjé
- * @uathor Manuel Prinz
+ * @author Manuel Prinz
  */
 @SuppressWarnings('MethodCount')
 @CompileStatic
@@ -167,10 +167,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      * @param configurator Closure that configures a {@link org.ysb33r.grolifant.api.JavaForkOptions} instance.
      */
     void forkOptions(@DelegatesTo(org.ysb33r.grolifant.api.JavaForkOptions) Closure configurator) {
-        Closure cfg = (Closure) (configurator.clone())
-        cfg.delegate = this.javaForkOptions
-        cfg.resolveStrategy = DELEGATE_FIRST
-        cfg.call()
+        executeDelegatingClosure(this.javaForkOptions,configurator)
     }
 
     /** Set fork options for {@link #JAVA_EXEC} and {@link #OUT_OF_PROCESS} modes.
@@ -208,13 +205,12 @@ class AbstractAsciidoctorTask extends DefaultTask {
      *
      * @param cfg Configuration closure. Is passed a {@link PatternSet}.
      */
+    @CompileDynamic
     void secondarySources(final Closure cfg) {
-        if (secondarySourceDocumentPattern == null) {
-            sourceDocumentPattern = defaultSecondarySourceDocumentPattern
+        if (this.secondarySourceDocumentPattern == null) {
+            this.secondarySourceDocumentPattern = defaultSecondarySourceDocumentPattern
         }
-        Closure configuration = (Closure) cfg.clone()
-        configuration.delegate = secondarySourceDocumentPattern
-        configuration()
+        executeDelegatingClosure(this.secondarySourceDocumentPattern, cfg)
     }
 
     /** Configures sources.
@@ -223,7 +219,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      */
     void secondarySources(final Action<? super PatternSet> cfg) {
         if (secondarySourceDocumentPattern == null) {
-            sourceDocumentPattern = defaultSecondarySourceDocumentPattern
+            secondarySourceDocumentPattern = defaultSecondarySourceDocumentPattern
         }
         cfg.execute(secondarySourceDocumentPattern)
     }
@@ -487,14 +483,10 @@ class AbstractAsciidoctorTask extends DefaultTask {
      */
     void withIntermediateArtifacts(@DelegatesTo(PatternSet) Closure cfg) {
         useIntermediateWorkDir()
-        Closure configurator = (Closure) cfg.clone()
-        configurator.resolveStrategy = DELEGATE_FIRST
         if (this.intermediateArtifactPattern == null) {
             this.intermediateArtifactPattern = new PatternSet()
         }
-        configurator.delegate = this.intermediateArtifactPattern
-        configurator()
-//        withIntermediateArtifacts(configurator as Action<PatternSet>)
+        executeDelegatingClosure(this.intermediateArtifactPattern, cfg)
     }
 
     /** Additional artifacts created by Asciidoctor that might require copying.
@@ -649,8 +641,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      */
     @Internal
     protected PatternSet getDefaultSecondarySourceDocumentPattern() {
-        PatternSet ps = defaultSourceDocumentPattern
-        ps.include '*docinfo*'
+        defaultSourceDocumentPattern
     }
 
     /** The default CopySpec that will be used if {@code resources} was never called
@@ -819,38 +810,49 @@ class AbstractAsciidoctorTask extends DefaultTask {
         asciidoctorj.asGemPath()
     }
 
-    Map<String, ExecutorConfiguration> runWithWorkers(final File workingSourceDir, final Set<File> sourceFiles) {
+    private Map<String, ExecutorConfiguration> runWithWorkers(
+        final File workingSourceDir, final Set<File> sourceFiles) {
         FileCollection asciidoctorClasspath = configurations
         logger.info "Running AsciidoctorJ with workers. Classpath = ${asciidoctorClasspath.files}"
+        Map<String, ExecutorConfiguration> executorConfigurations = getExecutorConfigurations(workingSourceDir, sourceFiles)
         if (parallelMode) {
-            Map<String, ExecutorConfiguration> executorConfigurations = getExecutorConfigurations(workingSourceDir, sourceFiles)
             executorConfigurations.each { String configName, ExecutorConfiguration executorConfiguration ->
                 worker.submit(AsciidoctorJExecuter) { WorkerConfiguration config ->
-                    config.isolationMode = inProcess == IN_PROCESS ? CLASSLOADER : PROCESS
-                    config.classpath = asciidoctorClasspath
-                    config.displayName = "Asciidoctor (task=${name}) conversion for ${configName}"
-                    config.params(
-                        new ExecutorConfigurationContainer(executorConfiguration),
-                        asciidoctorClasspath.files
+                    configureWorker(
+                        "Asciidoctor (task=${name}) conversion for ${configName}",
+                        config,
+                        asciidoctorClasspath,
+                        new ExecutorConfigurationContainer(executorConfiguration)
                     )
-                    configureForkOptions(config.forkOptions)
                 }
             }
-            executorConfigurations
         } else {
-            Map<String, ExecutorConfiguration> executorConfigurations = getExecutorConfigurations(workingSourceDir, sourceFiles)
             worker.submit(AsciidoctorJExecuter) { WorkerConfiguration config ->
-                config.isolationMode = inProcess ? CLASSLOADER : PROCESS
-                config.classpath = asciidoctorClasspath
-                config.displayName = "Asciidoctor (task=${name}) conversions for ${executorConfigurations.keySet().join(', ')}"
-                config.params(
-                    new ExecutorConfigurationContainer(executorConfigurations.values()),
-                    asciidoctorClasspath.files
+                configureWorker(
+                    "Asciidoctor (task=${name}) conversions for ${executorConfigurations.keySet().join(', ')}",
+                    config,
+                    asciidoctorClasspath,
+                    new ExecutorConfigurationContainer(executorConfigurations.values())
                 )
-                configureForkOptions(config.forkOptions)
             }
-            executorConfigurations
         }
+        executorConfigurations
+    }
+
+    private void configureWorker(
+        final String displayName,
+        final WorkerConfiguration config,
+        final FileCollection asciidoctorClasspath,
+        final ExecutorConfigurationContainer ecContainer
+    ) {
+        config.isolationMode = inProcess == IN_PROCESS ? CLASSLOADER : PROCESS
+        config.classpath = asciidoctorClasspath
+        config.displayName = displayName
+        config.params(
+            ecContainer,
+            asciidoctorClasspath.files
+        )
+        configureForkOptions(config.forkOptions)
     }
 
     private Map<String, ExecutorConfiguration> runWithJavaExec(
@@ -865,13 +867,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
         Map<String, ExecutorConfiguration> executorConfigurations = getExecutorConfigurations(workingSourceDir, sourceFiles)
 
         execConfigurationData.parentFile.mkdirs()
-        execConfigurationData.withOutputStream { fout ->
-            new ObjectOutputStream(fout).withCloseable { oos ->
-                oos.writeObject(
-                    new ExecutorConfigurationContainer(executorConfigurations.values())
-                )
-            }
-        }
+        ExecutorConfigurationContainer.toFile(execConfigurationData, executorConfigurations.values())
 
         logger.debug("Serialised AsciidoctorJ configuration to ${execConfigurationData}")
         logger.info "Running AsciidoctorJ instance with classpath ${javaExecClasspath.files}"

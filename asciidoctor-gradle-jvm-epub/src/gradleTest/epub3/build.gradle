@@ -6,6 +6,8 @@ apply from: "${System.getProperty('OFFLINE_REPO')}/repositories.gradle"
 
 
 asciidoctorEpub {
+    ebookFormats = []
+
     ebookFormats EPUB3
 
     sources {

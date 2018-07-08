@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.jvm
 
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.file.FileCollection
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
@@ -31,7 +32,7 @@ import spock.lang.Specification
 @SuppressWarnings(['MethodName', 'DuplicateStringLiteral', 'DuplicateMapLiteral'])
 class AsciidoctorTaskSpec extends Specification {
     private static final String ASCIIDOCTOR = 'asciidoctor'
-    private static final String ASCIIDOC_RESOURCES_DIR = 'build/resources/test/src/asciidoc'
+    private static final String ASCIIDOC_RESOURCES_DIR = 'asciidoctor-gradle-jvm/src/test/resources/src/asciidoc'
     private static final String ASCIIDOC_BUILD_DIR = 'build/asciidoc'
     private static final String ASCIIDOC_SAMPLE_FILE = 'sample.asciidoc'
     private static final String ASCIIDOC_SAMPLE2_FILE = 'subdir/sample2.ad'
@@ -51,7 +52,7 @@ class AsciidoctorTaskSpec extends Specification {
             apply plugin: 'org.asciidoctor.jvm.base'
         }
 
-        testRootDir = new File('.')
+        testRootDir = new File(System.getProperty('ROOT_PROJECT_DIR') ?: '.')
         srcDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR).absoluteFile
         outDir = new File(project.projectDir, ASCIIDOC_BUILD_DIR)
         systemOut = new ByteArrayOutputStream()
@@ -63,7 +64,6 @@ class AsciidoctorTaskSpec extends Specification {
         System.out = originSystemOut
     }
 
-    @SuppressWarnings('MethodName')
     void "Allow setting of options via method"() {
         when:
         AsciidoctorTask task = asciidoctorTask {
@@ -79,7 +79,6 @@ class AsciidoctorTaskSpec extends Specification {
         task.options['toc'] == 'right'
     }
 
-    @SuppressWarnings('MethodName')
     void "Allow setting of options via assignment"() {
         when:
         AsciidoctorTask task = asciidoctorTask {
@@ -94,7 +93,6 @@ class AsciidoctorTaskSpec extends Specification {
         !task.options.containsKey('toc')
     }
 
-    @SuppressWarnings('MethodName')
     void "Allow setting of attributes via method (Map variant)"() {
         when:
         AsciidoctorTask task = asciidoctorTask {
@@ -110,7 +108,6 @@ class AsciidoctorTaskSpec extends Specification {
         task.attributes['idseparator'] == '-'
     }
 
-    @SuppressWarnings('MethodName')
     void "Do not allow setting of attributes via legacy key=value list"() {
         when:
         asciidoctorTask {
@@ -121,7 +118,6 @@ class AsciidoctorTaskSpec extends Specification {
         thrown(MissingMethodException)
     }
 
-    @SuppressWarnings('MethodName')
     void "Do not allow setting of attributes via legacy key-value string"() {
         when:
         asciidoctorTask {
@@ -132,7 +128,6 @@ class AsciidoctorTaskSpec extends Specification {
         thrown(MissingMethodException)
     }
 
-    @SuppressWarnings('MethodName')
     void "Allow setting of attributes via assignment"() {
         when:
         AsciidoctorTask task = asciidoctorTask {
@@ -147,7 +142,6 @@ class AsciidoctorTaskSpec extends Specification {
         !task.attributes.containsKey('idprefix')
     }
 
-    @SuppressWarnings('MethodName')
     void "Mixing attributes with options, produces an exception"() {
         when:
         asciidoctorTask {
@@ -159,7 +153,6 @@ class AsciidoctorTaskSpec extends Specification {
         thrown(GradleException)
     }
 
-    @SuppressWarnings('MethodName')
     void "Mixing attributes with options (with assignment), produces an exception"() {
         when:
         Map tmpStore = [eruby: 'erubis', attributes: ['source-highlighter': 'foo', idprefix: '$']]
@@ -172,7 +165,6 @@ class AsciidoctorTaskSpec extends Specification {
         thrown(GradleException)
     }
 
-    @SuppressWarnings('MethodName')
     void "Mixing string legacy form of attributes with options with assignment, produces an exception"() {
         when:
         asciidoctorTask {
@@ -183,7 +175,6 @@ class AsciidoctorTaskSpec extends Specification {
         thrown(GradleException)
     }
 
-    @SuppressWarnings('MethodName')
     void "Mixing list legacy form of attributes with options with assignment, produces an exception"() {
         when:
         asciidoctorTask {
@@ -198,7 +189,6 @@ class AsciidoctorTaskSpec extends Specification {
         thrown(GradleException)
     }
 
-    @SuppressWarnings('MethodName')
     void "Allow setting of backends via method"() {
         given:
         Set<String> testBackends
@@ -224,7 +214,6 @@ class AsciidoctorTaskSpec extends Specification {
         }
     }
 
-    @SuppressWarnings('MethodName')
     void "Allow setting of backends via assignment"() {
         given:
         Set<String> testBackends
@@ -251,7 +240,6 @@ class AsciidoctorTaskSpec extends Specification {
         }
     }
 
-    @SuppressWarnings('MethodName')
     void "Allow setting of requires via method"() {
         when:
         project.allprojects {
@@ -272,7 +260,6 @@ class AsciidoctorTaskSpec extends Specification {
         task.asciidoctorj.requires.contains('slim')
     }
 
-    @SuppressWarnings('MethodName')
     void "Allow setting of requires via assignment"() {
         when:
         project.allprojects {
@@ -293,7 +280,6 @@ class AsciidoctorTaskSpec extends Specification {
         task.asciidoctorj.requires.contains('slim')
     }
 
-    @SuppressWarnings('MethodName')
     void "Allow setting of sourceDir via method"() {
         when:
         AsciidoctorTask task = asciidoctorTask {
@@ -307,7 +293,6 @@ class AsciidoctorTaskSpec extends Specification {
     }
 
 
-    @SuppressWarnings('MethodName')
     void "When setting sourceDir via assignment"() {
         when:
         AsciidoctorTask task = asciidoctorTask {
@@ -320,7 +305,6 @@ class AsciidoctorTaskSpec extends Specification {
 
     }
 
-    @SuppressWarnings('MethodName')
     void "When setting sourceDir via setSourceDir"() {
         when:
         AsciidoctorTask task = asciidoctorTask {
@@ -333,7 +317,6 @@ class AsciidoctorTaskSpec extends Specification {
         !systemOut.toString().contains('deprecated')
     }
 
-    @SuppressWarnings('MethodName')
     void "Allow setting of gemPath via method"() {
         when:
         AsciidoctorTask task = asciidoctorTask {
@@ -347,7 +330,6 @@ class AsciidoctorTaskSpec extends Specification {
         task.asciidoctorj.asGemPath() == project.projectDir.absolutePath
     }
 
-    @SuppressWarnings('MethodName')
     void "When setting gemPath via assignment"() {
         when:
         AsciidoctorTask task = asciidoctorTask {
@@ -361,7 +343,6 @@ class AsciidoctorTaskSpec extends Specification {
         !systemOut.toString().contains('deprecated')
     }
 
-    @SuppressWarnings('MethodName')
     void "When setting gemPath via setGemPaths"() {
         when:
         project.allprojects {
@@ -377,7 +358,6 @@ class AsciidoctorTaskSpec extends Specification {
         !systemOut.toString().contains('deprecated')
     }
 
-    @SuppressWarnings('MethodName')
     void "Method `sourceDocumentNames` should resolve descendant files of `sourceDir` if supplied as relatives"() {
         when: 'I specify two files relative to sourceDir,including one in a subfolder'
         AsciidoctorTask task = asciidoctorTask {
@@ -396,6 +376,20 @@ class AsciidoctorTaskSpec extends Specification {
         fileCollection.files.size() == 2
     }
 
+    void 'Can configure secondary sources'() {
+        final String secSrc = 'secondary.txt'
+        when: 'Secondary sources are specified'
+        AsciidoctorTask task = asciidoctorTask {
+            sourceDir srcDir
+            secondarySources {
+                include secSrc
+            }
+        }
+        FileCollection fileCollection = task.secondarySourceFileTree
+
+        then: 'Default patterns are ignored'
+        fileCollection.contains(new File(srcDir, secSrc).canonicalFile)
+    }
 
     AsciidoctorTask asciidoctorTask(Closure cfg) {
         project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask).configure cfg

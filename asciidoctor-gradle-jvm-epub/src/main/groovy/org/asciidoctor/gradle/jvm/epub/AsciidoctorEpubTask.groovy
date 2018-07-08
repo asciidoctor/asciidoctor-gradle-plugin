@@ -22,7 +22,6 @@ import org.asciidoctor.gradle.jvm.AsciidoctorExecutionException
 import org.asciidoctor.gradle.jvm.ProcessMode
 import org.asciidoctor.gradle.kindlegen.KindleGenExtension
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.util.PatternSet
 import org.gradle.process.JavaForkOptions
 import org.gradle.util.GradleVersion
 import org.gradle.workers.WorkerExecutor
@@ -103,16 +102,6 @@ class AsciidoctorEpubTask extends AbstractAsciidoctorTask {
         postProcessKindleGenFileOnWindows()
     }
 
-    /** The default pattern set for secondary sources.
-     *
-     * @return {@link #getDefaultSourceDocumentPattern} + `*docinfo*`.
-     */
-    @Override
-    protected PatternSet getDefaultSecondarySourceDocumentPattern() {
-        PatternSet ps = defaultSourceDocumentPattern
-        ps
-    }
-
     /** Configure Java fork options prior to execution
      *
      * @param pfo Fork options to be configured.
@@ -122,12 +111,12 @@ class AsciidoctorEpubTask extends AbstractAsciidoctorTask {
         super.configureForkOptions(pfo)
 
         if (this.ebookFormats.contains(KF8)) {
-            if(OS.windows) {
+            if (OS.windows) {
                 File kindlegen = tmpKindleGenBatchFileForWindows
                 kindlegen.text = """@echo off
 echo %1 %2 %3 %4 55 %6 %7 %8 %9 > ${tmpKindleGenLogFileForWindows}
 """
-                tmpKindleGenLogFileForWindows.text= ''
+                tmpKindleGenLogFileForWindows.text = ''
                 pfo.environment[KINDLEGEN_ENV_VAR] = kindlegen.absolutePath
             } else {
                 pfo.environment[KINDLEGEN_ENV_VAR] = kindleGenExtension.resolvableExecutable.executable.absolutePath
@@ -182,8 +171,8 @@ echo %1 %2 %3 %4 55 %6 %7 %8 %9 > ${tmpKindleGenLogFileForWindows}
      */
     @Override
     protected ProcessMode getFinalProcessMode() {
-        if(GradleVersion.current() <= LAST_GRADLE_WITH_CLASSPATH_LEAKAGE) {
-            if(inProcess != JAVA_EXEC) {
+        if (GradleVersion.current() <= LAST_GRADLE_WITH_CLASSPATH_LEAKAGE) {
+            if (inProcess != JAVA_EXEC) {
                 logger.warn 'EPUB processing on this version of Gradle will fail due to classpath issues. Switching to JAVA_EXEC instead.'
             }
             JAVA_EXEC
@@ -195,12 +184,13 @@ echo %1 %2 %3 %4 55 %6 %7 %8 %9 > ${tmpKindleGenLogFileForWindows}
     private File getTmpKindleGenLogFileForWindows() {
         project.file("${project.buildFile}/tmp/${FileUtils.toSafeFileName(name)}/${FileUtils.toSafeFileName(name)}-fake-kindlegen.log")
     }
+
     private File getTmpKindleGenBatchFileForWindows() {
         project.file("${project.buildFile}/tmp/${FileUtils.toSafeFileName(name)}/${FileUtils.toSafeFileName(name)}-fake-kindlegen.bat")
     }
 
     private void postProcessKindleGenFileOnWindows() {
-        if(OS.windows) {
+        if (OS.windows) {
             logger.warn 'Post-processing kindlegen files on Windows not yet implemented.'
         }
     }

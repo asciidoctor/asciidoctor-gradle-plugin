@@ -19,6 +19,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
+@SuppressWarnings('MethodName')
 class AsciidoctorJEpubPluginSpec extends Specification {
 
     void 'Kindlegen plugin is required'() {

@@ -1,7 +1,6 @@
 language: java
-
 install: true
-
+sudo: true
 cache:
     directories:
         - $HOME/.gradle
