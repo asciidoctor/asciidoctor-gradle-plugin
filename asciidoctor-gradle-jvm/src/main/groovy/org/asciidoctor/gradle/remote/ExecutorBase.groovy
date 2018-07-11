@@ -28,6 +28,7 @@ import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
 @CompileStatic
 class ExecutorBase {
 
+
     protected final List<ExecutorConfiguration> runConfigurations
 
     protected ExecutorBase(final ExecutorConfigurationContainer execConfig) {
