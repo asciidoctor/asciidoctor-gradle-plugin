@@ -11,6 +11,8 @@ asciidoctorEpub {
     sources {
         include 'epub3.adoc'
     }
+
+    inProcess IN_PROCESS
 }
 
 task runGradleTest {

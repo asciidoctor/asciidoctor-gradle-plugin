@@ -116,6 +116,26 @@ class AsciidoctorEpubTaskFunctionalSpec extends FunctionalSpecification {
         formatOrder << ['EPUB3, KF8', 'KF8, EPUB3']
     }
 
+    void 'eBookFormats may not be empty'() {
+        given:
+        getBuildFile('''
+        asciidoctorEpub {
+            sourceDir 'src/docs/asciidoc'
+            ebookFormats = []
+            sources {
+                include 'epub3.adoc'
+            }
+        }
+        ''')
+
+        when:
+        BuildResult result = getGradleRunner(['asciidoctorEpub' , '-i']).buildAndFail()
+
+        then:
+        result.output.contains('No eBook format specified for task')
+
+    }
+
     File getSingleFormatBuildFile(final String format) {
         getBuildFile( """
 
