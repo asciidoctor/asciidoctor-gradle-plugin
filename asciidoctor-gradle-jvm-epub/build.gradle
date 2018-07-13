@@ -1,4 +1,3 @@
-
 dependencies {
     compile project(':asciidoctor-gradle-jvm')
     compile project(':kindlegen-gradle')
@@ -8,12 +7,11 @@ dependencies {
 }
 
 intTest {
-    systemProperties 'org.asciidoctor.gradle.kindlegen.uri' : offlineRepoBinariesRoot.toURI()
-    systemProperties TEST_PROJECTS_DIR : file('src/intTest/projects')
+    systemProperties 'org.asciidoctor.gradle.kindlegen.uri': offlineRepoBinariesRoot.toURI()
+    systemProperties TEST_PROJECTS_DIR: file('src/intTest/projects')
 }
 
 configurePlugin 'org.asciidoctor.jvm.epub',
     'AsciidoctorJ EPUB Plugin',
     'Asciidoctor task for creating EPUB3 & KF8 documents',
-    [ 'asciidoctorj', 'epub', 'epub3', 'kf8']
-
+    ['asciidoctorj', 'epub', 'epub3', 'kf8']

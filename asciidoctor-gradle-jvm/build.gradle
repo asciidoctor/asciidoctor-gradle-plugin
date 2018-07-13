@@ -49,22 +49,26 @@ dependencies {
 configurePlugin 'org.asciidoctor.jvm.base',
     'AsciidoctorJ Base Plugin',
     'Base plugin for all AsciidoctorJ tasks & extensions. Provides the asciidoctorj project extension.',
-    [ 'asciidoctorj' ]
+    ['asciidoctorj']
 
 configurePlugin 'org.asciidoctor.convert',
     'AsciidoctorJ Compatibility Plugin',
     'Compatibility AsciidoctorJ plugin for those upgrading from 1.5.x',
-    [ 'asciidoctorj', 'html5', 'docbook', 'pdf', 'epub3' ]
+    ['asciidoctorj', 'html5', 'docbook', 'pdf', 'epub3']
 
 configurePlugin 'org.asciidoctor.jvm.convert',
     'AsciidoctorJ General Purpose Document Conversion Plugin',
     'Provides asciidoctor task and conventions',
-    [ 'asciidoctorj', 'html5', 'docbook' ]
+    ['asciidoctorj', 'html5', 'docbook']
 
 configurePlugin 'org.asciidoctor.jvm.pdf',
     'AsciidoctorJ PDF Conversion Plugin',
     'Simplifies convesion of asciidoc documetns to PDF',
-    [ 'asciidoctorj', 'pdf' ]
+    ['asciidoctorj', 'pdf']
+
+test {
+    systemProperties ROOT_PROJECT_DIR: rootProject.projectDir.absolutePath
+}
 
 intTest {
     systemProperties TEST_PROJECTS_DIR: file('src/intTest/projects')
@@ -89,4 +93,3 @@ sourceSets {
 configurations {
     gradleTestProjectExtensionCompileOnly.extendsFrom compileOnly
 }
-

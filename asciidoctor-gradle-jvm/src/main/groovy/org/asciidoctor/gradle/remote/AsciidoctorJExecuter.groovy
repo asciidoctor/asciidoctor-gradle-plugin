@@ -172,10 +172,20 @@ class AsciidoctorJExecuter extends ExecutorBase implements Runnable {
         }
     }
 
-    private void logClasspath(ClassLoader cl) {
-        Set<URL> urls = ((URLClassLoader) cl).URLs as Set
-        urls.addAll(((URLClassLoader) cl.parent).URLs as Set)
+    @SuppressWarnings('Instanceof')
+    void logClasspath(ClassLoader cl) {
+        if(cl instanceof URLClassLoader) {
+            Set<URL> urls = ((URLClassLoader) cl).URLs as Set
 
-        log.info "AsciidoctorJ worker is using effective classpath of: ${urls.join(' ')}"
+            if(cl.parent instanceof URLClassLoader) {
+                urls.addAll(((URLClassLoader) cl.parent).URLs as Set)
+            }
+
+            log.info "AsciidoctorJ worker is using effective classpath of: ${urls.join(' ')}"
+        }
+
+        // TODO: Find a way of logging classpath in JDK9 & 10
     }
+
+
 }

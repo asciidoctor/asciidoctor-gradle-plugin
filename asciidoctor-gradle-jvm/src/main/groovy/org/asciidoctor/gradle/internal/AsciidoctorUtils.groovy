@@ -19,6 +19,8 @@ import groovy.transform.CompileStatic
 import org.gradle.api.logging.LogLevel
 import org.ysb33r.grolifant.api.OperatingSystem
 
+import static groovy.lang.Closure.DELEGATE_FIRST
+
 @CompileStatic
 class AsciidoctorUtils {
 
@@ -58,7 +60,7 @@ class AsciidoctorUtils {
      * @return
      */
     static ExecutorLogLevel getExecutorLogLevel(LogLevel level) {
-        switch(level) {
+        switch (level) {
             case LogLevel.DEBUG:
                 return ExecutorLogLevel.DEBUG
             case LogLevel.LIFECYCLE:
@@ -71,5 +73,19 @@ class AsciidoctorUtils {
             default:
                 return ExecutorLogLevel.ERROR
         }
+    }
+
+    /** Executes a configuration closure.
+     *
+     * The closure will be cloned before excution.
+     *
+     * @param delegated Closure delegate
+     * @param cfg Closure to execute
+     */
+    static void executeDelegatingClosure(Object delegated, Closure cfg) {
+        Closure configuration = (Closure) cfg.clone()
+        configuration.resolveStrategy = DELEGATE_FIRST
+        configuration.delegate = delegated
+        configuration.call(delegated)
     }
 }

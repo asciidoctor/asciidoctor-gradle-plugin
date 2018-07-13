@@ -1,4 +1,5 @@
 apply from : "${rootProject.projectDir}/gradle/kindlegen-versions.gradle"
+apply from: "${rootProject.projectDir}/gradle/classpath-manifest.gradle"
 
 ext {
     kindleGenCacheDir = offlineRepoBinariesRoot
@@ -14,6 +15,14 @@ test {
     dependsOn createClasspathManifest
     dependsOn ':testfixtures-offline-repo:buildOfflineRepositories'
     systemProperties OFFLINE_REPO: offlineRepoRoot.absolutePath
+}
+
+pluginManager.withPlugin('jacoco') {
+    jacocoTestReport {
+        executionData = (fileTree('.') { exclude '**' })
+        executionData test
+//        dependsOn test
+    }
 }
 
 configurePlugin 'org.asciidoctor.kindlegen.base',

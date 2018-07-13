@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.jvm
 
 import groovy.transform.CompileStatic
 import org.gradle.api.Action
+import org.gradle.api.tasks.util.PatternSet
 import org.gradle.workers.WorkerExecutor
 import org.ysb33r.grolifant.api.FileUtils
 
@@ -83,6 +84,29 @@ class AsciidoctorTask extends AbstractAsciidoctorTask {
         final String safeFolderName = FileUtils.toSafeFileName(folderName)
         sourceDir = "src/docs/${folderName}"
         outputDir = { project.file("${project.buildDir}/docs/${safeFolderName}") }
+    }
+
+    /** The default pattern set for secondary sources baced upon the configured backends.
+     *
+     * If the backends contain {@code docbook} then {@code *docbook*.xml} is added.
+     * If the backend contain {@code html5} then {@code *docbook*.html} is added.
+     *
+     * @return Defaui
+     */
+    @Override
+    protected PatternSet getDefaultSecondarySourceDocumentPattern() {
+        PatternSet ps = super.defaultSecondarySourceDocumentPattern
+
+        Set<String> backends = this.configuredOutputOptions.backends
+
+        if(backends.find { it.startsWith('html') }) {
+            ps.include '*docinfo*.html'
+        }
+        if(backends.find { it.startsWith('docbook') }) {
+            ps.include '*docinfo*.xml'
+        }
+
+        ps
     }
 }
 

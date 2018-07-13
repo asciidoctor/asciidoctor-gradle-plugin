@@ -42,7 +42,6 @@ class AsciidoctorJEpubPlugin implements Plugin<Project> {
             AsciidoctorEpubTask task = tasks.create('asciidoctorEpub', AsciidoctorEpubTask)
             task.outputDir = { "${project.buildDir}/docs/asciidocEpub"}
             extensions.getByType(AsciidoctorJExtension).epubVersion = AsciidoctorJExtension.DEFAULT_EPUB_VERSION
-
         }
     }
 }

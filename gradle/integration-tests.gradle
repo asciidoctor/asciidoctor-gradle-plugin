@@ -1,21 +1,4 @@
-// Write the plugin's classpath to a file to share with the integration tests.
-// This is a workaround/hack as described in the Gradle user guide:
-//
-//    https://docs.gradle.org/2.10/userguide/test_kit.html#testKitFunctionalTestSpockClassesTestConfig
-//
-// It has to come before the `dependencies` block because one of the dependencies
-// relies on it.
-task createClasspathManifest {
-    def outputDir = file("$buildDir/$name")
-
-    inputs.files sourceSets.main.runtimeClasspath
-    outputs.dir outputDir
-
-    doLast {
-        outputDir.mkdirs()
-        file("$outputDir/plugin-classpath.txt").text = sourceSets.main.runtimeClasspath.join("\n")
-    }
-}
+apply from: "${rootProject.projectDir}/gradle/classpath-manifest.gradle"
 
 sourceSets {
     intTest
@@ -24,48 +7,6 @@ sourceSets {
 configurations {
     intTestOfflineRepo
 }
-
-//syncRemoteRepositories {
-//
-//    repoRoot "${buildDir}/intTestOfflineRepo"
-//
-//    ext {
-//        repDescriptionFile = file("${repoRoot}/repositories.gradle")
-//    }
-//
-//    outputs.files repDescriptionFile
-//    inputs.file "${rootProject.projectDir}/gradle/integration-tests.gradle"
-//
-//    repositories {
-//        // Put this first as sometimes Ivy hits a hiccup on JCenter()
-//        mavenCentral()
-//        jcenter()
-//
-//        if (version.endsWith('-SNAPSHOT')) {
-//            mavenLocal()
-//        }
-//    }
-//
-//    configurations 'intTestOfflineRepo'
-//
-//    doLast {
-//        repDescriptionFile.withWriter { w ->
-//            w.println 'repositories {'
-//            w.print ' ' * 4
-//            w.println 'ivy {'
-//            w.print ' ' * 8
-//            w.println "name 'OfflineRepo'"
-//            w.print ' ' * 8
-//            w.println "layout 'gradle'"
-//            w.print ' ' * 8
-//            w.println "url '${file(repoRoot).toURI()}'"
-//            w.print ' ' * 4
-//            w.println '}'
-//            w.println '}'
-//        }
-//    }
-//
-//}
 
 // For a single test, you can run "gradle -DintTest.single=<test name> intTest"
 task intTest(type: Test) {
@@ -85,4 +26,11 @@ task intTest(type: Test) {
 
 check {
     dependsOn intTest
+}
+
+pluginManager.withPlugin('jacoco') {
+    jacocoTestReport {
+        executionData intTest
+        dependsOn intTest
+    }
 }

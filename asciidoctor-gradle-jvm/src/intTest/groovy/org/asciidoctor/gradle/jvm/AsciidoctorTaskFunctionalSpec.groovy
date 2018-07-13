@@ -153,7 +153,7 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
     File getBuildFile(String extraContent) {
         getJvmConvertBuildFile("""
 asciidoctorj {
-    jrubyVersion = '${AJ15_SAFE_MAXIMUM}'
+    jrubyVersion = '${AJ16_SAFE_MAXIMUM}'
 }
 
 ${extraContent}

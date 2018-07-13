@@ -33,5 +33,20 @@ class ExecutorConfigurationContainer implements Serializable {
     ExecutorConfigurationContainer(ExecutorConfiguration single) {
         this.configurations = [single]
     }
+
+    /** Writes a collection of {@link ExecutorConfiguration} to a file.
+     *
+     * @param destinationFile File to serialise exector configurations.
+     * @param configs Executor configurations.
+     */
+    static void toFile(final File destinationFile,final Iterable<ExecutorConfiguration> configs) {
+        destinationFile.withOutputStream { fout ->
+            new ObjectOutputStream(fout).withCloseable { oos ->
+                oos.writeObject(
+                    new ExecutorConfigurationContainer(configs)
+                )
+            }
+        }
+    }
 }
 

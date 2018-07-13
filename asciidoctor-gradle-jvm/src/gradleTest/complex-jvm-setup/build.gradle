@@ -2,7 +2,6 @@ plugins {
     id 'org.asciidoctor.jvm.convert'
     id 'org.asciidoctor.jvm.pdf'
 
-    // id 'jruby-gradle.base' version '...'
 }
 
 repositories {
@@ -10,13 +9,6 @@ repositories {
 }
 
 asciidoctorj {
-
-    // options
-    // attributes
-
-    // extensions
-
-    // gemPaths
 
     diagramVersion = '1.5.4.1'
 
@@ -29,7 +21,6 @@ configurations {
 
 dependencies {
     // asciidoctorLeanpub
-     //gems
 }
 
 asciidoctor {
