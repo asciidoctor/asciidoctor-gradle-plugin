@@ -22,6 +22,7 @@ import org.asciidoctor.gradle.jvm.AsciidoctorExecutionException
 import org.asciidoctor.gradle.jvm.ProcessMode
 import org.asciidoctor.gradle.kindlegen.KindleGenExtension
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.util.PatternSet
 import org.gradle.process.JavaForkOptions
 import org.gradle.util.GradleVersion
 import org.gradle.workers.WorkerExecutor
@@ -100,6 +101,15 @@ class AsciidoctorEpubTask extends AbstractAsciidoctorTask {
         super.processAsciidocSources()
 
         postProcessKindleGenFileOnWindows()
+    }
+
+    /** The default pattern set for secondary sources.
+     *
+     * @return {@link #getDefaultSourceDocumentPattern} + `*docinfo*`.
+     */
+    @Override
+    protected PatternSet getDefaultSecondarySourceDocumentPattern() {
+        defaultSourceDocumentPattern
     }
 
     /** Configure Java fork options prior to execution

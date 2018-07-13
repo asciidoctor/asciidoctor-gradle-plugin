@@ -36,10 +36,6 @@ codenarc {
 }
 
 pluginManager.withPlugin('jacoco') {
-    jacoco {
-        toolVersion
-    }
-
     jacocoTestReport {
         reports {
             xml.enabled = true // coveralls plugin depends on xml format report

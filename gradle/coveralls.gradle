@@ -38,7 +38,7 @@ coveralls {
 
 subprojects {
     pluginManager.withPlugin('jacoco') {
-//        rootProject.jacocoRootMerge.dependsOn jacocoTestReport
+        rootProject.jacocoRootMerge.dependsOn jacocoTestReport
         rootProject.jacocoRootMerge.executionData jacocoTestReport.executionData
         rootProject.jacocoRootReport.sourceSets sourceSets.main
         rootProject.jacocoRootReport.additionalClassDirs files(sourceSets.main.output)
