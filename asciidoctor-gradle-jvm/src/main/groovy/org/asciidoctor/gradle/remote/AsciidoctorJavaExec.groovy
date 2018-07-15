@@ -40,6 +40,7 @@ class AsciidoctorJavaExec extends ExecutorBase {
 
     void run() {
 
+        Thread.currentThread().contextClassLoader = this.class.classLoader
         Asciidoctor asciidoctor = asciidoctorInstance
         addRequires(asciidoctor)
 
@@ -76,12 +77,11 @@ class AsciidoctorJavaExec extends ExecutorBase {
 
     private Asciidoctor getAsciidoctorInstance() {
         String combinedGemPath = runConfigurations*.gemPath.join(File.pathSeparator)
-
-        ClassLoader adClassLoader = this.class.classLoader
-
-        (combinedGemPath.empty || combinedGemPath == File.pathSeparator) ?
-            Asciidoctor.Factory.create(adClassLoader) :
-            Asciidoctor.Factory.create(adClassLoader, combinedGemPath)
+        if(combinedGemPath.empty || combinedGemPath == File.pathSeparator) {
+            Asciidoctor.Factory.create()
+        } else {
+            Asciidoctor.Factory.create(combinedGemPath)
+        }
     }
 
     private void addRequires(Asciidoctor asciidoctor) {

@@ -31,6 +31,6 @@ check {
 pluginManager.withPlugin('jacoco') {
     jacocoTestReport {
         executionData intTest
-        dependsOn intTest
+        mustRunAfter intTest
     }
 }

@@ -37,15 +37,11 @@ import javax.inject.Inject
 @Log4j
 class AsciidoctorJExecuter extends ExecutorBase implements Runnable {
 
-    private final Set<File> asciidoctorClasspath
-
     @Inject
     AsciidoctorJExecuter(
-        final ExecutorConfigurationContainer execConfig,
-        final Set<File> asciidoctorClasspath
+        final ExecutorConfigurationContainer execConfig
     ) {
         super(execConfig)
-        this.asciidoctorClasspath = asciidoctorClasspath
     }
 
     @Override

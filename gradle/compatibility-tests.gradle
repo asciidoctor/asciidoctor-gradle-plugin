@@ -28,6 +28,6 @@ licenseGradleTest.enabled = false
 pluginManager.withPlugin('jacoco') {
     jacocoTestReport {
         executionData gradleTest
-        dependsOn gradleTest
+        mustRunAfter gradleTest
     }
 }

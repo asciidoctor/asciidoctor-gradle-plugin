@@ -849,8 +849,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
         config.classpath = asciidoctorClasspath
         config.displayName = displayName
         config.params(
-            ecContainer,
-            asciidoctorClasspath.files
+            ecContainer
         )
         configureForkOptions(config.forkOptions)
     }
