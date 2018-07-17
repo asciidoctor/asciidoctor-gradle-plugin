@@ -164,8 +164,10 @@ extensions:: Groovy DSL extensions.
   Extensions can be any kind of object that is serialisable, although in most cases they will be strings or files.
   If extensiosn are detached dependencies, theu will nto be serialised, but rather will be placed on the classpath so that
   {asciidoctorj-name} can pick them up automatically.
-jrubyVersion:: Minimum version of JRuby to be used.
-  The exact version that will be used could be higher due to {asciidoctorj-name} having a transitive dependency that is newer.
+fatalWarnings: Patterns for {asciidoctorj-name} log messages that shuold be treated as fatal errors.
+  The list is empty be default. Use `setFatalWarnings` to clear any existing patterns or to decouple a task's configuration from the global
+  configuration. Use `fatalWarnings` to add more patterns. Pass `missingIncludes()` to add the common use-case of
+  missing include files.
 gemPaths:: One or more gem installation directories (separated by the system path separator).
   Use `gemPaths` to append. Use `setGemPaths` or `gemPaths=['path1','path2']` to overwrite.
   Use `asGemPath` to obtain a path string, separated by platform-specific separator.
@@ -173,6 +175,8 @@ gemPaths:: One or more gem installation directories (separated by the system pat
   Default: empty
 groovyDslVersion:: Version of Groovy Extensions DSL.
   If not specified and no extensions are specified, Groovy DSL will not be used. However, if any extensions are added without setting an explicit version and default version will be used.
+jrubyVersion:: Minimum version of JRuby to be used.
+  The exact version that will be used could be higher due to {asciidoctorj-name} having a transitive dependency that is newer.
 logLevel:: The log level at which AsciidoctorJ will log.
   This is specified as a GRadle loggin glevel. The plugin will translate it to the appropriate AsciidoctorJ logging level.
   Default is `project.logger.level`.

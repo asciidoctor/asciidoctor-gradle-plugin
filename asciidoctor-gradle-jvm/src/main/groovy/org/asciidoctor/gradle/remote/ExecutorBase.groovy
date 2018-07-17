@@ -17,8 +17,14 @@ package org.asciidoctor.gradle.remote
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.Options
+import org.asciidoctor.ast.Cursor
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
+import org.asciidoctor.gradle.internal.ExecutorLogLevel
+import org.asciidoctor.log.LogHandler
+import org.asciidoctor.log.LogRecord
+
+import java.util.regex.Pattern
 
 /** Base class for building claspath-isolated executors for Asciidoctor.
  *
@@ -26,15 +32,33 @@ import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
  * @author Schalk W. Cronjé
  */
 @CompileStatic
-class ExecutorBase {
+abstract class ExecutorBase {
 
+    private final List<String> warningMessages = []
+    private final List<Pattern> messagePatterns = []
 
+    /**  List of configurations that are required for execution.
+     *
+     */
     protected final List<ExecutorConfiguration> runConfigurations
 
+    /** Initialise the executor.
+     *
+     * @param execConfig Container of executor configurations
+     */
     protected ExecutorBase(final ExecutorConfigurationContainer execConfig) {
         this.runConfigurations = execConfig.configurations
     }
 
+    /** Normalises Asciidoctor options for a given source file.
+     *
+     * Relativizes certain attributes and ensure specific options for backend, sage mode and output
+     * directory are in place.
+     *
+     * @param file Source file to be converted
+     * @param runConfiguration The current executor configuration
+     * @return Asciidoctor options
+     */
     @SuppressWarnings('Instanceof')
     protected
     Map<String, Object> normalisedOptionsFor(final File file, ExecutorConfiguration runConfiguration) {
@@ -84,6 +108,12 @@ class ExecutorBase {
         base.toPath().relativize(target.toPath()).toFile().toString()
     }
 
+    /** Rehydrates extensions that were serialised.
+     *
+     * @param registry Asciidoctor GroovyDSL registry instance.
+     * @param exts List of extensions to rehydrate.
+     * @return
+     */
     protected List<Object> rehydrateExtensions(final Object registry, final List<Object> exts) {
         exts.collect {
             switch (it) {
@@ -97,4 +127,86 @@ class ExecutorBase {
             }
         } as List<Object>
     }
+
+    /** Creates a log handler for Asciidoctor
+     *
+     * @param required The required level of logging
+     * @return A log handler instance suitable for registering with AsciidoctorJ.
+     */
+    protected LogHandler getLogHandler(ExecutorLogLevel required) {
+        int requiredLevel = required.level
+        new LogHandler() {
+            @Override
+            void log(LogRecord logRecord) {
+                ExecutorLogLevel logLevel = LogSeverityMapper.translateAsciidoctorLogLevel(logRecord.severity)
+
+                if (logLevel.level >= requiredLevel) {
+
+                    String msg = logRecord.message
+                    Cursor cursor = logRecord.cursor
+                    if (cursor) {
+                        msg = "${msg} :: ${cursor.path ?: ''} :: ${cursor.dir ?: ''}/${cursor.file ?: ''}:${cursor.lineNumber >= 0 ? cursor.lineNumber.toString() : ''}"
+                    }
+                    if (logRecord.sourceFileName) {
+                        msg = "${msg} (${logRecord.sourceFileName}${logRecord.sourceMethodName ? (':' + logRecord.sourceMethodName) : ''})"
+                    }
+
+                    logMessage(logLevel,msg)
+                }
+
+                addMatchingMessage(logRecord.message)
+            }
+        }
+    }
+
+    /** Performs the actual logging of a message.
+     *
+     * it calls an implementation specifc to the kind of executor to log the message.
+     *
+     * @param logLevel The level of the message
+     * @param msg Message to be logged
+     */
+    abstract protected void logMessage( ExecutorLogLevel logLevel, final String msg)
+
+    /** Adds a warning message that fits a pattern.
+     *
+     * @param msg
+     */
+    protected void addMatchingMessage(final String msg) {
+        if(!this.messagePatterns.empty) {
+            if (this.messagePatterns.any { msg =~ it }) {
+                this.warningMessages.add msg
+            }
+        }
+    }
+
+    /** The list of warning messages that was recorded during the conversion.
+     *
+     * @return
+     */
+    protected List<String> getWarningMessages() {
+        this.warningMessages
+    }
+
+    /** Patterns for matching log messages as errors
+     *
+     * @param patterns List of patterns. Can be empty.
+     */
+    protected void resetMessagePatternsTo(final List<Pattern> patterns) {
+        this.messagePatterns.clear()
+        this.messagePatterns.addAll(patterns)
+    }
+
+    /** If any warning message was set, fail with an exception.
+     *
+     */
+    @SuppressWarnings('UnnecessaryGString')
+    protected void failOnWarnings() {
+        if(!warningMessages.empty) {
+            final String msg = "ERROR: The following messages from AsciidoctorJ are treated as errors:\n" + warningMessages.join("\n- ")
+            throw new AsciidoctorRemoteExecutionException(msg)
+        }
+    }
+
+
 }

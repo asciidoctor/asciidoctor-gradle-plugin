@@ -24,6 +24,7 @@ import spock.lang.Unroll
 class LogSeverityMapperSpec extends Specification {
 
     @Unroll
+    @SuppressWarnings('UnnecessaryObjectReferences')
     void 'Map asciidoctor severity #sev to executor log level #ell'() {
 
         expect:

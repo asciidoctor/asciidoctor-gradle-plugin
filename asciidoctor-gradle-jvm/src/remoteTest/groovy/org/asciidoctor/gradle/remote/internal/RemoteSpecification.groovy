@@ -67,12 +67,13 @@ include::a-missing-include-file[]
         ])
     }
 
+    @SuppressWarnings('Println')
     ExecutorConfiguration getExecutorConfiguration(
         final String backend, File srcFile, File outputFile, File gemDir
     ) {
         boolean altOptions = gemDir != null
         Set<String> requires = (altOptions ? [] : []) as Set
-        List<Object> exts = altOptions ? [{ println 'registered extension' }.dehydrate()] : []
+        List<Object> exts = altOptions ? [{ println 'fake extension' }.dehydrate()] : []
 
         new ExecutorConfiguration(
             options: [:],
@@ -81,6 +82,7 @@ include::a-missing-include-file[]
             copyResources: false,
             safeModeLevel: 0,
             backendName: backend,
+            fatalMessagePatterns: [],
             sourceDir: srcFile.parentFile,
             outputDir: outputFile.parentFile,
             projectDir: testProjectDir.root,

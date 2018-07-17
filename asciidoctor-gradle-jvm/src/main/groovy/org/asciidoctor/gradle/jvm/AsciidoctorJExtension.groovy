@@ -31,6 +31,8 @@ import org.gradle.api.logging.LogLevel
 import org.ysb33r.grolifant.api.AbstractCombinedProjectTaskExtension
 import org.ysb33r.grolifant.api.OperatingSystem
 
+import java.util.regex.Pattern
+
 import static org.ysb33r.grolifant.api.StringUtils.stringize
 
 /** Extension for configuring AsciidoctorJ.
@@ -84,12 +86,14 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     private final List<Object> asciidoctorExtensions = []
     private final List<Object> gemPaths = []
     private final List<Action<ResolutionStrategy>> resolutionsStrategies = []
+    private final List<Object> warningsAsErrors = []
 
     private boolean onlyTaskOptions = false
     private boolean onlyTaskAttributes = false
     private boolean onlyTaskRequires = false
     private boolean onlyTaskExtensions = false
     private boolean onlyTaskGems = false
+    private boolean onlyTaskWarnings = false
 
     private LogLevel logLevel
 
@@ -612,6 +616,52 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         this.resolutionsStrategies.add(strategy as Action<ResolutionStrategy>)
     }
 
+    /** Returns a patterns suitabkle for detcting missing include files.
+     *
+     * This can be passed to {@link #fatalWarnings(Object ...)}
+     *
+     * @return Missing include file pattern.
+     */
+    Pattern missingIncludes() {
+        ~/include file not found/
+    }
+
+    /** Provide patterns for Asciidoctor messages that are treated as failures.
+     *
+     * @return Regex patterns that will be used to check Asciidoctor log messages.
+     *
+     */
+    List<Pattern> getFatalWarnings() {
+        if (!task || onlyTaskWarnings) {
+            patternize(this.warningsAsErrors)
+        } else if (this.warningsAsErrors.empty) {
+            extFromProject.fatalWarnings
+        } else {
+            extFromProject.fatalWarnings + patternize(this.warningsAsErrors)
+        }
+    }
+
+    /** Provide patterns for Asciidoctor messages that are treated as failures.
+     *
+     * Clears any existing message patterns. If this ethid is called on a task extension,
+     * the patterns from the project extension will be ignored.
+     *
+     * @param patterns
+     */
+    void setFatalWarnings(Iterable<Object> patterns) {
+        onlyTaskWarnings = true
+        this.warningsAsErrors.clear()
+        this.warningsAsErrors.addAll(patterns)
+    }
+
+    /** Adds additional message patterns for treating Asciidoctor log messages as errors.
+     *
+     * @param patterns Message patterns.
+     */
+    void fatalWarnings(Object... patterns) {
+        this.warningsAsErrors.addAll(patterns)
+    }
+
     @SuppressWarnings('FactoryMethodName')
     private Dependency createDependency(final String notation, final Closure configurator = null) {
         if (configurator) {
@@ -737,6 +787,13 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
 
     private String minimumSafeJRubyVersion(final String asciidoctorjVersion) {
         asciidoctorjVersion.startsWith('1.5.') ? '9.0.5.0' : '9.1.0.0'
+    }
+
+    @SuppressWarnings('Instanceof')
+    private List<Pattern> patternize(final List<Object> patterns) {
+        patterns.collect {
+            it instanceof Pattern ? it : ~/${stringize(it)}/
+        } as List<Pattern>
     }
 
     @CompileDynamic

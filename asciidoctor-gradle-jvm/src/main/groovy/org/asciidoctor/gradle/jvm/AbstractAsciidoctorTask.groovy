@@ -167,7 +167,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      * @param configurator Closure that configures a {@link org.ysb33r.grolifant.api.JavaForkOptions} instance.
      */
     void forkOptions(@DelegatesTo(org.ysb33r.grolifant.api.JavaForkOptions) Closure configurator) {
-        executeDelegatingClosure(this.javaForkOptions,configurator)
+        executeDelegatingClosure(this.javaForkOptions, configurator)
     }
 
     /** Set fork options for {@link #JAVA_EXEC} and {@link #OUT_OF_PROCESS} modes.
@@ -597,6 +597,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
             backendName: backendName,
             logDocuments: logDocuments,
             gemPath: gemPath,
+            fatalMessagePatterns: asciidoctorj.fatalWarnings,
             asciidoctorExtensions: (asciidoctorJExtensions.findAll { !(it instanceof Dependency) }),
             requires: requires,
             copyResources: this.copyResourcesForBackends != null && (this.copyResourcesForBackends.empty || backendName in this.copyResourcesForBackends),
