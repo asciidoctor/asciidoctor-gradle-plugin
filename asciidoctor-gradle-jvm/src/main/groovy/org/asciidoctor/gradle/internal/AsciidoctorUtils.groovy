@@ -88,4 +88,14 @@ class AsciidoctorUtils {
         configuration.delegate = delegated
         configuration.call(delegated)
     }
+
+    /** Returns the location of a class
+     *
+     * @param aClass Class to look for.
+     * @return Location as a file on disk.
+     */
+    static File getClassLocation(Class aClass) {
+        new File(aClass.protectionDomain.codeSource.location.toURI()).absoluteFile
+    }
+
 }

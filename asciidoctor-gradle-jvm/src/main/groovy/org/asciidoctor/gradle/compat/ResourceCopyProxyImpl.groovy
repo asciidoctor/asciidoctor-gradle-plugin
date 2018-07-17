@@ -22,6 +22,7 @@ import org.gradle.api.tasks.WorkResult
 /**
  * @author Schalk W. Cronjé.
  */
+@Deprecated
 class ResourceCopyProxyImpl implements ResourceCopyProxy {
     Project project
 

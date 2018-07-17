@@ -15,7 +15,6 @@
  */
 package org.asciidoctor.gradle.compat
 
-import org.asciidoctor.gradle.AsciidoctorCompatibilityPlugin
 import org.asciidoctor.gradle.jvm.AsciidoctorJPlugin
 import org.gradle.api.GradleException
 import org.gradle.api.Project

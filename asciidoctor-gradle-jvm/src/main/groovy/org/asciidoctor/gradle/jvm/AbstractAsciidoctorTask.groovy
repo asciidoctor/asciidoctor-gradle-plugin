@@ -20,6 +20,7 @@ import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.internal.AsciidoctorUtils
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
+import org.asciidoctor.gradle.internal.JavaExecUtils
 import org.asciidoctor.gradle.remote.AsciidoctorJExecuter
 import org.asciidoctor.gradle.remote.AsciidoctorJavaExec
 import org.gradle.api.Action
@@ -47,6 +48,7 @@ import org.ysb33r.grolifant.api.StringUtils
 import java.nio.file.Path
 
 import static org.asciidoctor.gradle.internal.AsciidoctorUtils.executeDelegatingClosure
+import static org.asciidoctor.gradle.internal.AsciidoctorUtils.getClassLocation
 import static org.gradle.workers.IsolationMode.CLASSLOADER
 import static org.gradle.workers.IsolationMode.PROCESS
 
@@ -856,18 +858,12 @@ class AbstractAsciidoctorTask extends DefaultTask {
     }
 
     private Map<String, ExecutorConfiguration> runWithJavaExec(
-        final File workingSourceDir, final Set<File> sourceFiles) {
-        FileCollection asciidoctorClasspath = configurations
-
-        File entryPoint = new File(AsciidoctorJavaExec.protectionDomain.codeSource.location.toURI()).absoluteFile
-        File groovyJar = getClassLocation(GroovyObject)
-        FileCollection javaExecClasspath = project.files(entryPoint, groovyJar, asciidoctorClasspath)
-
-        File execConfigurationData = project.file("${project.buildDir}/tmp/${FileUtils.toSafeFileName(this.name)}.javaexec-data")
+        final File workingSourceDir,
+        final Set<File> sourceFiles
+    ) {
+        FileCollection javaExecClasspath = JavaExecUtils.getJavaExecClasspath(project, configurations)
         Map<String, ExecutorConfiguration> executorConfigurations = getExecutorConfigurations(workingSourceDir, sourceFiles)
-
-        execConfigurationData.parentFile.mkdirs()
-        ExecutorConfigurationContainer.toFile(execConfigurationData, executorConfigurations.values())
+        File execConfigurationData = JavaExecUtils.writeExecConfigurationData(this, executorConfigurations.values())
 
         logger.debug("Serialised AsciidoctorJ configuration to ${execConfigurationData}")
         logger.info "Running AsciidoctorJ instance with classpath ${javaExecClasspath.files}"
@@ -948,9 +944,5 @@ class AbstractAsciidoctorTask extends DefaultTask {
             }
         }
         cfg
-    }
-
-    private File getClassLocation(Class aClass) {
-        new File(aClass.protectionDomain.codeSource.location.toURI()).absoluteFile
     }
 }
