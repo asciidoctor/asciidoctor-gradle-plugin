@@ -91,31 +91,6 @@ class AsciidoctorJavaExec extends ExecutorBase {
         }
     }
 
-//    @SuppressWarnings('Println')
-//    LogHandler getLogHandler(ExecutorLogLevel required) {
-//        int requiredLevel = required.level
-//        new LogHandler() {
-//            @Override
-//            void log(LogRecord logRecord) {
-//                int level = LogSeverityMapper.translateAsciidoctorLogLevel(logRecord.severity).level
-//
-//                if (level >= requiredLevel) {
-//
-//                    String msg = logRecord.message
-//                    Cursor cursor = logRecord.cursor
-//                    if (cursor) {
-//                        msg = "${msg} :: ${cursor.path ?: ''} :: ${cursor.dir ?: ''}/${cursor.file ?: ''}:${cursor.lineNumber >= 0 ? cursor.lineNumber.toString() : ''}"
-//                    }
-//                    if (logRecord.sourceFileName) {
-//                        msg = "${msg} (${logRecord.sourceFileName}${logRecord.sourceMethodName ? (':' + logRecord.sourceMethodName) : ''})"
-//                    }
-//
-//                    println msg
-//                }
-//            }
-//        }
-//    }
-
     /** Writes the message to stdout.
      *
      * @param logLevel The level of the message (ignored).

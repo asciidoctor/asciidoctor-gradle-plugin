@@ -55,7 +55,7 @@ class AsciidoctorFunctionalSpec extends FunctionalSpecification {
 
     @SuppressWarnings('MethodName')
     @IgnoreIf({ System.getProperty('OFFLINE_MODE') })
-    def "Should build normally for a standard project"() {
+    void 'Should build normally for a standard project'() {
         given: "A minimal build file"
         def buildFile = testProjectDir.newFile("build.gradle")
         buildFile << """

@@ -26,7 +26,9 @@ import static org.asciidoctor.gradle.internal.ExecutorLogLevel.DEBUG
 class RemoteSpecification extends Specification {
 
     static final String INPUT_DOC = 'index.adoc'
+    static final String INPUT_DOC2 = 'index2.adoc'
     static final String OUTPUT_HTML = 'index.html'
+    static final String OUTPUT_HTML2 = 'subdir/index2.html'
     static final String OUTPUT_DOCBOOK = 'index.xml'
     static final String HTML = 'html5'
     static final String DOCBOOK = 'docbook'
@@ -38,16 +40,20 @@ class RemoteSpecification extends Specification {
         File src = new File(base, 'src')
         File output = new File(base, 'out')
         File gemDir = new File(base, 'gems')
+        File src2 = new File(src,'subdir')
 
-        src.mkdirs()
+        src2.mkdirs()
         output.mkdirs()
         gemDir.mkdirs()
-
         new File(src, INPUT_DOC) << '''= A document
 
 with text
 
 include::a-missing-include-file[]
+'''
+        new File(src2,INPUT_DOC2) << '''= A document
+
+in a subdirectory
 '''
         new File(gemDir, 'verbose.rb').text = '$VERBOSE = true'
 
@@ -88,7 +94,7 @@ include::a-missing-include-file[]
             projectDir: testProjectDir.root,
             rootDir: testProjectDir.root,
             baseDir: testProjectDir.root,
-            sourceTree: [srcFile],
+            sourceTree: [srcFile, new File(srcFile.parentFile,"subdir/${INPUT_DOC2}")],
             logDocuments: altOptions,
             executorLogLevel: DEBUG,
             requires: requires,

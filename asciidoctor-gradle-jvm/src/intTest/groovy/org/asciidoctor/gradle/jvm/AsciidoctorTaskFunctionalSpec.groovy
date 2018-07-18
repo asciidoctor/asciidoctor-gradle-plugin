@@ -71,6 +71,7 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         then: 'u content is generated as HTML and XML'
         verifyAll {
             new File(testProjectDir.root, 'build/docs/asciidoc/html5/sample.html').exists() || !compatible
+            new File(testProjectDir.root, 'build/docs/asciidoc/html5/subdir/sample2.html').exists() || !compatible
             new File(testProjectDir.root, 'build/docs/asciidoc/docbook/sample.xml').exists() || !compatible
             !new File(testProjectDir.root, 'build/docs/asciidoc/docinfo/docinfo.xml').exists() || !compatible
             !new File(testProjectDir.root, 'build/docs/asciidoc/docinfo/sample-docinfo.xml').exists() || !compatible

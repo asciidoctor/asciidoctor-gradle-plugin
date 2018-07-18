@@ -31,6 +31,7 @@ class AsciidoctorJavaExecSpec extends RemoteSpecification {
 
         then:
         new File(asciidoc.outputDir, OUTPUT_HTML).exists()
+        new File(asciidoc.outputDir, OUTPUT_HTML2).exists()
     }
 
     void 'Can execute a conversion using serialised execution specification'() {
@@ -45,6 +46,7 @@ class AsciidoctorJavaExecSpec extends RemoteSpecification {
 
         then:
         new File(asciidoc.outputDir, OUTPUT_HTML).exists()
+        new File(asciidoc.outputDir, OUTPUT_HTML2).exists()
         new File(asciidoc.outputDir, OUTPUT_DOCBOOK).exists()
     }
 

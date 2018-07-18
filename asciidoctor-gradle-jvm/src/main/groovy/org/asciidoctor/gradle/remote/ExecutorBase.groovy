@@ -66,12 +66,15 @@ abstract class ExecutorBase {
         Map<String, Object> mergedOptions = [:]
 
         runConfiguration.with {
+            final String srcRelative = getRelativePath(file.parentFile, sourceDir)
+
             mergedOptions.putAll(options)
             mergedOptions.putAll([
                 (Options.BACKEND) : backendName,
                 (Options.IN_PLACE): false,
                 (Options.SAFE)    : safeModeLevel,
-                (Options.TO_DIR)  : outputDir.absolutePath
+                (Options.TO_DIR)  : (srcRelative.empty ? outputDir : new File(outputDir,srcRelative)).absolutePath,
+                (Options.MKDIRS)  : true
             ])
 
             mergedOptions[Options.BASEDIR] = (baseDir ?: file.parentFile).absolutePath
@@ -151,7 +154,7 @@ abstract class ExecutorBase {
                         msg = "${msg} (${logRecord.sourceFileName}${logRecord.sourceMethodName ? (':' + logRecord.sourceMethodName) : ''})"
                     }
 
-                    logMessage(logLevel,msg)
+                    logMessage(logLevel, msg)
                 }
 
                 addMatchingMessage(logRecord.message)
@@ -166,14 +169,14 @@ abstract class ExecutorBase {
      * @param logLevel The level of the message
      * @param msg Message to be logged
      */
-    abstract protected void logMessage( ExecutorLogLevel logLevel, final String msg)
+    abstract protected void logMessage(ExecutorLogLevel logLevel, final String msg)
 
     /** Adds a warning message that fits a pattern.
      *
      * @param msg
      */
     protected void addMatchingMessage(final String msg) {
-        if(!this.messagePatterns.empty) {
+        if (!this.messagePatterns.empty) {
             if (this.messagePatterns.any { msg =~ it }) {
                 this.warningMessages.add msg
             }
@@ -202,7 +205,7 @@ abstract class ExecutorBase {
      */
     @SuppressWarnings('UnnecessaryGString')
     protected void failOnWarnings() {
-        if(!warningMessages.empty) {
+        if (!warningMessages.empty) {
             final String msg = "ERROR: The following messages from AsciidoctorJ are treated as errors:\n" + warningMessages.join("\n- ")
             throw new AsciidoctorRemoteExecutionException(msg)
         }

@@ -655,6 +655,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      * @return A {@link CopySpec}. Never {@code null}.
      */
     @CompileDynamic
+    @Internal
     protected CopySpec getDefaultResourceCopySpec() {
         project.copySpec {
             from(sourceDir) {
