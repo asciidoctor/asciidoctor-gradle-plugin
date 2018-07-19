@@ -36,6 +36,7 @@ import org.gradle.api.file.FileTree
 import org.gradle.api.internal.file.copy.CopySpecInternal
 @java.lang.SuppressWarnings('NoWildcardImports')
 import org.gradle.api.tasks.*
+import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.process.JavaExecSpec
 import org.gradle.process.JavaForkOptions
@@ -49,6 +50,7 @@ import java.nio.file.Path
 
 import static org.asciidoctor.gradle.internal.AsciidoctorUtils.executeDelegatingClosure
 import static org.asciidoctor.gradle.internal.AsciidoctorUtils.getClassLocation
+import static org.asciidoctor.gradle.internal.AsciidoctorUtils.getSourceFileTree
 import static org.gradle.workers.IsolationMode.CLASSLOADER
 import static org.gradle.workers.IsolationMode.PROCESS
 
@@ -144,7 +146,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      */
     void sources(final Closure cfg) {
         if (sourceDocumentPattern == null) {
-            sourceDocumentPattern = new PatternSet()
+            sourceDocumentPattern = new PatternSet().exclude('**/_*')
         }
         Closure configuration = (Closure) cfg.clone()
         configuration.delegate = sourceDocumentPattern
@@ -157,7 +159,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      */
     void sources(final Action<? super PatternSet> cfg) {
         if (sourceDocumentPattern == null) {
-            sourceDocumentPattern = new PatternSet()
+            sourceDocumentPattern = new PatternSet().exclude('**/_*')
         }
         cfg.execute(sourceDocumentPattern)
     }
@@ -690,8 +692,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      * @return Source tree based upon configured pattern.
      */
     protected FileTree getSourceFileTreeFrom(File dir) {
-        project.fileTree(dir).
-            matching(this.sourceDocumentPattern ?: defaultSourceDocumentPattern)
+        getSourceFileTree(project,dir,this.sourceDocumentPattern ?: defaultSourceDocumentPattern)
     }
 
     /** Obtains a secondary source tree based on patterns.

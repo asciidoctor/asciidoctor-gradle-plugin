@@ -588,9 +588,7 @@ options:: a Map specifying different options that can be sent to Asciidoctor.
 attributes:: a Map specifying various document attributes that can be sent to Asciidoctor
   Use `attributes` to append, Use `setAttributes` or `attributes=` to overwrite.
 
-////
-To see examples of many of these configuration options used in practice, refer to the http://asciidoctor.github.io/asciidoctor-gradle-examples[Asciidoctor Gradle Examples] project.
-////
+NOTE: Even though the DSL remains the same with this task, the internals have been changed to use the same `JAVA_EXEC` mechanism of the `org.asciidoctor.jvm.convert` plugins. The problems which the 1.5.x series suffered with classpaths anions disappearing shuol dnow be a thing of the past.
 
 == Kindlegen plugin
 

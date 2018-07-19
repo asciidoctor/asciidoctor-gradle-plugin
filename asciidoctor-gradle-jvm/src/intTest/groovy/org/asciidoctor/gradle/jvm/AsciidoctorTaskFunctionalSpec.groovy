@@ -75,6 +75,7 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
             new File(testProjectDir.root, 'build/docs/asciidoc/docbook/sample.xml').exists() || !compatible
             !new File(testProjectDir.root, 'build/docs/asciidoc/docinfo/docinfo.xml').exists() || !compatible
             !new File(testProjectDir.root, 'build/docs/asciidoc/docinfo/sample-docinfo.xml').exists() || !compatible
+            !new File(testProjectDir.root, 'build/docs/asciidoc/html5/subdir/_include.html').exists() || !compatible
         }
 
         where:

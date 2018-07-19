@@ -30,18 +30,20 @@ import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.FileTree
 import org.gradle.api.internal.file.copy.CopySpecInternal
+@java.lang.SuppressWarnings('NoWildcardImports')
+import org.gradle.api.tasks.*
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.internal.FileUtils
 import org.gradle.process.JavaExecSpec
 import org.ysb33r.grolifant.api.OperatingSystem
-@java.lang.SuppressWarnings('NoWildcardImports')
-import org.gradle.api.tasks.*
 
 import static org.asciidoctor.gradle.internal.AsciidoctorUtils.getClassLocation
+import static org.asciidoctor.gradle.internal.AsciidoctorUtils.getSourceFileTree
 import static org.asciidoctor.gradle.internal.JavaExecUtils.getJavaExecClasspath
 import static org.ysb33r.grolifant.api.StringUtils.stringize
 
-/**
+/** The core functionality of the Asciidoctor task type as it was in the 1.5.x series.
+ *
  * @author Noam Tenne
  * @author Andres Almiray
  * @author Tom Bujok
@@ -60,34 +62,23 @@ import static org.ysb33r.grolifant.api.StringUtils.stringize
 @SuppressWarnings(['MethodCount', 'Instanceof'])
 @CompileStatic
 class AsciidoctorCompatibilityTask extends DefaultTask {
-//    private static final boolean IS_WINDOWS = System.getProperty('os.name').contains('Windows')
     private static final String PATH_SEPARATOR = OperatingSystem.current().pathSeparator
-//    private static final String DOUBLE_BACKLASH = '\\\\'
-//    private static final String BACKLASH = '\\'
-//    private static final String SAFE_MODE_CLASSNAME = 'org.asciidoctor.gradle.base.SafeMode'
     private static
     final String MIGRATE_GEMS_MSG = 'When upgrading GEMs, \'requires\' will need to be set via the asciidoctorj project and task extensions. Use  setGemPaths method in extension(s) to set GEM paths.'
 
     private static final String DEFAULT_BACKEND = AsciidoctorBackend.HTML5.id
-//    public static final String ASCIIDOCTOR_FACTORY_CLASSNAME = 'org.asciidoctor.Asciidoctor$Factory'
-
     private boolean baseDirSetToNull
     private Object outDir
     private Object srcDir
     private final List<Object> gemPaths = []
     private final Set<String> backends = []
     private final Set<String> requires = []
+    private final Set<String> migrationMessages = []
     private final Map opts = [:]
     private final Map attrs = [:]
     private PatternSet sourceDocumentPattern
     private CopySpec resourceCopy
-//    private static ClassLoader cl
     private boolean separateOutputDirs = true
-
-//    private final static Map<AsciidoctorProxyCacheKey, AsciidoctorProxy> ASCIIDOCTORS = [:]
-//    private final static Lock EXEC_LOCK = new ReentrantLock()
-
-    private final Set<String> migrationMessages = []
 
     /** If set to true each backend will be output to a separate subfolder below {@code outputDir}
      * @since 1.5.1
@@ -119,12 +110,6 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
      */
     @Internal
     final List<Object> asciidoctorExtensions = []
-
-//    @Internal
-//    AsciidoctorProxy asciidoctor
-
-    @Internal
-    ResourceCopyProxy resourceCopyProxy
 
     @Optional
     @InputFiles
@@ -445,8 +430,7 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
     @InputFiles
     @SkipWhenEmpty
     FileTree getSourceFileTree() {
-        project.fileTree(sourceDir).
-            matching(this.sourceDocumentPattern ?: defaultSourceDocumentPattern)
+        getSourceFileTree(project, sourceDir, this.sourceDocumentPattern ?: defaultSourceDocumentPattern)
     }
 
     /** Add patterns for source files or source files via a closure
@@ -456,7 +440,7 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
      */
     void sources(Closure cfg) {
         if (sourceDocumentPattern == null) {
-            sourceDocumentPattern = new PatternSet()
+            sourceDocumentPattern = new PatternSet().exclude('**/_*')
         }
         Closure configuration = (Closure) (cfg.clone())
         configuration.delegate = sourceDocumentPattern
@@ -532,7 +516,6 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
      * @since 1.5.2
      */
     @InputFiles
-    @SkipWhenEmpty
     @Optional
     FileCollection getResourceFileCollection() {
         (resourceCopySpec as CopySpecInternal).buildRootResolver().allSource
@@ -581,47 +564,16 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
             closurePaths
         )
 
-        if (resourceCopyProxy == null) {
-            resourceCopyProxy = new ResourceCopyProxyImpl(project)
-        }
-
         File execConfigurationData = JavaExecUtils.writeExecConfigurationData(this, ecc.configurations)
         logger.debug("Serialised AsciidoctorJ configuration to ${execConfigurationData}")
         logger.info "Running AsciidoctorJ instance with classpath ${javaExecClasspath.files}"
 
         activeBackends().each { backend ->
-            resourceCopyProxy.copy(outputBackendDir(outputDir, backend), resourceCopySpec)
+            copyResources(outputBackendDir(outputDir, backend), resourceCopySpec)
         }
 
         runJavaExec(execConfigurationData, javaExecClasspath)
-//        if (classpath == null) {
-//            classpath = project.configurations.getByName(AsciidoctorCompatibilityPlugin.ASCIIDOCTOR)
-//        }
-//
-//        setupClassLoader()
-//
-//        withAsciidoctor {
-//            asciidoctor = it
-//
-//            if (!asciidoctorExtensions?.empty) {
-//                asciidoctor.registerExtensions(asciidoctorExtensions)
-//
-//            }
-//
-//        }
     }
-
-//    @groovy.transform.PackageScope
-//    File outputDirFor(final File source, final String basePath, final File outputDir, final String backend) {
-//        String filePath = source.directory ? source.absolutePath : source.parentFile.absolutePath
-//        String relativeFilePath = normalizePath(filePath) - normalizePath(basePath)
-//        File baseOutputDir = outputBackendDir(outputDir, backend)
-//        File destinationParentDir = new File(baseOutputDir, relativeFilePath)
-//        if (!destinationParentDir.exists()) {
-//            destinationParentDir.mkdirs()
-//        }
-//        destinationParentDir
-//    }
 
     // Helper method to be able to produce migration messages
     @Internal
@@ -641,13 +593,13 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
         separateOutputDirs ? new File(outputDir, FileUtils.toSafeFileName(backend)) : outputDir
     }
 
-//    private static String normalizePath(String path) {
-//        if (IS_WINDOWS) {
-//            path = path.replace(DOUBLE_BACKLASH, BACKLASH)
-//            path = path.replace(BACKLASH, DOUBLE_BACKLASH)
-//        }
-//        path
-//    }
+    @CompileDynamic
+    private WorkResult copyResources(File outputDir, CopySpec spec) {
+        project.copy {
+            into outputDir
+            with spec
+        }
+    }
 
     private void migrationMessage(final String currentMethod, final String upgradeInstructions) {
         this.migrationMessages.add("You have used '${currentMethod}'. When upgrading you will need to: ${upgradeInstructions}".toString())
@@ -674,89 +626,6 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
             }
         } as List<Object>
     }
-
-//    @SuppressWarnings('CatchException')
-//    @SuppressWarnings('DuplicateStringLiteral')
-//    protected void processDocumentsAndResources(final String backend) {
-//        try {
-//            resourceCopyProxy.copy(outputBackendDir(outputDir, backend), resourceCopySpec)
-//
-//            sourceFileTree.files.each { File file ->
-//                if (file.name.startsWith('_')) {
-//                    throw new InvalidUserDataException('Source documents may not start with an underscore')
-//                }
-//                File destinationParentDir = owner.outputDirFor(file, sourceDir.absolutePath, outputDir, backend)
-//                processSingleFile(backend, destinationParentDir, file)
-//            }
-//
-//        } catch (Exception e) {
-//            throw new GradleException('Error running Asciidoctor', e)
-//        }
-//    }
-
-//    protected void processSingleFile(String backend, File destinationParentDir, File file) {
-//        if (logDocuments) {
-//            logger.lifecycle("Converting $file")
-//        }
-//        asciidoctor.renderFile(file, mergedOptions(file,
-//            [
-//                project   : project,
-//                options   : options,
-//                attributes: attrs,
-//                baseDir   : !baseDir && !baseDirSetToNull ? file.parentFile : baseDir,
-//                projectDir: project.projectDir,
-//                rootDir   : project.rootDir,
-//                outputDir : destinationParentDir,
-//                backend   : backend]))
-//    }
-
-//    @SuppressWarnings('AbcMetric')
-//    private static Map<String, Object> mergedOptions(File file, Map params) {
-//        Map<String, Object> mergedOptions = [:]
-//        mergedOptions.putAll(params.options)
-//        mergedOptions.backend = params.backend
-//        mergedOptions.in_place = false
-//        mergedOptions.safe = resolveSafeModeLevel(mergedOptions.safe, 0i)
-//        mergedOptions.to_dir = params.outputDir
-//        if (params.baseDir) {
-//            mergedOptions.base_dir = params.baseDir
-//        }
-//
-//        if (mergedOptions.to_file) {
-//            File toFile = new File(mergedOptions.to_file)
-//            mergedOptions.to_file = new File(mergedOptions.remove('to_dir'), toFile.name)
-//        }
-//
-//        Map attributes = [:]
-//        processMapAttributes(attributes, params.attributes)
-//
-//        // Note: Directories passed as relative to work around issue #83
-//        // Asciidoctor cannot handle absolute paths in Windows properly
-//        attributes.projectdir = AsciidoctorUtils.getRelativePath(params.projectDir, file.parentFile)
-//        attributes.rootdir = AsciidoctorUtils.getRelativePath(params.rootDir, file.parentFile)
-//
-//        // resolve these properties here as we want to catch both Map and String definitions parsed above
-//        attributes.'project-name' = attributes.'project-name' ?: params.project.name
-//        attributes.'project-group' = attributes.'project-group' ?: (params.project.group ?: '')
-//        attributes.'project-version' = attributes.'project-version' ?: (params.project.version ?: '')
-//        mergedOptions.attributes = attributes
-//
-//        // Issue #14 force GString -> String as jruby will fail
-//        // to find an exact match when invoking Asciidoctor
-//        for (entry in mergedOptions) {
-//            if (entry.value instanceof CharSequence) {
-//                mergedOptions[entry.key] = entry.value.toString()
-//            } else if (entry.value instanceof List) {
-//                mergedOptions[entry.key] = stringifyList(entry.value)
-//            } else if (entry.value instanceof Map) {
-//                mergedOptions[entry.key] = stringifyMap(entry.value)
-//            } else if (entry.value instanceof File) {
-//                mergedOptions[entry.key] = entry.value.absolutePath
-//            }
-//        }
-//
-//        mergedOptions
-//    }
 
     @CompileDynamic
     private static List stringifyList(List input) {
@@ -792,22 +661,6 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
             }
         }
         output
-    }
-
-    protected static void processMapAttributes(Map attributes, Map rawAttributes) {
-        // copy all attributes in order to prevent changes down
-        // the Asciidoctor chain that could cause serialization
-        // problems with Gradle -> all inputs/outputs get serialized
-        // for caching purposes; Ruby objects are non-serializable
-        // Issue #14 force GString -> String as jruby will fail
-        // to find an exact match when invoking Asciidoctor
-        for (entry in rawAttributes) {
-            if (entry.value == null || entry.value instanceof Boolean) {
-                attributes[entry.key] = entry.value
-            } else {
-                attributes[entry.key] = entry.value.toString()
-            }
-        }
     }
 
     @CompileDynamic
@@ -855,7 +708,7 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
     }
 
     @SuppressWarnings('Instanceof')
-    private static int resolveSafeModeLevel(Object safe, int defaultLevel) {
+    static int resolveSafeModeLevel(Object safe, int defaultLevel = SafeMode.UNSAFE.level) {
         if (safe == null) {
             defaultLevel
         } else if (safe instanceof SafeMode) {
@@ -868,53 +721,5 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
             defaultLevel
         }
     }
-
-//    static Class loadClass(String className) {
-//        cl.loadClass(className)
-//    }
-
-//    @SuppressWarnings('AssignmentToStaticFieldFromInstanceMethod')
-//    private void setupClassLoader() {
-//        if (classpath?.files) {
-//            def urls = classpath.files.collect { it.toURI().toURL() }
-//            cl = new URLClassLoader(urls as URL[], Thread.currentThread().contextClassLoader)
-//            Thread.currentThread().contextClassLoader = cl
-//        } else {
-//            cl = Thread.currentThread().contextClassLoader
-//        }
-//    }
-
-//    @SuppressWarnings('CatchException')
-//    private withAsciidoctor(Closure<?> cl) {
-//        EXEC_LOCK.lock()
-//        try {
-//            def key = new AsciidoctorProxyCacheKey(
-//                classpath?.files?.toList(),
-//                asGemPath()
-//            )
-//            def asciidoctor = ASCIIDOCTORS.computeIfAbsent(key) { k ->
-//                def clazz = loadClass(ASCIIDOCTOR_FACTORY_CLASSNAME)
-//                Class asciidoctorExtensionsDslRegistry = loadClass('org.asciidoctor.groovydsl.AsciidoctorExtensions')
-//
-//                if (k.gemPath) {
-//                    new AsciidoctorProxyImpl(delegate: clazz.create(k.gemPath), extensionRegistry: asciidoctorExtensionsDslRegistry.newInstance())
-//                } else {
-//                    try {
-//                        new AsciidoctorProxyImpl(delegate: clazz.create(null as String), extensionRegistry: asciidoctorExtensionsDslRegistry.newInstance())
-//                    } catch (Exception e) {
-//                        // Asciidoctor < 1.5.1 can't handle a null gemPath, so fallback to default create() method
-//                        new AsciidoctorProxyImpl(delegate: clazz.create(), extensionRegistry: asciidoctorExtensionsDslRegistry.newInstance())
-//                    }
-//                }
-//            }
-//            cl.call(asciidoctor)
-//        } finally {
-//            if (asciidoctor) {
-//                asciidoctor.unregisterAllExtensions()
-//            }
-//            EXEC_LOCK.unlock()
-//        }
-//    }
-
 }
 
