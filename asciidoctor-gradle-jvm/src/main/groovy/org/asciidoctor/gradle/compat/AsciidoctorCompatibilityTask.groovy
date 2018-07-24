@@ -37,8 +37,7 @@ import org.gradle.internal.FileUtils
 import org.gradle.process.JavaExecSpec
 import org.ysb33r.grolifant.api.OperatingSystem
 
-import static org.asciidoctor.gradle.internal.AsciidoctorUtils.getClassLocation
-import static org.asciidoctor.gradle.internal.AsciidoctorUtils.getSourceFileTree
+import static org.asciidoctor.gradle.internal.AsciidoctorUtils.*
 import static org.asciidoctor.gradle.internal.JavaExecUtils.getJavaExecClasspath
 import static org.ysb33r.grolifant.api.StringUtils.stringize
 
@@ -476,7 +475,7 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
         ps.include '**/*.ad'
         ps.include '**/*.asc'
         ps.include '**/*.asciidoc'
-        ps.exclude '**/_*'
+        ps.exclude UNDERSCORE_LED_FILES
     }
 
     /** The default CopySpec that will be used if {@code resources} was never called

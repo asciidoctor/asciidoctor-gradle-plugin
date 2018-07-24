@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle.jvm.epub
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.jvm.AsciidoctorJBasePlugin
 import org.asciidoctor.gradle.jvm.AsciidoctorJExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -40,6 +41,8 @@ class AsciidoctorJEpubPlugin implements Plugin<Project> {
             apply plugin : 'org.asciidoctor.kindlegen.base'
 
             AsciidoctorEpubTask task = tasks.create('asciidoctorEpub', AsciidoctorEpubTask)
+            task.group = AsciidoctorJBasePlugin.TASK_GROUP
+            task.description = 'Convert AsciiDoc files to EPUB3/KF8 formats'
             task.outputDir = { "${project.buildDir}/docs/asciidocEpub"}
             extensions.getByType(AsciidoctorJExtension).epubVersion = AsciidoctorJExtension.DEFAULT_EPUB_VERSION
         }

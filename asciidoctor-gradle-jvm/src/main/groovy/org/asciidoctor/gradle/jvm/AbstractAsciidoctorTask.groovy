@@ -36,7 +36,6 @@ import org.gradle.api.file.FileTree
 import org.gradle.api.internal.file.copy.CopySpecInternal
 @java.lang.SuppressWarnings('NoWildcardImports')
 import org.gradle.api.tasks.*
-import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.process.JavaExecSpec
 import org.gradle.process.JavaForkOptions
@@ -48,9 +47,7 @@ import org.ysb33r.grolifant.api.StringUtils
 
 import java.nio.file.Path
 
-import static org.asciidoctor.gradle.internal.AsciidoctorUtils.executeDelegatingClosure
-import static org.asciidoctor.gradle.internal.AsciidoctorUtils.getClassLocation
-import static org.asciidoctor.gradle.internal.AsciidoctorUtils.getSourceFileTree
+import static org.asciidoctor.gradle.internal.AsciidoctorUtils.*
 import static org.gradle.workers.IsolationMode.CLASSLOADER
 import static org.gradle.workers.IsolationMode.PROCESS
 
@@ -159,7 +156,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      */
     void sources(final Action<? super PatternSet> cfg) {
         if (sourceDocumentPattern == null) {
-            sourceDocumentPattern = new PatternSet().exclude('**/_*')
+            sourceDocumentPattern = new PatternSet().exclude(UNDERSCORE_LED_FILES)
         }
         cfg.execute(sourceDocumentPattern)
     }
@@ -637,7 +634,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
         ps.include '**/*.ad'
         ps.include '**/*.asc'
         ps.include '**/*.asciidoc'
-        ps.exclude '**/_*'
+        ps.exclude UNDERSCORE_LED_FILES
     }
 
     /** The default pattern set for secondary sources.
@@ -692,7 +689,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      * @return Source tree based upon configured pattern.
      */
     protected FileTree getSourceFileTreeFrom(File dir) {
-        getSourceFileTree(project,dir,this.sourceDocumentPattern ?: defaultSourceDocumentPattern)
+        getSourceFileTree(project, dir, this.sourceDocumentPattern ?: defaultSourceDocumentPattern)
     }
 
     /** Obtains a secondary source tree based on patterns.
