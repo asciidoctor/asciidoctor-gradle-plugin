@@ -463,6 +463,15 @@ When applying `org.asciidoctor.jvm.pdf` it creates a single task of type `org.as
 * Not to copy any resources to the output directory
 * It will set also a default version for `asciidoctorj-pdf` artifact. To override set `asciidoctorj.pdfVersion` or `asciidoctorPdf.asciidoctorj.pdfVersion`.
 
+The `AsciidoctorPdfTask` task type has the following additional methods:
+
+[horizontal]
+fontsDir:: Directory for custom PDF fonts
+  Specify a directory in any form acceptable to `project.file`. Using this instead of directly setting the `pdf-fontsdir` attribute means that Gradle will be able to check out of date status dependent on the content of this folder.
+stylesDir:: Directory for finding a theme.
+  Specify a directory in any form acceptable to `project.file`. Using this instead of directly setting the `pdf-stylesdir` attribute means that Gradle will be able to check out of date status dependent on the content of this folder.
+styleName: Name of the PDF theme.
+
 == The AsciidoctorEpub Plugin
 
 When applying `org.asciidoctor.jvm.epub` it creates a single task of type `org.asciidoctor.gradle.jvm.epub.AsciidoctorEpubTask` which is then configured to:
