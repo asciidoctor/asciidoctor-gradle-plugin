@@ -100,7 +100,7 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
      *
      */
     @Optional
-    @Internal
+    @Console
     boolean logDocuments = false
 
     /**

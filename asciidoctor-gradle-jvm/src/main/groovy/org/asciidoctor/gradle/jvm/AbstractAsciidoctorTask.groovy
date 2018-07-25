@@ -48,6 +48,7 @@ import org.ysb33r.grolifant.api.StringUtils
 import java.nio.file.Path
 
 import static org.asciidoctor.gradle.internal.AsciidoctorUtils.*
+import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 import static org.gradle.workers.IsolationMode.CLASSLOADER
 import static org.gradle.workers.IsolationMode.PROCESS
 
@@ -91,7 +92,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
     /** Logs documents as they are converted
      *
      */
-    @Internal
+    @Console
     boolean logDocuments = false
 
     /** Run Asciidoctor conversions in or out of process
@@ -190,6 +191,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      */
     @InputFiles
     @SkipWhenEmpty
+    @PathSensitive(RELATIVE)
     FileTree getSourceFileTree() {
         getSourceFileTreeFrom(sourceDir)
     }
@@ -231,6 +233,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      *
      */
     @InputFiles
+    @PathSensitive(RELATIVE)
     FileTree getSecondarySourceFileTree() {
         getSecondarySourceFileTreeFrom(sourceDir)
     }
@@ -420,7 +423,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      *
      * @return FileCollection
      */
-    @InputFiles
+    @Classpath
     @SuppressWarnings('Instanceof')
     FileCollection getConfigurations() {
         FileCollection fc = asciidoctorj.configuration

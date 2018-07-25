@@ -51,6 +51,7 @@ class OutputOptions {
      *
      * @return Set of backends.
      */
+    @Input
     Set<String> getBackends() {
         this.backends.empty ? ['html5'].toSet() : this.backends
     }

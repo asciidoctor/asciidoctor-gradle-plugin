@@ -15,14 +15,9 @@
  */
 package org.asciidoctor.gradle.compat
 
-import org.apache.commons.io.FileUtils
 import org.asciidoctor.gradle.internal.FunctionalSpecification
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
 import org.gradle.testkit.runner.BuildResult
-import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
-import spock.lang.IgnoreIf
 
 /**
  * This was first functional specification. It is now the functional sepcification to ensure that
@@ -48,7 +43,7 @@ class AsciidoctorFunctionalSpec extends FunctionalSpecification {
     }
 
     void 'Should do nothing with an empty project'() {
-        given: "A minimal build file"
+        given: 'A minimal build file'
         getBuildFile('''
         asciidoctor {
             sourceDir 'non-existing'
@@ -71,8 +66,8 @@ class AsciidoctorFunctionalSpec extends FunctionalSpecification {
 
         then:
         result.task(ASCIIDOCTOR_PATH).outcome == TaskOutcome.SUCCESS
-        new File(buildDir, "asciidoc/html5/sample.html").exists()
-        new File(buildDir, "asciidoc/html5/subdir/sample2.html").exists()
+        new File(buildDir, 'asciidoc/html5/sample.html').exists()
+        new File(buildDir, 'asciidoc/html5/subdir/sample2.html').exists()
     }
 
     void 'Task should be up-to-date when executed a second time'() {
@@ -100,7 +95,7 @@ class AsciidoctorFunctionalSpec extends FunctionalSpecification {
 
         when:
         runGradle()
-        BuildResult result = getGradleRunner([ASCIIDOCTOR_TASK,'-PmodifyClasspath']).build()
+        BuildResult result = getGradleRunner([ASCIIDOCTOR_TASK, '-PmodifyClasspath']).build()
 
         then:
         result.task(ASCIIDOCTOR_PATH).outcome == TaskOutcome.SUCCESS
@@ -154,7 +149,9 @@ class AsciidoctorFunctionalSpec extends FunctionalSpecification {
         runGradle()
 
         then:
-        !new File(buildDir,'asciidoctor/html5').listFiles({ !it.directory && !(it.name =~ DOCINFO_FILE_PATTERN) } as FileFilter)
+        !new File(buildDir, 'asciidoctor/html5').listFiles({
+            !it.directory && !(it.name =~ DOCINFO_FILE_PATTERN)
+        } as FileFilter)
     }
 
     void 'When resources not specified, then copy all images to backend'() {
@@ -171,8 +168,8 @@ class AsciidoctorFunctionalSpec extends FunctionalSpecification {
         runGradle()
 
         then:
-        new File(buildDir,'asciidoc/html5/images/fake.txt').exists()
-        new File(buildDir,'asciidoc/html5/images/fake2.txt').exists()
+        new File(buildDir, 'asciidoc/html5/images/fake.txt').exists()
+        new File(buildDir, 'asciidoc/html5/images/fake2.txt').exists()
     }
 
     void 'When resources are specified, then copy images according to patterns'() {
@@ -195,8 +192,8 @@ class AsciidoctorFunctionalSpec extends FunctionalSpecification {
 
         then:
         verifyAll {
-            !new File(buildDir,'asciidoc/html5/images/fake.txt').exists()
-            new File(buildDir,'asciidoc/html5/images/fake2.txt').exists()
+            !new File(buildDir, 'asciidoc/html5/images/fake.txt').exists()
+            new File(buildDir, 'asciidoc/html5/images/fake2.txt').exists()
             new File(buildDir, 'asciidoc/html5/sample.html').exists()
         }
     }
@@ -217,7 +214,7 @@ class AsciidoctorFunctionalSpec extends FunctionalSpecification {
         then:
         verifyAll {
             result.task(ASCIIDOCTOR_PATH).outcome == TaskOutcome.NO_SOURCE
-            !new File(buildDir,'asciidoc/html5/subdir/_include.html').exists()
+            !new File(buildDir, 'asciidoc/html5/subdir/_include.html').exists()
         }
     }
 
@@ -231,11 +228,11 @@ class AsciidoctorFunctionalSpec extends FunctionalSpecification {
         )
     }
 
-    BuildResult runGradle( List<String> args = ['asciidoctor']) {
+    BuildResult runGradle(List<String> args = ['asciidoctor']) {
         getGradleRunner(args).build()
     }
 
-    BuildResult failedGradle( List<String> args = ['asciidoctor']) {
+    BuildResult failedGradle(List<String> args = ['asciidoctor', '-i']) {
         getGradleRunner(args).buildAndFail()
     }
 }

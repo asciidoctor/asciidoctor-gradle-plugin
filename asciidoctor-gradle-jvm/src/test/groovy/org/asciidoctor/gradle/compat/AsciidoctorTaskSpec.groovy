@@ -75,7 +75,7 @@ class AsciidoctorTaskSpec extends Specification {
             outputDir = outDir
         }
 
-        Set<File> files = task.getSourceFileTree().files
+        Set<File> files = task.sourceFileTree.files
 
         then:
         files.find { it.name == '_include.adoc'} == null
@@ -185,8 +185,6 @@ class AsciidoctorTaskSpec extends Specification {
         task.attributes['idprefix'] == '$'
         task.options['eruby'] == 'erubis'
         task.options['doctype'] == 'book'
-        // @Ignore('Wrong sysout capture')
-        // systemOut.toString().contains('Attributes found in options.')
     }
 
     @SuppressWarnings('MethodName')
@@ -452,8 +450,8 @@ class AsciidoctorTaskSpec extends Specification {
             ]
         }
 
-        Map options = task.getOptions()
-        Map attrs = task.getAttributes()
+        Map options = task.options
+        Map attrs = task.attributes
 
         expect:
         verifyAll {
@@ -475,7 +473,7 @@ class AsciidoctorTaskSpec extends Specification {
 
     void "Throws exception when attributes embedded in options is an unsupported type"() {
         when:
-        AsciidoctorTask task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
+        project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
             options = [
                 attributes: 23
             ]
@@ -496,8 +494,9 @@ class AsciidoctorTaskSpec extends Specification {
                 foo: "${variable}"
             ]
         }
-        Map options = task.getOptions()
-        Map attrs = task.getAttributes()
+
+        Map options = task.options
+        Map attrs = task.attributes
 
         expect:
         verifyAll {
@@ -508,7 +507,6 @@ class AsciidoctorTaskSpec extends Specification {
             options.template_dirs[0].endsWith('haml')
             attrs.'foo' == variable
         }
-
     }
 
     void 'Safe mode option is equal to level of SafeMode.UNSAFE by default'() {
