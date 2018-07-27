@@ -33,7 +33,6 @@ import org.gradle.api.artifacts.DependencyResolveDetails
 import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.FileTree
-import org.gradle.api.internal.file.copy.CopySpecInternal
 @java.lang.SuppressWarnings('NoWildcardImports')
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.util.PatternSet
@@ -51,6 +50,7 @@ import static org.asciidoctor.gradle.internal.AsciidoctorUtils.*
 import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 import static org.gradle.workers.IsolationMode.CLASSLOADER
 import static org.gradle.workers.IsolationMode.PROCESS
+import static org.ysb33r.grolifant.api.FileUtils.filesFromCopySpec
 
 /** Base class for all AsciidoctorJ tasks.
  *
@@ -554,7 +554,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
         addInputProperty 'trackBaseDir', { getBaseDir().absolutePath }
 
         inputs.files { asciidoctorj.gemPaths }
-        inputs.files { (resourceCopySpec as CopySpecInternal).buildRootResolver().allSource }
+        inputs.files { filesFromCopySpec(resourceCopySpec) }
     }
 
     /** Returns all of the executor configurations for this task
