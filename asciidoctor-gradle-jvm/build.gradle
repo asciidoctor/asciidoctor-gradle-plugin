@@ -68,6 +68,7 @@ configurePlugin 'org.asciidoctor.jvm.pdf',
 
 test {
     systemProperties ROOT_PROJECT_DIR: rootProject.projectDir.absolutePath
+    systemProperties TEST_THEMES_DIR: file('src/test/resources/themes')
 }
 
 intTest {

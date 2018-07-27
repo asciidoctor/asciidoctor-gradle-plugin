@@ -18,15 +18,12 @@ package org.asciidoctor.gradle.jvm
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.internal.AsciidoctorUtils
 import org.gradle.api.Project
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.PathSensitive
-import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.UnknownDomainObjectException
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.util.GradleVersion
 import org.gradle.workers.WorkerExecutor
-import org.ysb33r.grolifant.api.StringUtils
+@java.lang.SuppressWarnings('NoWildcardImports')
+import org.gradle.api.tasks.*
 
 import javax.inject.Inject
 
@@ -39,8 +36,7 @@ import javax.inject.Inject
 class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
 
     private Object fontsDir
-    private Object stylesDir
-    private Object styleName
+    private String theme
 
     @Inject
     AsciidoctorPdfTask(WorkerExecutor we) {
@@ -48,7 +44,6 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
 
         configuredOutputOptions.backends = ['pdf']
         copyNoResources()
-
     }
 
     /** The directory where custom are fonts to be found.
@@ -73,26 +68,24 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
         this.fontsDir = f
     }
 
+    /** Set the tehem to be used from the {@code pdfThemes} extension.
+     *
+     * @param themeName
+     */
+    void setTheme(final String themeName) {
+        this.theme = themeName
+    }
+
     /** The directory where custom theme is to be found.
      *
-     * @return Directory or {@code null} is no directory was set.
+     * @return Directory or {@code null} if no directory was set.
+     * @throw {@link UnknownDomainObjectException} if theme was specified, but not registered.
      */
     @InputDirectory
     @PathSensitive(PathSensitivity.RELATIVE)
     @Optional
     File getStylesDir() {
-        this.stylesDir != null ? project.file(this.stylesDir) : null
-    }
-
-    /** Specify a directory where to load custom theme from.
-     *
-     * This will set the {@code pdf-stylesdir} attribute
-     *
-     * @param f Directory where custom syles can be found. anything convertible with {@link Project#file}
-     *   can be used.
-     */
-    void setStylesDir(Object f) {
-        this.stylesDir = f
+        this.theme != null ? project.extensions.getByType(AsciidoctorPdfThemesExtension).getByName(this.theme).styleDir : null
     }
 
     /** The theme to use.
@@ -102,18 +95,7 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
     @Input
     @Optional
     String getStyleName() {
-        this.styleName != null ? StringUtils.stringize(this.styleName) : null
-    }
-
-    /** The name of the YAML theme file to load.
-     *
-     * If the name ends with {@code .yml}, it’s assumed to be the complete name of a file.
-     * Otherwise, {@code -theme.yml} is appended to the name to make the file name (i.e., {@code <name>-theme.yml}).
-     *
-     * @param s Name of style (theme).
-     */
-    void setStyleName(Object s) {
-        this.styleName = s
+        this.theme != null ? project.extensions.getByType(AsciidoctorPdfThemesExtension).getByName(this.theme).styleName : null
     }
 
     /** Selects a final process mode of PDF processing.
@@ -125,8 +107,8 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
      */
     @Override
     protected ProcessMode getFinalProcessMode() {
-        if(GradleVersion.current() <= LAST_GRADLE_WITH_CLASSPATH_LEAKAGE && AsciidoctorUtils.OS.windows) {
-            if(inProcess != JAVA_EXEC) {
+        if (GradleVersion.current() <= LAST_GRADLE_WITH_CLASSPATH_LEAKAGE && AsciidoctorUtils.OS.windows) {
+            if (inProcess != JAVA_EXEC) {
                 logger.warn 'PDF processing on this version of Gradle combined with running on Microsoft Windows will fail due to classpath issues. Switching to JAVA_EXEC instead.'
             }
             JAVA_EXEC
@@ -161,18 +143,18 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
         Map<String, Object> attrs = super.getTaskSpecificDefaultAttributes(workingSourceDir)
 
         File fonts = getFontsDir()
-        if(fonts != null) {
+        if (fonts != null) {
             attrs['pdf-fontsdir'] = fonts.absolutePath
         }
 
-        File styles = getStylesDir()
-        if(styles != null) {
+        File styles = stylesDir
+        if (styles != null) {
             attrs['pdf-stylesdir'] = styles.absolutePath
         }
 
-        String theme = getStyleName()
-        if(theme != null) {
-            attrs['pdf-style'] = theme
+        String selectedTheme = styleName
+        if (selectedTheme != null) {
+            attrs['pdf-style'] = selectedTheme
         }
 
         attrs
