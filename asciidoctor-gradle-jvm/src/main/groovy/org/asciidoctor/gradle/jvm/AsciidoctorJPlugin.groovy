@@ -31,7 +31,8 @@ class AsciidoctorJPlugin implements Plugin<Project> {
             apply plugin : 'org.asciidoctor.jvm.base'
 
             tasks.create('asciidoctor', AsciidoctorTask) {
-
+                group = AsciidoctorJBasePlugin.TASK_GROUP
+                description = 'Generic task to convert AsciiDoc files and copy related resources'
             }
         }
     }

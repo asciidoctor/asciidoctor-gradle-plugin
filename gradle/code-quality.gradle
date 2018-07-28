@@ -41,7 +41,7 @@ pluginManager.withPlugin('jacoco') {
             xml.enabled = true // coveralls plugin depends on xml format report
             html.enabled = true
         }
-        dependsOn test
+        mustRunAfter test
     }
 }
 

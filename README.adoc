@@ -164,8 +164,10 @@ extensions:: Groovy DSL extensions.
   Extensions can be any kind of object that is serialisable, although in most cases they will be strings or files.
   If extensiosn are detached dependencies, theu will nto be serialised, but rather will be placed on the classpath so that
   {asciidoctorj-name} can pick them up automatically.
-jrubyVersion:: Minimum version of JRuby to be used.
-  The exact version that will be used could be higher due to {asciidoctorj-name} having a transitive dependency that is newer.
+fatalWarnings: Patterns for {asciidoctorj-name} log messages that shuold be treated as fatal errors.
+  The list is empty be default. Use `setFatalWarnings` to clear any existing patterns or to decouple a task's configuration from the global
+  configuration. Use `fatalWarnings` to add more patterns. Pass `missingIncludes()` to add the common use-case of
+  missing include files.
 gemPaths:: One or more gem installation directories (separated by the system path separator).
   Use `gemPaths` to append. Use `setGemPaths` or `gemPaths=['path1','path2']` to overwrite.
   Use `asGemPath` to obtain a path string, separated by platform-specific separator.
@@ -173,6 +175,8 @@ gemPaths:: One or more gem installation directories (separated by the system pat
   Default: empty
 groovyDslVersion:: Version of Groovy Extensions DSL.
   If not specified and no extensions are specified, Groovy DSL will not be used. However, if any extensions are added without setting an explicit version and default version will be used.
+jrubyVersion:: Minimum version of JRuby to be used.
+  The exact version that will be used could be higher due to {asciidoctorj-name} having a transitive dependency that is newer.
 logLevel:: The log level at which AsciidoctorJ will log.
   This is specified as a GRadle loggin glevel. The plugin will translate it to the appropriate AsciidoctorJ logging level.
   Default is `project.logger.level`.
@@ -453,11 +457,64 @@ By convention it sets the
 
 == The AsciidoctorPdf Plugin
 
-When applying `org.asciidoctor.jvm.pdf` it creates a single task of type `org.asciidoctor.gradle.jvm.AsciidoctorPdfTask` which is then configured to:
+When applying `org.asciidoctor.jvm.pdf` it creates a single task of type `org.asciidoctor.gradle.jvm.AsciidoctorPdfTask` an extension called `pdfThemes`
+
+The default task is named `asciidoctorPdf` and is configured to:
 
 * Output source to "${buildDir}/docs/asciidocPdf"
 * Not to copy any resources to the output directory
 * It will set also a default version for `asciidoctorj-pdf` artifact. To override set `asciidoctorj.pdfVersion` or `asciidoctorPdf.asciidoctorj.pdfVersion`.
+
+The `AsciidoctorPdfTask` task type has the following additional methods:
+
+[horizontal]
+fontsDir:: Directory for custom PDF fonts.
+  Specify a directory in any form acceptable to `project.file`. Using this instead of directly setting the `pdf-fontsdir` attribute means that Gradle will be able to check out of date status dependent on the content of this folder.
+theme:: Name of the theme to use.
+  Optional. When specifying a theme name it must match one registered via `pdfThemes`.
+
+The `pdfThemes` extension allows for themes to be registered from local copies or downloaded from GitHub or GitLab and has been inspired by earlier work of Florian Wilhelm (@fwilhe).
+
+.Registering a local theme
+[source,groovy]
+----
+pdfThemes {
+    local 'basic', { // <1>
+        styleDir = file('themes/basic') // <2>
+        styleName = 'very-basic' // <3>
+    }
+}
+----
+<1> Local themes are registered using the `local` keyword and must be provided with a name
+<2> Directory for finding the theme. Specify a directory in any form acceptable to `project.file`.
+<3> Optional setting of the style name. If this is not set, the theme name provided previously will be used.
+
+.Registering a GitHub or GitLab theme
+[source,groovy]
+----
+pdfThemes {
+    github 'basic', { // <1>
+        organisation = 'fwilhe' // <2>
+        repository = 'corporate-theme' // <3>
+        relativePath = 'resources/themes' // <4>
+
+        branch = 'master' // <5>
+        tag = '1.0.1' // <6>
+        commit = '4910271e8c3964b60e186a62f3e4339ed0752714' // <7>
+    }
+}
+----
+<1> Specify a GitHub repository which contains one or more themes. (For GitLab replace `github` with `gitlab`).
+<2> GitHub/GitLab Organisation (or user).
+<3> Name of repository containing the theme(s).
+<4> Relative path inside the repository to where the theme is located. If not speciified the theme is assumed to be in the root of the repository.
+<5> Specify the branch
+<6> Instead of a branch a tag can be used.
+<7> Instead of a branch or a tag, a very specific commit can be used.
+
+If a repository contains more than one theme, then the block will need to be repeated for each theme and the `name` and `relativePath` adjusted accordingly. Gradle will however, only downlaod the repository once.
+
+Kotlin users can use equivalent `Action`-based configurations.
 
 == The AsciidoctorEpub Plugin
 
@@ -584,9 +641,7 @@ options:: a Map specifying different options that can be sent to Asciidoctor.
 attributes:: a Map specifying various document attributes that can be sent to Asciidoctor
   Use `attributes` to append, Use `setAttributes` or `attributes=` to overwrite.
 
-////
-To see examples of many of these configuration options used in practice, refer to the http://asciidoctor.github.io/asciidoctor-gradle-examples[Asciidoctor Gradle Examples] project.
-////
+NOTE: Even though the DSL remains the same with this task, the internals have been changed to use the same `JAVA_EXEC` mechanism of the `org.asciidoctor.jvm.convert` plugins. The problems which the 1.5.x series suffered with classpaths anions disappearing shuol dnow be a thing of the past.
 
 == Kindlegen plugin
 

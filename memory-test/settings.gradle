@@ -1,0 +1,5 @@
+(1..30).each { int n ->
+    String projectName = "prj-${n}"
+    include ":${projectName}"
+    project(":${projectName}").projectDir = file('template')
+}

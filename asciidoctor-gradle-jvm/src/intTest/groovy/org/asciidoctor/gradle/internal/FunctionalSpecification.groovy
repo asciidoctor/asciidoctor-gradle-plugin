@@ -51,11 +51,11 @@ class FunctionalSpecification extends Specification {
         FunctionalTestSetup.getOfflineRepositories(new File(TEST_REPO_DIR))
     }
 
-    File getJvmConvertBuildFile(String extraContent) {
+    File getJvmConvertBuildFile(String extraContent, String plugin = 'org.asciidoctor.jvm.convert') {
         File buildFile = testProjectDir.newFile('build.gradle')
         buildFile << """
             plugins {
-                id 'org.asciidoctor.jvm.convert'
+                id '${plugin}'
             }
             
             ${offlineRepositories}

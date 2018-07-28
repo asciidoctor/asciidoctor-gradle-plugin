@@ -18,13 +18,11 @@ package org.asciidoctor.gradle.remote
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.asciidoctor.Asciidoctor
-import org.asciidoctor.ast.Cursor
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
 import org.asciidoctor.gradle.internal.ExecutorLogLevel
 import org.asciidoctor.groovydsl.AsciidoctorExtensions
 import org.asciidoctor.log.LogHandler
-import org.asciidoctor.log.LogRecord
 
 /** Runs Asciidoctor as an externally invoked Java process.
  *
@@ -40,6 +38,7 @@ class AsciidoctorJavaExec extends ExecutorBase {
 
     void run() {
 
+        Thread.currentThread().contextClassLoader = this.class.classLoader
         Asciidoctor asciidoctor = asciidoctorInstance
         addRequires(asciidoctor)
 
@@ -53,10 +52,11 @@ class AsciidoctorJavaExec extends ExecutorBase {
 
             LogHandler lh = getLogHandler(runConfiguration.executorLogLevel)
             asciidoctor.registerLogHandler(lh)
-
+            resetMessagePatternsTo(runConfiguration.fatalMessagePatterns)
             runConfiguration.outputDir.mkdirs()
             convertFiles(asciidoctor, runConfiguration)
             asciidoctor.unregisterLogHandler(lh)
+            failOnWarnings()
         }
     }
 
@@ -76,12 +76,11 @@ class AsciidoctorJavaExec extends ExecutorBase {
 
     private Asciidoctor getAsciidoctorInstance() {
         String combinedGemPath = runConfigurations*.gemPath.join(File.pathSeparator)
-
-        ClassLoader adClassLoader = this.class.classLoader
-
-        (combinedGemPath.empty || combinedGemPath == File.pathSeparator) ?
-            Asciidoctor.Factory.create(adClassLoader) :
-            Asciidoctor.Factory.create(adClassLoader, combinedGemPath)
+        if (combinedGemPath.empty || combinedGemPath == File.pathSeparator) {
+            Asciidoctor.Factory.create()
+        } else {
+            Asciidoctor.Factory.create(combinedGemPath)
+        }
     }
 
     private void addRequires(Asciidoctor asciidoctor) {
@@ -92,29 +91,15 @@ class AsciidoctorJavaExec extends ExecutorBase {
         }
     }
 
+    /** Writes the message to stdout.
+     *
+     * @param logLevel The level of the message (ignored).
+     * @param msg Message to be logged.
+     */
     @SuppressWarnings('Println')
-    LogHandler getLogHandler(ExecutorLogLevel required) {
-        int requiredLevel = required.level
-        new LogHandler() {
-            @Override
-            void log(LogRecord logRecord) {
-                int level = LogSeverityMapper.translateAsciidoctorLogLevel(logRecord.severity).level
-
-                if (level >= requiredLevel) {
-
-                    String msg = logRecord.message
-                    Cursor cursor = logRecord.cursor
-                    if (cursor) {
-                        msg = "${msg} :: ${cursor.path ?: ''} :: ${cursor.dir ?: ''}/${cursor.file ?: ''}:${cursor.lineNumber >= 0 ? cursor.lineNumber.toString() : ''}"
-                    }
-                    if (logRecord.sourceFileName) {
-                        msg = "${msg} (${logRecord.sourceFileName}${logRecord.sourceMethodName ? (':' + logRecord.sourceMethodName) : ''})"
-                    }
-
-                    println msg
-                }
-            }
-        }
+    @Override
+    protected void logMessage(ExecutorLogLevel logLevel, String msg) {
+        println msg
     }
 
     @CompileDynamic

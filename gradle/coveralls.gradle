@@ -31,7 +31,6 @@ task jacocoRootReport(dependsOn: jacocoRootMerge, type: JacocoReport) {
 }
 
 coveralls {
-    // sourceDirs = projectsWithCoverage.sourceSets.main.allSource.srcDirs.flatten()
      jacocoReportPath = jacocoMergeReportXMLFile
 
 }

@@ -25,6 +25,7 @@ import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
 import org.asciidoctor.gradle.internal.ExecutorLogLevel
 import org.asciidoctor.groovydsl.AsciidoctorExtensions
+import org.asciidoctor.log.LogHandler
 
 import javax.inject.Inject
 
@@ -37,15 +38,11 @@ import javax.inject.Inject
 @Log4j
 class AsciidoctorJExecuter extends ExecutorBase implements Runnable {
 
-    private final Set<File> asciidoctorClasspath
-
     @Inject
     AsciidoctorJExecuter(
-        final ExecutorConfigurationContainer execConfig,
-        final Set<File> asciidoctorClasspath
+        final ExecutorConfigurationContainer execConfig
     ) {
         super(execConfig)
-        this.asciidoctorClasspath = asciidoctorClasspath
     }
 
     @Override
@@ -57,6 +54,32 @@ class AsciidoctorJExecuter extends ExecutorBase implements Runnable {
             runSingle()
         } else {
             runMultiple()
+        }
+    }
+
+    /** Forwards the message to Log4J.
+     *
+     * @param logLevel The level of the message
+     * @param msg Message to be logged
+     */
+    @Override
+    protected void logMessage(ExecutorLogLevel level, String msg) {
+        switch (level) {
+            case ExecutorLogLevel.DEBUG:
+                log.debug(msg)
+                break
+            case ExecutorLogLevel.INFO:
+                log.info(msg)
+                break
+            case ExecutorLogLevel.WARN:
+                log.warn(msg)
+                break
+            case ExecutorLogLevel.ERROR:
+                log.error(msg)
+                break
+            case ExecutorLogLevel.QUIET:
+                log.fatal(msg)
+                break
         }
     }
 
@@ -77,6 +100,9 @@ class AsciidoctorJExecuter extends ExecutorBase implements Runnable {
             if (asciidoctorExtensions?.size()) {
                 registerExtensions(asciidoctor, asciidoctorExtensions)
             }
+            LogHandler lh = getLogHandler(executorLogLevel)
+            asciidoctor.registerLogHandler(lh)
+            resetMessagePatternsTo(fatalMessagePatterns)
         }
 
         runConfiguration.outputDir.mkdirs()
@@ -88,12 +114,14 @@ class AsciidoctorJExecuter extends ExecutorBase implements Runnable {
                 }
                 asciidoctor.convertFile(file, normalisedOptionsFor(file, runConfiguration))
             } catch (Throwable t) {
-                throw new AsciidoctorRemoteExecutionException("Error running Asciidoctor whilst attempting to process ${file} using backend ${runConfiguration.backendName}", t)
+                throw new AsciidoctorRemoteExecutionException("ERROR: Running Asciidoctor whilst attempting to process ${file} using backend ${runConfiguration.backendName}", t)
             }
         }
+
+        failOnWarnings()
     }
 
-    @SuppressWarnings('CatchThrowable')
+    @SuppressWarnings(['CatchThrowable', 'DuplicateStringLiteral'])
     private void runMultiple() {
 
         String combinedGemPath = runConfigurations*.gemPath.join(File.pathSeparator)
@@ -115,6 +143,7 @@ class AsciidoctorJExecuter extends ExecutorBase implements Runnable {
 
         runConfigurations.each { runConfiguration ->
             logLevel = runConfiguration.executorLogLevel
+            resetMessagePatternsTo(runConfiguration.fatalMessagePatterns)
             runConfiguration.outputDir.mkdirs()
 
             runConfiguration.sourceTree.each { File file ->
@@ -127,6 +156,9 @@ class AsciidoctorJExecuter extends ExecutorBase implements Runnable {
                     throw new AsciidoctorRemoteExecutionException("Error running Asciidoctor whilst attempting to process ${file} using backend ${runConfiguration.backendName}", t)
                 }
             }
+
+            failOnWarnings()
+
         }
     }
 
@@ -145,7 +177,7 @@ class AsciidoctorJExecuter extends ExecutorBase implements Runnable {
         this.class.classLoader
     }
 
-    ExecutorLogLevel findHighestLogLevel(Iterable<ExecutorLogLevel> levels) {
+    private ExecutorLogLevel findHighestLogLevel(Iterable<ExecutorLogLevel> levels) {
         int lvl = levels*.level.min() as int
         ExecutorLogLevel.values().find {
             it.level == lvl
@@ -173,11 +205,11 @@ class AsciidoctorJExecuter extends ExecutorBase implements Runnable {
     }
 
     @SuppressWarnings('Instanceof')
-    void logClasspath(ClassLoader cl) {
-        if(cl instanceof URLClassLoader) {
+    private void logClasspath(ClassLoader cl) {
+        if (cl instanceof URLClassLoader) {
             Set<URL> urls = ((URLClassLoader) cl).URLs as Set
 
-            if(cl.parent instanceof URLClassLoader) {
+            if (cl.parent instanceof URLClassLoader) {
                 urls.addAll(((URLClassLoader) cl.parent).URLs as Set)
             }
 

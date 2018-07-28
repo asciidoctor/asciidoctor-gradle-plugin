@@ -1,3 +1,5 @@
+rootProject.name = 'asciidoctor-gradle-plugin'
+
 include 'asciidoctor-gradle-base'
 include 'asciidoctor-gradle-jvm'
 include 'kindlegen-gradle'

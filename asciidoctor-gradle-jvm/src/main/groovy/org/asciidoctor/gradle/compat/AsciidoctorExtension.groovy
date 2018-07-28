@@ -15,15 +15,20 @@
  */
 package org.asciidoctor.gradle.compat
 
+import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.jvm.AsciidoctorJExtension
 import org.gradle.api.Project
 
 /**
  * @author Andres Almiray
+ * @author Schalk W. Cronjé
  */
+@Deprecated
+@CompileStatic
 class AsciidoctorExtension {
-    String version = '1.5.6'
+    String version = AsciidoctorJExtension.DEFAULT_ASCIIDOCTORJ_VERSION
 
-    String groovyDslVersion = '1.0.0.Alpha3'
+    String groovyDslVersion = AsciidoctorJExtension.DEFAULT_GROOVYDSL_VERSION
 
     /**
      * By default the plugin will try to add a default repository to find AsciidoctorJ.

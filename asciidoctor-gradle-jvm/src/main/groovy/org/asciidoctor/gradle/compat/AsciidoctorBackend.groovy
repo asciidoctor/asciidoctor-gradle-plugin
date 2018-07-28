@@ -15,12 +15,16 @@
  */
 package org.asciidoctor.gradle.compat
 
+import groovy.transform.CompileStatic
+
 /**
  * Supported backends.
  *
  * @author Benjamin Muschko
  * @author Dan Allen
  */
+@Deprecated
+@CompileStatic
 enum AsciidoctorBackend {
     HTML('html'),
     DOCBOOK('docbook'),
@@ -36,7 +40,7 @@ enum AsciidoctorBackend {
     private final String id
 
     static {
-        ALL_BACKENDS = values().collectEntries{ [it.id, it] }.asImmutable()
+        ALL_BACKENDS = (values().collectEntries { [it.id, it] }.asImmutable()) as Map<String, AsciidoctorBackend>
     }
 
     private AsciidoctorBackend(String id) {

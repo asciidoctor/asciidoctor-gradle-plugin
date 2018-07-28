@@ -108,21 +108,46 @@ asciidoctorPdf {
     void 'Pdf generation can be run in JAVA_EXEC process mode'() {
         given:
         getBuildFile("""
-asciidoctorPdf {
-    sourceDir 'src/docs/asciidoc'
-
-    inProcess = JAVA_EXEC    
-}
-""")
+        asciidoctorPdf {
+            sourceDir 'src/docs/asciidoc'
+        
+            inProcess = JAVA_EXEC    
+        }
+        """)
 
         when:
-        getGradleRunner([DEFAULT_TASK, '-s']).build()
+        getGradleRunner([DEFAULT_TASK]).build()
 
         then:
         verifyAll {
             new File(testProjectDir.root, DEFAULT_OUTPUT_FILE).exists()
         }
 
+    }
+
+    void 'Custom theme for PDF'() {
+        given:
+        getBuildFile("""
+        pdfThemes {
+            local 'basic', {
+                styleDir = 'src/docs/asciidoc/pdf-theme' 
+            }
+        }
+        
+        asciidoctorPdf {
+            theme 'basic'
+            sourceDir 'src/docs/asciidoc'
+            fontsDir 'src/docs/asciidoc/pdf-theme' 
+        }
+        """)
+
+        when:
+        getGradleRunner([DEFAULT_TASK]).build()
+
+        then:
+        verifyAll {
+            new File(testProjectDir.root, DEFAULT_OUTPUT_FILE).exists()
+        }
     }
 
     File getBuildFile(String extraContent) {

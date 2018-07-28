@@ -34,10 +34,14 @@ class AsciidoctorJPdfPlugin implements Plugin<Project> {
 
     void apply(Project project) {
         project.with {
-            apply plugin : 'org.asciidoctor.jvm.base'
+            apply plugin: 'org.asciidoctor.jvm.base'
+
+            extensions.create(AsciidoctorPdfThemesExtension.NAME, AsciidoctorPdfThemesExtension, project)
 
             AsciidoctorPdfTask task = tasks.create('asciidoctorPdf', AsciidoctorPdfTask)
-            task.outputDir = { "${project.buildDir}/docs/asciidocPdf"}
+            task.group = AsciidoctorJBasePlugin.TASK_GROUP
+            task.description = 'Convert AsciiDoc files to PDF format'
+            task.outputDir = { "${project.buildDir}/docs/asciidocPdf" }
             extensions.getByType(AsciidoctorJExtension).pdfVersion = AsciidoctorJExtension.DEFAULT_PDF_VERSION
 
         }

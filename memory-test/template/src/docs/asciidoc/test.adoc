@@ -1,0 +1,6 @@
+= HELLO
+:Author Initials: AC
+
+HELLO WORLD!!!
+
+(Adapted from https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/182).

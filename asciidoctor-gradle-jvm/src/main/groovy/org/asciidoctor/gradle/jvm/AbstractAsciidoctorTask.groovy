@@ -20,6 +20,7 @@ import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.internal.AsciidoctorUtils
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
+import org.asciidoctor.gradle.internal.JavaExecUtils
 import org.asciidoctor.gradle.remote.AsciidoctorJExecuter
 import org.asciidoctor.gradle.remote.AsciidoctorJavaExec
 import org.gradle.api.Action
@@ -32,7 +33,6 @@ import org.gradle.api.artifacts.DependencyResolveDetails
 import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.FileTree
-import org.gradle.api.internal.file.copy.CopySpecInternal
 @java.lang.SuppressWarnings('NoWildcardImports')
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.util.PatternSet
@@ -46,9 +46,11 @@ import org.ysb33r.grolifant.api.StringUtils
 
 import java.nio.file.Path
 
-import static org.asciidoctor.gradle.internal.AsciidoctorUtils.executeDelegatingClosure
+import static org.asciidoctor.gradle.internal.AsciidoctorUtils.*
+import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 import static org.gradle.workers.IsolationMode.CLASSLOADER
 import static org.gradle.workers.IsolationMode.PROCESS
+import static org.ysb33r.grolifant.api.FileUtils.filesFromCopySpec
 
 /** Base class for all AsciidoctorJ tasks.
  *
@@ -90,7 +92,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
     /** Logs documents as they are converted
      *
      */
-    @Internal
+    @Console
     boolean logDocuments = false
 
     /** Run Asciidoctor conversions in or out of process
@@ -142,7 +144,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      */
     void sources(final Closure cfg) {
         if (sourceDocumentPattern == null) {
-            sourceDocumentPattern = new PatternSet()
+            sourceDocumentPattern = new PatternSet().exclude('**/_*')
         }
         Closure configuration = (Closure) cfg.clone()
         configuration.delegate = sourceDocumentPattern
@@ -155,7 +157,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      */
     void sources(final Action<? super PatternSet> cfg) {
         if (sourceDocumentPattern == null) {
-            sourceDocumentPattern = new PatternSet()
+            sourceDocumentPattern = new PatternSet().exclude(UNDERSCORE_LED_FILES)
         }
         cfg.execute(sourceDocumentPattern)
     }
@@ -167,7 +169,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      * @param configurator Closure that configures a {@link org.ysb33r.grolifant.api.JavaForkOptions} instance.
      */
     void forkOptions(@DelegatesTo(org.ysb33r.grolifant.api.JavaForkOptions) Closure configurator) {
-        executeDelegatingClosure(this.javaForkOptions,configurator)
+        executeDelegatingClosure(this.javaForkOptions, configurator)
     }
 
     /** Set fork options for {@link #JAVA_EXEC} and {@link #OUT_OF_PROCESS} modes.
@@ -189,6 +191,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      */
     @InputFiles
     @SkipWhenEmpty
+    @PathSensitive(RELATIVE)
     FileTree getSourceFileTree() {
         getSourceFileTreeFrom(sourceDir)
     }
@@ -230,6 +233,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      *
      */
     @InputFiles
+    @PathSensitive(RELATIVE)
     FileTree getSecondarySourceFileTree() {
         getSecondarySourceFileTreeFrom(sourceDir)
     }
@@ -419,7 +423,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      *
      * @return FileCollection
      */
-    @InputFiles
+    @Classpath
     @SuppressWarnings('Instanceof')
     FileCollection getConfigurations() {
         FileCollection fc = asciidoctorj.configuration
@@ -550,7 +554,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
         addInputProperty 'trackBaseDir', { getBaseDir().absolutePath }
 
         inputs.files { asciidoctorj.gemPaths }
-        inputs.files { (resourceCopySpec as CopySpecInternal).buildRootResolver().allSource }
+        inputs.files { filesFromCopySpec(resourceCopySpec) }
     }
 
     /** Returns all of the executor configurations for this task
@@ -597,6 +601,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
             backendName: backendName,
             logDocuments: logDocuments,
             gemPath: gemPath,
+            fatalMessagePatterns: asciidoctorj.fatalWarnings,
             asciidoctorExtensions: (asciidoctorJExtensions.findAll { !(it instanceof Dependency) }),
             requires: requires,
             copyResources: this.copyResourcesForBackends != null && (this.copyResourcesForBackends.empty || backendName in this.copyResourcesForBackends),
@@ -632,7 +637,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
         ps.include '**/*.ad'
         ps.include '**/*.asc'
         ps.include '**/*.asciidoc'
-        ps.exclude '**/_*'
+        ps.exclude UNDERSCORE_LED_FILES
     }
 
     /** The default pattern set for secondary sources.
@@ -652,6 +657,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      * @return A {@link CopySpec}. Never {@code null}.
      */
     @CompileDynamic
+    @Internal
     protected CopySpec getDefaultResourceCopySpec() {
         project.copySpec {
             from(sourceDir) {
@@ -686,8 +692,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      * @return Source tree based upon configured pattern.
      */
     protected FileTree getSourceFileTreeFrom(File dir) {
-        project.fileTree(dir).
-            matching(this.sourceDocumentPattern ?: defaultSourceDocumentPattern)
+        getSourceFileTree(project, dir, this.sourceDocumentPattern ?: defaultSourceDocumentPattern)
     }
 
     /** Obtains a secondary source tree based on patterns.
@@ -849,25 +854,18 @@ class AbstractAsciidoctorTask extends DefaultTask {
         config.classpath = asciidoctorClasspath
         config.displayName = displayName
         config.params(
-            ecContainer,
-            asciidoctorClasspath.files
+            ecContainer
         )
         configureForkOptions(config.forkOptions)
     }
 
     private Map<String, ExecutorConfiguration> runWithJavaExec(
-        final File workingSourceDir, final Set<File> sourceFiles) {
-        FileCollection asciidoctorClasspath = configurations
-
-        File entryPoint = new File(AsciidoctorJavaExec.protectionDomain.codeSource.location.toURI()).absoluteFile
-        File groovyJar = getClassLocation(GroovyObject)
-        FileCollection javaExecClasspath = project.files(entryPoint, groovyJar, asciidoctorClasspath)
-
-        File execConfigurationData = project.file("${project.buildDir}/tmp/${FileUtils.toSafeFileName(this.name)}.javaexec-data")
+        final File workingSourceDir,
+        final Set<File> sourceFiles
+    ) {
+        FileCollection javaExecClasspath = JavaExecUtils.getJavaExecClasspath(project, configurations)
         Map<String, ExecutorConfiguration> executorConfigurations = getExecutorConfigurations(workingSourceDir, sourceFiles)
-
-        execConfigurationData.parentFile.mkdirs()
-        ExecutorConfigurationContainer.toFile(execConfigurationData, executorConfigurations.values())
+        File execConfigurationData = JavaExecUtils.writeExecConfigurationData(this, executorConfigurations.values())
 
         logger.debug("Serialised AsciidoctorJ configuration to ${execConfigurationData}")
         logger.info "Running AsciidoctorJ instance with classpath ${javaExecClasspath.files}"
@@ -948,9 +946,5 @@ class AbstractAsciidoctorTask extends DefaultTask {
             }
         }
         cfg
-    }
-
-    private File getClassLocation(Class aClass) {
-        new File(aClass.protectionDomain.codeSource.location.toURI()).absoluteFile
     }
 }

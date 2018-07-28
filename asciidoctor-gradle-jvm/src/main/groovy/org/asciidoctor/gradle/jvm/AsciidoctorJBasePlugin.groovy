@@ -27,6 +27,7 @@ import org.gradle.api.tasks.diagnostics.DependencyReportTask
 @CompileStatic
 class AsciidoctorJBasePlugin implements Plugin<Project> {
 
+    static final String TASK_GROUP = 'Documentation'
     static final String DEPS_REPORT = 'asciidoctorjDependencies'
 
     void apply(Project project) {

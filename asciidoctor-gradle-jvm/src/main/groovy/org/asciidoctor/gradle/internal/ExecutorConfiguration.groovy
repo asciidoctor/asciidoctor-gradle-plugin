@@ -18,6 +18,8 @@ package org.asciidoctor.gradle.internal
 import groovy.transform.CompileStatic
 import groovy.transform.TupleConstructor
 
+import java.util.regex.Pattern
+
 /** Configuration for running Asciidoctor
  *
  * @since 2.0.0
@@ -33,6 +35,7 @@ class ExecutorConfiguration implements Serializable, Cloneable {
     File rootDir
     File baseDir
     Set<File> sourceTree
+    List<Pattern> fatalMessagePatterns
 
     String backendName
     String gemPath
