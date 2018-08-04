@@ -680,8 +680,16 @@ is just like any other Java/Groovy project. You simply define a dependency using
 [source,groovy]
 .build.gradle
 ----
+configurations {
+    asciidoctor
+}
+
 dependencies {
     asciidoctor 'com.acme:asciidoctor-extensions:x.y.z'
+}
+
+asciidoctor {
+    configurations 'asciidoctor'
 }
 ----
 

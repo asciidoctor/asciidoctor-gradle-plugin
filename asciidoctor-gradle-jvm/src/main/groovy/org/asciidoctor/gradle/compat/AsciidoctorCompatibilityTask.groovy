@@ -258,7 +258,7 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
      * @since 0.7.1
      */
     void setBackends(Iterable<Object> b) {
-        migrationMessage('setBackends', 'Use outputOoptons.setBackends')
+        migrationMessage('setBackends', 'Use outputOptions.setBackends')
         this.backends.clear()
         this.backends.addAll(stringize(b))
     }
@@ -271,7 +271,7 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
      */
     @SuppressWarnings('ConfusingMethodName')
     void backends(Object... b) {
-        migrationMessage('backends', 'Use outputOoptons.setbackends')
+        migrationMessage('backends', 'Use outputOptions.setbackends')
         this.backends.addAll(stringize(b as List))
     }
 

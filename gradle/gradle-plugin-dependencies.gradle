@@ -1,7 +1,7 @@
 dependencies {
     // BUG: https://github.com/gradle/gradle/issues/3698
     // TODO: We use a dependency on groovy-all rather than localGroovy. This
-    // works around a bug in the worker API known to be in Gradle 4.0-4.8
+    // works around a bug in the worker API known to be in Gradle 4.0-4.9
     //compile localGroovy()
     compile "org.codehaus.groovy:groovy-all:${GroovySystem.version}"
 
@@ -13,5 +13,20 @@ dependencies {
     if(configurations.findByName('intTestCompile')) {
         intTestCompile project(':testfixtures-jvm')
         intTestRuntime files(createClasspathManifest)
+    }
+}
+
+// works around an issue with Gradle 4.9 and the version of Groovy
+if (GradleVersion.current() < GradleVersion.version('4.9')) {
+    configurations {
+        fixedGroovyCompiler
+    }
+
+    dependencies {
+        fixedGroovyCompiler 'org.codehaus.groovy:groovy-all:2.4.15'
+    }
+
+    tasks.withType(GroovyCompile) {
+        groovyClasspath = configurations.fixedGroovyCompiler
     }
 }
