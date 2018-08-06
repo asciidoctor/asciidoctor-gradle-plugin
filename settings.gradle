@@ -9,6 +9,7 @@ include 'asciidoctor-gradle-jvm-gems'
 include 'asciidoctor-gradle-jvm-slides'
 include 'asciidoctor-gradle-js'
 include 'asciidoctor-gradle-slides-export'
+include 'asciidoctor-gradle-jvm-leanpub'
 
 ['offline-repo', 'jvm'].each {
     include "testfixtures/${it}"

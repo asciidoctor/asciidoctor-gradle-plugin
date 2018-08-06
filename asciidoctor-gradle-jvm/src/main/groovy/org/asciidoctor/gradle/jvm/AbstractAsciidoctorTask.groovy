@@ -72,8 +72,8 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
     @Internal
     protected final static GradleVersion LAST_GRADLE_WITH_CLASSPATH_LEAKAGE = GradleVersion.version(('5.99'))
 
+    protected final AsciidoctorJExtension asciidoctorj
     private ProcessMode inProcess = JAVA_EXEC
-    private final AsciidoctorJExtension asciidoctorj
     private final WorkerExecutor worker
     private final List<Object> asciidocConfigurations = []
 

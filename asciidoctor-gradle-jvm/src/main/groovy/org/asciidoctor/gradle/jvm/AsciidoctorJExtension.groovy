@@ -60,6 +60,7 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     private static final String ASCIIDOCTORJ_PDF_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-pdf"
     private static final String ASCIIDOCTORJ_EPUB_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-epub3"
     private static final String ASCIIDOCTORJ_DIAGRAM_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-diagram"
+    private static final String ASCIIDOCTORJ_LEANPUB_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctor-leanpub-markdown"
     private static final String JRUBY_COMPLETE_DEPENDENCY = 'org.jruby:jruby-complete'
     private static final String ASCIIDOCTOR_DEPENDENCY_PROPERTY_NAME = 'asciidoctorj'
     private static final OperatingSystem OS = OperatingSystem.current()
@@ -313,6 +314,7 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
         final String gDslVer = finalGroovyDslVersion
         final String pdfVer = finalPdfVersion
         final String epubVer = finalEpubVersion
+        final String leanpubVer = finalLeanpubVersion
         final String diagramVer = finalDiagramVersion
         final String jrubyVer = getJrubyVersion() ?: minimumSafeJRubyVersion(getVersion())
         final String jrubyCompleteDep = "${JRUBY_COMPLETE_DEPENDENCY}:${jrubyVer}"
@@ -329,6 +331,10 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
 
         if (epubVer != null) {
             deps.add(createDependency("${ASCIIDOCTORJ_EPUB_DEPENDENCY}:${epubVer}"))
+        }
+
+        if (leanpubVer != null) {
+            deps.add(createDependency("${ASCIIDOCTORJ_LEANPUB_DEPENDENCY}:${leanpubVer}"))
         }
 
         if (diagramVer != null) {
@@ -627,6 +633,14 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
             this.modules.epub.version ?: extFromProject.modules.epub.version
         } else {
             extFromProject.modules.epub.version
+        }
+    }
+
+    private String getFinalLeanpubVersion() {
+        if (task) {
+            this.modules.leanpub.version ?: extFromProject.modules.leanpub.version
+        } else {
+            extFromProject.modules.leanpub.version
         }
     }
 

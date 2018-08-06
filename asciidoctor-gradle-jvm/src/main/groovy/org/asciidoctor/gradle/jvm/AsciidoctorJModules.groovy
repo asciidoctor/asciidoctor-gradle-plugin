@@ -33,11 +33,13 @@ class AsciidoctorJModules {
     private final AsciidoctorModuleDefinition pdf
     private final AsciidoctorModuleDefinition epub
     private final AsciidoctorModuleDefinition diagram
+    private final AsciidoctorModuleDefinition leanpub
     private final AsciidoctorModuleDefinition groovyDsl
 
     AsciidoctorJModules(AsciidoctorJExtension asciidoctorjs, Map<String, String> defaultVersions) {
         this.pdf = Module.of('pdf', defaultVersions['asciidoctorj.pdf'])
         this.epub = Module.of('epub', defaultVersions['asciidoctorj.epub'])
+        this.leanpub = Module.of('leanpub', defaultVersions['asciidoctorj.leanpub'])
         this.diagram = Module.of('diagram', defaultVersions['asciidoctorj.diagram']) { value ->
             if (value != null) {
                 asciidoctorjs.requires('asciidoctor-diagram')
@@ -45,7 +47,7 @@ class AsciidoctorJModules {
         }
         this.groovyDsl = Module.of('groovyDsl', defaultVersions['asciidoctorj.groovydsl'])
 
-        [pdf, epub, diagram, groovyDsl].each {
+        [pdf, epub, diagram, groovyDsl, leanpub].each {
             index[it.name] = it
         }
     }
@@ -64,6 +66,14 @@ class AsciidoctorJModules {
 
     AsciidoctorModuleDefinition getEpub() {
         this.epub
+    }
+
+    void leanpub(@DelegatesTo(AsciidoctorModuleDefinition) Closure cfg) {
+        configureItem(this.leanpub, cfg)
+    }
+
+    AsciidoctorModuleDefinition getLeanpub() {
+        this.leanpub
     }
 
     void diagram(@DelegatesTo(AsciidoctorModuleDefinition) Closure cfg) {
