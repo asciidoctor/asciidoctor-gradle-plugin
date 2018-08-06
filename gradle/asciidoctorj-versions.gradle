@@ -9,6 +9,7 @@ ext {
     compileOnlyGroovyDslVersion = readAsciidoctorjExtVersion('groovydsl')
     downloadOnlyPdfVersion = readAsciidoctorjExtVersion('pdf')
     downloadOnlyEpubVersion = readAsciidoctorjExtVersion('epub')
+    downloadOnlyLeanpubVersion = readAsciidoctorjExtVersion('leanpub')
 
     asciidoctorjTestVersion = [
         series20: readAsciidoctorjExtVersion(),
@@ -21,6 +22,11 @@ ext {
     diagramTestVersion = [
         series20: readAsciidoctorjExtVersion('diagram'),
     ]
+
+    leanpubTestVersion = [
+        series20: readAsciidoctorjExtVersion('leanpub')
+    ]
+
 }
 
 asciidoctorjTestVersion.keySet().each {

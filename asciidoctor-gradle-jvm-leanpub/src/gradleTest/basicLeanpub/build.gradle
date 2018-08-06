@@ -1,0 +1,22 @@
+plugins {
+    id 'org.asciidoctor.jvm.leanpub'
+    id 'org.asciidoctor.jvm.leanpub.dropbox-copy'
+}
+
+repositories {
+    jcenter()
+}
+
+asciidoctorLeanpub {
+    colistStyle ASIDE
+    colistPrefix 'line'
+}
+
+copyAsciidoctorLeanpubToDropbox {
+    dropboxRoot file('Dropbox')
+    bookPath 'sample'
+}
+
+task runGradleTest {
+    dependsOn copyAsciidoctorLeanpubToDropbox, asciidoctorLeanpub
+}
