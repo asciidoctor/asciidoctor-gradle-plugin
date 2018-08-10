@@ -73,7 +73,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
 
     static final OperatingSystem OS = OperatingSystem.current()
 
-    private Object version = DEFAULT_ASCIIDOCTORJ_VERSION
+    private Object version
     private Optional<Object> groovyDslVersion
     private Optional<Object> pdfVersion
     private Optional<Object> epubVersion
@@ -111,6 +111,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         this.attributes['gradle-project-version'] = { project.version ?: '' }
 
         this.safeMode = SafeMode.SAFE
+        this.version = DEFAULT_ASCIIDOCTORJ_VERSION
         this.groovyDslVersion = Optional.empty()
     }
 
