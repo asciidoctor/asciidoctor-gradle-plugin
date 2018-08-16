@@ -447,6 +447,10 @@ All tasks can control how Asciidoctor conversions are being run via the `inProce
 
 NOTE: In certain cases the plugin will overrule your choice as it has some built-in rules for special cases. In such cases it will log a warning that it has done that.
 
+=== Include directives
+
+These plugins do not change the way link:https://asciidoctor.org/docs/user-manual/#include-resolution[include::] directive works, but it is important to note how setting `baseDir` will affect top level includes. It is recommended that you always use `{includedir}` as a prefix for the file path. This attribute is always set to the correct top-level folder where the sources will be located.
+
 == The New AsciidoctorJ Plugin
 
 When applying `org.asciidoctor.jvm.convert` it creates a single task of type `org.asciidoctor.gradle.jvm.AsciidoctorTask` called `asciidoctor`.

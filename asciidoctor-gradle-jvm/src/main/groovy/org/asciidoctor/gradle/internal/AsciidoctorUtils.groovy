@@ -113,7 +113,7 @@ class AsciidoctorUtils {
 
     /** Executes a configuration closure.
      *
-     * The closure will be cloned before excution.
+     * The closure will be cloned before execution.
      *
      * @param delegated Closure delegate
      * @param cfg Closure to execute
