@@ -51,7 +51,7 @@ class AsciidoctorPdfThemeExtensionSpec extends Specification {
         }
 
         when:
-        AsciidoctorPdfThemesExtension.ThemeDescriptor theme = pdfThemes.getByName('basic')
+        AsciidoctorPdfThemesExtension.PdfThemeDescriptor theme = pdfThemes.getByName('basic')
 
         then:
         theme.styleName == 'basic'
@@ -70,11 +70,11 @@ class AsciidoctorPdfThemeExtensionSpec extends Specification {
 
 
         when:
-        AsciidoctorPdfThemesExtension.ThemeDescriptor theme = pdfThemes.getByName('basic')
+        AsciidoctorPdfThemesExtension.PdfThemeDescriptor theme = pdfThemes.getByName('basic')
 
         then:
         theme.styleName == 'basic'
-        theme.styleDir == new File(determineUnpackedDir('github-cache'),'bar-master/some/path')
+        theme.styleDir == new File(determineUnpackedDir('github-cache','master'),'bar-master/some/path')
     }
 
     void 'Configure GitLab theme'() {
@@ -89,15 +89,15 @@ class AsciidoctorPdfThemeExtensionSpec extends Specification {
 
 
         when:
-        AsciidoctorPdfThemesExtension.ThemeDescriptor theme = pdfThemes.getByName('basic')
+        AsciidoctorPdfThemesExtension.PdfThemeDescriptor theme = pdfThemes.getByName('basic')
 
         then:
         theme.styleName == 'basic'
-        theme.styleDir == new File(determineUnpackedDir('gitlab-cache'),'bar-master/some/path')
+        theme.styleDir == new File(determineUnpackedDir('gitlab-cache','bar-master'),'bar-master/some/path')
     }
 
-    File determineUnpackedDir(String cacheSubDir) {
-        File baseDir = project.file("${project.buildDir}/${cacheSubDir}/foo/bar/bar-master")
+    File determineUnpackedDir(String cacheSubDir,String pattern) {
+        File baseDir = project.file("${project.buildDir}/${cacheSubDir}/foo/bar/${pattern}")
         FileUtils.listDirs(baseDir)[0]
     }
 }

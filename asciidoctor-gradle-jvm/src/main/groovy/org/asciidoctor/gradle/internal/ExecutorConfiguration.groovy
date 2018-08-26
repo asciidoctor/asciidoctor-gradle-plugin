@@ -42,6 +42,7 @@ class ExecutorConfiguration implements Serializable, Cloneable {
 
     boolean logDocuments
     boolean copyResources
+    boolean legacyAttributes = false
 
     int safeModeLevel
 
@@ -71,7 +72,7 @@ Asciidoctor:
   ${options.size()} options
   ${attributes.size()} attributes
   ${asciidoctorExtensions?.size() ?: 0} extensions
-  logDocuments = ${logDocuments}, copyReources = ${copyResources}, safeMode = ${safeModeLevel}
+  logDocuments = ${logDocuments}, copyResources = ${copyResources}, safeMode = ${safeModeLevel}
 """
     }
 }

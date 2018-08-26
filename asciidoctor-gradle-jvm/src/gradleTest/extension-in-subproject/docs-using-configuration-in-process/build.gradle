@@ -16,3 +16,13 @@ asciidoctor {
     configurations 'asciidocExt'
     inProcess IN_PROCESS
 }
+
+
+// This is to work around a bug in Gradle. It is not part of normal build script.
+// The side affect of this is that we actually get better code coverage as the process mode
+// changes depending on which version of Gradle is being tested.
+if(System.getProperty('CALLING_GRADLETEST_USES_GROOVY_VERSION') != GroovySystem.version) {
+    asciidoctor {
+        inProcess JAVA_EXEC
+    }
+}

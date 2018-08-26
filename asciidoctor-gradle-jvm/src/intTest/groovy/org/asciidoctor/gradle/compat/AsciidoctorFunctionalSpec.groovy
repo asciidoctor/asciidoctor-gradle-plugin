@@ -146,7 +146,7 @@ class AsciidoctorFunctionalSpec extends FunctionalSpecification {
         getBuildFile('')
 
         when:
-        runGradle()
+        runGradle(['asciidoctor','-i'])
 
         then:
         !new File(buildDir, 'asciidoctor/html5').listFiles({

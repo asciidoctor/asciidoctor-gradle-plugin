@@ -28,6 +28,7 @@ import org.gradle.api.artifacts.DependencyResolveDetails
 import org.gradle.api.artifacts.ResolutionStrategy
 import org.gradle.api.file.FileCollection
 import org.gradle.api.logging.LogLevel
+import org.gradle.util.GradleVersion
 import org.ysb33r.grolifant.api.AbstractCombinedProjectTaskExtension
 import org.ysb33r.grolifant.api.OperatingSystem
 
@@ -72,6 +73,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     final static String NAME = 'asciidoctorj'
 
     static final OperatingSystem OS = OperatingSystem.current()
+    public static final boolean GUAVA_REQUIRED_FOR_EXTERNALS = GradleVersion.current() >= GradleVersion.version('4.8')
 
     private Object version
     private Optional<Object> groovyDslVersion
@@ -79,6 +81,8 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     private Optional<Object> epubVersion
     private Optional<Object> diagramVersion
     private Optional<Object> jrubyVersion
+
+    private Boolean injectGuavaJar
 
     private final Map<String, Object> options = [:]
     private final Map<String, Object> attributes = [:]
@@ -121,6 +125,31 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      */
     AsciidoctorJExtension(Task task) {
         super(task, NAME)
+    }
+
+    /** Whether the Guava JAR that ships with the Gradle sustribution should be injected into the
+     * classpath for external AsciidoctorJ processes.
+     *
+     * If not set previously via {@link #setInjectInternalGuavaJar} then a default version depending of the version of
+     * the Gradle distribution will be used.
+     *
+     * @return {@code true} if JAR should be injected.
+     */
+    boolean getInjectInternalGuavaJar() {
+        if(task) {
+            this.injectGuavaJar == null ? extFromProject.injectInternalGuavaJar : this.injectGuavaJar
+        } else {
+            this.injectGuavaJar == null ? GUAVA_REQUIRED_FOR_EXTERNALS : this.injectGuavaJar
+        }
+    }
+
+    /** Whether the Guava JAR that ships with the Gradle sustribution should be injected into the
+     * classpath for external AsciidoctorJ processes.
+     *
+     * @param inject {@code true} if JAR should be injected.
+     */
+    void setInjectInternalGuavaJar(boolean inject) {
+        this.injectGuavaJar = inject
     }
 
     /** Version of AsciidoctorJ that should be used.
