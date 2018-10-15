@@ -17,6 +17,7 @@ package org.asciidoctor.gradle
 
 import spock.lang.Specification
 
+@SuppressWarnings(['DuplicateStringLiteral','DuplicateNumberLiteral','MethodName','ClassSize','DuplicateMapLiteral'])
 class AsciidoctorUtilsSpec extends Specification {
 
     static s = File.separator

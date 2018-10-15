@@ -24,6 +24,7 @@ import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
+@SuppressWarnings(['DuplicateStringLiteral','DuplicateNumberLiteral','MethodName','ClassSize','DuplicateMapLiteral', 'UnnecessaryGString'])
 class AsciidoctorExtensionFunctionalSpec extends Specification {
     public static final String TEST_PROJECTS_DIR = "src/intTest/projects"
     @Rule
@@ -64,7 +65,7 @@ class AsciidoctorExtensionFunctionalSpec extends Specification {
 
         when:
         final BuildResult firstInvocationResult = GradleRunner.create()
-            .withProjectDir(testProjectDir.getRoot())
+            .withProjectDir(testProjectDir.root)
             .withArguments("asciidoctor")
             .withPluginClasspath(pluginClasspath)
             .withDebug(true)
@@ -79,7 +80,7 @@ class AsciidoctorExtensionFunctionalSpec extends Specification {
         when:
         new File(testProjectDir.root, "src/docs/asciidoc/sample.asciidoc") << "changes"
         final BuildResult secondInvocationResult = GradleRunner.create()
-            .withProjectDir(testProjectDir.getRoot())
+            .withProjectDir(testProjectDir.root)
             .withArguments("asciidoctor")
             .withPluginClasspath(pluginClasspath)
             .withDebug(true)
@@ -160,7 +161,7 @@ digraph {
 
         when:
         final BuildResult firstInvocationResult = GradleRunner.create()
-            .withProjectDir(testProjectDir.getRoot())
+            .withProjectDir(testProjectDir.root)
             .withArguments("clean", "asciidoctor")
             .withPluginClasspath(pluginClasspath)
             .forwardOutput()
@@ -177,7 +178,7 @@ digraph {
         when:
         new File(testProjectDir.root, "src/docs/asciidoc/sample.asciidoc") << "changes"
         final BuildResult secondInvocationResult = GradleRunner.create()
-            .withProjectDir(testProjectDir.getRoot())
+            .withProjectDir(testProjectDir.root)
             .withArguments("clean", "asciidoctor")
             .withPluginClasspath(pluginClasspath)
             .forwardOutput()
