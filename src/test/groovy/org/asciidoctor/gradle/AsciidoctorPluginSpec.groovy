@@ -30,6 +30,7 @@ import spock.lang.Specification
  * @author Patrick Reimers
  * @author Markus Schlichting
  */
+@SuppressWarnings(['MethodName','DuplicateStringLiteral'])
 class AsciidoctorPluginSpec extends Specification {
     private static final String ASCIIDOCTOR = 'asciidoctor'
 
@@ -39,7 +40,6 @@ class AsciidoctorPluginSpec extends Specification {
         project = ProjectBuilder.builder().build()
     }
 
-    @SuppressWarnings('MethodName')
     def "Applies plugin and checks default setup"() {
         expect:
             project.tasks.findByName(ASCIIDOCTOR) == null
@@ -71,13 +71,13 @@ class AsciidoctorPluginSpec extends Specification {
 
         def config = project.project.configurations.getByName('asciidoctor')
         def dependencies = config.dependencies
-        assert dependencies.isEmpty();
+        assert dependencies.isEmpty()
 
         // mock-trigger beforeResolve() to avoid 'real' resolution of dependencies
-        DependencyResolutionListener broadcast = config.getDependencyResolutionBroadcast()
-        ResolvableDependencies incoming = config.getIncoming()
+        DependencyResolutionListener broadcast = config.dependencyResolutionBroadcast
+        ResolvableDependencies incoming = config.incoming
         broadcast.beforeResolve(incoming)
-        def dependencyHandler = project.getDependencies();
+        def dependencyHandler = project.dependencies
 
         then:
         assert dependencies.contains(dependencyHandler.create(AsciidoctorPlugin.ASCIIDOCTORJ_GROOVY_DSL_DEPENDENCY + expectedDslVersion))

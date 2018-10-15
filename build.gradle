@@ -69,6 +69,11 @@ audit {
 }
 
 dependencies {
+    compileOnly "org.asciidoctor:asciidoctorj:${asciidoctorjVersion}"
+    compileOnly "org.asciidoctor:asciidoctorj-groovy-dsl:${asciidoctorjDslVersion}", {
+        exclude module: 'groovy-all'
+    }
+
     compile gradleApi()
     testCompile "org.asciidoctor:asciidoctorj:$asciidoctorjVersion"
     testCompile("org.asciidoctor:asciidoctorj-groovy-dsl:$asciidoctorjDslVersion") {
