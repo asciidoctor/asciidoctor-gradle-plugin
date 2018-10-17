@@ -20,7 +20,6 @@ import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
-import spock.lang.IgnoreRest
 import spock.lang.Specification
 
 /**
@@ -28,9 +27,11 @@ import spock.lang.Specification
  *
  * @author Peter Ledbrook
  */
+@SuppressWarnings(['DuplicateStringLiteral', 'DuplicateNumberLiteral', 'MethodName', 'ClassSize', 'DuplicateMapLiteral', 'UnnecessaryGString'])
 class AsciidoctorFunctionalSpec extends Specification {
     public static final String TEST_PROJECTS_DIR = "src/intTest/projects"
-    @Rule final TemporaryFolder testProjectDir = new TemporaryFolder()
+    @Rule
+    final TemporaryFolder testProjectDir = new TemporaryFolder()
 
     List<File> pluginClasspath
 
@@ -47,7 +48,7 @@ class AsciidoctorFunctionalSpec extends Specification {
     def "Should do nothing with an empty project"() {
         given: "A minimal build file"
         def buildFile = testProjectDir.newFile("build.gradle")
-        buildFile << """\
+        buildFile << """
         plugins {
             id "org.asciidoctor.convert"
         }
@@ -56,10 +57,10 @@ class AsciidoctorFunctionalSpec extends Specification {
 
         when:
         final result = GradleRunner.create()
-                .withProjectDir(testProjectDir.getRoot())
-                .withArguments("asciidoctor")
-                .withPluginClasspath(pluginClasspath)
-                .build()
+            .withProjectDir(testProjectDir.root)
+            .withArguments("asciidoctor")
+            .withPluginClasspath(pluginClasspath)
+            .build()
 
         then:
         result.task(":asciidoctor").outcome == TaskOutcome.NO_SOURCE
@@ -69,7 +70,7 @@ class AsciidoctorFunctionalSpec extends Specification {
     def "Should build normally for a standard project"() {
         given: "A minimal build file"
         def buildFile = testProjectDir.newFile("build.gradle")
-        buildFile << """\
+        buildFile << """
         plugins {
             id "org.asciidoctor.convert"
         }
@@ -81,10 +82,10 @@ class AsciidoctorFunctionalSpec extends Specification {
 
         when:
         final result = GradleRunner.create()
-                .withProjectDir(testProjectDir.getRoot())
-                .withArguments("asciidoctor")
-                .withPluginClasspath(pluginClasspath)
-                .build()
+            .withProjectDir(testProjectDir.root)
+            .withArguments("asciidoctor")
+            .withPluginClasspath(pluginClasspath)
+            .build()
 
         then:
         result.task(":asciidoctor").outcome == TaskOutcome.SUCCESS
@@ -96,7 +97,7 @@ class AsciidoctorFunctionalSpec extends Specification {
     def "Task should be up-to-date when executed a second time"() {
         given: "A minimal build file"
         def buildFile = testProjectDir.newFile("build.gradle")
-        buildFile << """\
+        buildFile << """
         plugins {
             id "org.asciidoctor.convert"
         }
@@ -104,29 +105,28 @@ class AsciidoctorFunctionalSpec extends Specification {
 
         and: "Some source files"
         FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, "normal"), testProjectDir.root)
-        final buildDir = new File(testProjectDir.root, "build")
 
         when:
         GradleRunner.create()
-                .withProjectDir(testProjectDir.getRoot())
-                .withArguments("asciidoctor")
-                .withPluginClasspath(pluginClasspath)
-                .build()
+            .withProjectDir(testProjectDir.root)
+            .withArguments("asciidoctor")
+            .withPluginClasspath(pluginClasspath)
+            .build()
         final result = GradleRunner.create()
-                .withProjectDir(testProjectDir.getRoot())
-                .withArguments("asciidoctor")
-                .withPluginClasspath(pluginClasspath)
-                .build()
+            .withProjectDir(testProjectDir.root)
+            .withArguments("asciidoctor")
+            .withPluginClasspath(pluginClasspath)
+            .build()
 
         then:
         result.task(":asciidoctor").outcome == TaskOutcome.UP_TO_DATE
     }
 
-        @SuppressWarnings('MethodName')
+    @SuppressWarnings('MethodName')
     def "Task should not be up-to-date when classpath is changed"() {
         given: "A minimal build file"
         def buildFile = testProjectDir.newFile("build.gradle")
-        buildFile << """\
+        buildFile << """
         plugins {
             id "org.asciidoctor.convert"
         }
@@ -142,19 +142,18 @@ class AsciidoctorFunctionalSpec extends Specification {
 
         and: "Some source files"
         FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, "normal"), testProjectDir.root)
-        final buildDir = new File(testProjectDir.root, "build")
 
         when:
         GradleRunner.create()
-                .withProjectDir(testProjectDir.getRoot())
-                .withArguments("asciidoctor")
-                .withPluginClasspath(pluginClasspath)
-                .build()
+            .withProjectDir(testProjectDir.root)
+            .withArguments("asciidoctor")
+            .withPluginClasspath(pluginClasspath)
+            .build()
         final result = GradleRunner.create()
-                .withProjectDir(testProjectDir.getRoot())
-                .withArguments("asciidoctor", "-PmodifyClasspath")
-                .withPluginClasspath(pluginClasspath)
-                .build()
+            .withProjectDir(testProjectDir.root)
+            .withArguments("asciidoctor", "-PmodifyClasspath")
+            .withPluginClasspath(pluginClasspath)
+            .build()
 
         then:
         result.task(":asciidoctor").outcome == TaskOutcome.SUCCESS
