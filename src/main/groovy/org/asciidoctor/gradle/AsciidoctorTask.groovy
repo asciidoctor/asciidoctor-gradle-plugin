@@ -642,7 +642,7 @@ class AsciidoctorTask extends DefaultTask {
         logger.debug("Serialised AsciidoctorJ configuration to ${execConfigurationData}")
         logger.info "Running AsciidoctorJ instance with classpath ${javaExecClasspath.files}"
         checkForExtensionsOnClasspath()
-        
+
         activeBackends().each { backend ->
             copyResources(outputBackendDir(outputDir, backend), resourceCopySpec)
         }
