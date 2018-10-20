@@ -41,7 +41,6 @@ class AsciidoctorExtensionFunctionalSpec extends Specification {
         pluginClasspath = pluginClasspathResource.readLines().collect { new File(it) }
     }
 
-    @SuppressWarnings('MethodName')
     def "Postprocessor extensions are registered and preserved across multiple builds"() {
         given: "A build file that declares extensions"
         def buildFile = testProjectDir.newFile("build.gradle")
@@ -92,7 +91,6 @@ class AsciidoctorExtensionFunctionalSpec extends Specification {
     }
 
     @spock.lang.Ignore
-    @SuppressWarnings('MethodName')
     def "require modules are registered and preserved across multiple builds"() {
         given: "A build file that declares a required module"
         def buildFile = testProjectDir.newFile("build.gradle")

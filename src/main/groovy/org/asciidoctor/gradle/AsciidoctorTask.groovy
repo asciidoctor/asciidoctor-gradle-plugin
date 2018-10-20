@@ -17,6 +17,7 @@ package org.asciidoctor.gradle
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import org.asciidoctor.extension.spi.ExtensionRegistry
 import org.asciidoctor.gradle.backported.AsciidoctorJavaExec
 import org.asciidoctor.gradle.backported.ExecutorConfiguration
 import org.asciidoctor.gradle.backported.ExecutorConfigurationContainer
@@ -28,14 +29,15 @@ import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.FileTree
 import org.gradle.api.internal.file.copy.CopySpecInternal
+@java.lang.SuppressWarnings('NoWildcardImports')
+import org.gradle.api.tasks.*
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.internal.FileUtils
 import org.gradle.process.JavaExecSpec
 import org.gradle.util.CollectionUtils
-@java.lang.SuppressWarnings('NoWildcardImports')
-import org.gradle.api.tasks.*
+import org.gradle.util.GradleVersion
 
-import static org.asciidoctor.gradle.backported.AsciidoctorUtils.getClassLocation
+import static org.asciidoctor.gradle.AsciidoctorUtils.getClassLocation
 import static org.asciidoctor.gradle.backported.JavaExecUtils.getJavaExecClasspath
 
 /**
@@ -55,6 +57,7 @@ import static org.asciidoctor.gradle.backported.JavaExecUtils.getJavaExecClasspa
  */
 @SuppressWarnings(['MethodCount', 'Instanceof'])
 class AsciidoctorTask extends DefaultTask {
+    static final boolean GRADLE_4_OR_BETTER = GradleVersion.current() >= GradleVersion.version('4.0')
     static final boolean IS_WINDOWS = System.getProperty('os.name').contains('Windows')
     static final String DOUBLE_BACKLASH = '\\\\'
     static final String BACKLASH = '\\'
@@ -111,11 +114,6 @@ class AsciidoctorTask extends DefaultTask {
      */
     @Internal
     List<Object> asciidoctorExtensions = []
-
-    @Internal
-    AsciidoctorProxy asciidoctor
-    @Internal
-    ResourceCopyProxy resourceCopyProxy
 
     @Optional
     @InputFiles
@@ -627,7 +625,10 @@ class AsciidoctorTask extends DefaultTask {
         }.collect {
             getClassLocation(it.class)
         }.toSet()
-        closurePaths.add(getClassLocation(org.gradle.internal.scripts.ScriptOrigin))
+
+        if(GRADLE_4_OR_BETTER) {
+            closurePaths.add(getClassLocation(org.gradle.internal.scripts.ScriptOrigin))
+        }
 
         FileCollection javaExecClasspath = project.files(
             getJavaExecClasspath(
@@ -646,6 +647,22 @@ class AsciidoctorTask extends DefaultTask {
         }
 
         runJavaExec(execConfigurationData, javaExecClasspath)
+    }
+
+    @CompileStatic
+    List<File> getExtensionsOnClasspath() {
+        URLClassLoader cl = (URLClassLoader)Thread.currentThread().contextClassLoader
+        ServiceLoader<ExtensionRegistry> loader = ServiceLoader.load(ExtensionRegistry,cl)
+        List<String> names = loader.iterator().collect {
+            it.class.name
+        }
+
+        if(names.empty) {
+            []
+        } else {
+            project.logger.warn "Asciidoctor extensions found on the Gradle classpath. This behaviour is deprecated and will be removed in 2.0. Use a configuration such as `asciidoctor` to explicitly declare those extensions and add the configuration to the asciidoctor task if necessary.\nDiscovered extensions: ${names.join(', ')}"
+           cl.URLs.collect { URL it -> new File(it.toURI()) }
+        }
     }
 
     @CompileDynamic
