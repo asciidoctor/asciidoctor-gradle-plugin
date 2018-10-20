@@ -20,7 +20,8 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.FileCollection
 
-import static org.gradle.internal.FileUtils.toSafeFileName
+import static org.asciidoctor.gradle.AsciidoctorUtils.getClassLocation
+import static org.ysb33r.grolifant.api.FileUtils.toSafeFileName
 
 /** Utilities for dealing with Asciidoctor in an external JavaExec process.
  *
@@ -37,9 +38,9 @@ class JavaExecUtils {
      * @return A computed classpath that can be given to an external Java process.
      */
     static FileCollection getJavaExecClasspath(final Project project, final FileCollection asciidoctorClasspath) {
-        File entryPoint = AsciidoctorUtils.getClassLocation(AsciidoctorJavaExec)
-        File groovyJar = AsciidoctorUtils.getClassLocation(GroovyObject)
-        project.files(entryPoint, groovyJar, asciidoctorClasspath)
+        File entryPoint = getClassLocation(AsciidoctorJavaExec)
+        File groovyJar = getClassLocation(GroovyObject)
+        project.files(entryPoint, groovyJar, asciidoctorClasspath, org.asciidoctor.gradle.AsciidoctorUtils.contextClasspath)
     }
 
     /** The file to which execution configuration data can be serialised to.

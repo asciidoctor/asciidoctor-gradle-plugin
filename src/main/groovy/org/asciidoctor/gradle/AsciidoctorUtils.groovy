@@ -15,6 +15,9 @@
  */
 package org.asciidoctor.gradle
 
+import groovy.transform.CompileStatic
+import org.ysb33r.grolifant.api.FileUtils
+
 import java.util.regex.Pattern
 
 class AsciidoctorUtils {
@@ -60,5 +63,23 @@ class AsciidoctorUtils {
         }
 
         result.toString()
+    }
+
+    @SuppressWarnings('Instanceof')
+    @CompileStatic
+    static List<File> getContextClasspath() {
+        ClassLoader cl = Thread.currentThread().contextClassLoader
+        if (cl instanceof URLClassLoader) {
+            ((URLClassLoader) cl).URLs.findAll { URL u ->
+                u.toURI().scheme == 'file'
+            } as List<File>
+        } else {
+            []
+        }
+    }
+
+    @CompileStatic
+    static File getClassLocation(Class aClass) {
+        FileUtils.resolveClassLocation(aClass).file
     }
 }

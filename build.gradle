@@ -74,6 +74,7 @@ dependencies {
         exclude module: 'groovy-all'
     }
 
+    compile "org.ysb33r.gradle:grolifant:${grolifantVersion}"
     compile gradleApi()
     testCompile "org.asciidoctor:asciidoctorj:$asciidoctorjVersion"
     testCompile("org.asciidoctor:asciidoctorj-groovy-dsl:$asciidoctorjDslVersion") {
