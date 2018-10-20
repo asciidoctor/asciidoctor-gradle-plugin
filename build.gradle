@@ -93,6 +93,7 @@ dependencies {
     
     intTestCompile gradleApi()
     intTestCompile gradleTestKit()
+    intTestCompile "org.asciidoctor:asciidoctorj:$asciidoctorjVersion"
     intTestCompile 'junit:junit:4.12'
     intTestCompile 'commons-io:commons-io:2.6'
     intTestCompile ("org.spockframework:spock-core:$spockVersion") {
