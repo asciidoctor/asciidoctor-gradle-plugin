@@ -39,6 +39,7 @@ class AsciidoctorTaskExecutedSpec extends Specification {
     private static final String ASCIIDOC_SAMPLE_FILE = 'sample.asciidoc'
     private static final String ASCIIDOC_SAMPLE2_FILE = 'subdir/sample2.ad'
     private static final String ASCIIDOC_INVALID_FILE = 'subdir/_include.adoc'
+    private static final String HTML5 = 'html5'
 
     Project project
     File testRootDir
@@ -412,7 +413,7 @@ class AsciidoctorTaskExecutedSpec extends Specification {
 
             sourceDir srcDir
             outputDir "${outDir}/foo"
-            backends AsciidoctorBackend.HTML5.id
+            backends HTML5
 
             sources {
                 include ASCIIDOC_SAMPLE_FILE

@@ -73,6 +73,10 @@ class AsciidoctorFunctionalSpec extends Specification {
         plugins {
             id "org.asciidoctor.convert"
         }
+        
+        asciidoctor {
+            options safe : 'UNSAFE'
+        }
         """
 
         and: "Some source files"
@@ -82,7 +86,7 @@ class AsciidoctorFunctionalSpec extends Specification {
         when:
         final BuildResult result = GradleRunner.create()
             .withProjectDir(testProjectDir.root)
-            .withArguments("asciidoctor")
+            .withArguments(["asciidoctor"])
             .withPluginClasspath(pluginClasspath)
             .forwardOutput()
             .build()

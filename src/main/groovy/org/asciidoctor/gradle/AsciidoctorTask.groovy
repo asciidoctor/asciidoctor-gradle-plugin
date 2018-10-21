@@ -21,6 +21,7 @@ import org.asciidoctor.gradle.backported.AsciidoctorJavaExec
 import org.asciidoctor.gradle.backported.ExecutorConfiguration
 import org.asciidoctor.gradle.backported.ExecutorConfigurationContainer
 import org.asciidoctor.gradle.backported.JavaExecUtils
+import org.asciidoctor.gradle.backported.SafeMode
 import org.gradle.api.DefaultTask
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.artifacts.Configuration
@@ -56,6 +57,7 @@ import static org.asciidoctor.gradle.backported.JavaExecUtils.getJavaExecClasspa
  * @author Robert Panzer
  */
 @SuppressWarnings(['MethodCount', 'Instanceof'])
+@CompileStatic
 class AsciidoctorTask extends DefaultTask {
     static final boolean GRADLE_4_OR_BETTER = GradleVersion.current() >= GradleVersion.version('4.0')
     static final boolean GRADLE_4_5_OR_BETTER = GradleVersion.current() >= GradleVersion.version('4.5')
@@ -66,19 +68,18 @@ class AsciidoctorTask extends DefaultTask {
     private static final String PATH_SEPARATOR = System.getProperty('path.separator')
     private static final String SAFE_MODE_CLASSNAME = 'org.asciidoctor.SafeMode'
 
-    private static final String DEFAULT_BACKEND = AsciidoctorBackend.HTML5.id
+    private static final String DEFAULT_BACKEND = 'html5'
 
     private boolean baseDirSetToNull
-    private Object outDir
+    private Object outDir = {new File(project.buildDir, 'asciidoc')}
     private Object srcDir
     private final List<Object> gemPaths = []
-    private Set<String> backends
-    private Set<String> requires
+    private final Set<String> backends = []
+    private final Set<String> requires = []
     private Map opts = [:]
     private Map attrs = [:]
     private PatternSet sourceDocumentPattern
     private CopySpec resourceCopy
-    private static ClassLoader cl
 
     /** If set to true each backend will be output to a separate subfolder below {@code outputDir}
      * @since 1.5.1
@@ -187,11 +188,8 @@ class AsciidoctorTask extends DefaultTask {
      * @since 1.5.1
      */
     void setAttributes(Map m) {
-        if (m) {
-            this.attrs = m
-        } else {
-            this.attrs.clear()
-        }
+        this.attrs.clear()
+        this.attrs.putAll(m)
     }
 
     /** Appends a set of Asciidoctor attributes.
@@ -200,10 +198,6 @@ class AsciidoctorTask extends DefaultTask {
      * @since 1.5.1
      */
     void attributes(Object... o) {
-        if (!o) {
-            this.attrs.clear()
-            return
-        }
         for (input in o) {
             this.attrs += coerceLegacyAttributeFormats(input)
         }
@@ -223,8 +217,8 @@ class AsciidoctorTask extends DefaultTask {
      * @since 1.5.0
      */
     void setRequires(Object... b) {
-        this.requires?.clear()
-        requires(b)
+        this.requires.clear()
+        this.requires.addAll(CollectionUtils.stringize(b as List))
     }
 
     /** Appends new set of Ruby modules to be included.
@@ -234,10 +228,6 @@ class AsciidoctorTask extends DefaultTask {
      */
     @SuppressWarnings('ConfusingMethodName')
     void requires(Object... b) {
-        if (this.requires == null) {
-            this.requires = []
-        }
-        if (!b) return // null check
         this.requires.addAll(CollectionUtils.stringize(b as List))
     }
 
@@ -248,7 +238,9 @@ class AsciidoctorTask extends DefaultTask {
      */
     @Optional
     @Input
-    Set<String> getBackends() { this.backends }
+    Set<String> getBackends() {
+        this.backends
+    }
 
     void setBackend(String b) {
         if (!b) return // null check
@@ -264,8 +256,8 @@ class AsciidoctorTask extends DefaultTask {
      * @since 0.7.1
      */
     void setBackends(Object... b) {
-        this.backends?.clear()
-        backends(b)
+        this.backends.clear()
+        this.backends.addAll(CollectionUtils.stringize(b as List))
     }
 
     /** Appends additional Asciidoctor backends that will be used for document generation.
@@ -276,10 +268,6 @@ class AsciidoctorTask extends DefaultTask {
      */
     @SuppressWarnings('ConfusingMethodName')
     void backends(Object... b) {
-        if (this.backends == null) {
-            this.backends = []
-        }
-        if (!b) return // null check
         this.backends.addAll(CollectionUtils.stringize(b as List))
     }
 
@@ -320,6 +308,7 @@ class AsciidoctorTask extends DefaultTask {
      * @param s
      */
     @SuppressWarnings('UnnecessarySetter')
+    @CompileDynamic
     void setGemPath(Object path) {
         this.gemPaths.clear()
         if (path instanceof CharSequence) {
@@ -397,9 +386,6 @@ class AsciidoctorTask extends DefaultTask {
      */
     @OutputDirectory
     File getOutputDir() {
-        if (this.outDir == null) {
-            this.outDir = new File(project.buildDir, 'asciidoc')
-        }
         project.file(this.outDir)
     }
 
@@ -423,6 +409,7 @@ class AsciidoctorTask extends DefaultTask {
      * @deprecated
      */
     @SuppressWarnings('UnnecessarySetter')
+    @CompileDynamic
     void setSourceDocumentName(File f) {
         deprecated 'setSourceDocumentName', 'setIncludes', 'File will be converted to a pattern.'
         sources {
@@ -437,6 +424,7 @@ class AsciidoctorTask extends DefaultTask {
      * @deprecated
      */
     @SuppressWarnings(['DuplicateStringLiteral', 'UnnecessarySetter'])
+    @CompileDynamic
     void setSourceDocumentNames(Object... src) {
         deprecated 'setSourceDocumentNames', 'setIncludes', 'Files are converted to patterns. Some might not convert correctly. ' +
             'FileCollections will not convert'
@@ -496,7 +484,7 @@ class AsciidoctorTask extends DefaultTask {
         if (sourceDocumentPattern == null) {
             sourceDocumentPattern = new PatternSet()
         }
-        def configuration = cfg.clone()
+        Closure configuration = (Closure)cfg.clone()
         configuration.delegate = sourceDocumentPattern
         configuration()
     }
@@ -511,7 +499,7 @@ class AsciidoctorTask extends DefaultTask {
         if (this.resourceCopy == null) {
             this.resourceCopy = project.copySpec(cfg)
         } else {
-            def configuration = cfg.clone()
+            Closure configuration = (Closure)cfg.clone()
             configuration.delegate = this.resourceCopy
             configuration()
         }
@@ -541,6 +529,7 @@ class AsciidoctorTask extends DefaultTask {
      * @since 1.5.1
      */
     @Internal
+    @CompileDynamic
     CopySpec getDefaultResourceCopySpec() {
         project.copySpec {
             from(sourceDir) {
@@ -698,11 +687,12 @@ class AsciidoctorTask extends DefaultTask {
 
     protected Set<String> activeBackends() {
         if (this.backends) {
-            return this.backends
+            this.backends
         } else if (backend) {
-            return [backend]
+            [backend].toSet()
+        } else {
+            [DEFAULT_BACKEND].toSet()
         }
-        [DEFAULT_BACKEND]
     }
 
     private static List stringifyList(List input) {
@@ -721,6 +711,7 @@ class AsciidoctorTask extends DefaultTask {
         }
     }
 
+    @CompileDynamic
     private static Map stringifyMap(Map input) {
         Map output = [:]
         input.each { key, value ->
@@ -739,6 +730,7 @@ class AsciidoctorTask extends DefaultTask {
         output
     }
 
+    @CompileDynamic
     protected static void processCollectionAttributes(Map attributes, rawAttributes) {
         for (attr in rawAttributes) {
             if (attr instanceof CharSequence) {
@@ -782,6 +774,7 @@ class AsciidoctorTask extends DefaultTask {
     }
 
     @CompileDynamic
+    @Internal
     boolean isDumpLegacyFileList() {
         if (GRADLE_4_5_OR_BETTER) {
             project.gradle.startParameter.warningMode.toString().toLowerCase() == 'all'
@@ -792,6 +785,7 @@ class AsciidoctorTask extends DefaultTask {
 
     @SuppressWarnings('DuplicateStringLiteral')
     @SuppressWarnings('DuplicateNumberLiteral')
+    @CompileDynamic
     private static Map coerceLegacyAttributeFormats(Object attributes) {
         Map transformedMap = [:]
         switch (attributes) {
@@ -821,6 +815,7 @@ class AsciidoctorTask extends DefaultTask {
         transformedMap
     }
 
+    @CompileDynamic
     private static int resolveSafeModeLevel(Object safe, int defaultLevel) {
         if (safe == null) {
             defaultLevel
@@ -828,17 +823,13 @@ class AsciidoctorTask extends DefaultTask {
             safe.level
         } else if (safe instanceof CharSequence) {
             try {
-                Enum.valueOf(loadClass(SAFE_MODE_CLASSNAME), safe.toString().toUpperCase()).level
+                SafeMode.valueOf(safe.toString().toUpperCase()).level
             } catch (IllegalArgumentException e) {
                 defaultLevel
             }
         } else {
             safe.intValue()
         }
-    }
-
-    static Class loadClass(String className) {
-        cl.loadClass(className)
     }
 
     private void deprecated(final String method, final String alternative, final String msg = '') {
