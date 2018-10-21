@@ -17,7 +17,6 @@ package org.asciidoctor.gradle
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import org.asciidoctor.extension.spi.ExtensionRegistry
 import org.asciidoctor.gradle.backported.AsciidoctorJavaExec
 import org.asciidoctor.gradle.backported.ExecutorConfiguration
 import org.asciidoctor.gradle.backported.ExecutorConfigurationContainer
@@ -626,7 +625,7 @@ class AsciidoctorTask extends DefaultTask {
             getClassLocation(it.class)
         }.toSet()
 
-        if(GRADLE_4_OR_BETTER) {
+        if (GRADLE_4_OR_BETTER) {
             closurePaths.add(getClassLocation(org.gradle.internal.scripts.ScriptOrigin))
         }
 
@@ -641,26 +640,12 @@ class AsciidoctorTask extends DefaultTask {
         File execConfigurationData = JavaExecUtils.writeExecConfigurationData(this, ecc.configurations)
         logger.debug("Serialised AsciidoctorJ configuration to ${execConfigurationData}")
         logger.info "Running AsciidoctorJ instance with classpath ${javaExecClasspath.files}"
-        checkForExtensionsOnClasspath()
 
         activeBackends().each { backend ->
             copyResources(outputBackendDir(outputDir, backend), resourceCopySpec)
         }
 
         runJavaExec(execConfigurationData, javaExecClasspath)
-    }
-
-    @CompileStatic
-    void checkForExtensionsOnClasspath() {
-        URLClassLoader cl = (URLClassLoader)Thread.currentThread().contextClassLoader
-        ServiceLoader<ExtensionRegistry> loader = ServiceLoader.load(ExtensionRegistry,cl)
-        List<String> names = loader.iterator().collect {
-            it.class.name
-        }
-
-        if(!names.empty) {
-            project.logger.warn "Asciidoctor extensions found on the Gradle classpath. This behaviour is deprecated and will be removed in 2.0. Use a configuration such as `asciidoctor` to explicitly declare those extensions and add the configuration to the asciidoctor task if necessary.\nDiscovered extensions: ${names.join(', ')}"
-        }
     }
 
     @CompileDynamic

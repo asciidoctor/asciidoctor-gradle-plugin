@@ -13,8 +13,7 @@ task createClasspathManifest {
 
     doLast {
         outputDir.mkdirs()
-        file("$outputDir/plugin-classpath.txt").text = sourceSets.main.runtimeClasspath.join("\n") + "\n" +
-            sourceSets.intTest.runtimeClasspath.join("\n")
+        file("$outputDir/plugin-classpath.txt").text = sourceSets.main.runtimeClasspath.join("\n")
     }
 }
 
