@@ -49,8 +49,6 @@ class AsciidoctorPlugin implements Plugin<Project> {
         }
 
         Configuration configuration = project.configurations.maybeCreate(ASCIIDOCTOR)
-        project.logger.info("[Asciidoctor] asciidoctorj: ${extension.version}")
-        project.logger.info("[Asciidoctor] asciidoctorj-groovy-dsl: ${extension.groovyDslVersion}")
 
         configuration.incoming.beforeResolve(new Action<ResolvableDependencies>() {
             @SuppressWarnings('UnusedMethodParameter')

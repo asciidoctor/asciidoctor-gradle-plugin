@@ -17,7 +17,6 @@ package org.asciidoctor.gradle
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import org.asciidoctor.extension.spi.ExtensionRegistry
 import org.asciidoctor.gradle.backported.AsciidoctorJavaExec
 import org.asciidoctor.gradle.backported.ExecutorConfiguration
 import org.asciidoctor.gradle.backported.ExecutorConfigurationContainer
@@ -626,7 +625,7 @@ class AsciidoctorTask extends DefaultTask {
             getClassLocation(it.class)
         }.toSet()
 
-        if(GRADLE_4_OR_BETTER) {
+        if (GRADLE_4_OR_BETTER) {
             closurePaths.add(getClassLocation(org.gradle.internal.scripts.ScriptOrigin))
         }
 
