@@ -1,7 +1,8 @@
 = Asciidoctor Gradle Plugin
 Andres Almiray <https://github.com/aalmiray[@aalmiray]>
-:version: 1.5.8
-:version-published: 1.5.8
+:version: 1.5.9.1
+:version-published: 1.5.9.1
+:asciidoctorj-version: 1.5.7
 :asciidoc-url: http://asciidoc.org
 :asciidoctor-url: http://asciidoctor.org
 :issues: https://github.com/asciidoctor/asciidoctor-maven-plugin/issues
@@ -322,7 +323,7 @@ for more information.
 
 == Configuration
 
-This plugin uses `asciidoctorj-1.5.3.2` by default, however, you can change this by
+This plugin uses `asciidoctorj-{asciidoctorj-version}` by default, however, you can change this by
 defining a value on the `asciidoctorj` extension, like so
 
 [source,groovy]
