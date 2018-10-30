@@ -136,6 +136,10 @@ class AsciidoctorJavaExec {
             newAttrs.putAll(attributes)
             newAttrs.projectdir = getRelativePath(projectDir, file.parentFile)
             newAttrs.rootdir = getRelativePath(rootDir, file.parentFile)
+
+            newAttrs['gradle-projectdir'] = getRelativePath(projectDir, file.parentFile)
+            newAttrs['gradle-rootdir'] = getRelativePath(rootDir, file.parentFile)
+            println 'Implicit attributes projectdir and rootdir are deprecated and will no longer be set in 2.0. Please migrate your documents to use gradle-projectdir and gradle-rootdir instead.'
             mergedOptions[Options.ATTRIBUTES] = newAttrs
         }
 
