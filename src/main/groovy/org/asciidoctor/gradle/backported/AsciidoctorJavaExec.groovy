@@ -134,8 +134,8 @@ class AsciidoctorJavaExec {
             // Asciidoctor cannot handle absolute paths in Windows properly
             Map<String, Object> newAttrs = [:]
             newAttrs.putAll(attributes)
-            newAttrs['gradle-projectdir'] = getRelativePath(projectDir, file.parentFile)
-            newAttrs['gradle-rootdir'] = getRelativePath(rootDir, file.parentFile)
+            newAttrs.projectdir = getRelativePath(projectDir, file.parentFile)
+            newAttrs.rootdir = getRelativePath(rootDir, file.parentFile)
             mergedOptions[Options.ATTRIBUTES] = newAttrs
         }
 
