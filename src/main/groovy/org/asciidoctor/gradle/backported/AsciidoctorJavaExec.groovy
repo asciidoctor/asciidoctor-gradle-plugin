@@ -102,7 +102,7 @@ class AsciidoctorJavaExec {
      * @param runConfiguration The current executor configuration
      * @return Asciidoctor options
      */
-    @SuppressWarnings('Instanceof')
+    @SuppressWarnings(['Instanceof','Println','DuplicateStringLiteral'])
     protected
     Map<String, Object> normalisedOptionsFor(final File file, ExecutorConfiguration runConfiguration) {
 
