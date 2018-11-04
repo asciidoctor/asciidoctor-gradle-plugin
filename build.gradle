@@ -160,6 +160,8 @@ jacocoTestReport {
         xml.enabled = true // coveralls plugin depends on xml format report
         html.enabled = true
     }
+
+    executionData intTest
 }
 
 jdeps {

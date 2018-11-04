@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle
 
 import org.apache.commons.io.FileUtils
+import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.Rule
@@ -44,7 +45,6 @@ class AsciidoctorFunctionalSpec extends Specification {
         pluginClasspath = pluginClasspathResource.readLines().collect { new File(it) }
     }
 
-    @SuppressWarnings('MethodName')
     def "Should do nothing with an empty project"() {
         given: "A minimal build file"
         def buildFile = testProjectDir.newFile("build.gradle")
@@ -66,8 +66,39 @@ class AsciidoctorFunctionalSpec extends Specification {
         result.task(":asciidoctor").outcome == TaskOutcome.NO_SOURCE
     }
 
-    @SuppressWarnings('MethodName')
     def "Should build normally for a standard project"() {
+        given: "A minimal build file"
+        def buildFile = testProjectDir.newFile("build.gradle")
+        buildFile << """
+        plugins {
+            id "org.asciidoctor.convert"
+        }
+        
+        asciidoctor {
+            options safe : 'UNSAFE'
+        }
+        """
+
+        and: "Some source files"
+        FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, "normal"), testProjectDir.root)
+        final buildDir = new File(testProjectDir.root, "build")
+
+        when:
+        final BuildResult result = GradleRunner.create()
+            .withProjectDir(testProjectDir.root)
+            .withArguments(["asciidoctor"])
+            .withPluginClasspath(pluginClasspath)
+            .forwardOutput()
+            .build()
+
+        then:
+        result.task(":asciidoctor").outcome == TaskOutcome.SUCCESS
+        new File(buildDir, "asciidoc/html5/sample.html").exists()
+        new File(buildDir, "asciidoc/html5/subdir/sample2.html").exists()
+        result.output.contains('Use --warning-mode=all to see list of potential affected files')
+    }
+
+    def "Should print warning message for legacy attributes"() {
         given: "A minimal build file"
         def buildFile = testProjectDir.newFile("build.gradle")
         buildFile << """
@@ -77,23 +108,25 @@ class AsciidoctorFunctionalSpec extends Specification {
         """
 
         and: "Some source files"
-        FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, "normal"), testProjectDir.root)
-        final buildDir = new File(testProjectDir.root, "build")
+        FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, 'normal'), testProjectDir.root)
+        final buildDir = new File(testProjectDir.root, 'build')
 
         when:
-        final result = GradleRunner.create()
+        final BuildResult result = GradleRunner.create()
             .withProjectDir(testProjectDir.root)
-            .withArguments("asciidoctor")
+            .withArguments('asciidoctor', '--warning-mode=all')
             .withPluginClasspath(pluginClasspath)
+            .forwardOutput()
             .build()
+        final String output = result.output
 
         then:
         result.task(":asciidoctor").outcome == TaskOutcome.SUCCESS
         new File(buildDir, "asciidoc/html5/sample.html").exists()
-        new File(buildDir, "asciidoc/html5/subdir/sample2.html").exists()
+        output.contains('It seems that you may be using implicit attributes ')
+        output.contains('sample.asciidoc')
     }
 
-    @SuppressWarnings('MethodName')
     def "Task should be up-to-date when executed a second time"() {
         given: "A minimal build file"
         def buildFile = testProjectDir.newFile("build.gradle")
