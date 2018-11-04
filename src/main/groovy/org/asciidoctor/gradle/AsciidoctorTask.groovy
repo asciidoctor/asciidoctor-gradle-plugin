@@ -37,6 +37,7 @@ import org.gradle.util.CollectionUtils
 import org.gradle.util.GradleVersion
 
 import static org.asciidoctor.gradle.AsciidoctorUtils.getClassLocation
+import static org.asciidoctor.gradle.AsciidoctorUtils.getRelativePath
 import static org.asciidoctor.gradle.backported.JavaExecUtils.getJavaExecClasspath
 
 /**
@@ -57,6 +58,8 @@ import static org.asciidoctor.gradle.backported.JavaExecUtils.getJavaExecClasspa
 @SuppressWarnings(['MethodCount', 'Instanceof'])
 class AsciidoctorTask extends DefaultTask {
     static final boolean GRADLE_4_OR_BETTER = GradleVersion.current() >= GradleVersion.version('4.0')
+    static final boolean GRADLE_4_5_OR_BETTER = GradleVersion.current() >= GradleVersion.version('4.5')
+
     static final boolean IS_WINDOWS = System.getProperty('os.name').contains('Windows')
     static final String DOUBLE_BACKLASH = '\\\\'
     static final String BACKLASH = '\\'
@@ -598,6 +601,8 @@ class AsciidoctorTask extends DefaultTask {
 
         File output = outputDir
 
+        scanForLegacyAttributes()
+
         ExecutorConfigurationContainer ecc = new ExecutorConfigurationContainer(activeBackends().collect { backend ->
             new ExecutorConfiguration(
                 sourceDir: sourceDir,
@@ -743,6 +748,45 @@ class AsciidoctorTask extends DefaultTask {
                 // QUESTION should we just coerce it to a String?
                 throw new InvalidUserDataException("Unsupported type for attribute ${attr}: ${attr.getClass()}")
             }
+        }
+    }
+
+    private void scanForLegacyAttributes() {
+        FileTree ft
+        if(this.sourceDocumentPattern) {
+            ft = project.fileTree(sourceDir).matching(this.sourceDocumentPattern) +
+                project.fileTree(sourceDir).matching(defaultSourceDocumentPattern)
+        } else {
+            ft = project.fileTree(sourceDir).matching(defaultSourceDocumentPattern)
+        }
+
+        Set<File> hits = ft.files.findAll { File f ->
+            String content = f.text
+            content.contains('{projectdir}') || content.contains('{rootdir}')
+        }
+
+        if(!hits.empty) {
+            logger.warn 'It seems that you may be using implicit attributes `projectdir` and/or `rootdir` in your documents. These are deprecated and will no longer be set in 2.0. Please migrate your documents to use `gradle-projectdir` and `gradle-rootdir` instead.'
+
+            if(dumpLegacyFileList) {
+                File base = sourceDir
+                String finalList = hits.collect { File f ->
+                    getRelativePath(f,base)
+                }.join(', ')
+
+                logger.warn "Potentially affected source files are: ${finalList}"
+            } else if (GRADLE_4_5_OR_BETTER) {
+                logger.warn 'Use --warning-mode=all to see list of potential affected files'
+            }
+        }
+    }
+
+    @CompileDynamic
+    boolean isDumpLegacyFileList() {
+        if (GRADLE_4_5_OR_BETTER) {
+            project.gradle.startParameter.warningMode.toString().toLowerCase() == 'all'
+        } else {
+            true
         }
     }
 
