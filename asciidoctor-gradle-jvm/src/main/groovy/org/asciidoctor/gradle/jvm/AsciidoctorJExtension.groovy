@@ -47,17 +47,19 @@ import static org.ysb33r.grolifant.api.StringUtils.stringize
 @SuppressWarnings('MethodCount')
 class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
 
+    // ------------------------------------------------------------------------
     // Be careful about modifying the keyword ordering in these six lines.
-    // They are parsed by the build script yo set up some compilation dependencies.
-    // It is also a good idea that DEFAULT_ASCIIDOCTORJ_VERSION &
-    // MINIMUM_SAFE_JRUBY_VERSION respectively matches one of
+    // They are parsed by the build script to set up some compilation dependencies.
+    // It is also a good idea that DEFAULT_ASCIIDOCTORJ_VERSION  matches one of
     // the values in testfixtures-jvm.
+    // ------------------------------------------------------------------------
     final static String DEFAULT_ASCIIDOCTORJ_VERSION = '1.6.0-alpha.7'
     final static String DEFAULT_GROOVYDSL_VERSION = '1.6.0-alpha.2'
     final static String DEFAULT_PDF_VERSION = '1.5.0-alpha.14'
     final static String DEFAULT_EPUB_VERSION = '1.5.0-alpha.8.1'
     final static String PDF_SNAKE_YAML_FOR_JRUBY9_VERSION = '1.13'
     final static String DEFAULT_DIAGRAM_VERSION = '1.5.8'
+    // ------------------------------------------------------------------------
 
     static final String ASCIIDOCTORJ_GROUP = 'org.asciidoctor'
     static final String ASCIIDOCTORJ_CORE_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj"
@@ -198,9 +200,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     /** The version of JRuby to use.
      *
      * If no version of JRuby is specified the one that is linked to AsciidoctorJ
-     * will be used. However is that JRuby version is below
-     * a minimum safe version (@link #MINIMUM_SAFE_JRUBY_VERSION}), the latter will be substituted
-     * instead and used at runtime.
+     * will be used.
      *
      * @return Version of JRuby to use or {@code null} to use the JRUby version that is
      * linked to the specified vesrion of AsciidoctorJ.
