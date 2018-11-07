@@ -66,6 +66,8 @@ allprojects {
 
 subprojects {
 
+    apply plugin : 'org.ysb33r.os'
+
     if( project.name != 'testfixtures-offline-repo') {
         apply plugin: 'groovy'
         apply plugin: 'idea'

@@ -3,7 +3,7 @@ ext {
     jrubyFixtureFileContent = file("${project(':testfixtures-jvm').projectDir}/src/main/groovy/org/asciidoctor/gradle/testfixtures/jvm/JRubyTestVersions.groovy").readLines()
 
     snakeYamlForJRubyVersion = (asciidoctorjExtFileContent.grep {
-        it =~ /final\s+static\s+String\s+PDF_SNAKE_YAML_FOR_JRUBY9_VERSION\s+=/
+        it =~ /final\s+static\s+String\s+PDF_SNAKE_YAML_FOR_EARLY_JRUBY9_VERSIONS\s+=/
     })[0].replaceFirst(~/^(.+?["'])/, '').replaceFirst(~/(["'].*)$/, '')
 
     readJRubyVersion = { itemName ->

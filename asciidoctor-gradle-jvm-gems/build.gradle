@@ -8,6 +8,14 @@ test {
     systemProperties OFFLINE_REPO: offlineRepoRoot.absolutePath
 }
 
+gradleTest {
+
+    if(OS.windows) {
+        // Expecting external-gems to fail due to JRuby issue
+        expectFailure ~/external-gems/
+    }
+}
+
 configurePlugin 'org.asciidoctor.jvm.gems',
     'Simplifies support for using external GEMs with AsciidoctorJ',
     'Provides appropriate tasks and configurations for adding GEMs to AsciidoctorJ conversions',

@@ -38,7 +38,7 @@ class JRubyTestVersions {
 
     final static String AJ16_ABSOLUTE_MINIMUM = '1.7.27'
     final static String AJ16_SAFE_MINIMUM = '9.1.0.0'
-    final static String AJ16_SAFE_MAXIMUM = '9.2.1.0'
+    final static String AJ16_SAFE_MAXIMUM = '9.2.0.0'
     final static String AJ16_ABSOLUTE_MAXIMUM = '9.2.1.0'
     // ----------------------------------------------------------
 

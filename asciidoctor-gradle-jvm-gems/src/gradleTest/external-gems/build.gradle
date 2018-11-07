@@ -3,7 +3,7 @@ plugins {
     id 'org.asciidoctor.jvm.convert'
     id 'org.asciidoctor.jvm.gems'
     // tag::use-gems[]
-    id 'org.ysb33r.os' version '0.9'
+//    id 'org.ysb33r.os' version '0.9'
     // end::use-gems[]
 }
 // end::use-gems[]
@@ -36,12 +36,12 @@ asciidoctor {
 
 task runGradleTest {
 
-    if(OS.windows) {
-        doLast {
-            println '***** `external-gems` test disabled on Windows due to curretnly unresolved JRuby issue.'
-        }
-    } else {
+//    if(OS.windows) {
+//        doLast {
+//            println '***** `external-gems` test disabled on Windows due to curretnly unresolved JRuby issue.'
+//        }
+//    } else {
         dependsOn asciidoctor
-    }
+//    }
 }
 
