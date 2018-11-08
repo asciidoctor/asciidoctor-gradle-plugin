@@ -21,8 +21,8 @@ import spock.lang.Issue
 import spock.lang.Timeout
 import spock.lang.Unroll
 
-import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.SERIES_15
 import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.SERIES_16
+import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.SERIES_20
 @java.lang.SuppressWarnings('NoWildcardImports')
 import static org.asciidoctor.gradle.testfixtures.jvm.JRubyTestVersions.*
 
@@ -80,17 +80,17 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
 
         where:
         parallelMode | jrubyVer              | asciidoctorjVer | compatible
-//        true         | AJ15_ABSOLUTE_MINIMUM | SERIES_15       | true  // <- too brittle
+        true         | AJ20_ABSOLUTE_MINIMUM | SERIES_20       | true
         true         | AJ16_ABSOLUTE_MINIMUM | SERIES_16       | true
-        true         | AJ15_SAFE_MINIMUM     | SERIES_15       | true
+        true         | AJ20_SAFE_MINIMUM     | SERIES_20       | true
         true         | AJ16_SAFE_MINIMUM     | SERIES_16       | true
-        true         | AJ15_SAFE_MAXIMUM     | SERIES_15       | true
+        true         | AJ20_SAFE_MAXIMUM     | SERIES_20       | true
         true         | AJ16_SAFE_MAXIMUM     | SERIES_16       | true
-        false        | AJ15_ABSOLUTE_MINIMUM | SERIES_15       | true
-        false        | AJ15_SAFE_MINIMUM     | SERIES_15       | true
-        false        | AJ15_SAFE_MAXIMUM     | SERIES_15       | true
+        false        | AJ20_ABSOLUTE_MINIMUM | SERIES_20       | true
+        false        | AJ20_SAFE_MINIMUM     | SERIES_20       | true
+        false        | AJ20_SAFE_MAXIMUM     | SERIES_20       | true
         false        | AJ16_SAFE_MAXIMUM     | SERIES_16       | true
-        true         | AJ15_ABSOLUTE_MAXIMUM | SERIES_15       | false
+        true         | AJ20_ABSOLUTE_MAXIMUM | SERIES_20       | true
         false        | AJ16_ABSOLUTE_MAXIMUM | SERIES_16       | true
     }
 

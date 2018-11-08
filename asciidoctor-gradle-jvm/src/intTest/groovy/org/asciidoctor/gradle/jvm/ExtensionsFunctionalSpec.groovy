@@ -272,7 +272,7 @@ asciidoctor {
         String versionConfig = """
             asciidoctorj {
                 version = '${version}'
-                groovyDslVersion = '${version == SERIES_15 ? GROOVYDSL_SERIES_15 : GROOVYDSL_SERIES_16}'
+                groovyDslVersion = '${version == SERIES_20 ? GROOVYDSL_SERIES_20 : GROOVYDSL_SERIES_16}'
             }
         """
 

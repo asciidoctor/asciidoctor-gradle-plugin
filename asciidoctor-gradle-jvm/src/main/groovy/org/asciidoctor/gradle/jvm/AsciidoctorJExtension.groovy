@@ -815,8 +815,9 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         } as List<Object>
     }
 
+    @SuppressWarnings('UnusedPrivateMethodParameter')
     private String minimumSafeJRubyVersion(final String asciidoctorjVersion) {
-        asciidoctorjVersion.startsWith('1.5.') ? '9.0.5.0' : '9.1.0.0'
+        '9.1.0.0'
     }
 
     @SuppressWarnings('Instanceof')
