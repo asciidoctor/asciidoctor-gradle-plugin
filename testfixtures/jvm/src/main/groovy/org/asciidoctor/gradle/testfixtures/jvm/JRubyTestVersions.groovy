@@ -26,8 +26,8 @@ class JRubyTestVersions {
 
     // These lines are read by the build script.
     // AJ15: AciidoctorJ 1.5.x
-    // ABSOLUTE_MINIMUM The lowest JRuby to test against (compatibiliy not guaranteed)
-    // ABSOLUTE_MINIMUM The highest JRuby to test against (compatibiliy not guaranteed)
+    // ABSOLUTE_MINIMUM The lowest JRuby to test against (compatibility not guaranteed)
+    // ABSOLUTE_MINIMUM The highest JRuby to test against (compatibility not guaranteed)
     // SAFE_MINIMUM The lowest known compatible version of JRuby
     // SAFE_MAXIMUM The highest known compatible version of JRuby
     // ----------------------------------------------------------
@@ -39,7 +39,7 @@ class JRubyTestVersions {
     final static String AJ16_ABSOLUTE_MINIMUM = '1.7.27'
     final static String AJ16_SAFE_MINIMUM = '9.1.0.0'
     final static String AJ16_SAFE_MAXIMUM = '9.2.0.0'
-    final static String AJ16_ABSOLUTE_MAXIMUM = '9.2.0.0'
+    final static String AJ16_ABSOLUTE_MAXIMUM = '9.2.1.0'
     // ----------------------------------------------------------
 
 }

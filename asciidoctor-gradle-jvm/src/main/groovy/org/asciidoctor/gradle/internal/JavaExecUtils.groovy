@@ -22,7 +22,7 @@ import org.gradle.api.Task
 import org.gradle.api.file.FileCollection
 import org.ysb33r.grolifant.api.FileUtils
 
-import static org.asciidoctor.gradle.internal.AsciidoctorUtils.getClassLocation
+import static org.asciidoctor.gradle.base.AsciidoctorUtils.getClassLocation
 
 /** Utilities for dealing with Asciidoctor in an external JavaExec process.
  *
@@ -36,12 +36,20 @@ class JavaExecUtils {
      *
      * @param project Current Gradle project
      * @param asciidoctorClasspath External asciidoctor dependencies
+     * @param addInternalGuava Set to {@code true} to add internal Guava to classpath
      * @return A computed classpath that can be given to an external Java process.
      */
-    static FileCollection getJavaExecClasspath(final Project project, final FileCollection asciidoctorClasspath) {
+    static FileCollection getJavaExecClasspath(
+        final Project project,
+        final FileCollection asciidoctorClasspath,
+        boolean addInternalGuava = false
+    ) {
         File entryPoint = getClassLocation(AsciidoctorJavaExec)
         File groovyJar = getClassLocation(GroovyObject)
-        project.files(entryPoint, groovyJar, asciidoctorClasspath)
+
+        FileCollection fc = project.files(entryPoint, groovyJar, asciidoctorClasspath)
+
+        addInternalGuava ? project.files(fc, new File(project.gradle.gradleHomeDir, 'lib/guava-jdk5-17.0.jar')) : fc
     }
 
     /** The file to which execution configuration data can be serialised to.

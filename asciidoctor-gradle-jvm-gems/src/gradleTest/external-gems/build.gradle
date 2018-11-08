@@ -1,0 +1,47 @@
+// tag::use-gems[]
+plugins {
+    id 'org.asciidoctor.jvm.convert'
+    id 'org.asciidoctor.jvm.gems'
+    // tag::use-gems[]
+//    id 'org.ysb33r.os' version '0.9'
+    // end::use-gems[]
+}
+// end::use-gems[]
+
+apply from: "${System.getProperty('OFFLINE_REPO')}/repositories.gradle"
+
+// tag::use-gems[]
+repositories {
+    maven { url 'http://rubygems-proxy.torquebox.org/releases' } // <2>
+}
+
+dependencies {
+    asciidoctorGems 'rubygems:asciidoctor-bibtex:0.3.1'
+}
+
+asciidoctorj {
+    requires 'asciidoctor-bibtex'
+}
+
+asciidoctor {
+    dependsOn asciidoctorGemsPrepare
+
+    secondarySources {
+        include 'biblio.bib'
+    }
+
+    attributes 'bibtex-file' : file("${sourceDir}/biblio.bib")
+}
+// end::use-gems[]
+
+task runGradleTest {
+
+//    if(OS.windows) {
+//        doLast {
+//            println '***** `external-gems` test disabled on Windows due to curretnly unresolved JRuby issue.'
+//        }
+//    } else {
+        dependsOn asciidoctor
+//    }
+}
+

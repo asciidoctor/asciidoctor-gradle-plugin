@@ -16,7 +16,7 @@
 package org.asciidoctor.gradle.jvm
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.internal.AsciidoctorUtils
+import org.asciidoctor.gradle.base.AsciidoctorUtils
 import org.gradle.api.Project
 import org.gradle.api.UnknownDomainObjectException
 import org.gradle.api.tasks.util.PatternSet

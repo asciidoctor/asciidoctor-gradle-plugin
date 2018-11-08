@@ -76,8 +76,8 @@ jar {
         attributes(
             'Built-By': System.properties['user.name'],
             'Created-By': buildCreatedBy,
-            'Build-Date': buildDate,
-            'Build-Time': buildTime,
+//            'Build-Date': buildDate,
+//            'Build-Time': buildTime,
             'Build-Revision': buildRevision,
             'Specification-Title': project.name,
             'Specification-Version': project.version,
@@ -165,9 +165,10 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
-            artifact sourcesJar
-            artifact javadocJar
-
+            afterEvaluate {
+                artifact sourcesJar.baseName
+                artifact javadocJar.baseName
+            }
             pom.withXml {
                 asNode().children().last() + pomConfig
                 asNode().appendNode('description', project.project_description)
@@ -175,6 +176,7 @@ publishing {
         }
     }
 }
+
 
 //bintray {
 //    user = bintrayUsername

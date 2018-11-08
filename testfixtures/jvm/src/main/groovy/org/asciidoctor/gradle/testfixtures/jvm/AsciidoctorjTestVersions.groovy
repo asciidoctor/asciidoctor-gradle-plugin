@@ -26,7 +26,7 @@ class AsciidoctorjTestVersions {
 
     // These lines are read by the build script.
     final static String SERIES_15 = '1.5.7'
-    final static String SERIES_16 = '1.6.0-alpha.7'
+    final static String SERIES_16 = '1.6.0-RC.1'
     final static String GROOVYDSL_SERIES_15 = '1.0.0.Alpha3'
     final static String GROOVYDSL_SERIES_16 = '1.6.0-alpha.2'
     final static String DIAGRAM_SERIES_15 = '1.5.8'

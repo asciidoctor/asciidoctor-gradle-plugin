@@ -28,6 +28,7 @@ import org.gradle.api.artifacts.DependencyResolveDetails
 import org.gradle.api.artifacts.ResolutionStrategy
 import org.gradle.api.file.FileCollection
 import org.gradle.api.logging.LogLevel
+import org.gradle.util.GradleVersion
 import org.ysb33r.grolifant.api.AbstractCombinedProjectTaskExtension
 import org.ysb33r.grolifant.api.OperatingSystem
 
@@ -46,17 +47,19 @@ import static org.ysb33r.grolifant.api.StringUtils.stringize
 @SuppressWarnings('MethodCount')
 class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
 
+    // ------------------------------------------------------------------------
     // Be careful about modifying the keyword ordering in these six lines.
-    // They are parsed by the build script yo set up some compilation dependencies.
-    // It is also a good idea that DEFAULT_ASCIIDOCTORJ_VERSION &
-    // MINIMUM_SAFE_JRUBY_VERSION respectively matches one of
+    // They are parsed by the build script to set up some compilation dependencies.
+    // It is also a good idea that DEFAULT_ASCIIDOCTORJ_VERSION  matches one of
     // the values in testfixtures-jvm.
-    final static String DEFAULT_ASCIIDOCTORJ_VERSION = '1.6.0-alpha.7'
+    // ------------------------------------------------------------------------
+    final static String DEFAULT_ASCIIDOCTORJ_VERSION = '1.6.0-RC.1'
     final static String DEFAULT_GROOVYDSL_VERSION = '1.6.0-alpha.2'
-    final static String DEFAULT_PDF_VERSION = '1.5.0-alpha.14'
+    final static String DEFAULT_PDF_VERSION = '1.5.0-alpha.16'
     final static String DEFAULT_EPUB_VERSION = '1.5.0-alpha.8.1'
-    final static String PDF_SNAKE_YAML_FOR_JRUBY9_VERSION = '1.13'
+    final static String PDF_SNAKE_YAML_FOR_EARLY_JRUBY9_VERSIONS = '1.13'
     final static String DEFAULT_DIAGRAM_VERSION = '1.5.8'
+    // ------------------------------------------------------------------------
 
     static final String ASCIIDOCTORJ_GROUP = 'org.asciidoctor'
     static final String ASCIIDOCTORJ_CORE_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj"
@@ -72,6 +75,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     final static String NAME = 'asciidoctorj'
 
     static final OperatingSystem OS = OperatingSystem.current()
+    public static final boolean GUAVA_REQUIRED_FOR_EXTERNALS = GradleVersion.current() >= GradleVersion.version('4.8')
 
     private Object version
     private Optional<Object> groovyDslVersion
@@ -79,6 +83,8 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     private Optional<Object> epubVersion
     private Optional<Object> diagramVersion
     private Optional<Object> jrubyVersion
+
+    private Boolean injectGuavaJar
 
     private final Map<String, Object> options = [:]
     private final Map<String, Object> attributes = [:]
@@ -121,6 +127,31 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      */
     AsciidoctorJExtension(Task task) {
         super(task, NAME)
+    }
+
+    /** Whether the Guava JAR that ships with the Gradle sustribution should be injected into the
+     * classpath for external AsciidoctorJ processes.
+     *
+     * If not set previously via {@link #setInjectInternalGuavaJar} then a default version depending of the version of
+     * the Gradle distribution will be used.
+     *
+     * @return {@code true} if JAR should be injected.
+     */
+    boolean getInjectInternalGuavaJar() {
+        if(task) {
+            this.injectGuavaJar == null ? extFromProject.injectInternalGuavaJar : this.injectGuavaJar
+        } else {
+            this.injectGuavaJar == null ? GUAVA_REQUIRED_FOR_EXTERNALS : this.injectGuavaJar
+        }
+    }
+
+    /** Whether the Guava JAR that ships with the Gradle sustribution should be injected into the
+     * classpath for external AsciidoctorJ processes.
+     *
+     * @param inject {@code true} if JAR should be injected.
+     */
+    void setInjectInternalGuavaJar(boolean inject) {
+        this.injectGuavaJar = inject
     }
 
     /** Version of AsciidoctorJ that should be used.
@@ -169,9 +200,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     /** The version of JRuby to use.
      *
      * If no version of JRuby is specified the one that is linked to AsciidoctorJ
-     * will be used. However is that JRuby version is below
-     * a minimum safe version (@link #MINIMUM_SAFE_JRUBY_VERSION}), the latter will be substituted
-     * instead and used at runtime.
+     * will be used.
      *
      * @return Version of JRuby to use or {@code null} to use the JRUby version that is
      * linked to the specified vesrion of AsciidoctorJ.
@@ -479,7 +508,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         final String jrubyCompleteDep = "${JRUBY_COMPLETE_DEPENDENCY}:${jrubyVer}"
 
         final boolean isAsciidoctor15series = getVersion().startsWith('1.5')
-        final boolean isJRuby9 = jrubyVer.startsWith('9.')
+        final boolean isEarlyJRuby9 = jrubyVer =~ /^(9\.[01])|(9\.2\.0)/
 
         List<Dependency> deps = [createDependency("${ASCIIDOCTORJ_CORE_DEPENDENCY}:${getVersion()}")]
 
@@ -490,8 +519,8 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         if (pdfVer != null) {
             deps.add(createDependency("${ASCIIDOCTORJ_PDF_DEPENDENCY}:${pdfVer}"))
 
-            if (isJRuby9 || jrubyVer =~ /1.7.2\d/) {
-                deps.add(createDependency("${SNAKE_YAML_DEPENDENCY}:${PDF_SNAKE_YAML_FOR_JRUBY9_VERSION}"))
+            if (isEarlyJRuby9 || jrubyVer =~ /1.7.2\d/) {
+                deps.add(createDependency("${SNAKE_YAML_DEPENDENCY}:${PDF_SNAKE_YAML_FOR_EARLY_JRUBY9_VERSIONS}"))
             }
         }
 

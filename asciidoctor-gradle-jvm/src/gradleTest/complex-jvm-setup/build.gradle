@@ -1,7 +1,7 @@
+// tag::using-two-plugins-three-backends[]
 plugins {
     id 'org.asciidoctor.jvm.convert'
     id 'org.asciidoctor.jvm.pdf'
-
 }
 
 repositories {
@@ -9,18 +9,8 @@ repositories {
 }
 
 asciidoctorj {
-
-    diagramVersion = '1.5.4.1'
-
-    logLevel = 'INFO'
-}
-
-configurations {
-    asciidoctorLeanpub
-}
-
-dependencies {
-    // asciidoctorLeanpub
+    diagramVersion '1.5.4.1'
+    logLevel 'INFO'
 }
 
 asciidoctor {
@@ -37,10 +27,6 @@ asciidoctor {
         include 'images/**'
     }
 
-    asciidoctorj {
-        // requires
-    }
-
     copyResourcesOnlyIf 'html5'
     useIntermediateWorkDir()
 }
@@ -54,18 +40,18 @@ asciidoctorPdf {
         include 'subdir/sample2.ad'
     }
 }
-
-//task asciidoctorLeanpub ( type : org.asciidoctor.gradle.jvm.AsciidoctorTask ) {
-//    sourceDir 'src/docs/asciidoc'
-//    configurations 'asciidoctorLeanpub'
-//    copyNoResources()
-//
-//    asciidoctorj {
-//        version = '1.6.0-alpha-1'
-//        safeMode 'unsafe'
-//    }
-//}
+// end::using-two-plugins-three-backends[]
 
 task runGradleTest {
     dependsOn asciidoctor, asciidoctorPdf
+}
+
+
+// This is to work around a bug in Gradle. It is not part of normal build script.
+// The side affect of this is that we actually get better code coverage as the process mode
+// changes depending on which version of Gradle is being tested.
+if(System.getProperty('CALLING_GRADLETEST_USES_GROOVY_VERSION') != GroovySystem.version) {
+    asciidoctorPdf {
+        inProcess JAVA_EXEC
+    }
 }

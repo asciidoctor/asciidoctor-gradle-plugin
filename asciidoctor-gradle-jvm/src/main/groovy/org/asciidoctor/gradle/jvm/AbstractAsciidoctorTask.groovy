@@ -17,9 +17,9 @@ package org.asciidoctor.gradle.jvm
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.internal.AsciidoctorUtils
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
+import org.asciidoctor.gradle.internal.ExecutorUtils
 import org.asciidoctor.gradle.internal.JavaExecUtils
 import org.asciidoctor.gradle.remote.AsciidoctorJExecuter
 import org.asciidoctor.gradle.remote.AsciidoctorJavaExec
@@ -46,7 +46,7 @@ import org.ysb33r.grolifant.api.StringUtils
 
 import java.nio.file.Path
 
-import static org.asciidoctor.gradle.internal.AsciidoctorUtils.*
+import static org.asciidoctor.gradle.base.AsciidoctorUtils.*
 import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 import static org.gradle.workers.IsolationMode.CLASSLOADER
 import static org.gradle.workers.IsolationMode.PROCESS
@@ -67,7 +67,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
     final static ProcessMode JAVA_EXEC = ProcessMode.JAVA_EXEC
 
     @Internal
-    protected final static GradleVersion LAST_GRADLE_WITH_CLASSPATH_LEAKAGE = GradleVersion.version(('4.99'))
+    protected final static GradleVersion LAST_GRADLE_WITH_CLASSPATH_LEAKAGE = GradleVersion.version(('5.0'))
 
     @Nested
     protected final OutputOptions configuredOutputOptions = new OutputOptions()
@@ -118,7 +118,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      *
      * Default is parallel.
      *
-     * WHen {@link #inProcess} {@code ==} {@link #JAVA_EXEC} this option is ignored.
+     * When {@link #inProcess} {@code ==} {@link #JAVA_EXEC} this option is ignored.
      */
     @Internal
     boolean parallelMode = true
@@ -605,7 +605,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
             asciidoctorExtensions: (asciidoctorJExtensions.findAll { !(it instanceof Dependency) }),
             requires: requires,
             copyResources: this.copyResourcesForBackends != null && (this.copyResourcesForBackends.empty || backendName in this.copyResourcesForBackends),
-            executorLogLevel: AsciidoctorUtils.getExecutorLogLevel(asciidoctorj.logLevel),
+            executorLogLevel: ExecutorUtils.getExecutorLogLevel(asciidoctorj.logLevel),
             safeModeLevel: asciidoctorj.safeMode.level
         )
     }
@@ -616,7 +616,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      *
      * The default implementation will add {@code includedir}
      *
-     * @param workingSourceDit DIrectory where source files are located.
+     * @param workingSourceDir Directory where source files are located.
      *
      * @return A collection of default attributes.
      */
@@ -832,6 +832,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
                 }
             }
         } else {
+
             worker.submit(AsciidoctorJExecuter) { WorkerConfiguration config ->
                 configureWorker(
                     "Asciidoctor (task=${name}) conversions for ${executorConfigurations.keySet().join(', ')}",
@@ -863,7 +864,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
         final File workingSourceDir,
         final Set<File> sourceFiles
     ) {
-        FileCollection javaExecClasspath = JavaExecUtils.getJavaExecClasspath(project, configurations)
+        FileCollection javaExecClasspath = JavaExecUtils.getJavaExecClasspath(project, configurations, asciidoctorj.injectInternalGuavaJar)
         Map<String, ExecutorConfiguration> executorConfigurations = getExecutorConfigurations(workingSourceDir, sourceFiles)
         File execConfigurationData = JavaExecUtils.writeExecConfigurationData(this, executorConfigurations.values())
 

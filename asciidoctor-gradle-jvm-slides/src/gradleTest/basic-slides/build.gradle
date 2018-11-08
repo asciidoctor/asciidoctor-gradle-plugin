@@ -1,0 +1,52 @@
+// tag::revealjs-basics[]
+plugins {
+    id 'org.asciidoctor.jvm.revealjs' // <1>
+}
+// end::revealjs-basics[]
+
+apply from: "${System.getProperty('OFFLINE_REPO')}/repositories.gradle"
+
+// tag::revealjs-basics[]
+repositories {
+    maven { url 'http://rubygems-proxy.torquebox.org/releases' } // <2>
+}
+
+revealjsPlugins {
+    github 'rajgoel', {
+        organisation = 'rajgoel'
+        repository = 'reveal.js-plugins'
+        branch = 'master'
+    }
+}
+
+asciidoctorRevealJs {
+    sourceDir 'src/docs/asciidoc'
+
+    sources {
+        include 'revealjs.adoc'
+    }
+
+    plugins 'rajgoel/chart/Chart.js'
+//    pluginConfigurationFile 'src/docs/asciidoc/empty-plugin-configuration.js'
+
+    toggleBuiltinPlugin 'pdf', true
+    toggleBuiltinPlugin 'notes', false
+}
+// end::revealjs-basics[]
+
+task runGradleTest {
+    dependsOn asciidoctorRevealJs
+
+    doLast {
+        assert file("build/docs/asciidocRevealJs/revealjs.html").text.contains('World')
+    }
+}
+
+// This is to work around a bug in Gradle. It is not part of normal build script.
+// The side affect of this is that we actually get better code coverage as the process mode
+// changes depending on which version of Gradle is being tested.
+if(System.getProperty('CALLING_GRADLETEST_USES_GROOVY_VERSION') != GroovySystem.version) {
+    asciidoctorRevealJs {
+        inProcess JAVA_EXEC
+    }
+}

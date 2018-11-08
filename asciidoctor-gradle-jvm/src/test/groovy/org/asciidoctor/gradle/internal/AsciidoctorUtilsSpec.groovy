@@ -15,6 +15,7 @@
  */
 package org.asciidoctor.gradle.internal
 
+import org.asciidoctor.gradle.base.AsciidoctorUtils
 import spock.lang.Specification
 import spock.lang.Unroll
 

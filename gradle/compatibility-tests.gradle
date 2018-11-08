@@ -2,20 +2,25 @@ apply plugin : 'org.ysb33r.gradletest'
 
 gradleTest {
 
-    versions '4.9'
+    versions '4.10.2', '5.0-rc-1'
 
-    if(JavaVersion.current().java10) {
+    if(JavaVersion.current().java11) {
+        versions '4.8.1'
+    } else if(JavaVersion.current().java10) {
         versions '4.7'
     } else {
         versions '4.0.2', '4.3.1', '4.6'
     }
 
-    mustRunAfter intTest
+    if(tasks.findByName('intTest')) {
+        mustRunAfter 'intTest'
+    }
 
     enabled = !gradle.startParameter.offline
 
     dependsOn ':testfixtures-offline-repo:buildOfflineRepositories'
     systemProperties OFFLINE_REPO: offlineRepoRoot.absolutePath
+    systemProperties CALLING_GRADLETEST_USES_GROOVY_VERSION: GroovySystem.version
 }
 
 configurations {
