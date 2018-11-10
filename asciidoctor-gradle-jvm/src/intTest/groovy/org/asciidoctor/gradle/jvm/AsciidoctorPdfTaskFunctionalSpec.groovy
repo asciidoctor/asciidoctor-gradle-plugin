@@ -19,8 +19,8 @@ import org.asciidoctor.gradle.internal.FunctionalSpecification
 import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Unroll
 
-import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.SERIES_15
 import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.SERIES_16
+import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.SERIES_20
 @java.lang.SuppressWarnings('NoWildcardImports')
 import static org.asciidoctor.gradle.testfixtures.jvm.JRubyTestVersions.*
 
@@ -65,7 +65,7 @@ asciidoctorPdf {
 
     @Unroll
     @SuppressWarnings('DuplicateStringLiteral')
-    void 'PDF backend Is #text compatible with AsciidoctorJ=#asciidoctorjVer + min JRuby=#jrubyVer'() {
+    void 'PDF backend is #text compatible with AsciidoctorJ=#asciidoctorjVer + min JRuby=#jrubyVer'() {
         given:
         boolean compatible = text.empty
 
@@ -94,10 +94,10 @@ asciidoctorPdf {
 
         where:
         jrubyVer              | asciidoctorjVer | text
-        AJ15_ABSOLUTE_MAXIMUM | SERIES_15       | 'not'
-        AJ15_ABSOLUTE_MINIMUM | SERIES_15       | ''
-        AJ15_SAFE_MAXIMUM     | SERIES_15       | ''
-        AJ15_SAFE_MINIMUM     | SERIES_15       | ''
+        AJ20_ABSOLUTE_MAXIMUM | SERIES_20       | ''
+        AJ20_ABSOLUTE_MINIMUM | SERIES_20       | ''
+        AJ20_SAFE_MAXIMUM     | SERIES_20       | ''
+        AJ20_SAFE_MINIMUM     | SERIES_20       | ''
         AJ16_ABSOLUTE_MAXIMUM | SERIES_16       | ''
         AJ16_ABSOLUTE_MINIMUM | SERIES_16       | ''
         AJ16_SAFE_MAXIMUM     | SERIES_16       | ''

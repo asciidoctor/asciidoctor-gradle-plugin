@@ -46,11 +46,11 @@ class VersionProcessModeGenerator {
 
     static List<VersionProcess> get() {
         if (System.getenv('APPVEYOR')) {
-            [AsciidoctorjTestVersions.SERIES_15, AsciidoctorjTestVersions.SERIES_16].collect {
+            [AsciidoctorjTestVersions.SERIES_20, AsciidoctorjTestVersions.SERIES_16].collect {
                 VersionProcess.of(it, JAVA_EXEC)
             }
         } else {
-            [AsciidoctorjTestVersions.SERIES_15, AsciidoctorjTestVersions.SERIES_16].collect { it ->
+            [AsciidoctorjTestVersions.SERIES_20, AsciidoctorjTestVersions.SERIES_16].collect { it ->
                 [
                     VersionProcess.of(it, JAVA_EXEC),
                     VersionProcess.of(it, IN_PROCESS),

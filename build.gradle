@@ -33,6 +33,7 @@ plugins {
 }
 
 import java.text.SimpleDateFormat
+import org.gradle.util.GradleVersion
 
 apply plugin: 'net.nemerosa.versioning'
 
@@ -52,6 +53,7 @@ allprojects {
 
         withoutIntegrationTests = [
             'asciidoctor-gradle-base',
+            'asciidoctor-gradle-jvm-gems',
             'kindlegen-gradle'
         ]
 
@@ -63,6 +65,8 @@ allprojects {
 }
 
 subprojects {
+
+    apply plugin : 'org.ysb33r.os'
 
     if( project.name != 'testfixtures-offline-repo') {
         apply plugin: 'groovy'
@@ -77,6 +81,12 @@ subprojects {
 
             if(project.name != 'asciidoctorj-gradle-base') {
                 apply plugin: 'jacoco'
+
+                jacoco {
+                    if(JavaVersion.current().isJava11Compatible() && GradleVersion.version(toolVersion) < GradleVersion.version('0.8.2')) {
+                        toolVersion = '0.8.2'
+                    }
+                }
             }
          }
 

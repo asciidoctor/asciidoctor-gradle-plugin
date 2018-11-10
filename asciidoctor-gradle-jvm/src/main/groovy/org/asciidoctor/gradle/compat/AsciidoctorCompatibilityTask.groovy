@@ -37,7 +37,8 @@ import org.gradle.internal.FileUtils
 import org.gradle.process.JavaExecSpec
 import org.ysb33r.grolifant.api.OperatingSystem
 
-import static org.asciidoctor.gradle.internal.AsciidoctorUtils.*
+import static org.asciidoctor.gradle.base.AsciidoctorUtils.*
+import static org.asciidoctor.gradle.jvm.AsciidoctorJExtension.GUAVA_REQUIRED_FOR_EXTERNALS
 import static org.asciidoctor.gradle.internal.JavaExecUtils.getJavaExecClasspath
 import static org.ysb33r.grolifant.api.StringUtils.stringize
 
@@ -95,6 +96,15 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
     @Optional
     @InputDirectory
     File baseDir
+
+    /** Set to {@code true} in order to add legacy attributes
+     * {@code projectdir} and {@code rootdir}.
+     *
+     * This is for ease of upgrading. Documents should be converted to
+     * use {@code gradle-projectdir} amd {@code gradle-rootdir} instead.
+     */
+    @Input
+    boolean legacyAttributes = false
 
     /** Logs documents as they are converted
      *
@@ -543,6 +553,7 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
                 requires: getRequires(),
                 options: options,
                 attributes: attributes,
+                legacyAttributes : legacyAttributes,
                 asciidoctorExtensions: dehydrateExtensions(getAsciidoctorExtensions()),
                 executorLogLevel: ExecutorLogLevel.WARN
             )
@@ -558,10 +569,15 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
         FileCollection javaExecClasspath = project.files(
             getJavaExecClasspath(
                 project,
-                classpath ?: project.configurations.getByName(AsciidoctorCompatibilityPlugin.ASCIIDOCTOR)
+                classpath ?: project.configurations.getByName(AsciidoctorCompatibilityPlugin.ASCIIDOCTOR),
+                GUAVA_REQUIRED_FOR_EXTERNALS
             ),
             closurePaths
         )
+
+        if(legacyAttributes) {
+            migrationMessage 'legacyAttributes=true', 'Switch documents to use attributes `gradle-projectdir` and `gradle-rootdir` instead.'
+        }
 
         File execConfigurationData = JavaExecUtils.writeExecConfigurationData(this, ecc.configurations)
         logger.debug("Serialised AsciidoctorJ configuration to ${execConfigurationData}")

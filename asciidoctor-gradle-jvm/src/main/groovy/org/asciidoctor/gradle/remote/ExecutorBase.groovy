@@ -59,7 +59,7 @@ abstract class ExecutorBase {
      * @param runConfiguration The current executor configuration
      * @return Asciidoctor options
      */
-    @SuppressWarnings('Instanceof')
+    @SuppressWarnings(['Instanceof','DuplicateStringLiteral'])
     protected
     Map<String, Object> normalisedOptionsFor(final File file, ExecutorConfiguration runConfiguration) {
 
@@ -93,6 +93,12 @@ abstract class ExecutorBase {
             newAttrs.putAll(attributes)
             newAttrs['gradle-projectdir'] = getRelativePath(projectDir, file.parentFile)
             newAttrs['gradle-rootdir'] = getRelativePath(rootDir, file.parentFile)
+
+            if(legacyAttributes) {
+                newAttrs['projectdir'] = newAttrs['gradle-projectdir']
+                newAttrs['rootdir'] = newAttrs['gradle-rootdir']
+            }
+
             mergedOptions[Options.ATTRIBUTES] = newAttrs
         }
 

@@ -6,8 +6,10 @@
 // It has to come before the `dependencies` block because one of the dependencies
 // relies on it.
 task createClasspathManifest {
-    def outputDir = file("$buildDir/$name")
-
+    ext {
+        outputDir = file("$buildDir/$name")
+    }
+    
     inputs.files sourceSets.main.runtimeClasspath
     outputs.dir outputDir
 

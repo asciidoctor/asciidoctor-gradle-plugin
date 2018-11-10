@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.internal
+package org.asciidoctor.gradle.base
 
 import groovy.transform.CompileStatic
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.file.FileTree
 import org.gradle.api.file.FileVisitDetails
-import org.gradle.api.logging.LogLevel
 import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.util.PatternSet
 import org.ysb33r.grolifant.api.OperatingSystem
@@ -43,7 +42,7 @@ class AsciidoctorUtils {
     private static final String DOUBLE_BACKLASH = '\\\\'
     private static final String BACKLASH = '\\'
 
-    /** Gets a fileTree that descirbed an ASciidoctor set of source files.
+    /** Gets a fileTree that described an Asciidoctor set of source files.
      *
      * @param project Project to associate the file collection tp.
      * @param sourceDir Base directory for the sourcs.
@@ -51,7 +50,7 @@ class AsciidoctorUtils {
      * @return A colelction of suitable files.
      * @throw {@link GradleException} is files starting with undersocres are detected.
      */
-    static FileTree getSourceFileTree(final Project project, final File sourceDir, final PatternSet filePatterns )  {
+    static FileTree getSourceFileTree(final Project project, final File sourceDir, final PatternSet filePatterns) {
         FileTree ft = project.fileTree(sourceDir).
             matching(filePatterns).filter(ACCEPT_ONLY_FILES).asFileTree
 
@@ -90,30 +89,9 @@ class AsciidoctorUtils {
         base.toPath().relativize(target.toPath()).toFile().toString()
     }
 
-    /** Determines an executor logging level from the current Gradle logging level
-     *
-     * @param level
-     * @return
-     */
-    static ExecutorLogLevel getExecutorLogLevel(LogLevel level) {
-        switch (level) {
-            case LogLevel.DEBUG:
-                return ExecutorLogLevel.DEBUG
-            case LogLevel.LIFECYCLE:
-            case LogLevel.WARN:
-                return ExecutorLogLevel.WARN
-            case LogLevel.INFO:
-                return ExecutorLogLevel.INFO
-            case LogLevel.QUIET:
-                return ExecutorLogLevel.QUIET
-            default:
-                return ExecutorLogLevel.ERROR
-        }
-    }
-
     /** Executes a configuration closure.
      *
-     * The closure will be cloned before excution.
+     * The closure will be cloned before execution.
      *
      * @param delegated Closure delegate
      * @param cfg Closure to execute

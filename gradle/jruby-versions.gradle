@@ -3,7 +3,7 @@ ext {
     jrubyFixtureFileContent = file("${project(':testfixtures-jvm').projectDir}/src/main/groovy/org/asciidoctor/gradle/testfixtures/jvm/JRubyTestVersions.groovy").readLines()
 
     snakeYamlForJRubyVersion = (asciidoctorjExtFileContent.grep {
-        it =~ /final\s+static\s+String\s+PDF_SNAKE_YAML_FOR_JRUBY9_VERSION\s+=/
+        it =~ /final\s+static\s+String\s+PDF_SNAKE_YAML_FOR_EARLY_JRUBY9_VERSIONS\s+=/
     })[0].replaceFirst(~/^(.+?["'])/, '').replaceFirst(~/(["'].*)$/, '')
 
     readJRubyVersion = { itemName ->
@@ -14,10 +14,10 @@ ext {
 
     jrubyTestVersion = [
 
-        aj15_minimum : readJRubyVersion('AJ15_ABSOLUTE_MINIMUM'),
-        aj15_safe_mininum : readJRubyVersion('AJ15_SAFE_MINIMUM'),
-        aj15_safe_maximum : readJRubyVersion('AJ15_SAFE_MAXIMUM'),
-        aj15_maximum : readJRubyVersion('AJ15_ABSOLUTE_MAXIMUM'),
+        aj20_minimum : readJRubyVersion('AJ20_ABSOLUTE_MINIMUM'),
+        aj20_safe_mininum : readJRubyVersion('AJ20_SAFE_MINIMUM'),
+        aj20_safe_maximum : readJRubyVersion('AJ20_SAFE_MAXIMUM'),
+        aj20_maximum : readJRubyVersion('AJ20_ABSOLUTE_MAXIMUM'),
 
         aj16_minimum : readJRubyVersion('AJ16_ABSOLUTE_MINIMUM'),
         aj16_safe_mininum : readJRubyVersion('AJ16_SAFE_MINIMUM'),

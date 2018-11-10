@@ -6,6 +6,8 @@ asciidoctor {
     sources {
         include 'test.adoc'
     }
+
+    legacyAttributes = true
 }
 
 task runGradleTest {
