@@ -701,12 +701,15 @@ Gradle injected a number of attributes into the build. These names have now been
 
 [cols="3*"]
 |===
-| *Old name* | *New name* | *Usage*
-| `projectdir` | `gradle-projectdir` | The Gradle project directory which is running the Asciidoctor task.
-| `rootdir` | `gradle-rootdir` | The rootproject directory in a multi-project build.
-| `project-group` | `gradle-project-group` | The project/artifact group if it is defined.
-| `project-version` | `gradle-project-version` | The project version if it is defined.
+| *Old name* | *New name* | Substituable | *Usage*
+| `projectdir` | `gradle-projectdir` | No | The Gradle project directory which is running the Asciidoctor task.
+| `rootdir` | `gradle-rootdir` | No | The rootproject directory in a multi-project build.
+| `project-name` | `gradle-project-name` | Yes | The name of the current Gradle subproject. (Or the root project in case of a single project).
+| `project-group` | `gradle-project-group` | Yes | The project/artifact group if it is defined.
+| `project-version` | `revnumber` | Yes | The project version if it is defined.
 |===
+
+Substituable attributes means that the build script author can change those attributes by setting them explicitly.
 
 If you used external GEMs via the http://jruby-gradle.github.io/[JRuby Gradle plugin], you should switch over to using `org.asciidoctor.jvm.gems` instead. You should also use the `asciidoctorGems` configuration rather than the `gems` configuration. Tasks should not depend on `JRubyPrepare`, but on `AsciidoctorGemsPrepare` instead.
 

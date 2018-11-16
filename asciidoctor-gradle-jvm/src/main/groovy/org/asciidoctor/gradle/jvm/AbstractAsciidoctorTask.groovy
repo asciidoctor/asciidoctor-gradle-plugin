@@ -614,14 +614,19 @@ class AbstractAsciidoctorTask extends DefaultTask {
      *
      * If the user specifies any of these attributes, then those attributes will not be utilised.
      *
-     * The default implementation will add {@code includedir}
+     * The default implementation will add {@code includedir}, {@code revnumber}, {@code gradle-project-group}, {@code gradle-project-name}
      *
      * @param workingSourceDir Directory where source files are located.
      *
      * @return A collection of default attributes.
      */
     protected Map<String, Object> getTaskSpecificDefaultAttributes(File workingSourceDir) {
-        [includedir: (Object) workingSourceDir.absolutePath]
+        [
+            includedir: (Object) workingSourceDir.absolutePath,
+            revnumber : (Object) project.version,
+            'gradle-project-group' : (Object) project.group,
+            'gradle-project-name': (Object) project.name
+        ]
     }
 
     /** The default PatternSet that will be used if {@code sources} was never called
