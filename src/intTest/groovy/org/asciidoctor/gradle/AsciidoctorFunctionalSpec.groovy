@@ -123,7 +123,7 @@ class AsciidoctorFunctionalSpec extends Specification {
         then:
         result.task(":asciidoctor").outcome == TaskOutcome.SUCCESS
         new File(buildDir, "asciidoc/html5/sample.html").exists()
-        output.contains('It seems that you may be using implicit attributes ')
+        output.contains('It seems that you may be using one or more implicit attributes')
         output.contains('sample.asciidoc')
     }
 
