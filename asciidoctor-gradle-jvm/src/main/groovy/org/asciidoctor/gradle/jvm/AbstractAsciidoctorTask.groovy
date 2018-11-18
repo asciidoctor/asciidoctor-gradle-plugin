@@ -33,6 +33,7 @@ import org.gradle.api.artifacts.DependencyResolveDetails
 import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.FileTree
+import org.gradle.api.provider.Provider
 @java.lang.SuppressWarnings('NoWildcardImports')
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.util.PatternSet
@@ -596,8 +597,8 @@ class AbstractAsciidoctorTask extends DefaultTask {
             baseDir: getBaseDir(),
             projectDir: project.projectDir,
             rootDir: project.rootProject.projectDir,
-            options: options,
-            attributes: attrs,
+            options: evaluateProviders(options),
+            attributes: evaluateProviders(attrs),
             backendName: backendName,
             logDocuments: logDocuments,
             gemPath: gemPath,
@@ -952,5 +953,15 @@ class AbstractAsciidoctorTask extends DefaultTask {
             }
         }
         cfg
+    }
+
+    private Map<String,Object> evaluateProviders(final Map<String,Object> initialMap) {
+        initialMap.collectEntries { String k, Object v ->
+            if(v instanceof Provider) {
+                [k,v.get()]
+            }  else {
+                [k,v]
+            }
+        } as Map<String,Object>
     }
 }

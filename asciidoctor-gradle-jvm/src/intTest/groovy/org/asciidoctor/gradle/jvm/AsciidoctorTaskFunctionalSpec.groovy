@@ -116,7 +116,8 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
                 asciidoctorj {
                     attributes attr3 : new File('abc'),
                         attr4 : { 'a closure' },
-                        attr20 : [ a : 1 ]            
+                        attr20 : [ a : 1 ],
+                        attrProvider : providers.provider( { 'a string provider' } )            
                 }
             }
         """)
