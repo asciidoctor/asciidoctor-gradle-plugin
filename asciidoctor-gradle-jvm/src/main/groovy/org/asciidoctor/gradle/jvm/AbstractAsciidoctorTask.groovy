@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.jvm
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
 import org.asciidoctor.gradle.internal.ExecutorUtils
@@ -360,6 +361,18 @@ class AbstractAsciidoctorTask extends DefaultTask {
         asciidoctorj.attributes(m)
     }
 
+    /** Additional providers of attributes.
+     *
+     * NOTE: Attributes added via providers do no change th up-to-date status of the task.
+     *   Providers are therefore usfeul to add attributes such as build time.
+     *
+     * @return List of attribute providers.
+     */
+    @Internal
+    List<AsciidoctorAttributeProvider> getAttributeProviders() {
+        asciidoctorj.attributeProviders
+    }
+
     /** Add to the CopySpec for extra files. The destination of these files will always have a parent directory
      * of {@code outputDir} or {@code outputDir + backend}
      *
@@ -586,19 +599,15 @@ class AbstractAsciidoctorTask extends DefaultTask {
         final File workingSourceDir,
         final Set<File> sourceFiles
     ) {
-        File outputTo = getOutputDirFor(backendName)
-        Map<String, Object> attrs = getTaskSpecificDefaultAttributes(workingSourceDir)
-        attrs.putAll(attributes)
-
         new ExecutorConfiguration(
             sourceDir: workingSourceDir,
             sourceTree: sourceFiles,
-            outputDir: outputTo,
+            outputDir: getOutputDirFor(backendName),
             baseDir: getBaseDir(),
             projectDir: project.projectDir,
             rootDir: project.rootProject.projectDir,
             options: evaluateProviders(options),
-            attributes: evaluateProviders(attrs),
+            attributes: preparePreserialisedAttributes(workingSourceDir),
             backendName: backendName,
             logDocuments: logDocuments,
             gemPath: gemPath,
@@ -963,5 +972,23 @@ class AbstractAsciidoctorTask extends DefaultTask {
                 [k,v]
             }
         } as Map<String,Object>
+    }
+
+    private Map<String,Object> preparePreserialisedAttributes(final File workingSourceDir) {
+        Map<String,Object> attrs = [:]
+        attrs.putAll(attributes)
+        attributeProviders.each {
+            attrs.putAll(it.attributes)
+        }
+        Set<String> userDefinedAttrKeys = attrs.keySet()
+
+        Map<String, Object> defaultAttrs = getTaskSpecificDefaultAttributes(workingSourceDir).findAll { k,v ->
+            !userDefinedAttrKeys.contains(k)
+        }.collectEntries { k,v ->
+            [ "${k}@".toString(), v ]
+        } as Map<String,Object>
+
+        attrs.putAll(defaultAttrs)
+        evaluateProviders(attrs)
     }
 }

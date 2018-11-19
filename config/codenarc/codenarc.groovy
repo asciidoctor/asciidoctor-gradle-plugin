@@ -50,5 +50,7 @@ ruleset {
     ruleset('rulesets/junit.xml')
     ruleset('rulesets/unnecessary.xml')
     ruleset('rulesets/dry.xml')
-    ruleset('rulesets/design.xml')
+    ruleset('rulesets/design.xml') {
+        exclude 'Instanceof'
+    }
 }

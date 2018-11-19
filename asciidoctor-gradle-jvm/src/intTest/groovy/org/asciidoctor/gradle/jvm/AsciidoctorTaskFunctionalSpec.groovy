@@ -102,6 +102,10 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
                 attributes attr1 : 'a string',
                     attr2 : "A GString",
                     attr10 : [ 'a', 2, 5 ]
+
+                attributeProvider {
+                    [ attr50 : 'value' ]
+                }
             }
                     
             asciidoctor {

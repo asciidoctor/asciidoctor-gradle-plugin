@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.jvm
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
 import org.asciidoctor.gradle.base.SafeMode
 import org.gradle.api.Action
 import org.gradle.api.GradleException
@@ -40,7 +41,7 @@ import static org.ysb33r.grolifant.api.StringUtils.stringize
  *
  * It can be used as both a project and a task extension.
  *
- * @since 2.0.0
+ * @since 2.0
  * @author Schalk W. Cronjé
  */
 @CompileStatic
@@ -93,6 +94,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     private final List<Object> gemPaths = []
     private final List<Action<ResolutionStrategy>> resolutionsStrategies = []
     private final List<Object> warningsAsErrors = []
+    private final List<AsciidoctorAttributeProvider> attributeProviders = []
 
     private boolean onlyTaskOptions = false
     private boolean onlyTaskAttributes = false
@@ -385,6 +387,34 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     @SuppressWarnings('ConfusingMethodName')
     void attributes(Map m) {
         this.attributes.putAll(m)
+    }
+
+    /** Returns a list of additional attribute providers.
+     *
+     * @return List of providers. Can be empty. Never {@code null}.
+     */
+    List<AsciidoctorAttributeProvider> getAttributeProviders() {
+        if(task) {
+            this.attributeProviders.empty ? extFromProject.attributeProviders : this.attributeProviders
+        } else {
+            this.attributeProviders
+        }
+    }
+
+    /** Adds an additional attribute provider.
+     *
+     * @param provider
+     */
+    void attributeProvider(AsciidoctorAttributeProvider provider) {
+        this.attributeProviders.add(provider)
+    }
+
+    /** Adds a closure as an additional attribute provider.
+     *
+     * @param provider A closure must return a Map<String,Object>
+     */
+    void attributeProvider(Closure provider) {
+        attributeProvider(provider as AsciidoctorAttributeProvider)
     }
 
     /** Returns the set of Ruby modules to be included.
