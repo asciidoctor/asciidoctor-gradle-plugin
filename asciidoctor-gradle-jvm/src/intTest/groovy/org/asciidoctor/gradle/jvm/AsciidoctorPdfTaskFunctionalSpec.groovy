@@ -16,13 +16,9 @@
 package org.asciidoctor.gradle.jvm
 
 import org.asciidoctor.gradle.internal.FunctionalSpecification
+import org.asciidoctor.gradle.testfixtures.jvm.generators.PdfBackendJRubyAsciidoctorJCombinationGenerator
 import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Unroll
-
-import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.SERIES_16
-import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.SERIES_20
-@java.lang.SuppressWarnings('NoWildcardImports')
-import static org.asciidoctor.gradle.testfixtures.jvm.JRubyTestVersions.*
 
 @SuppressWarnings('MethodName')
 class AsciidoctorPdfTaskFunctionalSpec extends FunctionalSpecification {
@@ -65,20 +61,18 @@ asciidoctorPdf {
 
     @Unroll
     @SuppressWarnings('DuplicateStringLiteral')
-    void 'PDF backend is #text compatible with AsciidoctorJ=#asciidoctorjVer + min JRuby=#jrubyVer'() {
+    void '#combination (Groovy DSL)'() {
         given:
-        boolean compatible = text.empty
-
         getBuildFile("""
 asciidoctorPdf {
 
     ${defaultProcessModeForAppveyor}
 
     asciidoctorj {
-        version = '${asciidoctorjVer}'  
-        jrubyVersion = '${jrubyVer}'
+        version = '${combination.asciidoctorjVer}'  
+        jrubyVersion = '${combination.jrubyVer}'
 
-        ${getResolutionStrategy(asciidoctorjVer, jrubyVer)}
+        ${getResolutionStrategy(combination.asciidoctorjVer, combination.jrubyVer)}
     }
     
     sourceDir 'src/docs/asciidoc'
@@ -87,21 +81,13 @@ asciidoctorPdf {
         GradleRunner runner = getGradleRunner([DEFAULT_TASK, '-s'])
 
         when:
-        compatible ? runner.build() : runner.buildAndFail()
+        combination.compatible ? runner.build() : runner.buildAndFail()
 
         then:
-        compatible && new File(testProjectDir.root, DEFAULT_OUTPUT_FILE).exists() || !compatible
+        combination.compatible && new File(testProjectDir.root, DEFAULT_OUTPUT_FILE).exists() || !combination.compatible
 
         where:
-        jrubyVer              | asciidoctorjVer | text
-        AJ20_ABSOLUTE_MAXIMUM | SERIES_20       | ''
-        AJ20_ABSOLUTE_MINIMUM | SERIES_20       | ''
-        AJ20_SAFE_MAXIMUM     | SERIES_20       | ''
-        AJ20_SAFE_MINIMUM     | SERIES_20       | ''
-        AJ16_ABSOLUTE_MAXIMUM | SERIES_16       | ''
-        AJ16_ABSOLUTE_MINIMUM | SERIES_16       | ''
-        AJ16_SAFE_MAXIMUM     | SERIES_16       | ''
-        AJ16_SAFE_MINIMUM     | SERIES_16       | ''
+        combination << PdfBackendJRubyAsciidoctorJCombinationGenerator.get()
     }
 
     @SuppressWarnings('DuplicateStringLiteral')
@@ -142,7 +128,7 @@ asciidoctorPdf {
         """)
 
         when:
-        getGradleRunner([DEFAULT_TASK]).build()
+        getGradleRunner([DEFAULT_TASK,'-i']).build()
 
         then:
         verifyAll {
@@ -165,7 +151,7 @@ ${extraContent}
     }
 
     String getResolutionStrategy(final String asciidoctorjVer, final String jrubyVer) {
-        if (asciidoctorjVer.startsWith('1.6') && jrubyVer.startsWith('9.0')) {
+        if (asciidoctorjVer.startsWith('1.6') && jrubyVer.startsWith('9.')) {
 
             """resolutionStrategy { ResolutionStrategy rs ->
                 rs.eachDependency { details ->

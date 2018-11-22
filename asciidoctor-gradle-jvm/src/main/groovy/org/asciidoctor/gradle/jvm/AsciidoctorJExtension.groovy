@@ -58,7 +58,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     final static String DEFAULT_GROOVYDSL_VERSION = '1.6.0-alpha.2'
     final static String DEFAULT_PDF_VERSION = '1.5.0-alpha.16'
     final static String DEFAULT_EPUB_VERSION = '1.5.0-alpha.8.1'
-    final static String PDF_SNAKE_YAML_FOR_EARLY_JRUBY9_VERSIONS = '1.13'
+    final static String PDF_SNAKE_YAML_FOR_EARLY_JRUBY9_VERSIONS = '1.23'
     final static String DEFAULT_DIAGRAM_VERSION = '1.5.8'
     // ------------------------------------------------------------------------
 
@@ -538,7 +538,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         final String jrubyCompleteDep = "${JRUBY_COMPLETE_DEPENDENCY}:${jrubyVer}"
 
         final boolean isAsciidoctor15series = getVersion().startsWith('1.5')
-        final boolean isEarlyJRuby9 = jrubyVer =~ /^(9\.[01])|(9\.2\.0)/
+        final boolean isEarlyJRuby9 = jrubyVer =~ /^(9\.[01])|(9\.2\.[04])/
 
         List<Dependency> deps = [createDependency("${ASCIIDOCTORJ_CORE_DEPENDENCY}:${getVersion()}")]
 
