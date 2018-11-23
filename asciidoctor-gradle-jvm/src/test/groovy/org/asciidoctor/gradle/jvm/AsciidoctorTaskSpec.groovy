@@ -391,6 +391,21 @@ class AsciidoctorTaskSpec extends Specification {
         fileCollection.contains(new File(srcDir, secSrc).canonicalFile)
     }
 
+
+    void 'When attribute providers are registered on the task, then global ones will not be used.'() {
+        when:
+        AsciidoctorTask task = asciidoctorTask {
+            asciidoctorj {
+                attributeProvider {
+                    [:]
+                }
+            }
+        }
+
+        then:
+        task.attributeProviders != project.extensions.getByType(AsciidoctorJExtension).attributeProviders
+    }
+
     AsciidoctorTask asciidoctorTask(Closure cfg) {
         project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask).configure cfg
     }

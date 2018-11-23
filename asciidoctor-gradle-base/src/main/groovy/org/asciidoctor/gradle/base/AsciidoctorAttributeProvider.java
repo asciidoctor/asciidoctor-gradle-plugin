@@ -13,22 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.testfixtures.jvm
+package org.asciidoctor.gradle.base;
 
-import groovy.transform.CompileStatic
+import java.util.Map;
 
-/**
- * @since 2.0.0
- * @author Schalk W. Cronjé
+/** A provider of Asciidoctor attributes.
+ *
+ * @since 2.0
  */
-@CompileStatic
-class AsciidoctorjTestVersions {
+public interface AsciidoctorAttributeProvider {
 
-    // These lines are read by the build script.
-    public final static String SERIES_16 = '1.6.0-RC.2'
-    public final static String SERIES_20 = '1.6.0-RC.2'
-    public final static String GROOVYDSL_SERIES_16 = '1.6.0-alpha.2'
-    public final static String GROOVYDSL_SERIES_20 = '1.6.0-alpha.2'
-    public final static String DIAGRAM_SERIES_16 = '1.5.8'
-    public final static String DIAGRAM_SERIES_20 = '1.5.8'
+    /** Map of (potenitally unresolved) Asciidoctor attributes.
+     *
+     * @return Returns a map of Asciidoctor attributes
+     */
+    Map<String,Object> getAttributes();
 }

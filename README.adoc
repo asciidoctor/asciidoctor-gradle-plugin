@@ -157,13 +157,15 @@ The entities that can be set are:
 attributes:: {asciidoctorj-epub-name} attributes.
   Use `attributes` to append and `setAttributes` to replace any current attributes with a new set.
   Attribute values are lazy-evaluated to strings.
+attributeProvider:: Register an additional provider of attributes.
+  Attribute providers are a means of adding attributes that will not affect the up-to-date status of tasks.
 epubVersion:: {asciidoctorj-epub-name} version.
-  If not specified asciidoctork-epub will not be on the classpath. If you plan to use the EPUB backend, then you need to set a version here.
+  If not specified asciidoctorj-epub will not be on the classpath. If you plan to use the EPUB backend, then you need to set a version here.
 extensions:: Groovy DSL extensions.
   Use `extensions` to add one or more extensions. Use `setExtensions` to replace the current set of extensions with a new set.
   Extensions can be any kind of object that is serialisable, although in most cases they will be strings or files.
-  If extensiosn are detached dependencies, theu will nto be serialised, but rather will be placed on the classpath so that
-  {asciidoctorj-name} can pick them up automatically.
+  If extensions are detached dependencies, they will not be serialised, but rather will be placed on the classpath in
+  order that {asciidoctorj-name} can pick them up automatically.
 fatalWarnings: Patterns for {asciidoctorj-name} log messages that shuold be treated as fatal errors.
   The list is empty be default. Use `setFatalWarnings` to clear any existing patterns or to decouple a task's configuration from the global
   configuration. Use `fatalWarnings` to add more patterns. Pass `missingIncludes()` to add the common use-case of
@@ -178,7 +180,7 @@ groovyDslVersion:: Version of Groovy Extensions DSL.
 jrubyVersion:: Minimum version of JRuby to be used.
   The exact version that will be used could be higher due to {asciidoctorj-name} having a transitive dependency that is newer.
 logLevel:: The log level at which AsciidoctorJ will log.
-  This is specified as a GRadle loggin glevel. The plugin will translate it to the appropriate AsciidoctorJ logging level.
+  This is specified as a Gradle logging level. The plugin will translate it to the appropriate AsciidoctorJ logging level.
   Default is `project.logger.level`.
 options: {asciidoctorj-name} options.
   Use `options` to append and `setOptions` to replace any current options with a new set.
@@ -701,12 +703,15 @@ Gradle injected a number of attributes into the build. These names have now been
 
 [cols="3*"]
 |===
-| *Old name* | *New name* | *Usage*
-| `projectdir` | `gradle-projectdir` | The Gradle project directory which is running the Asciidoctor task.
-| `rootdir` | `gradle-rootdir` | The rootproject directory in a multi-project build.
-| `project-group` | `gradle-project-group` | The project/artifact group if it is defined.
-| `project-version` | `gradle-project-version` | The project version if it is defined.
+| *Old name* | *New name* | Substituable | *Usage*
+| `projectdir` | `gradle-projectdir` | No | The Gradle project directory which is running the Asciidoctor task.
+| `rootdir` | `gradle-rootdir` | No | The rootproject directory in a multi-project build.
+| `project-name` | `gradle-project-name` | Yes | The name of the current Gradle subproject. (Or the root project in case of a single project).
+| `project-group` | `gradle-project-group` | Yes | The project/artifact group if it is defined.
+| `project-version` | `revnumber` | Yes | The project version if it is defined.
 |===
+
+Substituable attributes means that the build script author can change those attributes by setting them explicitly.
 
 If you used external GEMs via the http://jruby-gradle.github.io/[JRuby Gradle plugin], you should switch over to using `org.asciidoctor.jvm.gems` instead. You should also use the `asciidoctorGems` configuration rather than the `gems` configuration. Tasks should not depend on `JRubyPrepare`, but on `AsciidoctorGemsPrepare` instead.
 

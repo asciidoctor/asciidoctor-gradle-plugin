@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.jvm
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
 import org.asciidoctor.gradle.base.SafeMode
 import org.gradle.api.Action
 import org.gradle.api.GradleException
@@ -40,7 +41,7 @@ import static org.ysb33r.grolifant.api.StringUtils.stringize
  *
  * It can be used as both a project and a task extension.
  *
- * @since 2.0.0
+ * @since 2.0
  * @author Schalk W. Cronjé
  */
 @CompileStatic
@@ -53,11 +54,11 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     // It is also a good idea that DEFAULT_ASCIIDOCTORJ_VERSION  matches one of
     // the values in testfixtures-jvm.
     // ------------------------------------------------------------------------
-    final static String DEFAULT_ASCIIDOCTORJ_VERSION = '1.6.0-RC.1'
+    final static String DEFAULT_ASCIIDOCTORJ_VERSION = '1.6.0-RC.2'
     final static String DEFAULT_GROOVYDSL_VERSION = '1.6.0-alpha.2'
     final static String DEFAULT_PDF_VERSION = '1.5.0-alpha.16'
     final static String DEFAULT_EPUB_VERSION = '1.5.0-alpha.8.1'
-    final static String PDF_SNAKE_YAML_FOR_EARLY_JRUBY9_VERSIONS = '1.13'
+    final static String PDF_SNAKE_YAML_FOR_EARLY_JRUBY9_VERSIONS = '1.23'
     final static String DEFAULT_DIAGRAM_VERSION = '1.5.8'
     // ------------------------------------------------------------------------
 
@@ -93,6 +94,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     private final List<Object> gemPaths = []
     private final List<Action<ResolutionStrategy>> resolutionsStrategies = []
     private final List<Object> warningsAsErrors = []
+    private final List<AsciidoctorAttributeProvider> attributeProviders = []
 
     private boolean onlyTaskOptions = false
     private boolean onlyTaskAttributes = false
@@ -387,6 +389,34 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         this.attributes.putAll(m)
     }
 
+    /** Returns a list of additional attribute providers.
+     *
+     * @return List of providers. Can be empty. Never {@code null}.
+     */
+    List<AsciidoctorAttributeProvider> getAttributeProviders() {
+        if(task) {
+            this.attributeProviders.empty ? extFromProject.attributeProviders : this.attributeProviders
+        } else {
+            this.attributeProviders
+        }
+    }
+
+    /** Adds an additional attribute provider.
+     *
+     * @param provider
+     */
+    void attributeProvider(AsciidoctorAttributeProvider provider) {
+        this.attributeProviders.add(provider)
+    }
+
+    /** Adds a closure as an additional attribute provider.
+     *
+     * @param provider A closure must return a Map<String,Object>
+     */
+    void attributeProvider(Closure provider) {
+        attributeProvider(provider as AsciidoctorAttributeProvider)
+    }
+
     /** Returns the set of Ruby modules to be included.
      *
      * @since 1.5.0
@@ -508,7 +538,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         final String jrubyCompleteDep = "${JRUBY_COMPLETE_DEPENDENCY}:${jrubyVer}"
 
         final boolean isAsciidoctor15series = getVersion().startsWith('1.5')
-        final boolean isEarlyJRuby9 = jrubyVer =~ /^(9\.[01])|(9\.2\.0)/
+        final boolean isEarlyJRuby9 = jrubyVer =~ /^(9\.[01])|(9\.2\.[04])/
 
         List<Dependency> deps = [createDependency("${ASCIIDOCTORJ_CORE_DEPENDENCY}:${getVersion()}")]
 

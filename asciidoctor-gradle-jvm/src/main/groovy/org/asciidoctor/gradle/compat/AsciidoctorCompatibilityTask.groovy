@@ -536,6 +536,20 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
 
         File output = outputDir
 
+        final Map finalAttributes = [
+            'gradle-project-group' : project.group,
+            'gradle-project-name' : project.name,
+            'revnumber' : project.version
+        ]
+        if(legacyAttributes) {
+            finalAttributes.putAll([
+                'project-version' : project.version,
+                'project-group' : project.group,
+                'project-name' : project.name
+            ])
+        }
+        finalAttributes.putAll(attributes)
+
         ExecutorConfigurationContainer ecc = new ExecutorConfigurationContainer(activeBackends().collect { backend ->
             new ExecutorConfiguration(
                 sourceDir: sourceDir,
@@ -552,7 +566,7 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
                 safeModeLevel: resolveSafeModeLevel(options['safe'], 0),
                 requires: getRequires(),
                 options: options,
-                attributes: attributes,
+                attributes: finalAttributes,
                 legacyAttributes : legacyAttributes,
                 asciidoctorExtensions: dehydrateExtensions(getAsciidoctorExtensions()),
                 executorLogLevel: ExecutorLogLevel.WARN
@@ -576,7 +590,13 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
         )
 
         if(legacyAttributes) {
-            migrationMessage 'legacyAttributes=true', 'Switch documents to use attributes `gradle-projectdir` and `gradle-rootdir` instead.'
+            migrationMessage 'legacyAttributes=true', '''Switch documents to use the following attributes instead:
+   - gradle-projectdir (old=projectdir)
+   - gradle-rootdir (old=rootdir)
+   - gradle-project-name (old=project-name)
+   - gradle-projetc-group (old=project-group)
+   - revnumber (old=project-version)
+            '''
         }
 
         File execConfigurationData = JavaExecUtils.writeExecConfigurationData(this, ecc.configurations)

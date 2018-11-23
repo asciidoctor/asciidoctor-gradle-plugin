@@ -102,6 +102,10 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
                 attributes attr1 : 'a string',
                     attr2 : "A GString",
                     attr10 : [ 'a', 2, 5 ]
+
+                attributeProvider {
+                    [ attr50 : 'value' ]
+                }
             }
                     
             asciidoctor {
@@ -116,7 +120,8 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
                 asciidoctorj {
                     attributes attr3 : new File('abc'),
                         attr4 : { 'a closure' },
-                        attr20 : [ a : 1 ]            
+                        attr20 : [ a : 1 ],
+                        attrProvider : providers.provider( { 'a string provider' } )            
                 }
             }
         """)
