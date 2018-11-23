@@ -146,7 +146,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      */
     void sources(final Closure cfg) {
         if (sourceDocumentPattern == null) {
-            sourceDocumentPattern = new PatternSet().exclude('**/_*')
+            sourceDocumentPattern = new PatternSet().exclude(UNDERSCORE_LED_FILES)
         }
         Closure configuration = (Closure) cfg.clone()
         configuration.delegate = sourceDocumentPattern
@@ -162,6 +162,20 @@ class AbstractAsciidoctorTask extends DefaultTask {
             sourceDocumentPattern = new PatternSet().exclude(UNDERSCORE_LED_FILES)
         }
         cfg.execute(sourceDocumentPattern)
+    }
+
+    /** Include source patterns.
+     *
+     * @param includePatterns ANT-style patterns for sources to include
+     */
+    void sources(String... includePatterns) {
+        new Action<PatternSet>() {
+
+            @Override
+            void execute(PatternSet patternSet) {
+                patternSet.include(includePatterns)
+            }
+        }
     }
 
     /** Set fork options for {@link #JAVA_EXEC} and {@link #OUT_OF_PROCESS} modes.

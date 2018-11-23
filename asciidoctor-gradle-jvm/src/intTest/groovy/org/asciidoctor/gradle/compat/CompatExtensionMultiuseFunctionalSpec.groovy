@@ -62,7 +62,7 @@ class CompatExtensionMultiuseFunctionalSpec extends FunctionalSpecification {
         final BuildResult firstInvocationResult = GradleRunner.create()
             .withProjectDir(testProjectDir.root)
             .withArguments('asciidoctor')
-            .withPluginClasspath(pluginClasspath)
+            .withPluginClasspath()
             .withDebug(true)
             .build()
 
@@ -77,7 +77,7 @@ class CompatExtensionMultiuseFunctionalSpec extends FunctionalSpecification {
         final BuildResult secondInvocationResult = GradleRunner.create()
             .withProjectDir(testProjectDir.root)
             .withArguments('asciidoctor')
-            .withPluginClasspath(pluginClasspath)
+            .withPluginClasspath()
             .withDebug(true)
             .build()
 

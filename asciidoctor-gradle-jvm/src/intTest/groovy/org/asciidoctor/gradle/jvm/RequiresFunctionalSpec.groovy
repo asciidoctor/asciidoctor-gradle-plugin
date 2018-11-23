@@ -21,8 +21,6 @@ import org.gradle.testkit.runner.TaskOutcome
 import spock.lang.Timeout
 
 import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.DIAGRAM_SERIES_16
-import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.DIAGRAM_SERIES_16
-import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.DIAGRAM_SERIES_16
 
 /**
  * @author Schalk W. Cronjé
@@ -69,7 +67,7 @@ class RequiresFunctionalSpec extends FunctionalSpecification {
     def 'Use asciidoctorj-diagram the old way way with `requires` still works'() {
         given:
         final String imageFileExt = '.png'
-        getJvmConvertBuildFile("""
+        getJvmConvertGroovyBuildFile("""
         configurations {
             diagram
         }
@@ -113,7 +111,7 @@ class RequiresFunctionalSpec extends FunctionalSpecification {
     }
 
     File getBuildFile(String sourceName, String extraContent) {
-        getJvmConvertBuildFile("""
+        getJvmConvertGroovyBuildFile("""
             asciidoctorj {
                 diagramVersion = '${DIAGRAM_SERIES_16}'
             }

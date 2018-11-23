@@ -150,7 +150,7 @@ class ExtensionsFunctionalSpec extends FunctionalSpecification {
     }
 
     File getBuildFile(final String extension) {
-        getJvmConvertBuildFile(
+        getJvmConvertGroovyBuildFile(
             """
                 asciidoctor {
                     sourceDir = file('src/docs/asciidoc')

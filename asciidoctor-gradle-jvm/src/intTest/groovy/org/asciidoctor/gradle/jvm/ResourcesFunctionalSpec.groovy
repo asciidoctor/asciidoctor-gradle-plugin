@@ -203,7 +203,7 @@ class ResourcesFunctionalSpec extends FunctionalSpecification {
     File getBuildFile(final String extraContent) {
 
 
-        getJvmConvertBuildFile("""           
+        getJvmConvertGroovyBuildFile("""           
             asciidoctor {
 //                sourceDir 'src/docs/asciidoc'
 //                sources {

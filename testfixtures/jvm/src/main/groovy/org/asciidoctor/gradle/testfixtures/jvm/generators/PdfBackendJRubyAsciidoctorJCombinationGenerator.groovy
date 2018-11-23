@@ -17,6 +17,8 @@ package org.asciidoctor.gradle.testfixtures.jvm.generators
 
 import groovy.transform.CompileStatic
 import groovy.transform.EqualsAndHashCode
+import groovy.transform.Sortable
+import groovy.transform.TupleConstructor
 
 @java.lang.SuppressWarnings('NoWildcardImports')
 import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.*
@@ -33,10 +35,12 @@ class PdfBackendJRubyAsciidoctorJCombinationGenerator {
 
     @SuppressWarnings('ClassName')
     @EqualsAndHashCode
+    @Sortable
+    @TupleConstructor
     static class Combination {
-        String jrubyVer
-        String asciidoctorjVer
-        boolean compatible
+        final String jrubyVer
+        final String asciidoctorjVer
+        final Boolean compatible
 
         @Override
         String toString() {
@@ -44,11 +48,11 @@ class PdfBackendJRubyAsciidoctorJCombinationGenerator {
         }
 
         static Combination of(final String v, final String p, boolean b) {
-            new Combination(jrubyVer: v, asciidoctorjVer: p, compatible: b)
+            new Combination(v,p,b)
         }
     }
 
-    static Set<Combination> get() {
+    static List<Combination> get() {
         List<Combination> combinations = [
             Combination.of(AJ20_ABSOLUTE_MAXIMUM, SERIES_20, true),
             Combination.of(AJ20_ABSOLUTE_MINIMUM, SERIES_20, true),
@@ -59,11 +63,11 @@ class PdfBackendJRubyAsciidoctorJCombinationGenerator {
             Combination.of(AJ16_SAFE_MAXIMUM, SERIES_16, true),
             Combination.of(AJ16_SAFE_MINIMUM, SERIES_16, true)
         ]
-        combinations.toSet()
+        combinations.toUnique()
     }
 
     static List<Combination> getRandom() {
-        List<Combination> vp = get().toList()
+        List<Combination> vp = get()
         Collections.shuffle(vp)
         vp
     }

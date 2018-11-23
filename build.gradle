@@ -61,6 +61,10 @@ allprojects {
             'asciidoctor-gradle-base',
             'kindlegen-gradle'
         ]
+
+        withoutCodeCoverage = [
+            'asciidoctorj-gradle-base'
+        ]
     }
 }
 
@@ -79,7 +83,7 @@ subprojects {
             apply plugin: 'net.ossindex.audit'
             apply plugin: 'org.kordamp.jdeps'
 
-            if(project.name != 'asciidoctorj-gradle-base') {
+            if(!(project.name in withoutCodeCoverage)) {
                 apply plugin: 'jacoco'
 
                 jacoco {

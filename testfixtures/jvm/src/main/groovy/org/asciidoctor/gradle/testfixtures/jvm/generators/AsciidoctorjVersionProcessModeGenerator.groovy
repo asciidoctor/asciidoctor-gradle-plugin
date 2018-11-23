@@ -16,6 +16,8 @@
 package org.asciidoctor.gradle.testfixtures.jvm.generators
 
 import groovy.transform.CompileStatic
+import groovy.transform.EqualsAndHashCode
+import groovy.transform.Sortable
 import org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions
 
 /** A test fixture generator class for AsciidoctorJ version & process mode.
@@ -30,6 +32,8 @@ class AsciidoctorjVersionProcessModeGenerator {
     static final String OUT_OF_PROCESS = 'OUT_OF_PROCESS'
 
     @SuppressWarnings('ClassName')
+    @EqualsAndHashCode
+    @Sortable
     static class VersionProcess {
         String version
         String processMode
@@ -48,7 +52,7 @@ class AsciidoctorjVersionProcessModeGenerator {
         if (System.getenv('APPVEYOR')) {
             [AsciidoctorjTestVersions.SERIES_20, AsciidoctorjTestVersions.SERIES_16].collect {
                 VersionProcess.of(it, JAVA_EXEC)
-            }
+            }.toUnique()
         } else {
             [AsciidoctorjTestVersions.SERIES_20, AsciidoctorjTestVersions.SERIES_16].collect { it ->
                 [
@@ -56,8 +60,7 @@ class AsciidoctorjVersionProcessModeGenerator {
                     VersionProcess.of(it, IN_PROCESS),
                     VersionProcess.of(it, OUT_OF_PROCESS)
                 ]
-            }.flatten() as List<VersionProcess>
-
+            }.flatten().toUnique() as List<VersionProcess>
         }
     }
 

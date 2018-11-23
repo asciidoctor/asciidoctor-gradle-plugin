@@ -219,7 +219,7 @@ class AsciidoctorFunctionalSpec extends FunctionalSpecification {
     }
 
     File getBuildFile(final String extraContent = '') {
-        getJvmConvertBuildFile("""
+        getJvmConvertGroovyBuildFile("""
             asciidoctorj.noDefaultRepositories = true
 
             ${extraContent}

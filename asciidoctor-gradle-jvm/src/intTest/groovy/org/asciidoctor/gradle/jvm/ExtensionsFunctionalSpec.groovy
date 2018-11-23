@@ -276,7 +276,7 @@ asciidoctor {
             }
         """
 
-        getJvmConvertBuildFile("""
+        getJvmConvertGroovyBuildFile("""
             ${configureGlobally ? versionConfig : ''}
             
             asciidoctor {
