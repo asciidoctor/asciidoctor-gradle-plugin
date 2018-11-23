@@ -16,7 +16,7 @@
 package org.asciidoctor.gradle.jvm
 
 import org.asciidoctor.gradle.internal.FunctionalSpecification
-import org.asciidoctor.gradle.testfixtures.jvm.generators.VersionProcessModeGenerator
+import org.asciidoctor.gradle.testfixtures.jvm.generators.AsciidoctorjVersionProcessModeGenerator
 import org.gradle.testkit.runner.BuildResult
 import spock.lang.Unroll
 
@@ -53,7 +53,7 @@ class WarningsAsErrorsFunctionalSpec extends FunctionalSpecification {
         result.output.contains('include file not found')
 
         where:
-        model << VersionProcessModeGenerator.get()
+        model << AsciidoctorjVersionProcessModeGenerator.get()
 
     }
 

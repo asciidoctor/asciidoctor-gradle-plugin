@@ -16,7 +16,7 @@
 package org.asciidoctor.gradle.jvm
 
 import org.asciidoctor.gradle.internal.FunctionalSpecification
-import org.asciidoctor.gradle.testfixtures.jvm.generators.VersionProcessModeGenerator
+import org.asciidoctor.gradle.testfixtures.jvm.generators.AsciidoctorjVersionProcessModeGenerator
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
@@ -80,7 +80,7 @@ asciidoctor {
         resultFile.text.contains('and write this in lowercase')
 
         where:
-        model << VersionProcessModeGenerator.get()
+        model << AsciidoctorjVersionProcessModeGenerator.get()
     }
 
     @Unroll
@@ -125,7 +125,7 @@ block('small') {
         resultFile.text.contains('and write this in lowercase')
 
         where:
-        model << VersionProcessModeGenerator.get()
+        model << AsciidoctorjVersionProcessModeGenerator.get()
     }
 
     @Timeout(value = 90)
@@ -152,7 +152,7 @@ asciidoctor {
         resultFile.text.contains('and write this in lowercase')
 
         where:
-        model << VersionProcessModeGenerator.get()
+        model << AsciidoctorjVersionProcessModeGenerator.get()
     }
 
     @Timeout(value = 90)
@@ -192,7 +192,7 @@ asciidoctor {
         outputFile.text.startsWith('Hi, Mom')
 
         where:
-        model << VersionProcessModeGenerator.get()
+        model << AsciidoctorjVersionProcessModeGenerator.get()
     }
 
     @Timeout(value = 90)
@@ -224,7 +224,7 @@ asciidoctor {
         result.output.contains('org.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed')
 
         where:
-        model << VersionProcessModeGenerator.get()
+        model << AsciidoctorjVersionProcessModeGenerator.get()
     }
 
     @Timeout(value = 90)
