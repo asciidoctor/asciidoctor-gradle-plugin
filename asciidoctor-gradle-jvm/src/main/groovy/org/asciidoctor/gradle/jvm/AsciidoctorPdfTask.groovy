@@ -16,14 +16,13 @@
 package org.asciidoctor.gradle.jvm
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.base.AsciidoctorUtils
 import org.gradle.api.Project
 import org.gradle.api.UnknownDomainObjectException
+@java.lang.SuppressWarnings('NoWildcardImports')
+import org.gradle.api.tasks.*
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.util.GradleVersion
 import org.gradle.workers.WorkerExecutor
-@java.lang.SuppressWarnings('NoWildcardImports')
-import org.gradle.api.tasks.*
 
 import javax.inject.Inject
 
@@ -107,9 +106,9 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
      */
     @Override
     protected ProcessMode getFinalProcessMode() {
-        if (GradleVersion.current() <= LAST_GRADLE_WITH_CLASSPATH_LEAKAGE && AsciidoctorUtils.OS.windows) {
+        if (GradleVersion.current() <= LAST_GRADLE_WITH_CLASSPATH_LEAKAGE) {
             if (inProcess != JAVA_EXEC) {
-                logger.warn 'PDF processing on this version of Gradle combined with running on Microsoft Windows will fail due to classpath issues. Switching to JAVA_EXEC instead.'
+                logger.warn 'This version of Gradle leaks snakeyaml onto worker classpaths which breaks PDF processing. Switching to JAVA_EXEC instead.'
             }
             JAVA_EXEC
         } else {

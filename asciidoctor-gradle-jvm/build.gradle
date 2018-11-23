@@ -37,7 +37,6 @@ dependencies {
 
     intTestOfflineRepo "org.asciidoctor:asciidoctorj-pdf:${downloadOnlyPdfVersion}"
     intTestOfflineRepo "org.asciidoctor:asciidoctorj-epub3:${downloadOnlyEpubVersion}"
-    intTestOfflineRepo "org.yaml:snakeyaml:${snakeYamlForJRubyVersion}"
 
     // This is here for extension testing on the compatibility plugin. It will be deleted
     // when compatibility mode is removed.

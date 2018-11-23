@@ -78,7 +78,7 @@ asciidoctorPdf {
     sourceDir 'src/docs/asciidoc'
 }
 """)
-        GradleRunner runner = getGradleRunner([DEFAULT_TASK, '-s'])
+        GradleRunner runner = getGradleRunner([DEFAULT_TASK, '-s', '-i'])
 
         when:
         combination.compatible ? runner.build() : runner.buildAndFail()
