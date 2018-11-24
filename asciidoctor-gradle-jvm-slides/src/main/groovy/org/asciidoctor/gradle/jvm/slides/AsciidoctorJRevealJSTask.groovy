@@ -113,10 +113,11 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
 
     /** Obtains the relative location of the template directory.
      *
-     * If this has not been set previsouly via {@link #setTemplateRelativeDir} the default is {@code reveal.js}.
+     * If this has not been set previously via {@link #setTemplateRelativeDir} the default is {@code reveal.js}.
      *
      * @return Relative location of template directory.
      */
+    @Input
     String getTemplateRelativeDir() {
         StringUtils.stringize(this.templateRelativeDir)
     }
@@ -319,10 +320,12 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
         }
     }
 
+    @Internal
     protected RevealJSExtension getRevealjsExtension() {
         project.extensions.getByType(RevealJSExtension)
     }
 
+    @Internal
     protected RevealJSPluginExtension getRevealsjsPluginExtension() {
         project.extensions.getByType(RevealJSPluginExtension)
     }
@@ -345,17 +348,14 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
         }
     }
 
-    @Internal
     private boolean isPluginSupportAvailable() {
         Version.of(revealjsExtension.version) >= FIRST_VERSION_WITH_PLUGIN_SUPPORT
     }
 
-    @Internal
     private String getPluginListLocation() {
         "${templateRelativeDir}/${PLUGIN_LIST_FILENAME}"
     }
 
-    @Internal
     private String getPluginConfigurationLocation() {
         "${templateRelativeDir}/${PLUGIN_CONFIGURATION_FILENAME}"
     }
