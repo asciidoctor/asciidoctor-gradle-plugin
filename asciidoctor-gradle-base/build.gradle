@@ -28,3 +28,5 @@ pluginManager.withPlugin('jacoco') {
         dependsOn test
     }
 }
+
+configurations.gradleTestCompile.transitive = false

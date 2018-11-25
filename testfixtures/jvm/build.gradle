@@ -8,7 +8,7 @@ dependencies {
     compile "org.jsoup:jsoup:$jsoupVersion"
     compile "cglib:cglib-nodep:$cglibVersion"
     compile("org.spockframework:spock-core:$spockVersion") {
-        exclude group:'org.codehaus.groovy'
+        exclude group: 'org.codehaus.groovy'
         exclude group: 'org.hamcrest', module: 'hamcrest-core'
     }
 }

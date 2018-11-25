@@ -15,7 +15,7 @@
  */
 
 plugins {
-    id 'com.gradle.build-scan' version '1.16'
+    id 'com.gradle.build-scan' version '2.0.2'
     id 'com.jfrog.bintray' version '1.8.0' apply false
     id 'net.nemerosa.versioning' version '2.6.1' apply false
     id 'com.github.ben-manes.versions' version '0.17.0' apply false
@@ -25,11 +25,11 @@ plugins {
     id 'net.ossindex.audit' version '0.1.1' apply false
     id 'org.kordamp.jdeps' version '0.2.0' apply false
     id 'fi.linuxbox.download.worker' version '0.3' apply false
-    id 'org.ysb33r.ivypot' version '0.8' apply false
+    id 'org.ysb33r.ivypot' version '0.9' apply false
     id 'org.ysb33r.os' version '0.9' apply false
-    id 'org.ysb33r.cloudci' version '2.3' apply false
-    id 'org.ysb33r.cloudci.appveyor.testreporter' version '2.3' apply false
-    id 'org.ysb33r.gradletest' version '2.0-beta.3' apply false
+    id 'org.ysb33r.cloudci' version '2.4' apply false
+    id 'org.ysb33r.cloudci.appveyor.testreporter' version '2.4' apply false
+    id 'org.ysb33r.gradletest' version '2.0-rc.1' apply false
 }
 
 buildScan {
@@ -63,13 +63,13 @@ allprojects {
         offlineRepoDescriptionFile = file("${offlineRepoRoot}/repositories.gradle")
 
         withoutIntegrationTests = [
-            'asciidoctor-gradle-base',
+//            'asciidoctor-gradle-base',
             'asciidoctor-gradle-jvm-gems',
             'kindlegen-gradle'
         ]
 
         withoutCompatibilityTests = [
-            'asciidoctor-gradle-base',
+//            'asciidoctor-gradle-base',
             'kindlegen-gradle'
         ]
 

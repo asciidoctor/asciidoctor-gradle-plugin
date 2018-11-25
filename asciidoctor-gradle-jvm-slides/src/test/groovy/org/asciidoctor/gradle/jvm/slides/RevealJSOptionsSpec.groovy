@@ -21,7 +21,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 import spock.lang.Unroll
 
-@SuppressWarnings(['MethodName','DuplicateStringLiteral'])
+@SuppressWarnings(['MethodName', 'DuplicateStringLiteral'])
 class RevealJSOptionsSpec extends Specification {
 
     Project project = ProjectBuilder.builder().build()
@@ -106,7 +106,7 @@ class RevealJSOptionsSpec extends Specification {
     void 'Set transition to #transition'() {
 
         when:
-        final String attribute = 'transition'
+        String attribute = 'transition'
 
         then:
         getStringFlag(attribute) == null
@@ -137,7 +137,7 @@ class RevealJSOptionsSpec extends Specification {
     void 'Set background transition to #transition'() {
 
         when:
-        final String attribute = 'backgroundTransition'
+        String attribute = 'backgroundTransition'
 
         then:
         getStringFlag(attribute) == null
@@ -168,7 +168,7 @@ class RevealJSOptionsSpec extends Specification {
     void 'Set transition speed to #transition'() {
 
         when:
-        final String attribute = 'transitionSpeed'
+        String attribute = 'transitionSpeed'
 
         then:
         getStringFlag(attribute) == null
@@ -198,7 +198,7 @@ class RevealJSOptionsSpec extends Specification {
     @SuppressWarnings('DuplicateStringLiteral')
     void 'Set Parallax background size'() {
         when:
-        final String attribute = 'parallaxBackgroundSize'
+        String attribute = 'parallaxBackgroundSize'
 
         then:
         getStringFlag(attribute) == null
@@ -294,10 +294,10 @@ class RevealJSOptionsSpec extends Specification {
         options.asAttributeMap[attribute] == "${relPath}${File.separator}file.img"
 
         where:
-        base                      | attribute                           | description
+        base                      | attribute                          | description
         'ParallaxBackgroundImage' | 'revealjs_parallaxBackgroundImage' | 'Parallax background image location'
         'CustomTheme'             | 'revealjs_customtheme'             | 'Custom theme location'
-        'HighlightJsTheme'        | 'highlightjs-theme'                 | 'Highlight.js theme location'
+        'HighlightJsTheme'        | 'highlightjs-theme'                | 'Highlight.js theme location'
 
     }
 

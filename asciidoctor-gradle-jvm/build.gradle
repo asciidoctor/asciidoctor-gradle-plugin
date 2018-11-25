@@ -80,7 +80,7 @@ gradleTest {
     systemProperties ASCIIDOCTORJ_VERSION: compileOnlyAsciidoctorJVersion
     systemProperties GROOVY_VERSION: GroovySystem.version
 
-    gradleArguments '-i'
+    gradleArguments '-i', '-s'
 }
 
 // Adding a third test set so that remote execution can be tested using a separate classpath
