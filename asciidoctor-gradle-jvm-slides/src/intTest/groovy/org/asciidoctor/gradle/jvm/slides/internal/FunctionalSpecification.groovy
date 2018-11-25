@@ -34,26 +34,11 @@ class FunctionalSpecification extends Specification {
     @Rule
     final TemporaryFolder testProjectDir = new TemporaryFolder()
 
-    @Shared
-    List<File> pluginClasspath
-
-    def setupSpec() {
-        def pluginClasspathResource = getClass().classLoader.getResource('plugin-classpath.txt')
-        if (pluginClasspathResource == null) {
-            pluginClasspathResource = new File('./asciidoctor-gradle-jvm-slides/build/createClasspathManifest/plugin-classpath.txt')
-        }
-        if (pluginClasspathResource == null) {
-            throw new IllegalStateException('Did not find plugin classpath resource, run `intTestClasses` build task.')
-        }
-
-        pluginClasspath = pluginClasspathResource.readLines().collect { new File(it) }
-    }
-
     GradleRunner getGradleRunner(List<String> taskNames) {
         GradleRunner.create()
             .withProjectDir(testProjectDir.root)
             .withArguments(taskNames)
-            .withPluginClasspath(pluginClasspath)
+            .withPluginClasspath()
             .forwardOutput()
             .withDebug(true)
     }
