@@ -12,10 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ */git
 
 plugins {
-    id 'com.gradle.build-scan' version '1.14'
+    id 'com.gradle.build-scan' version '1.16'
     id 'com.jfrog.bintray' version '1.8.0' apply false
     id 'net.nemerosa.versioning' version '2.6.1' apply false
     id 'com.github.ben-manes.versions' version '0.17.0' apply false
@@ -30,6 +30,17 @@ plugins {
     id 'org.ysb33r.cloudci' version '2.3' apply false
     id 'org.ysb33r.cloudci.appveyor.testreporter' version '2.3' apply false
     id 'org.ysb33r.gradletest' version '2.0-alpha-8' apply false
+}
+
+buildScan {
+    termsOfServiceUrl   = 'https://gradle.com/terms-of-service'
+    termsOfServiceAgree = 'yes'
+
+    buildFinished { buildResult ->
+        buildScanPublished { scan ->
+            ['curl', '-s', '-d', "message=asciidoctor-gradle-plugin build scan: ${scan.buildScanUri}", 'https://webhooks.gitter.im/e/6ba348eef26407adc22a'].execute()
+        }
+    }
 }
 
 import java.text.SimpleDateFormat

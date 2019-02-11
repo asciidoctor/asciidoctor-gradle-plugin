@@ -11,7 +11,7 @@ before_script:
     - ./gradlew --version
 
 script:
-    - ./gradlew --console=plain --warning-mode=all build jacocoRootReport
+    - ./gradlew --console=plain --warning-mode=all --scan -Dorg.gradle.parallel=true build jacocoRootReport
 
 jdk:
     - openjdk8
