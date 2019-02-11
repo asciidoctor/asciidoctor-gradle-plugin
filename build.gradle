@@ -36,7 +36,7 @@ plugins {
 buildScan {
     termsOfServiceUrl   = 'https://gradle.com/terms-of-service'
     termsOfServiceAgree = 'yes'
-    publishAlways()
+
     buildFinished { buildResult ->
         buildScanPublished { scan ->
             ['curl', '-s', '-d', "message=asciidoctor-gradle-plugin build scan: ${scan.buildScanUri}", 'https://webhooks.gitter.im/e/6ba348eef26407adc22a'].execute()

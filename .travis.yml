@@ -11,7 +11,7 @@ before_script:
     - ./gradlew --version
 
 script:
-    - TERM=dumb ./gradlew build jacocoTestReport
+    - TERM=dumb ./gradlew build jacocoTestReport --scan -Dorg.gradle.parallel=true
 
 jdk:
     - oraclejdk8
