@@ -29,6 +29,10 @@ ifdef::env-github[]
 :important-caption: :exclamation:
 endif::[]
 
+ifdef::env-github[]
+NOTE: This is the maintenance branch for the 1.5.x series. Only small maintenance releases are performed on this branch. For all new development on the 2.x series please look at the `development` branch.
+endif::[]
+
 ifdef::status[]
 image:http://img.shields.io/travis/{project-full-path}/{github-branch}.svg[Build Status, link=https://travis-ci.org/{project-full-path}]
 image:https://ci.appveyor.com/api/projects/status/db102rphsu5lviv6/branch/{github-branch}?svg=true&passingText={github-branch}%20-%20OK&failingText={github-branch}%20-%20Fails&pendingText={github-branch}%20-%20Pending[Build Status, link=https://ci.appveyor.com/project/{project-full-path}/branch/{github-branch}]
@@ -36,6 +40,7 @@ image:http://img.shields.io/coveralls/{project-full-path}/{github-branch}.svg[Co
 image:http://img.shields.io/badge/license-ASF2-blue.svg[Apache License 2, link=http://www.apache.org/licenses/LICENSE-2.0.txt]
 image:https://api.bintray.com/packages/asciidoctor/maven/{project-name}/images/download.svg[Download, link=https://bintray.com/asciidoctor/maven/{project-name}]
 endif::[]
+
 
 The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to convert all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
 
