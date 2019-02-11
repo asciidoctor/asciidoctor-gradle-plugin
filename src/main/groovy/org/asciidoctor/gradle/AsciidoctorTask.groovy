@@ -591,6 +591,15 @@ class AsciidoctorTask extends DefaultTask {
         File output = outputDir
 
         scanForLegacyAttributes()
+        Map finalAttributes = [
+            'gradle-project-group': project.group,
+            'gradle-project-name' : project.name,
+            'revnumber'           : project.version,
+            'project-version'     : project.version,
+            'project-group'       : project.group,
+            'project-name'        : project.name
+        ]
+        finalAttributes.putAll(attributes)
 
         ExecutorConfigurationContainer ecc = new ExecutorConfigurationContainer(activeBackends().collect { backend ->
             new ExecutorConfiguration(
@@ -608,7 +617,7 @@ class AsciidoctorTask extends DefaultTask {
                 safeModeLevel: resolveSafeModeLevel(options['safe'], 0),
                 requires: (Set) (getRequires() ?: []),
                 options: options,
-                attributes: attributes,
+                attributes: finalAttributes,
                 asciidoctorExtensions: dehydrateExtensions(getAsciidoctorExtensions())
             )
         })
@@ -754,11 +763,12 @@ class AsciidoctorTask extends DefaultTask {
 
         Set<File> hits = ft.files.findAll { File f ->
             String content = f.text
+            content.find( ~/\{(projectdir|rootdir|project-version|project-name|project-group)\}/ )
             content.contains('{projectdir}') || content.contains('{rootdir}')
         }
 
         if(!hits.empty) {
-            logger.warn 'It seems that you may be using implicit attributes `projectdir` and/or `rootdir` in your documents. These are deprecated and will no longer be set in 2.0. Please migrate your documents to use `gradle-projectdir` and `gradle-rootdir` instead.'
+            logger.warn 'It seems that you may be using one or more implicit attributes: `projectdir`, `rootdir`, `project-version`, `project-group`, `project.name` in your documents. These are deprecated and will no longer be set in 2.0. Please migrate your documents to use `gradle-projectdir`, `gradle-rootdir`, ``revnumber`, `gradle-project-version`, `gradle-project-name` respectively.'
 
             if(dumpLegacyFileList) {
                 File base = sourceDir
