@@ -54,7 +54,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     // It is also a good idea that DEFAULT_ASCIIDOCTORJ_VERSION  matches one of
     // the values in testfixtures-jvm.
     // ------------------------------------------------------------------------
-    final static String DEFAULT_ASCIIDOCTORJ_VERSION = '1.6.0-RC.2'
+    final static String DEFAULT_ASCIIDOCTORJ_VERSION = '1.6.1'
     final static String DEFAULT_GROOVYDSL_VERSION = '1.6.0-alpha.2'
     final static String DEFAULT_PDF_VERSION = '1.5.0-alpha.16'
     final static String DEFAULT_EPUB_VERSION = '1.5.0-alpha.8.1'
@@ -669,7 +669,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         this.resolutionsStrategies.add(strategy as Action<ResolutionStrategy>)
     }
 
-    /** Returns a patterns suitabkle for detcting missing include files.
+    /** Returns a patterns suitable for detecting missing include files.
      *
      * This can be passed to {@link #fatalWarnings(Object ...)}
      *
