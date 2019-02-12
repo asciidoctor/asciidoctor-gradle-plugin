@@ -33,6 +33,11 @@ ifdef::env-github[]
 :important-caption: :exclamation:
 endif::[]
 
+ifdef::env-github[]
+NOTE: `master` now represents the code for the latest 2.x release of these plugins. Development for for 2.x is against the link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/development-2.0[development-2.0] branch. PRs are preferably taking against that branch. The 1.5.x series of the plugin is now in maintenance only mode. PRs for that should be raised against the https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/maintenance-1.5[maintenance-1.5] branch.
+endif::[]
+
+
 ifdef::status[]
 image:http://img.shields.io/travis/{project-full-path}/{github-branch}.svg[Build Status, link=https://travis-ci.org/{project-full-path}]
 image:https://ci.appveyor.com/api/projects/status/db102rphsu5lviv6/branch/{github-branch}?svg=true&passingText={github-branch}%20-%20OK&failingText={github-branch}%20-%20Fails&pendingText={github-branch}%20-%20Pending[Build Status, link=https://ci.appveyor.com/project/{project-full-path}/branch/{github-branch}]
