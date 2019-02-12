@@ -44,9 +44,13 @@ ruleset {
     ruleset('rulesets/braces.xml') {
        exclude 'IfStatementBraces'
     }
-    ruleset('rulesets/size.xml')
+    ruleset('rulesets/size.xml')  {
+        exclude 'CrapMetric'
+    }
     ruleset('rulesets/junit.xml')
     ruleset('rulesets/unnecessary.xml')
     ruleset('rulesets/dry.xml')
-    ruleset('rulesets/design.xml')
+    ruleset('rulesets/design.xml') {
+        exclude 'Instanceof'
+    }
 }

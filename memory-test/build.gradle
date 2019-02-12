@@ -1,0 +1,25 @@
+buildscript {
+
+    dependencies {
+        new File('../asciidoctor-gradle-jvm/build/createClasspathManifest/plugin-classpath.txt').eachLine { line ->
+            classpath files(line)
+        }
+    }
+
+}
+
+subprojects {
+
+    apply from : "${rootProject.projectDir}/../testfixtures/offline-repo/build/repo/repositories.gradle"
+    buildDir = file("${rootProject.buildDir}/${project.name}")
+
+    apply plugin : 'org.asciidoctor.jvm.convert'
+
+    asciidoctorj {
+        safeMode 'unsafe'
+    }
+
+    asciidoctor {
+        useIntermediateWorkDir()
+    }
+}

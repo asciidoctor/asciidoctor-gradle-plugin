@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2013-2018 the original author or authors.
  *
@@ -16,167 +15,144 @@
  */
 
 plugins {
-    id 'groovy'
-    id 'idea'
-    id 'maven-publish'
-    id 'jacoco'
-    id 'codenarc'
-    id 'java-gradle-plugin'
-    id 'com.jfrog.bintray'              version '1.8.4'
-    id 'net.nemerosa.versioning'        version '2.8.2'
-    id 'com.github.ben-manes.versions'  version '0.20.0'
-    id 'com.gradle.plugin-publish'      version '0.10.0'
-    id 'com.github.hierynomus.license'  version '0.14.0'
-    id 'com.github.kt3k.coveralls'      version '2.8.2'
-    id 'net.ossindex.audit'             version '0.3.21'
-    id 'org.kordamp.jdeps'              version '0.4.1'
-    id 'com.gradle.build-scan'          version '1.16'
+    id 'com.gradle.build-scan' version '1.14'
+    id 'com.jfrog.bintray' version '1.8.0' apply false
+    id 'net.nemerosa.versioning' version '2.6.1' apply false
+    id 'com.github.ben-manes.versions' version '0.17.0' apply false
+    id 'com.gradle.plugin-publish' version '0.9.10' apply false
+    id 'com.github.hierynomus.license' version '0.14.0' apply false
+    id 'com.github.kt3k.coveralls' version '2.8.2' apply false
+    id 'net.ossindex.audit' version '0.1.1' apply false
+    id 'org.kordamp.jdeps' version '0.2.0' apply false
+    id 'fi.linuxbox.download.worker' version '0.3' apply false
+    id 'org.ysb33r.ivypot' version '0.8' apply false
+    id 'org.ysb33r.os' version '0.9' apply false
+    id 'org.ysb33r.cloudci' version '2.3' apply false
+    id 'org.ysb33r.cloudci.appveyor.testreporter' version '2.3' apply false
+    id 'org.ysb33r.gradletest' version '2.0-beta.3' apply false
 }
 
-buildScan {
-    termsOfServiceUrl   = 'https://gradle.com/terms-of-service'
-    termsOfServiceAgree = 'yes'
+import java.text.SimpleDateFormat
+import org.gradle.util.GradleVersion
 
-    buildFinished { buildResult ->
-        buildScanPublished { scan ->
-            ['curl', '-s', '-d', "message=asciidoctor-gradle-plugin build scan: ${scan.buildScanUri}", 'https://webhooks.gitter.im/e/6ba348eef26407adc22a'].execute()
-        }
+apply plugin: 'net.nemerosa.versioning'
 
+ext {
+    buildTimeAndDate = new Date()
+    buildDate = new SimpleDateFormat('yyyy-MM-dd').format(buildTimeAndDate)
+    buildTime = new SimpleDateFormat('HH:mm:ss.SSSZ').format(buildTimeAndDate)
+    buildRevision = versioning.info.commit
+    buildCreatedBy = "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})".toString()
+}
+
+allprojects {
+    ext {
+        offlineRepoRoot = file("${project(':testfixtures-offline-repo').buildDir}/repo")
+        offlineRepoBinariesRoot = file("${offlineRepoRoot}/binaries")
+        offlineRepoDescriptionFile = file("${offlineRepoRoot}/repositories.gradle")
+
+        withoutIntegrationTests = [
+            'asciidoctor-gradle-base',
+            'asciidoctor-gradle-jvm-gems',
+            'kindlegen-gradle'
+        ]
+
+        withoutCompatibilityTests = [
+            'asciidoctor-gradle-base',
+            'kindlegen-gradle'
+        ]
+
+        withoutCodeCoverage = [
+            'asciidoctorj-gradle-base'
+        ]
     }
 }
 
-apply from: 'gradle/credentials.gradle'
-apply from: 'gradle/publishing.gradle'
-apply from: 'gradle/code-quality.gradle'
-apply from: 'gradle/integration-tests.gradle'
+subprojects {
 
-gradlePlugin {
-    plugins {
-        asciidoctorPlugin {
-            id = project_pluginId
-            implementationClass = 'org.asciidoctor.gradle.AsciidoctorPlugin'
-        }
-    }
-}
+    apply plugin : 'org.ysb33r.os'
 
-repositories {
-    jcenter()
-    // maven { url 'http://dl.bintray.com/lordofthejars/maven'}
-}
+    if( project.name != 'testfixtures-offline-repo') {
+        apply plugin: 'groovy'
+        apply plugin: 'idea'
+        apply plugin: 'org.ysb33r.cloudci.appveyor.testreporter'
 
-dependencyUpdates.resolutionStrategy = {
-    componentSelection { rules ->
-        rules.all { selection ->
-            boolean rejected = ['beta', 'rc', 'cr', 'm'].any { qualifier ->
-                selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+        if (!project.name.startsWith('testfixture')) {
+            apply plugin: 'maven-publish'
+            apply plugin: 'com.github.ben-manes.versions'
+            apply plugin: 'net.ossindex.audit'
+            apply plugin: 'org.kordamp.jdeps'
+
+            if(!(project.name in withoutCodeCoverage)) {
+                apply plugin: 'jacoco'
+
+                jacoco {
+                    if(JavaVersion.current().isJava11Compatible() && GradleVersion.version(toolVersion) < GradleVersion.version('0.8.2')) {
+                        toolVersion = '0.8.2'
+                    }
+                }
             }
-            if (rejected) {
-                selection.reject('Release candidate')
+         }
+
+        apply from: "${rootProject.projectDir}/gradle/standard-repositories.gradle"
+        apply from: "${rootProject.projectDir}/gradle/code-quality.gradle"
+
+        if (!project.name.startsWith('testfixture')) {
+
+            if ( !(project.name in withoutIntegrationTests ) ) {
+                apply from: "${rootProject.projectDir}/gradle/integration-tests.gradle"
+            }
+
+            apply from: "${rootProject.projectDir}/gradle/credentials.gradle"
+            apply from: "${rootProject.projectDir}/gradle/publishing.gradle"
+            apply from: "${rootProject.projectDir}/gradle/gradle-plugin-dependencies.gradle"
+            apply from: "${rootProject.projectDir}/gradle/gradle-plugin-documentation.gradle"
+
+            if (project.name.startsWith('asciidoctor-gradle-jvm')) {
+                apply from: "${rootProject.projectDir}/gradle/asciidoctorj-versions.gradle"
+                apply from: "${rootProject.projectDir}/gradle/jruby-versions.gradle"
+                apply from: "${rootProject.projectDir}/gradle/ci.gradle"
+            }
+
+            dependencyUpdates.resolutionStrategy = {
+                componentSelection { rules ->
+                    rules.all { selection ->
+                        boolean rejected = ['beta', 'rc', 'cr', 'm'].any { qualifier ->
+                            selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+                        }
+                        if (rejected) {
+                            selection.reject('Release candidate')
+                        }
+                    }
+                }
+            }
+
+            audit {
+                failOnError = false
+            }
+
+            if ( !(project.name in withoutCompatibilityTests ) ) {
+                apply from: "${rootProject.projectDir}/gradle/compatibility-tests.gradle"
             }
         }
-    }
-}
 
-audit {
-    failOnError = false
-}
+        compileGroovy {
+            sourceCompatibility = project.sourceCompatibility
+            targetCompatibility = project.targetCompatibility
+        }
 
-dependencies {
-    compileOnly "org.asciidoctor:asciidoctorj:${asciidoctorjVersion}"
-    compileOnly "org.asciidoctor:asciidoctorj-groovy-dsl:${asciidoctorjDslVersion}", {
-        exclude module: 'groovy-all'
-    }
 
-    compile "org.ysb33r.gradle:grolifant:${grolifantVersion}"
-    compile gradleApi()
-    testCompile "org.asciidoctor:asciidoctorj:$asciidoctorjVersion"
-    testCompile("org.asciidoctor:asciidoctorj-groovy-dsl:$asciidoctorjDslVersion") {
-        exclude group: 'org.codehaus.groovy', module: 'groovy-all'
-        exclude group: 'org.asciidoctor', module: 'asciidoctorj'
-    }
-    testCompile("org.spockframework:spock-core:$spockVersion") {
-        exclude group:'org.codehaus.groovy'
-    }
-    testCompile "org.jsoup:jsoup:$jsoupVersion"
-    testCompile "cglib:cglib-nodep:$cglibVersion"
-
-    // This is unnecessary for Gradle but does help IntelliJ find the TestKit
-    // classes when writing integration tests.
-    testCompile gradleTestKit()
-    
-    intTestCompile gradleApi()
-    intTestCompile gradleTestKit()
-    intTestCompile "org.asciidoctor:asciidoctorj:$asciidoctorjVersion"
-    intTestCompile 'junit:junit:4.12'
-    intTestCompile 'commons-io:commons-io:2.6'
-    intTestCompile ("org.spockframework:spock-core:$spockVersion") {
-        exclude group: 'org.codehaus.groovy', module: 'groovy-all'
-        exclude group: 'org.hamcrest', module: 'hamcrest-core'
-    }
-    intTestRuntime files(createClasspathManifest)
-}
-
-compileGroovy {
-    sourceCompatibility = project.sourceCompatibility
-    targetCompatibility = project.targetCompatibility
-}
-
-groovydoc {
-    use             = true
-    source          = project.sourceSets.main.allSource
-    classpath       = javadoc.classpath
-    ext.windowtitle = "$project.name $project.version API"
-    ext.doctitle    = "$project.name $project.version API"
-    header          = "$project.name $project.version API"
-    footer          = "Copyright &copy; ${copyrightYear} the original author or authors. All rights reserved."
-    includePrivate  = false
-    link 'https://docs.gradle.org/3.5/javadoc/', 'org.gradle.'
-    link 'http://docs.oracle.com/javase/7/docs/api/', 'java.', 'org.xml.', 'javax.', 'org.w3c.'
-}
-
-task sourcesJar(type: Jar) {
-    group 'Build'
-    description 'An archive of the source code'
-    classifier 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: groovydoc) {
-    group 'Build'
-    description 'An archive of the javadoc'
-    classifier 'javadoc'
-    from groovydoc.destinationDir
-}
-
-jar.finalizedBy sourcesJar
-jar.finalizedBy javadocJar
-
-artifacts {
-    sourcesJar
-    javadocJar
-}
-
-task publishRelease(dependsOn: [bintrayUpload, publishPlugins]) {}
-
-project.tasks.withType(Test) {
-    testLogging {
-        afterSuite { desc, result ->
-            if (!desc.parent) {
-                println "Test results ${project.name}: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} passed, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)"
+        project.tasks.withType(Test) {
+            testLogging {
+                afterSuite { desc, result ->
+                    if (!desc.parent) {
+                        println "Test results ${project.name}: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} passed, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)"
+                    }
+                }
             }
         }
     }
 }
 
-jacocoTestReport {
-    reports {
-        xml.enabled = true // coveralls plugin depends on xml format report
-        html.enabled = true
-    }
+apply from : 'gradle/coveralls.gradle'
 
-    executionData intTest
-}
-
-jdeps {
-    failOnError = false
-}

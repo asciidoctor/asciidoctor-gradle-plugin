@@ -1,0 +1,56 @@
+ext {
+    extensionFileContent = file("${project(':asciidoctor-gradle-jvm').projectDir}/src/main/groovy/org/asciidoctor/gradle/jvm/AsciidoctorJExtension.groovy").readLines()
+    asciidoctorjFixtureFileContent = file("${project(':testfixtures-jvm').projectDir}/src/main/groovy/org/asciidoctor/gradle/testfixtures/jvm/AsciidoctorjTestVersions.groovy").readLines()
+
+    readAsciidoctorjVersionsFromContent = { itemName, content ->
+        (content.grep {
+            it =~ $/final\s+static\s+String\s+${itemName}\s+=/$
+        })[0].replaceFirst(~/^(.+?["'])/, '').replaceFirst(~/(["'].*)$/, '')
+    }
+
+    readAsciidoctorjExtVersion = { itemName ->
+        readAsciidoctorjVersionsFromContent itemName, extensionFileContent
+    }
+
+    readAsciidoctorjTestVersion = { itemName ->
+        readAsciidoctorjVersionsFromContent itemName, asciidoctorjFixtureFileContent
+    }
+
+    compileOnlyAsciidoctorJVersion = readAsciidoctorjExtVersion('DEFAULT_ASCIIDOCTORJ_VERSION')
+    compileOnlyGroovyDslVersion = readAsciidoctorjExtVersion('DEFAULT_GROOVYDSL_VERSION')
+    downloadOnlyPdfVersion = readAsciidoctorjExtVersion('DEFAULT_PDF_VERSION')
+    downloadOnlyEpubVersion = readAsciidoctorjExtVersion('DEFAULT_EPUB_VERSION')
+
+    // TODO: This logic can go once we get 1.6 out of alpha
+    asciidoctorjHasApiJar = { ver ->
+        !( ver ==~ /1\.6\.0-alpha\.[123456]/ )
+    }
+
+    asciidoctorjTestVersion = [
+        series20: readAsciidoctorjTestVersion('SERIES_20'),
+        series16: readAsciidoctorjTestVersion('SERIES_16')
+    ]
+
+    groovyDslTestVersion = [
+        series20: readAsciidoctorjTestVersion('GROOVYDSL_SERIES_20'),
+        series16: readAsciidoctorjTestVersion('GROOVYDSL_SERIES_16')
+    ]
+
+    diagramTestVersion = [
+        series20: readAsciidoctorjTestVersion('DIAGRAM_SERIES_20'),
+        series16: readAsciidoctorjTestVersion('DIAGRAM_SERIES_16'),
+    ]
+}
+
+asciidoctorjTestVersion.keySet().each {
+    String config = "intTestOfflineAsciidoctorJ_${it}"
+    configurations.create(config)
+    dependencies.add(config, "org.asciidoctor:asciidoctorj:${asciidoctorjTestVersion[it]}")
+
+    if (asciidoctorjHasApiJar(asciidoctorjTestVersion[it])) {
+        dependencies.add(config, "org.asciidoctor:asciidoctorj-api:${asciidoctorjTestVersion[it]}")
+    }
+
+    dependencies.add(config, "org.asciidoctor:asciidoctorj-groovy-dsl:${groovyDslTestVersion[it]}")
+    dependencies.add(config, "org.asciidoctor:asciidoctorj-diagram:${diagramTestVersion[it]}")
+}

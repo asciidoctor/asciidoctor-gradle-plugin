@@ -1,0 +1,29 @@
+plugins {
+    id 'org.asciidoctor.jvm.convert' apply false
+}
+
+allprojects {
+    apply from: "${System.getProperty('OFFLINE_REPO')}/repositories.gradle"
+
+    configurations.all {
+        resolutionStrategy {
+            eachDependency { DependencyResolveDetails dsr ->
+                dsr.with {
+                    if (target.name == 'jruby' && target.group == 'org.jruby') {
+                        useTarget "org.jruby:jruby-complete:${target.version}"
+                    }
+                }
+            }
+        }
+    }
+}
+
+task runGradleTest {
+    dependsOn ':extension:build', ':docs-using-configuration:asciidoctor', ':docs-using-configuration-in-process:asciidoctor'
+    dependsOn ':docs-using-project-direct:asciidoctor'
+
+    doLast {
+        assert file("${project(':docs-using-configuration').buildDir}/docs/asciidoc/sample.html").text.contains('and write this in lowercase')
+        assert file("${project(':docs-using-configuration-in-process').buildDir}/docs/asciidoc/sample.html").text.contains('and write this in lowercase')
+    }
+}

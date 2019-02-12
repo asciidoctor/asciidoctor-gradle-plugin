@@ -1,0 +1,23 @@
+// Write the plugin's classpath to a file to share with the integration tests.
+// This is a workaround/hack as described in the Gradle user guide:
+//
+//    https://docs.gradle.org/2.10/userguide/test_kit.html#testKitFunctionalTestSpockClassesTestConfig
+//
+// It has to come before the `dependencies` block because one of the dependencies
+// relies on it.
+task createClasspathManifest {
+    ext {
+        outputDir = file("$buildDir/$name")
+    }
+    
+    inputs.files sourceSets.main.runtimeClasspath
+    outputs.dir outputDir
+
+    doLast {
+        outputDir.mkdirs()
+
+        file("$outputDir/plugin-classpath.txt").text = project.files(
+            sourceSets.main.runtimeClasspath
+        ).join("\n")
+    }
+}
