@@ -1,0 +1,32 @@
+ext {
+    asciidoctorjExtFileContent = file("${project(':asciidoctor-gradle-jvm').projectDir}/src/main/groovy/org/asciidoctor/gradle/jvm/AsciidoctorJExtension.groovy").readLines()
+    jrubyFixtureFileContent = file("${project(':testfixtures-jvm').projectDir}/src/main/groovy/org/asciidoctor/gradle/testfixtures/jvm/JRubyTestVersions.groovy").readLines()
+
+    readJRubyVersion = { itemName ->
+        (jrubyFixtureFileContent.grep {
+            it =~ $/final\s+static\s+String\s+${itemName}\s+=/$
+        })[0].replaceFirst(~/^(.+?["'])/, '').replaceFirst(~/(["'].*)$/, '')
+    }
+
+    jrubyTestVersion = [
+
+        aj20_minimum : readJRubyVersion('AJ20_ABSOLUTE_MINIMUM'),
+        aj20_safe_mininum : readJRubyVersion('AJ20_SAFE_MINIMUM'),
+        aj20_safe_maximum : readJRubyVersion('AJ20_SAFE_MAXIMUM'),
+        aj20_maximum : readJRubyVersion('AJ20_ABSOLUTE_MAXIMUM'),
+
+        aj16_minimum : readJRubyVersion('AJ16_ABSOLUTE_MINIMUM'),
+        aj16_safe_mininum : readJRubyVersion('AJ16_SAFE_MINIMUM'),
+        aj16_safe_maximum : readJRubyVersion('AJ16_SAFE_MAXIMUM'),
+        aj16_maximum : readJRubyVersion('AJ16_ABSOLUTE_MAXIMUM')
+
+    ]
+}
+
+jrubyTestVersion.keySet().each {
+    String config = "intTestOfflineJRuby_${it}"
+    configurations.create(config)
+    dependencies.add(config, "org.jruby:jruby-complete:${jrubyTestVersion[it]}") {
+        transitive = false
+    }
+}

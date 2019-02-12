@@ -1,0 +1,3 @@
+= Test file
+
+Check that compatibility plugins still works

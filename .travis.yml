@@ -1,22 +1,22 @@
 language: java
-
 install: true
-
+sudo: true
 cache:
     directories:
-        - $HOME/.m2
         - $HOME/.gradle
+        - .gradle/
+        - testfixtures/offline-repo/build/root
 
 before_script:
     - ./gradlew --version
 
 script:
-    - TERM=dumb ./gradlew build jacocoTestReport --scan -Dorg.gradle.parallel=true
+    - ./gradlew --console=plain --warning-mode=all build jacocoRootReport
 
 jdk:
-    - oraclejdk8
-    - openjdk9
+    - openjdk8
     - openjdk10
+    - openjdk11
 
 after_success:
     - ./gradlew coveralls

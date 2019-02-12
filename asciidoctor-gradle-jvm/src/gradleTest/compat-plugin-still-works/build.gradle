@@ -1,0 +1,19 @@
+plugins {
+    id 'org.asciidoctor.convert'
+}
+
+asciidoctor {
+    sources {
+        include 'test.adoc'
+    }
+
+    legacyAttributes = true
+}
+
+task runGradleTest {
+    dependsOn asciidoctor
+
+    doLast {
+        assert file("${buildDir}/asciidoc/html5/test.html").exists()
+    }
+}

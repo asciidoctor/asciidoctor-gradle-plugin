@@ -1,0 +1,42 @@
+apply plugin : 'org.ysb33r.cloudci'
+
+cloudci.any {
+        ext {
+            logBeforeTest = { desc ->
+                project.logger.lifecycle "Running: ${desc.name} (${desc.className})"
+            }
+            logAfterTest = { testTracker, descriptor, result ->
+                String key = "${descriptor.name} (${descriptor.className})"
+                long time = result.endTime - result.startTime
+                if(result.resultType == org.gradle.api.tasks.testing.TestResult.ResultType.FAILURE) {
+                    project.logger.lifecycle "FAILED (${time}s): ${key}",
+                        result.exceptions,
+                        testTracker.containsKey(key) ? testTracker[key] : ''
+                } else {
+                    project.logger.lifecycle "Completed (${time}s): ${key}"
+                }
+            }
+
+            testOutputListener = { testTracker, descriptor, outputEvent ->
+                String n = "${descriptor.name} (${descriptor.className})"
+
+                if(testTracker.containsKey(n)) {
+                    testTracker[n] = "${testTracker[n]}\n${outputEvent.message}"
+                } else {
+                    testTracker[n] = outputEvent.message
+                }
+            }
+        }
+
+        project.tasks.withType(Test) { t ->
+            t.with {
+                ext {
+                    testTracker = [:]
+                }
+                beforeTest logBeforeTest
+                afterTest logAfterTest.curry(testTracker)
+                addTestOutputListener (testOutputListener.curry(testTracker) as TestOutputListener)
+            }
+        }
+    }
+
