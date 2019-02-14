@@ -1,7 +1,7 @@
 = Asciidoctor Gradle Plugin
 Andres Almiray <https://github.com/aalmiray[@aalmiray]>
-:version: 1.5.10
-:version-published: 1.5.10
+:version: 1.6.0
+:version-published: 1.6.0
 :asciidoctorj-version: 1.6.1
 :asciidoc-url: http://asciidoc.org
 :asciidoctor-url: http://asciidoctor.org
@@ -30,7 +30,7 @@ ifdef::env-github[]
 endif::[]
 
 ifdef::env-github[]
-NOTE: This is the maintenance branch for the 1.5.x series. Only small maintenance releases are performed on this branch. For all new development on the 2.x series please look at the `development` branch.
+NOTE: This is the maintenance branch for the 1.6.x series. `1.6.0` is bascially `1.5.10` repackages. Only small maintenance releases are performed on this branch. For all new development on the 2.x series please look at the `development` branch.
 endif::[]
 
 ifdef::status[]
@@ -379,6 +379,8 @@ Starting with version 1.5.0 you'll be able to write your own Asciidoctor extensi
 for that matter. There are several options for you to make it happen.
 
 === As External Library
+
+NOTE: Custom extensions that works against 1.5.x might need recompilation against AsciidoctorJ 1.6.x in order to work with the 1.6.x series of these plugins.
 
 This is the most versatile option, as it allows you to reuse the same extension in different projects. An external library
 is just like any other Java/Groovy project. You simply define a dependency using the `asciidoctor` configuration.
