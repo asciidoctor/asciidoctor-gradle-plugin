@@ -30,7 +30,7 @@ ifdef::env-github[]
 endif::[]
 
 ifdef::env-github[]
-NOTE: This is the maintenance branch for the 1.6.x series. `1.6.0` is bascially `1.5.10` repackages. Only small maintenance releases are performed on this branch. For all new development on the 2.x series please look at the `development` branch.
+NOTE: This is the maintenance branch for the 1.6.x series. `1.6.0` is basically `1.5.10` repackaged. Only small maintenance releases are performed on this branch. For all new development on the 2.x series please look at the `development` branch.
 endif::[]
 
 ifdef::status[]
