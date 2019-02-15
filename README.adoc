@@ -48,7 +48,7 @@ endif::[]
 
 The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to convert all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
 
-NOTE: This started as a port of the {asciidoctor-maven-plugin}[Asciidoctor Maven Plugin] project founded by {lightguard}[@LightGuard] and relies on {asciidoctorj}[{asciidoctorj-name}] founded by {lordofthejars}[@lordofthejars]. In fact the 1.5.x series of the {plugin-name} can still be considered a port. However the 2.x series and beyond is a complete departure with functionality far exceeding any plugins for another build tool. This new series aalows for the creations of a true DocuOps pipeline by bringing together Gradle as a powerful and generic build tool and Asciidoctor as an agile aand lightweight document generator.
+NOTE: This started as a port of the {asciidoctor-maven-plugin}[Asciidoctor Maven Plugin] project founded by {lightguard}[@LightGuard] and relies on {asciidoctorj}[{asciidoctorj-name}] founded by {lordofthejars}[@lordofthejars]. In fact the 1.5.x series of the {plugin-name} can still be considered a port. However the 2.x series and beyond is a complete departure with functionality far exceeding any plugins for another build tool. This new series allows for the creations of a true DocuOps pipeline by bringing together Gradle as a powerful and generic build tool and Asciidoctor as an agile and lightweight document generator.
 
 NOTE: The https://github.com/gradle/kotlin-dsl[Gradle Kotlin DSL] is not properly supported by this plugin yet but it can be used with the GKD. Examples and workarounds are described below.
 
