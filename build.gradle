@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 the original author or authors.
+ * Copyright 2013-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ plugins {
     id 'org.ysb33r.os' version '0.9' apply false
     id 'org.ysb33r.cloudci' version '2.3' apply false
     id 'org.ysb33r.cloudci.appveyor.testreporter' version '2.3' apply false
-    id 'org.ysb33r.gradletest' version '2.0-alpha-8' apply false
+    id 'org.ysb33r.gradletest' version '2.0-beta.3' apply false
 }
 
 buildScan {
@@ -72,6 +72,10 @@ allprojects {
             'asciidoctor-gradle-base',
             'kindlegen-gradle'
         ]
+
+        withoutCodeCoverage = [
+            'asciidoctorj-gradle-base'
+        ]
     }
 }
 
@@ -90,7 +94,7 @@ subprojects {
             apply plugin: 'net.ossindex.audit'
             apply plugin: 'org.kordamp.jdeps'
 
-            if(project.name != 'asciidoctorj-gradle-base') {
+            if(!(project.name in withoutCodeCoverage)) {
                 apply plugin: 'jacoco'
 
                 jacoco {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 the original author or authors.
+ * Copyright 2013-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,9 @@
 package org.asciidoctor.gradle.jvm
 
 import org.asciidoctor.gradle.internal.FunctionalSpecification
-import org.asciidoctor.gradle.testfixtures.jvm.generators.VersionProcessModeGenerator
+import org.asciidoctor.gradle.testfixtures.jvm.generators.AsciidoctorjVersionProcessModeGenerator
 import org.gradle.testkit.runner.BuildResult
+import spock.lang.Ignore
 import spock.lang.Unroll
 
 @SuppressWarnings('MethodName')
@@ -28,10 +29,10 @@ class WarningsAsErrorsFunctionalSpec extends FunctionalSpecification {
     }
 
     @Unroll
-    void 'Warnings can be treated as errors (#model)'() {
+    void 'Warnings can be treated as errors (#model, Groovy DSL)'() {
 
         given:
-        getJvmConvertBuildFile("""
+        getJvmConvertGroovyBuildFile("""
         asciidoctorj {
             fatalWarnings missingIncludes()
             version = '${model.version}'
@@ -53,9 +54,37 @@ class WarningsAsErrorsFunctionalSpec extends FunctionalSpecification {
         result.output.contains('include file not found')
 
         where:
-        model << VersionProcessModeGenerator.get()
+        model << AsciidoctorjVersionProcessModeGenerator.get()
 
     }
 
+    @Unroll
+    @Ignore
+    void 'Warnings can be treated as errors (#model, Kotlin DSL)'() {
+
+        given:
+        getJvmConvertKotlinBuildFile("""
+        asciidoctorj {
+            fatalWarnings(missingIncludes())
+            version = "${model.version}"        
+        }
+        
+        asciidoctor {      
+            inProcess ProcessMode.${model.processMode}  
+            sources "sample.adoc"                
+        }
+        """)
+
+        when:
+        BuildResult result = getGradleRunner(['asciidoctor','-s','-i']).buildAndFail()
+
+        then:
+        result.output.contains('ERROR: The following messages from AsciidoctorJ are treated as errors')
+        result.output.contains('include file not found')
+
+        where:
+        model << AsciidoctorjVersionProcessModeGenerator.random
+
+    }
 
 }

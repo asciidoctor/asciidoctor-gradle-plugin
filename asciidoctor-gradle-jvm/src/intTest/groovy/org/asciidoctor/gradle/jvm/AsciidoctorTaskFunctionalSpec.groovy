@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 the original author or authors.
+ * Copyright 2013-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,7 +132,7 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         noExceptionThrown()
     }
 
-    void 'Can run in JAVA_EXEC process mode'() {
+    void 'Can run in JAVA_EXEC process mode (Groovy DSL)'() {
         given:
         getBuildFile('''
             asciidoctorj {
@@ -140,7 +140,6 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
             }
                     
             asciidoctor {
-            
                 inProcess = JAVA_EXEC
                 
                 outputOptions {
@@ -158,7 +157,7 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
     }
 
     File getBuildFile(String extraContent) {
-        getJvmConvertBuildFile("""
+        getJvmConvertGroovyBuildFile("""
 asciidoctorj {
     jrubyVersion = '${AJ16_SAFE_MAXIMUM}'
 }

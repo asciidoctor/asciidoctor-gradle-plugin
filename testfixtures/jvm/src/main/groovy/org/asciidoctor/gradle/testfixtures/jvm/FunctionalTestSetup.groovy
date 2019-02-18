@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 the original author or authors.
+ * Copyright 2013-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,10 @@ class FunctionalTestSetup {
         getGradleRunner(projectDir, loadPluginClassPath(testClass, projectSubdirName), taskNames)
     }
 
+    static GradleRunner getGradleRunner(File projectDir, List<String> taskNames) {
+        getGradleRunner(projectDir, null, taskNames)
+    }
+
     static GradleRunner getGradleRunner(File projectDir, List<File> pluginClasspath, List<String> taskNames) {
         List<String> eventualTaskNames = []
         eventualTaskNames.addAll(taskNames)
@@ -68,21 +72,22 @@ class FunctionalTestSetup {
             eventualTaskNames.add '--no-daemon'
         }
 
-        GradleRunner.create()
+        GradleRunner runner = GradleRunner.create()
             .withProjectDir(projectDir)
             .withArguments(taskNames)
-            .withPluginClasspath(pluginClasspath)
             .forwardOutput()
             .withDebug(true)
+
+        pluginClasspath ? runner.withPluginClasspath(pluginClasspath) : runner.withPluginClasspath()
     }
 
-    /** Returns a scriptlet that can be included in build script to load an off-line repository.
+    /** Returns a scriptlet that can be included in Groovy DSL build script to load an off-line repository.
      *
      * @param repoDir
      * @param fileName
-     * @return
+     * @return Groovy DSL
      */
-    static String getOfflineRepositories(File repoDir,final String fileName = 'repositories.gradle') {
+    static String getOfflineRepositoriesGroovyDsl(File repoDir, final String fileName = 'repositories.gradle') {
         File repo = new File(repoDir, fileName)
         if (!repo.exists()) {
             throw new FileNotFoundException("${repo} not found. Run ':testfixture-offline-repo:buildOfflineRepositories' build task")
@@ -95,5 +100,25 @@ class FunctionalTestSetup {
         }
     }
 
+    /** Returns a scriptlet that can be included in Kotlin DSL build script to load an off-line repository.
+     *
+     * @param repoDir
+     * @param fileName
+     * @return Kotlin DSL
+     */
+    static String getOfflineRepositoriesKotlinDsl(File repoDir, final String fileName = 'repositories.gradle.kts') {
+        File repo = new File(repoDir, fileName)
+        if (!repo.exists()) {
+            throw new FileNotFoundException("${repo} not found. Run ':testfixture-offline-repo:buildOfflineRepositories' build task")
+        }
 
+        if (OS.windows) {
+            "apply( from = \"${repo.absolutePath.replaceAll(BACKSLASH, DOUBLE_BACKSLASH)}\")"
+        } else {
+            "apply( from = \"${repo.absolutePath}\")"
+        }
+    }
+
+    static private final String BACKSLASH = '\\'
+    static private final String DOUBLE_BACKSLASH = BACKSLASH * 2
 }

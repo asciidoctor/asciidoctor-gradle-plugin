@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 the original author or authors.
+ * Copyright 2013-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,12 +54,11 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     // It is also a good idea that DEFAULT_ASCIIDOCTORJ_VERSION  matches one of
     // the values in testfixtures-jvm.
     // ------------------------------------------------------------------------
-    final static String DEFAULT_ASCIIDOCTORJ_VERSION = '1.6.0-RC.2'
-    final static String DEFAULT_GROOVYDSL_VERSION = '1.6.0-alpha.2'
+    final static String DEFAULT_ASCIIDOCTORJ_VERSION = '1.6.2'
+    final static String DEFAULT_GROOVYDSL_VERSION = '1.6.0'
     final static String DEFAULT_PDF_VERSION = '1.5.0-alpha.16'
     final static String DEFAULT_EPUB_VERSION = '1.5.0-alpha.8.1'
-    final static String PDF_SNAKE_YAML_FOR_EARLY_JRUBY9_VERSIONS = '1.23'
-    final static String DEFAULT_DIAGRAM_VERSION = '1.5.8'
+    final static String DEFAULT_DIAGRAM_VERSION = '1.5.12'
     // ------------------------------------------------------------------------
 
     static final String ASCIIDOCTORJ_GROUP = 'org.asciidoctor'
@@ -71,7 +70,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
 
     static final String JRUBY_COMPLETE_DEPENDENCY = 'org.jruby:jruby-complete'
     static final String JRUBY_DEPENDENCY = 'org.jruby:jruby'
-    static final String SNAKE_YAML_DEPENDENCY = 'org.yaml:snakeyaml'
 
     final static String NAME = 'asciidoctorj'
 
@@ -537,9 +535,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         final String jrubyVer = getJrubyVersion() ?: minimumSafeJRubyVersion(getVersion())
         final String jrubyCompleteDep = "${JRUBY_COMPLETE_DEPENDENCY}:${jrubyVer}"
 
-        final boolean isAsciidoctor15series = getVersion().startsWith('1.5')
-        final boolean isEarlyJRuby9 = jrubyVer =~ /^(9\.[01])|(9\.2\.[04])/
-
         List<Dependency> deps = [createDependency("${ASCIIDOCTORJ_CORE_DEPENDENCY}:${getVersion()}")]
 
         if (gDslVer != null) {
@@ -548,10 +543,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
 
         if (pdfVer != null) {
             deps.add(createDependency("${ASCIIDOCTORJ_PDF_DEPENDENCY}:${pdfVer}"))
-
-            if (isEarlyJRuby9 || jrubyVer =~ /1.7.2\d/) {
-                deps.add(createDependency("${SNAKE_YAML_DEPENDENCY}:${PDF_SNAKE_YAML_FOR_EARLY_JRUBY9_VERSIONS}"))
-            }
         }
 
         if (epubVer != null) {
@@ -572,13 +563,9 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
             deps.toArray() as Dependency[]
         )
 
-        if (!isAsciidoctor15series) {
-            configuration.resolutionStrategy.eachDependency { DependencyResolveDetails dsr ->
-                dsr.with {
-                    if (target.name == 'jruby' && target.group == 'org.jruby') {
-                        useTarget "${JRUBY_COMPLETE_DEPENDENCY}:${target.version}"
-                    }
-                }
+        configuration.resolutionStrategy.eachDependency { DependencyResolveDetails dsr ->
+            if (dsr.target.name == 'jruby' && dsr.target.group == 'org.jruby') {
+                dsr.useTarget "${JRUBY_COMPLETE_DEPENDENCY}:${dsr.target.version}"
             }
         }
 
@@ -592,7 +579,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     /** Return extensionRegistry.
      *
      * These extensionRegistry are not registered at this call. That action is left
-     * to the specific task at i'ts execution time.
+     * to the specific task at its execution time.
      *
      * @return
      */
@@ -676,7 +663,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         this.resolutionsStrategies.add(strategy as Action<ResolutionStrategy>)
     }
 
-    /** Returns a patterns suitabkle for detcting missing include files.
+    /** Returns a patterns suitable for detecting missing include files.
      *
      * This can be passed to {@link #fatalWarnings(Object ...)}
      *

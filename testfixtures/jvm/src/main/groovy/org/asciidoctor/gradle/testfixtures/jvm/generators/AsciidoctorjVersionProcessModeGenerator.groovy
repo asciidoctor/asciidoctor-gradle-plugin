@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 the original author or authors.
+ * Copyright 2013-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,24 @@
 package org.asciidoctor.gradle.testfixtures.jvm.generators
 
 import groovy.transform.CompileStatic
+import groovy.transform.EqualsAndHashCode
+import groovy.transform.Sortable
 import org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions
 
-/** A test fixture generator class for ASciidoctorJ version & process mode.
+/** A test fixture generator class for AsciidoctorJ version & process mode.
  *
  * @since 2.0
  */
 @CompileStatic
-class VersionProcessModeGenerator {
+class AsciidoctorjVersionProcessModeGenerator {
 
     static final String JAVA_EXEC = 'JAVA_EXEC'
     static final String IN_PROCESS = 'IN_PROCESS'
     static final String OUT_OF_PROCESS = 'OUT_OF_PROCESS'
 
     @SuppressWarnings('ClassName')
+    @EqualsAndHashCode
+    @Sortable
     static class VersionProcess {
         String version
         String processMode
@@ -48,7 +52,7 @@ class VersionProcessModeGenerator {
         if (System.getenv('APPVEYOR')) {
             [AsciidoctorjTestVersions.SERIES_20, AsciidoctorjTestVersions.SERIES_16].collect {
                 VersionProcess.of(it, JAVA_EXEC)
-            }
+            }.toUnique()
         } else {
             [AsciidoctorjTestVersions.SERIES_20, AsciidoctorjTestVersions.SERIES_16].collect { it ->
                 [
@@ -56,8 +60,7 @@ class VersionProcessModeGenerator {
                     VersionProcess.of(it, IN_PROCESS),
                     VersionProcess.of(it, OUT_OF_PROCESS)
                 ]
-            }.flatten() as List<VersionProcess>
-
+            }.flatten().toUnique() as List<VersionProcess>
         }
     }
 

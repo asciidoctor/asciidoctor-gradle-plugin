@@ -15,6 +15,7 @@ syncRemoteRepositories {
     repoRoot project.ext.offlineRepoRoot
 
     outputs.files project.ext.offlineRepoDescriptionFile
+    outputs.files file("${project.ext.offlineRepoDescriptionFile}.kts")
 
     repositories {
         // Put this first as sometimes Ivy hits a hiccup on JCenter()
@@ -30,6 +31,21 @@ syncRemoteRepositories {
 
     doLast {
         project.ext.offlineRepoDescriptionFile.withWriter { w ->
+            w.println 'repositories {'
+            w.print ' ' * 4
+            w.println 'ivy {'
+            w.print ' ' * 8
+            w.println "name 'OfflineRepo'"
+            w.print ' ' * 8
+            w.println "layout 'gradle'"
+            w.print ' ' * 8
+            w.println "url '${file(repoRoot).absoluteFile.toURI()}'"
+            w.print ' ' * 4
+            w.println '}'
+            w.println '}'
+        }
+
+        file("${project.ext.offlineRepoDescriptionFile}.kts").withWriter { w ->
             w.println 'repositories {'
             w.print ' ' * 4
             w.println 'ivy {'

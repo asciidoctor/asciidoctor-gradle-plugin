@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 the original author or authors.
+ * Copyright 2013-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,26 +34,11 @@ class FunctionalSpecification extends Specification {
     @Rule
     final TemporaryFolder testProjectDir = new TemporaryFolder()
 
-    @Shared
-    List<File> pluginClasspath
-
-    def setupSpec() {
-        def pluginClasspathResource = getClass().classLoader.getResource('plugin-classpath.txt')
-        if (pluginClasspathResource == null) {
-            pluginClasspathResource = new File('./asciidoctor-gradle-jvm-epub/build/createClasspathManifest/plugin-classpath.txt')
-        }
-        if (pluginClasspathResource == null) {
-            throw new IllegalStateException('Did not find plugin classpath resource, run `intTestClasses` build task.')
-        }
-
-        pluginClasspath = pluginClasspathResource.readLines().collect { new File(it) }
-    }
-
     GradleRunner getGradleRunner(List<String> taskNames = ['asciidoctor']) {
         GradleRunner.create()
             .withProjectDir(testProjectDir.root)
             .withArguments(taskNames)
-            .withPluginClasspath(pluginClasspath)
+            .withPluginClasspath()
             .forwardOutput()
             .withDebug(true)
     }

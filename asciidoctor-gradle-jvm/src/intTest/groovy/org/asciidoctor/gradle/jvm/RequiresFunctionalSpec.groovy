@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 the original author or authors.
+ * Copyright 2013-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,6 @@ import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
 import spock.lang.Timeout
 
-import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.DIAGRAM_SERIES_16
-import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.DIAGRAM_SERIES_16
 import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.DIAGRAM_SERIES_16
 
 /**
@@ -69,7 +67,7 @@ class RequiresFunctionalSpec extends FunctionalSpecification {
     def 'Use asciidoctorj-diagram the old way way with `requires` still works'() {
         given:
         final String imageFileExt = '.png'
-        getJvmConvertBuildFile("""
+        getJvmConvertGroovyBuildFile("""
         configurations {
             diagram
         }
@@ -93,7 +91,7 @@ class RequiresFunctionalSpec extends FunctionalSpecification {
         """)
 
         when:
-        final BuildResult firstInvocationResult = getGradleRunner(DEFAULT_ARGS).build()
+        final BuildResult firstInvocationResult = getGradleRunner(['-i'] + DEFAULT_ARGS).build()
         File outputFolder = new File(testProjectDir.root, 'build/docs/asciidoc')
         File outputFile = new File(outputFolder, 'ditaa.html')
 
@@ -113,7 +111,7 @@ class RequiresFunctionalSpec extends FunctionalSpecification {
     }
 
     File getBuildFile(String sourceName, String extraContent) {
-        getJvmConvertBuildFile("""
+        getJvmConvertGroovyBuildFile("""
             asciidoctorj {
                 diagramVersion = '${DIAGRAM_SERIES_16}'
             }

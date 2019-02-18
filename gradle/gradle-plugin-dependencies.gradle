@@ -14,7 +14,7 @@ dependencies {
 
     if(configurations.findByName('intTestCompile')) {
         intTestCompile project(':testfixtures-jvm')
-        intTestRuntime files(createClasspathManifest)
+//        intTestRuntime files(createClasspathManifest)
     }
 }
 
