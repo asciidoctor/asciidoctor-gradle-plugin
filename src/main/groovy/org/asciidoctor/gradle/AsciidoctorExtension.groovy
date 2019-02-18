@@ -21,9 +21,9 @@ import org.gradle.api.Project
  * @author Andres Almiray
  */
 class AsciidoctorExtension {
-    String version = '1.6.0'
+    String version = '1.6.2'
 
-    String groovyDslVersion = '1.0.0.Alpha3'
+    String groovyDslVersion = '1.6.0'
 
     /**
      * By default the plugin will try to add a default repository to find AsciidoctorJ.
