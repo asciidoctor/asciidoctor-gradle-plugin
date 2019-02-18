@@ -705,7 +705,7 @@ The base directory is now set to the directory of the root project. This may inf
 
 Gradle injected a number of attributes into the build. These names have now been changed to indicate that they are injected:
 
-[cols="3*"]
+[cols="4*"]
 |===
 | *Old name* | *New name* | Substituable | *Usage*
 | `projectdir` | `gradle-projectdir` | No | The Gradle project directory which is running the Asciidoctor task.
