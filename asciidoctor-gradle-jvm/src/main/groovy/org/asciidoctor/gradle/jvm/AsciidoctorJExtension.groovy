@@ -535,8 +535,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         final String jrubyVer = getJrubyVersion() ?: minimumSafeJRubyVersion(getVersion())
         final String jrubyCompleteDep = "${JRUBY_COMPLETE_DEPENDENCY}:${jrubyVer}"
 
-        final boolean isAsciidoctor15series = getVersion().startsWith('1.5')
-
         List<Dependency> deps = [createDependency("${ASCIIDOCTORJ_CORE_DEPENDENCY}:${getVersion()}")]
 
         if (gDslVer != null) {
@@ -565,11 +563,9 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
             deps.toArray() as Dependency[]
         )
 
-        if (!isAsciidoctor15series) {
-            configuration.resolutionStrategy.eachDependency { DependencyResolveDetails dsr ->
-                if (dsr.target.name == 'jruby' && dsr.target.group == 'org.jruby') {
-                    dsr.useTarget "${JRUBY_COMPLETE_DEPENDENCY}:${dsr.target.version}"
-                }
+        configuration.resolutionStrategy.eachDependency { DependencyResolveDetails dsr ->
+            if (dsr.target.name == 'jruby' && dsr.target.group == 'org.jruby') {
+                dsr.useTarget "${JRUBY_COMPLETE_DEPENDENCY}:${dsr.target.version}"
             }
         }
 
@@ -583,7 +579,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     /** Return extensionRegistry.
      *
      * These extensionRegistry are not registered at this call. That action is left
-     * to the specific task at i'ts execution time.
+     * to the specific task at its execution time.
      *
      * @return
      */
