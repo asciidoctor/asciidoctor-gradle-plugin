@@ -58,7 +58,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     final static String DEFAULT_GROOVYDSL_VERSION = '1.6.0'
     final static String DEFAULT_PDF_VERSION = '1.5.0-alpha.16'
     final static String DEFAULT_EPUB_VERSION = '1.5.0-alpha.8.1'
-    final static String DEFAULT_DIAGRAM_VERSION = '1.5.8'
+    final static String DEFAULT_DIAGRAM_VERSION = '1.5.12'
     // ------------------------------------------------------------------------
 
     static final String ASCIIDOCTORJ_GROUP = 'org.asciidoctor'
@@ -567,10 +567,8 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
 
         if (!isAsciidoctor15series) {
             configuration.resolutionStrategy.eachDependency { DependencyResolveDetails dsr ->
-                dsr.with {
-                    if (target.name == 'jruby' && target.group == 'org.jruby') {
-                        useTarget "${JRUBY_COMPLETE_DEPENDENCY}:${target.version}"
-                    }
+                if (dsr.target.name == 'jruby' && dsr.target.group == 'org.jruby') {
+                    dsr.useTarget "${JRUBY_COMPLETE_DEPENDENCY}:${dsr.target.version}"
                 }
             }
         }
