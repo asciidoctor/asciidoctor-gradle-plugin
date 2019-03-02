@@ -113,12 +113,12 @@ class FunctionalTestSetup {
         }
 
         if (OS.windows) {
-            "apply( from = \"${repo.absolutePath.replaceAll(BACKSLASH, DOUBLE_BACKSLASH)}\")"
+            $/apply( from = "${repo.absolutePath.replace(BACKSLASH, DOUBLE_BACKSLASH)}")/$
         } else {
-            "apply( from = \"${repo.absolutePath}\")"
+            $/apply( from = "${repo.absolutePath}")/$
         }
     }
 
-    static private final String BACKSLASH = '\\'
+    static private final String BACKSLASH = "\\"
     static private final String DOUBLE_BACKSLASH = BACKSLASH * 2
 }
