@@ -9,11 +9,11 @@ cloudci.any {
                 String key = "${descriptor.name} (${descriptor.className})"
                 long time = result.endTime - result.startTime
                 if(result.resultType == org.gradle.api.tasks.testing.TestResult.ResultType.FAILURE) {
-                    project.logger.lifecycle "FAILED (${time}s): ${key}",
+                    project.logger.lifecycle "  FAILED (${time}s): ${key}",
                         result.exceptions,
                         testTracker.containsKey(key) ? testTracker[key] : ''
                 } else {
-                    project.logger.lifecycle "Completed (${time}s): ${key}"
+                    project.logger.lifecycle "  Completed (${time}s): ${key}"
                 }
             }
 
