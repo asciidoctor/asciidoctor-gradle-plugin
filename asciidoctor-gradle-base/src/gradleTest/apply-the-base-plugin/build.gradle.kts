@@ -3,4 +3,7 @@ plugins {
 }
 
 tasks.register<DefaultTask>("runGradleTest") {
+    doLast {
+        println("hello")
+    }
 }
