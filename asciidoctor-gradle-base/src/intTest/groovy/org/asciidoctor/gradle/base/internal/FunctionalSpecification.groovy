@@ -22,7 +22,6 @@ import org.asciidoctor.gradle.testfixtures.jvm.FunctionalTestSetup
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
-import spock.lang.Shared
 import spock.lang.Specification
 
 import static org.asciidoctor.gradle.testfixtures.jvm.DslType.GROOVY_DSL

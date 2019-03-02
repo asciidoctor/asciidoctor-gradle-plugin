@@ -16,7 +16,6 @@
 package org.asciidoctor.gradle.base
 
 import org.asciidoctor.gradle.base.internal.FunctionalSpecification
-import org.gradle.testkit.runner.BuildResult
 
 class ApplyPluginSpec extends FunctionalSpecification {
 
@@ -26,7 +25,7 @@ class ApplyPluginSpec extends FunctionalSpecification {
         getKotlinBuildFile('')
 
         when:
-        BuildResult result = getGradleRunnerForKotlin(['tasks','-s']).build()
+        getGradleRunnerForKotlin(['tasks', '-s']).build()
 
         then:
         noExceptionThrown()
@@ -38,7 +37,7 @@ class ApplyPluginSpec extends FunctionalSpecification {
         getGroovyBuildFile('', 'base')
 
         when:
-        BuildResult result = getGradleRunner(['tasks']).build()
+        getGradleRunner(['tasks']).build()
 
         then:
         noExceptionThrown()

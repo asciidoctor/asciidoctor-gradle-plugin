@@ -24,17 +24,18 @@ ruleset {
     }
     ruleset('rulesets/naming.xml') {
         exclude 'PropertyName'
-        'ClassName' {
+        ClassName {
             regex = '^[A-Z][a-zA-Z0-9]*$'
         }
-        'FieldName' {
+        FieldName {
             finalRegex = '^_?[a-z][a-zA-Z0-9]*$'
             staticFinalRegex = '^[A-Z][A-Z_0-9]*$'
         }
-        'MethodName' {
+        MethodName {
             regex = '^[a-z][a-zA-Z0-9_]*$'
+            doNotApplyToFileNames = '*/test/*/*Spec.groovy,*/*Test/*/*Spec.groovy,*/test/*/*Specification.groovy,*/*Test/*/*Specification.groovy'
         }
-        'VariableName' {
+        VariableName {
             finalRegex = '^_?[a-z][a-zA-Z0-9]*$'
         }
     }
@@ -48,7 +49,20 @@ ruleset {
         exclude 'CrapMetric'
     }
     ruleset('rulesets/unnecessary.xml')
-    ruleset('rulesets/dry.xml')
+    ruleset('rulesets/dry.xml') {
+        DuplicateListLiteral {
+            doNotApplyToFileNames = '*/test/*/*Spec.groovy,*/*Test/*/*Spec.groovy,*/test/*/*Specification.groovy,*/*Test/*/*Specification.groovy'
+        }
+        DuplicateMapLiteral {
+            doNotApplyToFileNames = '*/test/*/*Spec.groovy,*/*Test/*/*Spec.groovy,*/test/*/*Specification.groovy,*/*Test/*/*Specification.groovy'
+        }
+        DuplicateNumberLiteral {
+            doNotApplyToFileNames = '*/test/*/*Spec.groovy,*/*Test/*/*Spec.groovy,*/test/*/*Specification.groovy,*/*Test/*/*Specification.groovy'
+        }
+        DuplicateStringLiteral {
+            doNotApplyToFileNames = '*/test/*/*Spec.groovy,*/*Test/*/*Spec.groovy,*/test/*/*Specification.groovy,*/*Test/*/*Specification.groovy'
+        }
+    }
     ruleset('rulesets/design.xml') {
         exclude 'Instanceof'
     }

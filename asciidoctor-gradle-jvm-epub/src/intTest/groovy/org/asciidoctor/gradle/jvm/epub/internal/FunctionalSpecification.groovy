@@ -20,7 +20,6 @@ import org.gradle.testkit.runner.GradleRunner
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import org.ysb33r.grolifant.api.OperatingSystem
-import spock.lang.Shared
 import spock.lang.Specification
 
 class FunctionalSpecification extends Specification {
@@ -43,7 +42,7 @@ class FunctionalSpecification extends Specification {
             .withDebug(true)
     }
 
-    @SuppressWarnings(['FactoryMethodName','BuilderMethodWithSideEffects'])
+    @SuppressWarnings(['FactoryMethodName', 'BuilderMethodWithSideEffects'])
     void createTestProject(String docGroup = 'epub3') {
         FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, docGroup), testProjectDir.root)
     }
@@ -54,7 +53,7 @@ class FunctionalSpecification extends Specification {
             throw new FileNotFoundException("${repo} not found. Run ':testfixture-offline-repo:buildOfflineRepositories' build task")
         }
 
-        if(OS.windows) {
+        if (OS.windows) {
             "apply from: /${repo.absolutePath}/"
         } else {
             "apply from: '${repo.absolutePath}'"

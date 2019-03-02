@@ -119,6 +119,6 @@ class FunctionalTestSetup {
         }
     }
 
-    static private final String BACKSLASH = "\\"
+    static private final String BACKSLASH = '\\'
     static private final String DOUBLE_BACKSLASH = BACKSLASH * 2
 }
