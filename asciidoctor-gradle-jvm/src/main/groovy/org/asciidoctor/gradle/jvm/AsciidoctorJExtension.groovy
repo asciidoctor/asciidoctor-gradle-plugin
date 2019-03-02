@@ -129,7 +129,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         super(task, NAME)
     }
 
-    /** Whether the Guava JAR that ships with the Gradle sustribution should be injected into the
+    /** Whether the Guava JAR that ships with the Gradle distribution should be injected into the
      * classpath for external AsciidoctorJ processes.
      *
      * If not set previously via {@link #setInjectInternalGuavaJar} then a default version depending of the version of
