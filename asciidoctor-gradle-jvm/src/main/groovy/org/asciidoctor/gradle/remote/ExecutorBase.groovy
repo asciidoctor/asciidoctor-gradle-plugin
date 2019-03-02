@@ -124,17 +124,19 @@ abstract class ExecutorBase {
      * @return
      */
     protected List<Object> rehydrateExtensions(final Object registry, final List<Object> exts) {
-        exts.collect {
-            switch (it) {
+        final List<Object> availableExtensions = []
+        for( Object ext in exts)  {
+            switch (ext) {
                 case Closure:
-                    Closure rehydrated = ((Closure) it).rehydrate(registry, null, null)
+                    Closure rehydrated = ((Closure) ext).rehydrate(registry, null, null)
                     rehydrated.resolveStrategy = Closure.DELEGATE_ONLY
-                    (Object) rehydrated
+                    availableExtensions.add((Object) rehydrated)
                     break
                 default:
-                    it
+                    availableExtensions.add(ext)
             }
-        } as List<Object>
+        }
+        availableExtensions
     }
 
     /** Creates a log handler for Asciidoctor

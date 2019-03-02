@@ -447,7 +447,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
 
     /** Returns all of the specified configurations as a collections of files.
      *
-     * If any extensions are dependencies then they w2ill be included here too.
+     * If any extensions are dependencies then they will be included here too.
      *
      * @return FileCollection
      */
@@ -952,6 +952,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
         if (!closurePaths.empty) {
             // Jumping through hoops to make extensions based upon closures to work.
             closurePaths.add(getClassLocation(org.gradle.internal.scripts.ScriptOrigin))
+            closurePaths.addAll(ifNoGroovyAddLocal(deps))
         }
 
         if (deps.empty && closurePaths.empty) {
@@ -962,6 +963,16 @@ class AbstractAsciidoctorTask extends DefaultTask {
             project.files(closurePaths)
         } else {
             jrubyLessConfiguration(deps) + project.files(closurePaths)
+        }
+    }
+
+    private List<File> ifNoGroovyAddLocal(final List<Dependency> deps) {
+        if(deps.find {
+            it.name == 'groovy-all' || it.name == 'groovy'
+        }) {
+            []
+        } else {
+            [JavaExecUtils.localGroovy]
         }
     }
 
