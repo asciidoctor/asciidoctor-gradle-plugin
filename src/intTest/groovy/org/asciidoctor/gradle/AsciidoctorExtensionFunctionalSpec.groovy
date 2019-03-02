@@ -28,7 +28,7 @@ import spock.lang.Specification
 class AsciidoctorExtensionFunctionalSpec extends Specification {
     public static final String TEST_PROJECTS_DIR = "src/intTest/projects"
     @Rule
-    final TemporaryFolder testProjectDir = new TemporaryFolder()
+    TemporaryFolder testProjectDir
 
     List<File> pluginClasspath
 

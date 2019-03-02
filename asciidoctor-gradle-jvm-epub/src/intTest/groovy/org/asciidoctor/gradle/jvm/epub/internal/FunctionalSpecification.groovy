@@ -32,7 +32,7 @@ class FunctionalSpecification extends Specification {
     final OperatingSystem OS = OperatingSystem.current()
 
     @Rule
-    final TemporaryFolder testProjectDir = new TemporaryFolder()
+    TemporaryFolder testProjectDir
 
     GradleRunner getGradleRunner(List<String> taskNames = ['asciidoctor']) {
         GradleRunner.create()

@@ -38,7 +38,7 @@ class FunctionalSpecification extends Specification {
     final String TEST_REPO_DIR = System.getProperty('OFFLINE_REPO') ?: './testfixtures/offline-repo/build/repo'
 
     @Rule
-    final TemporaryFolder testProjectDir = new TemporaryFolder()
+    TemporaryFolder testProjectDir
 
     @CompileStatic
     GradleRunner getGradleRunner(List<String> taskNames = ['asciidoctor']) {
