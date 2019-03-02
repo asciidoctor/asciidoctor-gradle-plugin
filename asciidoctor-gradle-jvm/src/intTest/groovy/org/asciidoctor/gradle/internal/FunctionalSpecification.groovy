@@ -22,7 +22,6 @@ import org.asciidoctor.gradle.testfixtures.jvm.FunctionalTestSetup
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
-import spock.lang.Shared
 import spock.lang.Specification
 
 import static org.asciidoctor.gradle.testfixtures.jvm.DslType.GROOVY_DSL
@@ -85,7 +84,7 @@ class FunctionalSpecification extends Specification {
     }
 
     String getDefaultProcessModeForAppveyor(final DslType dslType = GROOVY_DSL) {
-        if(System.getenv('APPVEYOR')) {
+        if (System.getenv('APPVEYOR')) {
             dslType == GROOVY_DSL ? 'inProcess = JAVA_EXEC' : 'inProcess = ProcessMode.JAVA_EXEC'
         } else {
             ''
