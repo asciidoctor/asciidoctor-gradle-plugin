@@ -71,7 +71,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
     final static ProcessMode JAVA_EXEC = ProcessMode.JAVA_EXEC
 
     @Internal
-    protected final static GradleVersion LAST_GRADLE_WITH_CLASSPATH_LEAKAGE = GradleVersion.version(('5.0'))
+    protected final static GradleVersion LAST_GRADLE_WITH_CLASSPATH_LEAKAGE = GradleVersion.version(('5.99'))
 
     @Nested
     protected final OutputOptions configuredOutputOptions = new OutputOptions()

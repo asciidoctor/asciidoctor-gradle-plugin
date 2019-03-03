@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.jvm.epub
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
+import org.asciidoctor.gradle.internal.Transform
 import org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask
 import org.asciidoctor.gradle.jvm.AsciidoctorExecutionException
 import org.asciidoctor.gradle.jvm.ProcessMode
@@ -83,7 +84,7 @@ class AsciidoctorEpubTask extends AbstractAsciidoctorTask {
     @SuppressWarnings('UnnecessaryCollectCall')
     void setEbookFormats(Iterable<String> formats) {
         this.ebookFormats.clear()
-        this.ebookFormats.addAll(formats.collect { String it -> it.toLowerCase() } as Set<String>)
+        this.ebookFormats.addAll(Transform.toSet(formats) { String it -> it.toLowerCase() })
     }
 
     /** Adds aditional eBook formats
@@ -93,7 +94,7 @@ class AsciidoctorEpubTask extends AbstractAsciidoctorTask {
      */
     @SuppressWarnings('ConfusingMethodName')
     void ebookFormats(String... formats) {
-        this.ebookFormats.addAll(formats*.toLowerCase())
+        this.ebookFormats.addAll(formats*.toLowerCase() as List)
     }
 
     @Override
@@ -152,7 +153,7 @@ echo %1 %2 %3 %4 55 %6 %7 %8 %9 > ${tmpKindleGenLogFileForWindows}
         } else if (this.ebookFormats.size() == 1) {
             executorConfigurations.collectEntries { configName, config ->
                 config.attributes[ebookAttr] = this.ebookFormats.first()
-                [backendName(this.ebookFormats.first()), config]
+                [backendName(this.ebookFormats.first().toString()), config]
             } as Map<String, ExecutorConfiguration>
         } else {
             Map<String, ExecutorConfiguration> newConfigurations = [:]

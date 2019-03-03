@@ -18,4 +18,8 @@ class Transform {
     static <I,O> Set<O> toSet(final Collection<I> collection, Function<I,O> tx ) {
         collection.stream().map(tx).collect(Collectors.toSet())
     }
+
+    static <I,O> Set<O> toSet(final Iterable<I> collection, Function<I,O> tx ) {
+        collection.toList().stream().map(tx).collect(Collectors.toSet())
+    }
 }
