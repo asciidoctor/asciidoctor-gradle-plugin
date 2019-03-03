@@ -22,6 +22,7 @@ import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
 import org.asciidoctor.gradle.internal.ExecutorLogLevel
 import org.asciidoctor.gradle.internal.JavaExecUtils
+import org.asciidoctor.gradle.internal.Transform
 import org.asciidoctor.gradle.remote.AsciidoctorJavaExec
 import org.gradle.api.DefaultTask
 import org.gradle.api.InvalidUserDataException
@@ -36,6 +37,8 @@ import org.gradle.api.tasks.util.PatternSet
 import org.gradle.internal.FileUtils
 import org.gradle.process.JavaExecSpec
 import org.ysb33r.grolifant.api.OperatingSystem
+
+import java.util.stream.Collectors
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.*
 import static org.asciidoctor.gradle.jvm.AsciidoctorJExtension.GUAVA_REQUIRED_FOR_EXTERNALS
@@ -424,7 +427,9 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
     @OutputDirectories
     Set<File> getOutputDirectories() {
         if (separateOutputDirs) {
-            backends.collect { new File(outputDir, it) } as Set
+            backends.stream().map({
+                new File(outputDir, it)
+            }).collect(Collectors.toSet())
         } else {
             [outputDir] as Set
         }
@@ -550,7 +555,7 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
         }
         finalAttributes.putAll(attributes)
 
-        ExecutorConfigurationContainer ecc = new ExecutorConfigurationContainer(activeBackends().collect { backend ->
+        ExecutorConfigurationContainer ecc = new ExecutorConfigurationContainer(activeBackends().stream().map( { backend ->
             new ExecutorConfiguration(
                 sourceDir: sourceDir,
                 outputDir: outputBackendDir(output, backend),
@@ -571,13 +576,13 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
                 asciidoctorExtensions: dehydrateExtensions(getAsciidoctorExtensions()),
                 executorLogLevel: ExecutorLogLevel.WARN
             )
-        })
+        }).collect(Collectors.toList()))
 
         Set<File> closurePaths = getAsciidoctorExtensions().findAll {
             it instanceof Closure
-        }.collect {
+        }.stream().map({
             getClassLocation(it.class)
-        }.toSet()
+        }).collect(Collectors.toSet())
         closurePaths.add(getClassLocation(org.gradle.internal.scripts.ScriptOrigin))
 
         FileCollection javaExecClasspath = project.files(
@@ -650,8 +655,8 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
         }
     }
 
-    private List<Object> dehydrateExtensions(final Iterable<Object> exts) {
-        exts.collect {
+    private List<Object> dehydrateExtensions(final List<Object> exts) {
+        Transform.toList(exts){
             switch (it) {
                 case Closure:
                     ((Closure) it).dehydrate()
@@ -659,12 +664,12 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
                 default:
                     it
             }
-        } as List<Object>
+        }
     }
 
     @CompileDynamic
     private static List stringifyList(List input) {
-        input.collect { element ->
+        Transform.toList(input) { element ->
             if (element instanceof CharSequence) {
                 element.toString()
             } else if (element instanceof List) {
@@ -720,7 +725,7 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
                 transformedMap = attributes
                 break
             case CharSequence:
-                attributes.replaceAll('([^\\\\]) ', '$1\0').replaceAll('\\\\ ', ' ').split('\0').collect {
+                Transform.toList(attributes.replaceAll('([^\\\\]) ', '$1\0').replaceAll('\\\\ ', ' ').split('\0')) {
                     def split = it.split('=')
                     if (split.size() < 2) {
                         throw new InvalidUserDataException("Unsupported format for attributes: ${attributes}")

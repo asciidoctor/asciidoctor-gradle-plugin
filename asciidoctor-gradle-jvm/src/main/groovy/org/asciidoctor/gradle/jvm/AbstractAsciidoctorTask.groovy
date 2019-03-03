@@ -22,6 +22,7 @@ import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
 import org.asciidoctor.gradle.internal.ExecutorUtils
 import org.asciidoctor.gradle.internal.JavaExecUtils
+import org.asciidoctor.gradle.internal.Transform
 import org.asciidoctor.gradle.remote.AsciidoctorJExecuter
 import org.asciidoctor.gradle.remote.AsciidoctorJavaExec
 import org.gradle.api.Action
@@ -47,6 +48,7 @@ import org.ysb33r.grolifant.api.FileUtils
 import org.ysb33r.grolifant.api.StringUtils
 
 import java.nio.file.Path
+import java.util.stream.Collectors
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.*
 import static org.gradle.api.tasks.PathSensitivity.RELATIVE
@@ -276,7 +278,9 @@ class AbstractAsciidoctorTask extends DefaultTask {
      */
     @OutputDirectories
     Set<File> getBackendOutputDirectories() {
-        configuredOutputOptions.backends.collect { getOutputDirFor(it) } as Set
+        Transform.toSet(configuredOutputOptions.backends) {
+            String it -> getOutputDirFor(it)
+        }
     }
 
     /** Base directory (current working directory) for a conversion.
@@ -943,11 +947,11 @@ class AbstractAsciidoctorTask extends DefaultTask {
             it instanceof Dependency
         } as List<Dependency>
 
-        Set<File> closurePaths = asciidoctorj.extensions.findAll {
+        Set<File> closurePaths = Transform.toSet(asciidoctorj.extensions.findAll {
             it instanceof Closure
-        }.collect {
+        },{
             getClassLocation(it.class)
-        }.toSet()
+        })
 
         if (!closurePaths.empty) {
             // Jumping through hoops to make extensions based upon closures to work.

@@ -25,7 +25,7 @@ gradleTest {
 }
 
 configurations {
-    gradleTestRuntime.extendsFrom testRuntime
+//    gradleTestRuntime.extendsFrom testRuntime
 }
 
 
