@@ -19,7 +19,7 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
 import org.asciidoctor.gradle.base.SafeMode
-import org.asciidoctor.gradle.internal.Transform
+import org.asciidoctor.gradle.base.Transform
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -35,7 +35,6 @@ import org.ysb33r.grolifant.api.AbstractCombinedProjectTaskExtension
 import org.ysb33r.grolifant.api.OperatingSystem
 
 import java.util.regex.Pattern
-import java.util.stream.Collectors
 
 import static org.ysb33r.grolifant.api.StringUtils.stringize
 

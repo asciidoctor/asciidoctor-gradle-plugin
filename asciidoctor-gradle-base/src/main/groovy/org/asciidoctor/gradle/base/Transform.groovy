@@ -1,4 +1,4 @@
-package org.asciidoctor.gradle.internal
+package org.asciidoctor.gradle.base
 
 import groovy.transform.CompileStatic
 

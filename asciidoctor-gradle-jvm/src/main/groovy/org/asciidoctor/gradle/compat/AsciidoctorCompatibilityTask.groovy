@@ -22,7 +22,7 @@ import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
 import org.asciidoctor.gradle.internal.ExecutorLogLevel
 import org.asciidoctor.gradle.internal.JavaExecUtils
-import org.asciidoctor.gradle.internal.Transform
+import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.remote.AsciidoctorJavaExec
 import org.gradle.api.DefaultTask
 import org.gradle.api.InvalidUserDataException

@@ -17,7 +17,7 @@ package org.asciidoctor.gradle.jvm.epub
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
-import org.asciidoctor.gradle.internal.Transform
+import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask
 import org.asciidoctor.gradle.jvm.AsciidoctorExecutionException
 import org.asciidoctor.gradle.jvm.ProcessMode

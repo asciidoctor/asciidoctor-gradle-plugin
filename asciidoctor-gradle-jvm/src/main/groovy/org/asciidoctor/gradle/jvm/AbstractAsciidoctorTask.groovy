@@ -22,7 +22,7 @@ import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
 import org.asciidoctor.gradle.internal.ExecutorUtils
 import org.asciidoctor.gradle.internal.JavaExecUtils
-import org.asciidoctor.gradle.internal.Transform
+import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.remote.AsciidoctorJExecuter
 import org.asciidoctor.gradle.remote.AsciidoctorJavaExec
 import org.gradle.api.Action
@@ -48,7 +48,6 @@ import org.ysb33r.grolifant.api.FileUtils
 import org.ysb33r.grolifant.api.StringUtils
 
 import java.nio.file.Path
-import java.util.stream.Collectors
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.*
 import static org.gradle.api.tasks.PathSensitivity.RELATIVE
