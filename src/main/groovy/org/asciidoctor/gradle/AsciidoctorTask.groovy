@@ -628,7 +628,7 @@ class AsciidoctorTask extends DefaultTask {
             getClassLocation(it.class)
         }.toSet()
 
-        if (GRADLE_4_OR_BETTER) {
+        if (GRADLE_4_OR_BETTER && !closurePaths.empty) {
             closurePaths.add(getClassLocation(org.gradle.internal.scripts.ScriptOrigin))
         }
 
