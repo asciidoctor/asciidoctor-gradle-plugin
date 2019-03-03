@@ -725,7 +725,7 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
                 transformedMap = attributes
                 break
             case CharSequence:
-                Transform.toList(attributes.replaceAll('([^\\\\]) ', '$1\0').replaceAll('\\\\ ', ' ').split('\0')) {
+                Transform.toList(attributes.replaceAll('([^\\\\]) ', '$1\0').replaceAll('\\\\ ', ' ').split('\0') as List) {
                     def split = it.split('=')
                     if (split.size() < 2) {
                         throw new InvalidUserDataException("Unsupported format for attributes: ${attributes}")
