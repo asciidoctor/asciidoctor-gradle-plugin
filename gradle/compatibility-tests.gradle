@@ -21,7 +21,6 @@ gradleTest {
 
     dependsOn ':testfixtures-offline-repo:buildOfflineRepositories'
     systemProperties OFFLINE_REPO: offlineRepoRoot.absolutePath
-    systemProperties CALLING_GRADLETEST_USES_GROOVY_VERSION: GroovySystem.version
 }
 
 configurations {
