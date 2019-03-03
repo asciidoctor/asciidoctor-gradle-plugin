@@ -54,6 +54,9 @@ NOTE: The https://github.com/gradle/kotlin-dsl[Gradle Kotlin DSL] is not properl
 
 NOTE: This collection of plugins requires at least Gradle 4.0 & JDK 8.0 to run. If you need prior Gradle or JDK support please use a plugin from the 1.5.x release series.
 
+
+NOTE: The plugin is not compatible with Kotlin DSL on Gradle 5.2.1. See https://github.com/gradle/kotlin-dsl/issues/1353[KOTLIN-DSL-1353].
+
 == Known Issues
 
 This is still an alpha development, so expect some issues. These are the main ones we know about:
