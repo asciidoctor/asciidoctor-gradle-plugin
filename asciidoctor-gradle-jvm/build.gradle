@@ -27,13 +27,10 @@ dependencies {
 
     compile project(':asciidoctor-gradle-base')
 
-    // This the default jruby-complete version for whichever the default AsciidoctorJ version is
-    // If the tests start failing becasue the default was changed, then consider changing this.
-    // It is necessary to have this here as we need tests that simply assume the defaults and we
-    // need to cater for those offline dependencies.
-    intTestOfflineRepo "org.jruby:jruby-complete:9.1.12.0", {
-        transitive = false
-    }
+    // These three are used in the compatibility tests for extensions
+    intTestOfflineRepo "org.codehaus.groovy:groovy:${GroovySystem.version}"
+    intTestOfflineRepo "org.codehaus.groovy:groovy-ant:${GroovySystem.version}"
+    intTestOfflineRepo "org.codehaus.groovy:groovy-groovydoc:${GroovySystem.version}"
 
     intTestOfflineRepo "org.asciidoctor:asciidoctorj-pdf:${downloadOnlyPdfVersion}"
     intTestOfflineRepo "org.asciidoctor:asciidoctorj-epub3:${downloadOnlyEpubVersion}"
@@ -62,7 +59,7 @@ configurePlugin 'org.asciidoctor.jvm.convert',
 
 configurePlugin 'org.asciidoctor.jvm.pdf',
     'AsciidoctorJ PDF Conversion Plugin',
-    'Simplifies convesion of asciidoc documetns to PDF',
+    'Simplifies conversion of asciidoc documents to PDF',
     ['asciidoctorj', 'pdf']
 
 test {
