@@ -788,7 +788,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      *
      * Some incompatibilities can cause certain process mode to fail given a combination of factors.
      *
-     * Task implementations can override this method to select a safte process mode, than the one provided by the
+     * Task implementations can override this method to select a safe process mode, than the one provided by the
      * build script author. The default implementation will simply return whatever what was configured, except in the
      * case for Gradle 4.3 or older in which case it will always return {@link #JAVA_EXEC}.
      *

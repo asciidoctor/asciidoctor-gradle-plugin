@@ -76,7 +76,6 @@ class FunctionalTestSetup {
             .withProjectDir(projectDir)
             .withArguments(taskNames)
             .forwardOutput()
-            .withDebug(true)
 
         pluginClasspath ? runner.withPluginClasspath(pluginClasspath) : runner.withPluginClasspath()
     }
