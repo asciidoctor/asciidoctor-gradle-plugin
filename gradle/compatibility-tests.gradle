@@ -17,6 +17,7 @@ gradleTest {
     }
 
     debugTests = false
+    debug = false
     enabled = !gradle.startParameter.offline
 
     dependsOn ':testfixtures-offline-repo:buildOfflineRepositories'

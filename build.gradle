@@ -30,6 +30,7 @@ plugins {
     id 'org.ysb33r.cloudci' version '2.4' apply false
     id 'org.ysb33r.cloudci.appveyor.testreporter' version '2.4' apply false
     id 'org.ysb33r.gradletest' version '2.0-rc.3' apply false
+    id 'idea'
 }
 
 buildScan {
@@ -165,3 +166,8 @@ subprojects {
 
 apply from : 'gradle/coveralls.gradle'
 
+//idea {
+//    extended {
+//        workspace.junit.tasks = ['classes', 'pluginUnderTestMetadata']
+//    }
+//}
