@@ -1,6 +1,6 @@
 apply plugin : 'org.ysb33r.cloudci'
 
-cloudci.any {
+ci.any_ci {
         ext {
             logBeforeTest = { desc ->
                 project.logger.lifecycle "Running: ${desc.name} (${desc.className})"
