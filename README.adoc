@@ -449,7 +449,7 @@ copyNoResources()
 All tasks can control how Asciidoctor conversions are being run via the `inProcess` property. This is early days, an choose for your build will depend very much on your context, but the following has already become clear:
 
 * `IN_PROCESS` and `OUT_OF_PROCESS` shuold theoretically run faster, especially if you continuously rebuild the same documentation. Gradle workers are the underlying implementation for these two options
-* The safe option is always `JAVA_EXEC`. For lower memory consumption this is by far the safer option. It is also the only way we can get the Windows-based tests for tjhis plugin completed on Appveyor. It you run a lot of builds the penalty statr-up time might become an issue for you.
+* The safe option is always `JAVA_EXEC`. For lower memory consumption this is by far the safer option. It is also the only way we can get the Windows-based tests for this plugin completed on Appveyor. It you run a lot of builds the penalty start-up time might become an issue for you.
 
 NOTE: In certain cases the plugin will overrule your choice as it has some built-in rules for special cases. In such cases it will log a warning that it has done that.
 
