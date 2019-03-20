@@ -8,36 +8,21 @@ cache:
         - testfixtures/offline-repo/build/root
 matrix:
     include:
-        - jdk: openjdk8
         - jdk: openjdk11
 
 stages:
-    - assemble
     - quality
     - check
     - report
 
 jobs:
     include:
-        - stage: assemble
-          before_script: ./gradlew --version
-          script: ./gradlew --console=plain --warning-mode=all --scan assemble
-        - stage: quality
-          script: ./gradlew --console=plain --scan license
-          name: 'Licensing'
-        - script: ./gradlew --console=plain --scan codenarcAll
-          name: 'Coding style'
-        - stage: check
-          script: ./gradlew --console=plain --scan test
-          name: 'Unit tests'
-        - script: ./gradlew --console=plain --scan intTest
-          name: 'Integration tests'
-        - script: ./gradlew --console=plain --scan remoteTest
-          name: 'Remote execution tests'
-        - script: ./gradlew --console=plain --scan gradleTest
-          name: 'Compatibility tests'
-        - stage: report
-          jdk: openjdk11
-          name: 'Code coverage'
-          script: ./gradlew --console=plain jacocoRootReport
-          after_success: ./gradlew coveralls
+      - stage: quality
+        script: ./gradlew --console=plain license
+        name: 'Licensing'
+      - script: ./gradlew --console=plain codenarcAll
+        name: 'Coding style'
+      - stage: check
+        name: 'Build and test'
+        script: ./gradlew --console=plain --scan test intTest remoteTest gradleTest jacocoRootReport
+        after_success: ./gradlew coveralls
