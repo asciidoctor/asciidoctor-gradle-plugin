@@ -2,7 +2,6 @@ stages:
   - build
   - testInfra
   - test
-  - compatibility
   - reports
 #  - release
 
@@ -59,7 +58,7 @@ test:integration:
     when: on_failure
 
 test:gradle_4.0.2,4.1,4.2.1:
-  stage: compatibility
+  stage: test
   image: openjdk:8
   except:
   - pages
@@ -76,7 +75,7 @@ test:gradle_4.0.2,4.1,4.2.1:
     when: on_failure
 
 test:gradle_4.3.1,4.4.1,4.5.1:
-  stage: compatibility
+  stage: test
   image: openjdk:8
   except:
   - pages
@@ -93,7 +92,7 @@ test:gradle_4.3.1,4.4.1,4.5.1:
     when: on_failure
 
 test:gradle_4.6,4.7,4.8.1:
-  stage: compatibility
+  stage: test
   image: openjdk:8
   except:
   - pages
@@ -110,7 +109,7 @@ test:gradle_4.6,4.7,4.8.1:
     when: on_failure
 
 test:gradle_4.9,4.10.2:
-  stage: compatibility
+  stage: test
   image: openjdk:11
   except:
   - pages
@@ -127,7 +126,7 @@ test:gradle_4.9,4.10.2:
     when: on_failure
 
 test:gradle_5.0,5.1.1:
-  stage: compatibility
+  stage: test
   image: openjdk:11
   except:
   - pages
@@ -144,7 +143,7 @@ test:gradle_5.0,5.1.1:
     when: on_failure
 
 #test:gradle_5.3-rc-3:
-#  stage: compatibility
+#  stage: test
 #  image: openjdk:11
 #  except:
 #  - pages
@@ -162,7 +161,10 @@ test:gradle_5.0,5.1.1:
 
 jacoco:
   stage: reports
-  image: openjdk11
+  image: openjdk:11
+  dependencies:
+    - test:integration
+    - test:gradle_5.0,5.1.1
   except:
     - pages
     - gh-pages
