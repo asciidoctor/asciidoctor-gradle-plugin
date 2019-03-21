@@ -2,7 +2,7 @@ stages:
   - build
   - testInfra
   - test
-  - reports
+#  - reports
 #  - release
 
 cache:
@@ -142,7 +142,7 @@ test:gradle_5.0,5.1.1:
     expire_in: 10 days
     when: on_failure
 
-#test:gradle_5.3-rc-3:
+#test:gradle_5.3:
 #  stage: test
 #  image: openjdk:11
 #  except:
@@ -159,17 +159,17 @@ test:gradle_5.0,5.1.1:
 #    expire_in: 10 days
 #    when: on_failure
 
-jacoco:
-  stage: reports
-  image: openjdk:11
-  dependencies:
-    - test:integration
-    - test:gradle_5.0,5.1.1
-  except:
-    - pages
-    - gh-pages
-    - tags
-  script: ./gradlew --console=plain jacocoRootReport coveralls
+#jacoco:
+#  stage: reports
+#  image: openjdk:11
+#  dependencies:
+#    - test:integration
+#    - test:gradle_5.0,5.1.1
+#  except:
+#    - pages
+#    - gh-pages
+#    - tags
+#  script: ./gradlew --console=plain jacocoRootReport coveralls
 
 #publish:
 #  stage: release
