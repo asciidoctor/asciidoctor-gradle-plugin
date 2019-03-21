@@ -1013,7 +1013,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
         Map<String, Object> defaultAttrs = getTaskSpecificDefaultAttributes(workingSourceDir).findAll { k,v ->
             !userDefinedAttrKeys.contains(k)
         }.collectEntries { k,v ->
-            [ "${k}@".toString(), v ]
+            [ "${k}@".toString(), v instanceof Serializable ? v : StringUtils.stringize(v) ]
         } as Map<String,Object>
 
         attrs.putAll(defaultAttrs)
