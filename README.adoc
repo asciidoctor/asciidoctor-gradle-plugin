@@ -1,7 +1,7 @@
 = Asciidoctor Gradle Plugin
 Andres Almiray <https://github.com/aalmiray[@aalmiray]>
-:version: 2.0.0-rc.1
-:version-published: 2.0-alpha.5
+:version: 2.0.0
+:version-published: 2.0.0-rc.1
 :asciidoc-url: http://asciidoc.org
 :asciidoctor-url: http://asciidoctor.org
 :issues: https://github.com/asciidoctor/asciidoctor-maven-plugin/issues
@@ -59,7 +59,7 @@ This is still an alpha development, so expect some issues. These are the main on
   (KF8+EPUB3 or EPUB3+KF8) the conversion takes place in.
 * KF8 conversions fails under Windows. (Related to asciidoctor/asciidoctorj#659 & jruby/jruby#4943)
 * Does not work with JDK9 (but does with JDK10).
-* Not compatible with Kotlin DSL on Gradle *5.2.1* and *5.3*. See https://github.com/gradle/kotlin-dsl/issues/1353[KOTLIN-DSL-1353].
+* Not compatible with {kotlindsl} on Gradle *5.2.1* and *5.3*. See https://github.com/gradle/kotlin-dsl/issues/1353[KOTLIN-DSL-1353].
 
 ifndef::env-site[]
 == Contributing
@@ -226,7 +226,7 @@ asciidoctorj { <1>
 ----
 <1> This can be globally on the project extension or locally on the task's extension.
 
-Or in the Gradle Kotlin DSL:
+Or in the {kotlindsl}:
 
 [source,kotlin]
 .build.gradle.kts
@@ -362,7 +362,7 @@ asciidoctor {
 
 Paths defined in this PatternSet are resolved relative to the `sourceDir`.
 
-For the Gradle Kotlin DSL a workaround is needed:footnoteref:[kotlin-delegate,The method delegates to a type that Kotlin cannot infer that from the byte-code. The function `delegateClosureOf<T>()` from the GKD is used to provide the information to Kotlin.]
+For the {kotlindsl} a workaround is needed:footnoteref:[kotlin-delegate,The method delegates to a type that Kotlin cannot infer that from the byte-code. The function `delegateClosureOf<T>()` from the GKD is used to provide the information to Kotlin.]
 
 [source,kotlin]
 .build.gradle.kts
@@ -405,7 +405,8 @@ Files will be copied to below `+${outputDir}/${backend}+` (or just `+${outputDir
 
 Unlike `sourceDir` files can be copied from anywhere in the filesystem.
 
-For the Gradle Kotlin DSL, the example above looks like this:footnoteref:[kotlin-delegate]
+For the {kotlindsl}, the example above looks like this:footnoteref:[kotlin-delegate]
+
 [source,kotlin]
 .build.gradle.kts
 ----
