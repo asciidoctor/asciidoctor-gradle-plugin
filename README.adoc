@@ -781,11 +781,11 @@ sourceDir:: where the asciidoc sources are.
 sources:: specify which Asciidoctor source files to include by using an
   http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.html[Ant-style PatternSet].
 
-NOTE: Even though the DSL remains the same with this task, the internals have been changed to use the same `JAVA_EXEC` mechanism of the `org.asciidoctor.jvm.convert` plugins. The problems which the 1.5.x series suffered with classpaths anions disappearing shuol dnow be a thing of the past.
+NOTE: Even though the DSL remains the same with this task, the internals have been changed to use the same `JAVA_EXEC` mechanism of the `org.asciidoctor.jvm.convert` plugins. The problems which the 1.5.x series suffered with classpaths anions disappearing should now be a thing of the past.
 
 == Kindlegen plugin
 
-Producing KF* formats via the EPUB extension requires `kindlegen` to be installed. This plugin provides the capability of bootstrapping `kindlegen` on Windows, MAx & Linux without the user having to do anything.
+Producing KF* formats via the EPUB extension requires `kindlegen` to be installed. This plugin provides the capability of bootstrapping `kindlegen` on Windows, Mac & Linux without the user having to do anything.
 
 There is a base plugin `org.asciidoctor.kindlegen.base` which just provides a `kindlegen` extension. In order to use it
 you will need to agree to the Amazon terms of usage. To confirm this you need to configure
@@ -793,13 +793,13 @@ you will need to agree to the Amazon terms of usage. To confirm this you need to
 [source,groovy]
 ----
 kindlegen {
-  agreeTotermsOfUse = true
+  agreeToTermsOfUse = true
 }
 ----
 
-If you do not them the plugin will refuse to botostrap `kindlegen`.
+If you do not, then the plugin will refuse to bootstrap `kindlegen`.
 
-NOTE: The base plugin is automatically applied by the EPUB plugin. If you only produce EPUB3 formats with the EPUB plugin you do not have to agree to usage of `kindlegen`.
+NOTE: The base plugin is automatically applied by the EPUB plugin. If you only produce EPUB3 formats with the EPUB plugin you do not have to agree to the usage of `kindlegen`.
 
 ifndef::env-site[]
 == Development
