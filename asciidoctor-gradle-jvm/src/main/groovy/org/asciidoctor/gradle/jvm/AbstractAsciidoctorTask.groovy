@@ -101,7 +101,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
     /** Run Asciidoctor conversions in or out of process
      *
      * Valid options are {@link #IN_PROCESS}, {@link #OUT_OF_PROCESS} and {@link #JAVA_EXEC}.
-     *
+     * The default mode is {@link #JAVA_EXEC}.
      */
     @Internal
     ProcessMode inProcess = JAVA_EXEC
