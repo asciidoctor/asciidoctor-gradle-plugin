@@ -556,7 +556,7 @@ Caused by: java.lang.UnsatisfiedLinkError: /path/to/openjdk10/lib/libfontmanager
   Reason: image not found
 ----
 
-The solutionn is to install `freetype` via HomeBrew or MacPorts. You might also need to do something (ridiculous) such as
+The solution is to install `freetype` via HomeBrew or MacPorts. You might also need to do something (ridiculous) such as
 
 [source,bash]
 ----
