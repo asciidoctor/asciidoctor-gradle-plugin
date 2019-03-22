@@ -37,7 +37,6 @@ ifdef::env-github[]
 NOTE: `master` now represents the code for the latest 2.x release of these plugins. Development for for 2.x is against the link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/development-2.0[development-2.0] branch. PRs are preferably taking against that branch. The 1.5.x series of the plugin is now in maintenance only mode. PRs for that should be raised against the https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/maintenance-1.5[maintenance-1.5] branch.
 endif::[]
 
-
 ifdef::status[]
 image:http://img.shields.io/travis/{project-full-path}/{github-branch}.svg[Build Status, link=https://travis-ci.org/{project-full-path}]
 image:https://ci.appveyor.com/api/projects/status/db102rphsu5lviv6/branch/{github-branch}?svg=true&passingText={github-branch}%20-%20OK&failingText={github-branch}%20-%20Fails&pendingText={github-branch}%20-%20Pending[Build Status, link=https://ci.appveyor.com/project/{project-full-path}/branch/{github-branch}]
@@ -811,7 +810,7 @@ endif::[]
 == Adding Custom Extensions
 
 Starting with version 1.5.0 you were able to write your own Asciidoctor extensions in Groovy, or any other JVM language
-for that matter. Now with the 2.0.0 you are even more flixibility in allowsin extensions to be applied on a per task basis on globally. There are several options for you to make it happen.
+for that matter. Now with the 2.0.0 you have even more flexibility in that extensions can be applied on a per task basis on globally. There are several options available to make it happen.
 
 === As External Library
 
