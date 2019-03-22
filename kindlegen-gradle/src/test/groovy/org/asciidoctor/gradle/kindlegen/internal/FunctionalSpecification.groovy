@@ -23,7 +23,7 @@ import spock.lang.Specification
 
 class FunctionalSpecification extends Specification {
     @Rule
-    final TemporaryFolder testProjectDir = new TemporaryFolder()
+    TemporaryFolder testProjectDir
 
     @Shared
     List<File> pluginClasspath

@@ -22,6 +22,7 @@ import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
 import org.asciidoctor.gradle.internal.ExecutorUtils
 import org.asciidoctor.gradle.internal.JavaExecUtils
+import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.remote.AsciidoctorJExecuter
 import org.asciidoctor.gradle.remote.AsciidoctorJavaExec
 import org.gradle.api.Action
@@ -69,7 +70,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
     final static ProcessMode JAVA_EXEC = ProcessMode.JAVA_EXEC
 
     @Internal
-    protected final static GradleVersion LAST_GRADLE_WITH_CLASSPATH_LEAKAGE = GradleVersion.version(('5.0'))
+    protected final static GradleVersion LAST_GRADLE_WITH_CLASSPATH_LEAKAGE = GradleVersion.version(('5.99'))
 
     @Nested
     protected final OutputOptions configuredOutputOptions = new OutputOptions()
@@ -100,7 +101,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
     /** Run Asciidoctor conversions in or out of process
      *
      * Valid options are {@link #IN_PROCESS}, {@link #OUT_OF_PROCESS} and {@link #JAVA_EXEC}.
-     *
+     * The default mode is {@link #JAVA_EXEC}.
      */
     @Internal
     ProcessMode inProcess = JAVA_EXEC
@@ -276,7 +277,9 @@ class AbstractAsciidoctorTask extends DefaultTask {
      */
     @OutputDirectories
     Set<File> getBackendOutputDirectories() {
-        configuredOutputOptions.backends.collect { getOutputDirFor(it) } as Set
+        Transform.toSet(configuredOutputOptions.backends) {
+            String it -> getOutputDirFor(it)
+        }
     }
 
     /** Base directory (current working directory) for a conversion.
@@ -447,7 +450,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
 
     /** Returns all of the specified configurations as a collections of files.
      *
-     * If any extensions are dependencies then they w2ill be included here too.
+     * If any extensions are dependencies then they will be included here too.
      *
      * @return FileCollection
      */
@@ -785,7 +788,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      *
      * Some incompatibilities can cause certain process mode to fail given a combination of factors.
      *
-     * Task implementations can override this method to select a safte process mode, than the one provided by the
+     * Task implementations can override this method to select a safe process mode, than the one provided by the
      * build script author. The default implementation will simply return whatever what was configured, except in the
      * case for Gradle 4.3 or older in which case it will always return {@link #JAVA_EXEC}.
      *
@@ -943,15 +946,16 @@ class AbstractAsciidoctorTask extends DefaultTask {
             it instanceof Dependency
         } as List<Dependency>
 
-        Set<File> closurePaths = asciidoctorj.extensions.findAll {
+        Set<File> closurePaths = Transform.toSet(asciidoctorj.extensions.findAll {
             it instanceof Closure
-        }.collect {
+        },{
             getClassLocation(it.class)
-        }.toSet()
+        })
 
         if (!closurePaths.empty) {
             // Jumping through hoops to make extensions based upon closures to work.
             closurePaths.add(getClassLocation(org.gradle.internal.scripts.ScriptOrigin))
+            closurePaths.addAll(ifNoGroovyAddLocal(deps))
         }
 
         if (deps.empty && closurePaths.empty) {
@@ -962,6 +966,16 @@ class AbstractAsciidoctorTask extends DefaultTask {
             project.files(closurePaths)
         } else {
             jrubyLessConfiguration(deps) + project.files(closurePaths)
+        }
+    }
+
+    private List<File> ifNoGroovyAddLocal(final List<Dependency> deps) {
+        if(deps.find {
+            it.name == 'groovy-all' || it.name == 'groovy'
+        }) {
+            []
+        } else {
+            [JavaExecUtils.localGroovy]
         }
     }
 
@@ -999,7 +1013,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
         Map<String, Object> defaultAttrs = getTaskSpecificDefaultAttributes(workingSourceDir).findAll { k,v ->
             !userDefinedAttrKeys.contains(k)
         }.collectEntries { k,v ->
-            [ "${k}@".toString(), v ]
+            [ "${k}@".toString(), v instanceof Serializable ? v : StringUtils.stringize(v) ]
         } as Map<String,Object>
 
         attrs.putAll(defaultAttrs)

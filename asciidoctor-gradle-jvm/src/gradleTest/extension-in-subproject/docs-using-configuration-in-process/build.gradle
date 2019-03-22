@@ -1,4 +1,4 @@
-apply plugin : 'org.asciidoctor.jvm.convert'
+apply plugin: 'org.asciidoctor.jvm.convert'
 
 configurations {
     asciidocExt
@@ -18,10 +18,10 @@ asciidoctor {
 }
 
 
-// This is to work around a bug in Gradle. It is not part of normal build script.
-// The side affect of this is that we actually get better code coverage as the process mode
-// changes depending on which version of Gradle is being tested.
-if(System.getProperty('CALLING_GRADLETEST_USES_GROOVY_VERSION') != GroovySystem.version) {
+// Gradle leak unnecessary JARs onto the classpath. Since this project is now
+// built with Gradle 5.x, we are swapping back to JAVA_EXEC if testing against
+// Gradle 4.x
+if (gradle.gradleVersion.startsWith('4.')) {
     asciidoctor {
         inProcess JAVA_EXEC
     }

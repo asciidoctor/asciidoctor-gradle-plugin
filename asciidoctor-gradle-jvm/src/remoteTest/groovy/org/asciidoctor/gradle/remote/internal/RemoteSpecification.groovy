@@ -34,7 +34,7 @@ class RemoteSpecification extends Specification {
     static final String DOCBOOK = 'docbook'
 
     @Rule
-    final TemporaryFolder testProjectDir = new TemporaryFolder()
+    TemporaryFolder testProjectDir
 
     Map getProject(File base) {
         File src = new File(base, 'src')

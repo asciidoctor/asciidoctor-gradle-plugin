@@ -20,7 +20,7 @@ task jacocoRootReport(dependsOn: jacocoRootMerge, type: JacocoReport) {
     group = 'Reporting'
     description = 'Aggregate Jacoco coverage reports.'
 
-    executionData = files(jacocoRootMerge.destinationFile)
+    executionData.setFrom(jacocoRootMerge.destinationFile)
 
     reports {
         html.enabled = true
@@ -37,6 +37,8 @@ coveralls {
 
 subprojects {
     pluginManager.withPlugin('jacoco') {
+
+        
         rootProject.jacocoRootMerge.dependsOn jacocoTestReport
         rootProject.jacocoRootMerge.executionData jacocoTestReport.executionData
         rootProject.jacocoRootReport.sourceSets sourceSets.main

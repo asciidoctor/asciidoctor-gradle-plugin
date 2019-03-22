@@ -20,17 +20,22 @@ import org.asciidoctor.gradle.remote.AsciidoctorJavaExec
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.FileCollection
+import org.gradle.util.GradleVersion
 import org.ysb33r.grolifant.api.FileUtils
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.getClassLocation
 
 /** Utilities for dealing with Asciidoctor in an external JavaExec process.
  *
- * @since 2.0
- * @author Sdhalk W. Cronjé
+ * @since 2.0* @author Sdhalk W. Cronjé
  */
 @CompileStatic
 class JavaExecUtils {
+
+    /** The name of the Guava JAR used internally by Gradle.
+     *
+     */
+    public static final String INTERNAL_GUAVA_NAME = internalGuavaName()
 
     /** Get the classpath that needs to be passed to the external Java process.
      *
@@ -49,7 +54,7 @@ class JavaExecUtils {
 
         FileCollection fc = project.files(entryPoint, groovyJar, asciidoctorClasspath)
 
-        addInternalGuava ? project.files(fc, new File(project.gradle.gradleHomeDir, 'lib/guava-jdk5-17.0.jar')) : fc
+        addInternalGuava ? project.files(fc, new File(project.gradle.gradleHomeDir, "lib/${INTERNAL_GUAVA_NAME}")) : fc
     }
 
     /** The file to which execution configuration data can be serialised to.
@@ -73,5 +78,21 @@ class JavaExecUtils {
         execConfigurationData.parentFile.mkdirs()
         ExecutorConfigurationContainer.toFile(execConfigurationData, executorConfigurations)
         execConfigurationData
+    }
+
+    /** Returns the location of the local Groovy Jar that is used by Gradle.
+     *
+     * @return Location on filesysetm where the Groovy Jar is located.
+     */
+    static File getLocalGroovy() {
+        getClassLocation(GroovyObject)
+    }
+
+    private static String internalGuavaName() {
+        if (GradleVersion.current() >= GradleVersion.version('5.0')) {
+            'guava-26.0-android.jar'
+        } else {
+            'guava-jdk5-17.0.jar'
+        }
     }
 }

@@ -30,7 +30,7 @@ import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.*
 @SuppressWarnings(['MethodName', 'DuplicateStringLiteral'])
 class ExtensionsFunctionalSpec extends FunctionalSpecification {
 
-    static final List DEFAULT_ARGS = ['asciidoctor', '-s']
+    static final List DEFAULT_ARGS = ['asciidoctor', '-s', '-i']
     static final String ASCIIDOC_INLINE_EXTENSIONS_FILE = 'inlineextensions.asciidoc'
 
     static final String GLOBAL = 'project'

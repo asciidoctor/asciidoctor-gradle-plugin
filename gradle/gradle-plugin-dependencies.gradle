@@ -1,12 +1,6 @@
 import org.gradle.util.GradleVersion
 
 dependencies {
-    // BUG: https://github.com/gradle/gradle/issues/3698
-    // TODO: We use a dependency on groovy-all rather than localGroovy. This
-    // works around a bug in the worker API known to be in Gradle 4.0-4.9
-    //compile localGroovy()
-    compile "org.codehaus.groovy:groovy-all:${GroovySystem.version}"
-
     compile gradleApi()
     compile "org.ysb33r.gradle:grolifant:${grolifantVersion}"
 
@@ -14,7 +8,6 @@ dependencies {
 
     if(configurations.findByName('intTestCompile')) {
         intTestCompile project(':testfixtures-jvm')
-//        intTestRuntime files(createClasspathManifest)
     }
 }
 

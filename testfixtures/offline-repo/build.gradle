@@ -50,11 +50,11 @@ syncRemoteRepositories {
             w.print ' ' * 4
             w.println 'ivy {'
             w.print ' ' * 8
-            w.println "name 'OfflineRepo'"
+            w.println 'name = "OfflineRepo"'
             w.print ' ' * 8
-            w.println "layout 'gradle'"
+            w.println 'layout("gradle")'
             w.print ' ' * 8
-            w.println "url '${file(repoRoot).absoluteFile.toURI()}'"
+            w.println "url = uri(\"${file(repoRoot).absoluteFile.toURI()}\")"
             w.print ' ' * 4
             w.println '}'
             w.println '}'

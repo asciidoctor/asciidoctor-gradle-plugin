@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.internal
+package org.asciidoctor.gradle.base.internal
 
 import groovy.transform.CompileStatic
 import org.apache.commons.io.FileUtils
@@ -32,7 +32,7 @@ import static org.asciidoctor.gradle.testfixtures.jvm.FunctionalTestSetup.getOff
 class FunctionalSpecification extends Specification {
 
     static
-    final String TEST_PROJECTS_DIR = System.getProperty('TEST_PROJECTS_DIR') ?: './asciidoctor-gradle-jvm/src/intTest/projects'
+    final String TEST_PROJECTS_DIR = System.getProperty('TEST_PROJECTS_DIR') ?: './asciidoctor-gradle-base/src/intTest/projects'
     static
     final String TEST_REPO_DIR = System.getProperty('OFFLINE_REPO') ?: './testfixtures/offline-repo/build/repo'
 
@@ -40,8 +40,13 @@ class FunctionalSpecification extends Specification {
     TemporaryFolder testProjectDir
 
     @CompileStatic
-    GradleRunner getGradleRunner(List<String> taskNames = ['asciidoctor']) {
+    GradleRunner getGradleRunner(List<String> taskNames = ['tasks']) {
         FunctionalTestSetup.getGradleRunner(testProjectDir.root, taskNames)
+    }
+
+    @CompileStatic
+    GradleRunner getGradleRunnerForKotlin(List<String> taskNames = ['tasks']) {
+        getGradleRunner(taskNames).withDebug(false)
     }
 
     @SuppressWarnings(['FactoryMethodName', 'BuilderMethodWithSideEffects'])
@@ -55,7 +60,7 @@ class FunctionalSpecification extends Specification {
             getOfflineRepositoriesKotlinDsl(new File(TEST_REPO_DIR))
     }
 
-    File getJvmConvertGroovyBuildFile(String extraContent, String plugin = 'org.asciidoctor.jvm.convert') {
+    File getGroovyBuildFile(String extraContent, String plugin = 'org.asciidoctor.base') {
         File buildFile = testProjectDir.newFile('build.gradle')
         buildFile << """
             plugins {
@@ -69,26 +74,18 @@ class FunctionalSpecification extends Specification {
         buildFile
     }
 
-    File getJvmConvertKotlinBuildFile(String extraContent, String plugin = 'org.asciidoctor.jvm.convert') {
+    File getKotlinBuildFile(String extraContent, String plugin = 'org.asciidoctor.base') {
         File buildFile = testProjectDir.newFile('build.gradle.kts')
         buildFile << """
             plugins {
-                id ("${plugin}")
+                id("${plugin}")
             }
             
             ${getOfflineRepositories(KOTLIN_DSL)}
 
             ${extraContent}
-        """
+"""
         buildFile
-    }
-
-    String getDefaultProcessModeForAppveyor(final DslType dslType = GROOVY_DSL) {
-        if (System.getenv('APPVEYOR')) {
-            dslType == GROOVY_DSL ? 'inProcess = JAVA_EXEC' : 'inProcess = ProcessMode.JAVA_EXEC'
-        } else {
-            ''
-        }
     }
 
 }

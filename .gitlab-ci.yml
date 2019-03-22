@@ -1,0 +1,191 @@
+stages:
+  - build
+  - testInfra
+  - test
+#  - reports
+#  - release
+
+cache:
+  key: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME-$CI_JOB_STAGE-$CI_JOB_NAME"
+  paths:
+  - $HOME/.gradle
+
+jdk8:
+  stage: build
+  image: openjdk:8
+  script: ./gradlew -i -S --console=plain --no-build-cache assemble codenarcAll license
+  artifacts:
+    paths:
+    - .gradle/
+    - '*/build/'
+    expire_in: 60min
+    when: always
+  except:
+  - pages
+  - gh-pages
+  - tags
+
+jdk11:
+  stage: build
+  image: openjdk:11
+  script: ./gradlew -i -S --console=plain --no-build-cache assemble
+  artifacts:
+    paths:
+    - .gradle/
+    - '*/build/'
+    expire_in: 60min
+    when: always
+  except:
+  - pages
+  - gh-pages
+  - tags
+
+test:integration:
+  stage: test
+  image: openjdk:8
+  except:
+  - pages
+  - gh-pages
+  - tags
+  dependencies:
+  - jdk8
+  script: ./gradlew -i -s --console=plain --no-build-cache test intTest remoteTest
+  artifacts:
+    paths:
+    - '*/build/reports'
+    - '*/build/jacoco'
+    expire_in: 10 days
+    when: on_failure
+
+test:gradle_4.0.2,4.1,4.2.1:
+  stage: test
+  image: openjdk:8
+  except:
+  - pages
+  - gh-pages
+  - tags
+  dependencies:
+  - jdk8
+  script: ./run-compatibility-test-on-ci.sh
+  artifacts:
+    paths:
+      - '*/build/reports'
+      - '*/build/jacoco'
+    expire_in: 10 days
+    when: on_failure
+
+test:gradle_4.3.1,4.4.1,4.5.1:
+  stage: test
+  image: openjdk:8
+  except:
+  - pages
+  - gh-pages
+  - tags
+  dependencies:
+  - jdk8
+  script: ./run-compatibility-test-on-ci.sh
+  artifacts:
+    paths:
+      - '*/build/reports'
+      - '*/build/jacoco'
+    expire_in: 10 days
+    when: on_failure
+
+test:gradle_4.6,4.7,4.8.1:
+  stage: test
+  image: openjdk:8
+  except:
+  - pages
+  - gh-pages
+  - tags
+  dependencies:
+  - jdk8
+  script: ./run-compatibility-test-on-ci.sh
+  artifacts:
+    paths:
+      - '*/build/reports'
+      - '*/build/jacoco'
+    expire_in: 10 days
+    when: on_failure
+
+test:gradle_4.9,4.10.2:
+  stage: test
+  image: openjdk:11
+  except:
+  - pages
+  - gh-pages
+  - tags
+  dependencies:
+  - jdk11
+  script: ./run-compatibility-test-on-ci.sh
+  artifacts:
+    paths:
+      - '*/build/reports'
+      - '*/build/jacoco'
+    expire_in: 10 days
+    when: on_failure
+
+test:gradle_5.0,5.1.1:
+  stage: test
+  image: openjdk:11
+  except:
+  - pages
+  - gh-pages
+  - tags
+  dependencies:
+  - jdk11
+  script: ./run-compatibility-test-on-ci.sh
+  artifacts:
+    paths:
+      - '*/build/reports'
+      - '*/build/jacoco'
+    expire_in: 10 days
+    when: on_failure
+
+#test:gradle_5.3:
+#  stage: test
+#  image: openjdk:11
+#  except:
+#  - pages
+#  - gh-pages
+#  - tags
+#  dependencies:
+#  - jdk11
+#  script: ./run-compatibility-test-on-ci.sh
+#  artifacts:
+#    paths:
+#      - '*/build/reports'
+#      - '*/build/jacoco'
+#    expire_in: 10 days
+#    when: on_failure
+
+#jacoco:
+#  stage: reports
+#  image: openjdk:11
+#  dependencies:
+#    - test:integration
+#    - test:gradle_5.0,5.1.1
+#  except:
+#    - pages
+#    - gh-pages
+#    - tags
+#  script: ./gradlew --console=plain jacocoRootReport coveralls
+
+#publish:
+#  stage: release
+#  image: openjdk:8
+#  script: ./gradlew -s -i --console=plain --no-build-cache installDocs publishPlugins gitPublishPush -i -Dgradle.publish.key=$GRADLE_PORTAL_KEY -Dgradle.publish.secret=$GRADLE_PORTAL_SECRET -Dorg.ajoberstar.grgit.auth.username=$PAGES_PUBLISH_USER -Dorg.ajoberstar.grgit.auth.password=$PAGES_PUBLISH_KEY -Dorg.ajoberstar.grgit.auth.force=hardcoded
+#  dependencies:
+#  - jdk8
+#  only:
+#  - release
+#
+#pages:
+#  stage: release
+#  script: ls -la
+#  artifacts:
+#    paths:
+#    - public
+#  only:
+#  - pages
+

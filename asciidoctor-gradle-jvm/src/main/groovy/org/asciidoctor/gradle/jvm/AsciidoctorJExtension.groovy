@@ -19,6 +19,7 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
 import org.asciidoctor.gradle.base.SafeMode
+import org.asciidoctor.gradle.base.Transform
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -129,7 +130,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         super(task, NAME)
     }
 
-    /** Whether the Guava JAR that ships with the Gradle sustribution should be injected into the
+    /** Whether the Guava JAR that ships with the Gradle distribution should be injected into the
      * classpath for external AsciidoctorJ processes.
      *
      * If not set previously via {@link #setInjectInternalGuavaJar} then a default version depending of the version of
@@ -608,7 +609,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      */
     void setExtensions(Iterable<Object> newExtensions) {
         asciidoctorExtensions.clear()
-        addExtensions(newExtensions)
+        addExtensions(newExtensions as List)
         onlyTaskExtensions = true
     }
 
@@ -747,7 +748,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     }
 
     private List<Object> stringizeScalarListItems(List<Object> list) {
-        list.collect { item ->
+        Transform.toList(list) { item ->
             switch (item) {
                 case List:
                     return stringizeScalarListItems((List) item)
@@ -798,13 +799,13 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         }
     }
 
-    /** Adds extensions to the existig container.
+    /** Adds extensions to the existing container.
      *
      * Also sets the Groovy DSL version if required.
      *
      * @param newExtensions List of new extensiosn to add
      */
-    private void addExtensions(Iterable<Object> newExtensions) {
+    private void addExtensions(List<Object> newExtensions) {
         setDefaultGroovyDslVersionIfRequired()
         asciidoctorExtensions.addAll(dehydrateExtensions(newExtensions))
     }
@@ -817,8 +818,8 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      * @return List of extensions suitable for serialization.
      *
      */
-    private List<Object> dehydrateExtensions(final Iterable<Object> exts) {
-        exts.collect {
+    private List<Object> dehydrateExtensions(final List<Object> exts) {
+        Transform.toList(exts){
             switch (it) {
                 case Closure:
                     ((Closure) it).dehydrate()
@@ -829,7 +830,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
                 default:
                     it
             }
-        } as List<Object>
+        }
     }
 
     @SuppressWarnings('UnusedPrivateMethodParameter')
@@ -839,9 +840,9 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
 
     @SuppressWarnings('Instanceof')
     private List<Pattern> patternize(final List<Object> patterns) {
-        patterns.collect {
-            it instanceof Pattern ? it : ~/${stringize(it)}/
-        } as List<Pattern>
+        Transform.toList(patterns){
+            (Pattern)(it instanceof Pattern ? it : ~/${stringize(it)}/)
+        }
     }
 
     @CompileDynamic

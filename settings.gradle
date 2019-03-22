@@ -12,5 +12,3 @@ include 'asciidoctor-gradle-jvm-slides'
     include "testfixtures/${it}"
     project(":testfixtures/${it}").name = "testfixtures-${it}"
 }
-
-enableFeaturePreview('STABLE_PUBLISHING')

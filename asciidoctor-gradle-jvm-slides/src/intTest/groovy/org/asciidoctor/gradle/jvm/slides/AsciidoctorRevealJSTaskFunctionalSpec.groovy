@@ -20,7 +20,7 @@ import org.asciidoctor.gradle.testfixtures.jvm.JRubyTestVersions
 import org.gradle.testkit.runner.BuildResult
 import spock.lang.PendingFeature
 
-@SuppressWarnings(['DuplicateStringLiteral', 'MethodName', 'DuplicateListLiteral'])
+@SuppressWarnings(['DuplicateStringLiteral', 'DuplicateListLiteral'])
 class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
 
     final static String JRUBY_TEST_VERSION = JRubyTestVersions.AJ16_SAFE_MAXIMUM
@@ -34,7 +34,7 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
         getBuildFile('')
 
         when:
-        BuildResult result = build()
+        build()
 
         then:
         verifyAll {
@@ -60,7 +60,7 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
         ''')
 
         when:
-        BuildResult result = build()
+        build()
 
         then:
         verifyAll {
@@ -92,10 +92,10 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
         ''')
 
         when:
-        BuildResult result = build()
+        build()
         File revealjsHtml = new File(testProjectDir.root, 'build/docs/asciidocRevealJs/revealjs.html')
-        File pluginList = new File(testProjectDir.root,"build/docs/asciidocRevealJs/reveal.js/revealjs-plugins.js")
-        File pluginConfig = new File(testProjectDir.root,"build/docs/asciidocRevealJs/reveal.js/revealjs-plugin-configuration.js")
+        File pluginList = new File(testProjectDir.root, 'build/docs/asciidocRevealJs/reveal.js/revealjs-plugins.js')
+        File pluginConfig = new File(testProjectDir.root, 'build/docs/asciidocRevealJs/reveal.js/revealjs-plugin-configuration.js')
 
         then:
         verifyAll {
@@ -108,6 +108,7 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
     }
 
 
+    @SuppressWarnings('FactoryMethodName')
     BuildResult build() {
         getGradleRunner(['asciidoctorRevealJs', '-s']).build()
     }

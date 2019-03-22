@@ -76,7 +76,6 @@ class FunctionalTestSetup {
             .withProjectDir(projectDir)
             .withArguments(taskNames)
             .forwardOutput()
-            .withDebug(true)
 
         pluginClasspath ? runner.withPluginClasspath(pluginClasspath) : runner.withPluginClasspath()
     }
@@ -113,9 +112,9 @@ class FunctionalTestSetup {
         }
 
         if (OS.windows) {
-            "apply( from = \"${repo.absolutePath.replaceAll(BACKSLASH, DOUBLE_BACKSLASH)}\")"
+            $/apply( from = "${repo.absolutePath.replace(BACKSLASH, DOUBLE_BACKSLASH)}")/$
         } else {
-            "apply( from = \"${repo.absolutePath}\")"
+            $/apply( from = "${repo.absolutePath}")/$
         }
     }
 
