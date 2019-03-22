@@ -49,7 +49,7 @@ The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to 
 
 NOTE: This started as a port of the {asciidoctor-maven-plugin}[Asciidoctor Maven Plugin] project founded by {lightguard}[@LightGuard] and relies on {asciidoctorj}[{asciidoctorj-name}] founded by {lordofthejars}[@lordofthejars]. In fact the 1.5.x series of the {plugin-name} can still be considered a port. However the 2.x series and beyond is a complete departure with functionality far exceeding any plugins for another build tool. This new series allows for the creations of a true DocuOps pipeline by bringing together Gradle as a powerful and generic build tool and Asciidoctor as an agile and lightweight document generator.
 
-NOTE: This collection of plugins requires at least Gradle 4.0 & JDK 8.0 to run. If you need prior Gradle or JDK support please use a plugin from the 1.5.x or 1.6.x release series.
+NOTE: This collection of plugins requires at least Gradle 4.0, JDK 8.0 and AsciidoctorJ 1.6.0 to run. If you need prior Gradle,  JDK or AsciidoctorJ support please use a plugin from the 1.5.x or 1.6.x release series.
 
 == Known Issues
 
@@ -60,13 +60,6 @@ This is still an alpha development, so expect some issues. These are the main on
 * KF8 conversions fails under Windows. (Related to asciidoctor/asciidoctorj#659 & jruby/jruby#4943)
 * Does not work with JDK9 (but does with JDK10).
 * Not compatible with {kotlindsl} on Gradle *5.2.1* and *5.3*. See https://github.com/gradle/kotlin-dsl/issues/1353[KOTLIN-DSL-1353].
-
-ifndef::env-site[]
-== Contributing
-
-Are you interested in contributing to this project? If so please read link:HACKING.adoc[HACKING] before sending in a patch.
-Thank you!
-endif::[]
 
 == Installation
 
@@ -447,8 +440,8 @@ copyNoResources()
 
 All tasks can control how Asciidoctor conversions are being run via the `inProcess` property. This is early days, an choose for your build will depend very much on your context, but the following has already become clear:
 
-* `IN_PROCESS` and `OUT_OF_PROCESS` shuold theoretically run faster, especially if you continuously rebuild the same documentation. Gradle workers are the underlying implementation for these two options
-* The safe option is always `JAVA_EXEC`. For lower memory consumption this is by far the safer option. It is also the only way we can get the Windows-based tests for this plugin completed on Appveyor. It you run a lot of builds the penalty start-up time might become an issue for you.
+* `IN_PROCESS` and `OUT_OF_PROCESS` should theoretically run faster, especially if you continuously rebuild the same documentation. Gradle workers are the underlying implementation for these two options
+* The safe option is always `JAVA_EXEC`. For lower memory consumption this is by far the safer option. (It is also the only way we can get the Windows-based tests for this plugin to complete on Appveyor & Travis CI). It you run a lot of builds the penalty start-up time might become an issue for you.
 
 NOTE: In certain cases the plugin will overrule your choice as it has some built-in rules for special cases. In such cases it will log a warning that it has done that.
 
