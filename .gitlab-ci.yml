@@ -142,22 +142,22 @@ test:gradle_5.0,5.1.1:
     expire_in: 10 days
     when: on_failure
 
-#test:gradle_5.3:
-#  stage: test
-#  image: openjdk:11
-#  except:
-#  - pages
-#  - gh-pages
-#  - tags
-#  dependencies:
-#  - jdk11
-#  script: ./run-compatibility-test-on-ci.sh
-#  artifacts:
-#    paths:
-#      - '*/build/reports'
-#      - '*/build/jacoco'
-#    expire_in: 10 days
-#    when: on_failure
+test:gradle_5.3:
+  stage: test
+  image: openjdk:11
+  except:
+  - pages
+  - gh-pages
+  - tags
+  dependencies:
+  - jdk11
+  script: ./run-compatibility-test-on-ci.sh
+  artifacts:
+    paths:
+      - '*/build/reports'
+      - '*/build/jacoco'
+    expire_in: 10 days
+    when: on_failure
 
 #jacoco:
 #  stage: reports

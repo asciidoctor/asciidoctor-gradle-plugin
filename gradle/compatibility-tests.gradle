@@ -5,25 +5,25 @@ pluginManager.withPlugin('org.ysb33r.cloudci') {
         travisci {
             gradleTest {
                 if (JavaVersion.current().java11) {
-                    versions '4.8.1', '5.1.1'
+                    versions '4.8.1', '5.3'
                 } else {
-                    versions '4.0.2', '5.0'
+                    versions '4.0.2', '5.1.1'
                 }
             }
         }
         appveyor {
             gradleTest {
-                versions '4.0.2', '4.10.2', '5.0', '5.1.1'
+                versions '4.0.2', '4.10.2', '5.0', '5.3'
             }
         }
         no_ci {
             gradleTest {
                 if (JavaVersion.current().java11) {
-                    versions '4.8.1', '5.0', '5.1.1'
+                    versions '4.8.1', '5.0', '5.1.1', '5.3'
                 } else if (JavaVersion.current().java10) {
                     versions '4.7', '5.0', '5.1.1'
                 } else {
-                    versions '4.0.2', '5.0', '5.1.1'
+                    versions '4.0.2', '5.0', '5.1.1', '5.3'
                 }
             }
         }
