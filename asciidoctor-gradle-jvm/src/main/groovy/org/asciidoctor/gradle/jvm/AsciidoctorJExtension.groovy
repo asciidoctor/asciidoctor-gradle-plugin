@@ -22,6 +22,7 @@ import org.asciidoctor.gradle.base.SafeMode
 import org.asciidoctor.gradle.base.Transform
 import org.gradle.api.Action
 import org.gradle.api.GradleException
+import org.gradle.api.NonExtensible
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
@@ -47,6 +48,7 @@ import static org.ysb33r.grolifant.api.StringUtils.stringize
  */
 @CompileStatic
 @SuppressWarnings('MethodCount')
+@NonExtensible
 class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
 
     // ------------------------------------------------------------------------
