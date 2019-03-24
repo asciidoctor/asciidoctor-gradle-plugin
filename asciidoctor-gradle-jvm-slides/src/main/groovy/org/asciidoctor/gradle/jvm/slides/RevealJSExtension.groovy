@@ -50,6 +50,10 @@ class RevealJSExtension {
         }
     }
 
+    /** Template is specified locally
+     *
+     * @param location Anything convertible to a local file.
+     */
     void templateLocal(Object location) {
         resolveRevealJs = { ->
             project.file(location)
@@ -72,10 +76,18 @@ class RevealJSExtension {
         this.resolveRevealJs = revealJsProvider
     }
 
+    /** Set the version of the Reveal.JS backend
+     *
+     * @param v Dotted version string.
+     */
     void setVersion(final String v) {
         this.version = v
     }
 
+    /** The version of the Reveal.js backend.
+     *
+     * @return Version string.
+     */
     String getVersion() {
         this.version
     }

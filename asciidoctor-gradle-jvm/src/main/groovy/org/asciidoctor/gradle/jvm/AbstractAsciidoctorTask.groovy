@@ -288,7 +288,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      */
     // IMPORTANT: Do not change this to @InputDirectory as it can lead to file locking issues on
     // Windows. In reality we do not need to track contents of the directory
-    // simply the value change, we tarck this via a normal property
+    // simply the value change, we track this via a normal property
     @Internal
     File getBaseDir() {
         this.baseDir != null ? project.file(this.baseDir) : project.projectDir
