@@ -54,7 +54,7 @@ import static org.ysb33r.grolifant.api.StringUtils.stringize
 @NonExtensible
 class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
 
-    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------gw --s
     // Be careful about modifying the keyword ordering in these six lines.
     // They are parsed by the build script to set up some compilation dependencies.
     // It is also a good idea that DEFAULT_ASCIIDOCTORJ_VERSION  matches one of

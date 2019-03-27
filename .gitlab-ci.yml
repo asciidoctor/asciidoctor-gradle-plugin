@@ -91,8 +91,8 @@ test:gradle_4.0.2,4.1,4.2.1:
   script: ./run-compatibility-test-on-ci.sh
   artifacts:
     paths:
-      - '*/build/reports'
-      - '*/build/jacoco'
+    - '*/build/reports'
+    - '*/build/jacoco'
     expire_in: 10 days
     when: on_failure
 
