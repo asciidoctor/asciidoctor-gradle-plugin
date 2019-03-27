@@ -946,11 +946,9 @@ class AbstractAsciidoctorTask extends DefaultTask {
             it instanceof Dependency
         } as List<Dependency>
 
-        Set<File> closurePaths = Transform.toSet(asciidoctorj.extensions.findAll {
-            it instanceof Closure
-        },{
+        Set<File> closurePaths = Transform.toSet(findExtensionClosures()){
             getClassLocation(it.class)
-        })
+        }
 
         if (!closurePaths.empty) {
             // Jumping through hoops to make extensions based upon closures to work.
@@ -1018,5 +1016,11 @@ class AbstractAsciidoctorTask extends DefaultTask {
 
         attrs.putAll(defaultAttrs)
         evaluateProviders(attrs)
+    }
+
+    private List<Closure> findExtensionClosures() {
+        asciidoctorj.extensions.findAll {
+            it instanceof Closure
+        } as List<Closure>
     }
 }

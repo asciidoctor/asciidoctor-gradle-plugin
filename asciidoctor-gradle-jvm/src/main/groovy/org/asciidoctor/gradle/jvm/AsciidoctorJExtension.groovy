@@ -148,7 +148,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         }
     }
 
-    /** Whether the Guava JAR that ships with the Gradle sustribution should be injected into the
+    /** Whether the Guava JAR that ships with the Gradle distribution should be injected into the
      * classpath for external AsciidoctorJ processes.
      *
      * @param inject {@code true} if JAR should be injected.
@@ -693,7 +693,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
 
     /** Provide patterns for Asciidoctor messages that are treated as failures.
      *
-     * Clears any existing message patterns. If this ethid is called on a task extension,
+     * Clears any existing message patterns. If this method is called on a task extension,
      * the patterns from the project extension will be ignored.
      *
      * @param patterns
