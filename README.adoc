@@ -802,6 +802,8 @@ Importantly, you probably did `import org.asciidoctor.gradle.AsciidoctorTask`. Y
 
 Extensions on the Gradle classpath are no longer detected. You need to declare them explicitly. This includes any extensions created in `buildSrc`.
 
+Extensions for older version of AsciidoctorJ needs to be recompiled and registered via placement in `META-INF/services/org.asciidoctor.jruby.extension.spi.ExtensionRegistry` to be recognised.
+
 == Asciidoctor Compatibility Plugin
 
 In order to help people upgrade a compatiblity plugin has been kept which mostly behaves in the same way as the AsciidoctorJ plugins in the 1.5.x series of releases.
