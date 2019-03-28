@@ -16,7 +16,6 @@ repositories {
 
 asciidoctorj {
     modules.getDiagram().setVersion("1.5.16")
-    setDiagramVersion("1.5.16")
     logLevel = LogLevel.INFO
 }
 
