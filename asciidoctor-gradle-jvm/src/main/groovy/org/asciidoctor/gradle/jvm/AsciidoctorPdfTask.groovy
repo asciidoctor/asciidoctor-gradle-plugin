@@ -67,7 +67,7 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
         this.fontsDir = f
     }
 
-    /** Set the tehem to be used from the {@code pdfThemes} extension.
+    /** Set the theme to be used from the {@code pdfThemes} extension.
      *
      * @param themeName
      */

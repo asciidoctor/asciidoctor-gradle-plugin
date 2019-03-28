@@ -61,7 +61,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     final static String DEFAULT_GROOVYDSL_VERSION = '1.6.0'
     final static String DEFAULT_PDF_VERSION = '1.5.0-alpha.16'
     final static String DEFAULT_EPUB_VERSION = '1.5.0-alpha.8.1'
-    final static String DEFAULT_DIAGRAM_VERSION = '1.5.12'
+    final static String DEFAULT_DIAGRAM_VERSION = '1.5.16'
     // ------------------------------------------------------------------------
 
     static final String ASCIIDOCTORJ_GROUP = 'org.asciidoctor'
