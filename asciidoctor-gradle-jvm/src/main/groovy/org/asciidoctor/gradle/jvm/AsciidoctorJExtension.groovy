@@ -61,7 +61,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     final static String DEFAULT_GROOVYDSL_VERSION = '1.6.0'
     final static String DEFAULT_PDF_VERSION = '1.5.0-alpha.16'
     final static String DEFAULT_EPUB_VERSION = '1.5.0-alpha.8.1'
-    final static String DEFAULT_DIAGRAM_VERSION = '1.5.12'
+    final static String DEFAULT_DIAGRAM_VERSION = '1.5.16'
     // ------------------------------------------------------------------------
 
     static final String ASCIIDOCTORJ_GROUP = 'org.asciidoctor'
@@ -148,7 +148,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         }
     }
 
-    /** Whether the Guava JAR that ships with the Gradle sustribution should be injected into the
+    /** Whether the Guava JAR that ships with the Gradle distribution should be injected into the
      * classpath for external AsciidoctorJ processes.
      *
      * @param inject {@code true} if JAR should be injected.
@@ -693,7 +693,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
 
     /** Provide patterns for Asciidoctor messages that are treated as failures.
      *
-     * Clears any existing message patterns. If this ethid is called on a task extension,
+     * Clears any existing message patterns. If this method is called on a task extension,
      * the patterns from the project extension will be ignored.
      *
      * @param patterns

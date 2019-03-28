@@ -288,7 +288,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      */
     // IMPORTANT: Do not change this to @InputDirectory as it can lead to file locking issues on
     // Windows. In reality we do not need to track contents of the directory
-    // simply the value change, we tarck this via a normal property
+    // simply the value change - we achieve that via a normal property.
     @Internal
     File getBaseDir() {
         this.baseDir != null ? project.file(this.baseDir) : project.projectDir
@@ -296,12 +296,10 @@ class AbstractAsciidoctorTask extends DefaultTask {
 
     /** Sets the base directory for a conversion.
      *
-     * The base directory is used by AsciidoctorJ to set a curretn working directory for
+     * The base directory is used by AsciidoctorJ to set a current working directory for
      * a conversion.
      *
-     * If never set, then {@code project.projectDir ( )} will be assumed to be the base directory.
-     *
-     * WHen {@link}
+     * If never set, then {@code project.projectDir} will be assumed to be the base directory.
      *
      * @param f Base directory
      */
@@ -380,8 +378,8 @@ class AbstractAsciidoctorTask extends DefaultTask {
 
     /** Additional providers of attributes.
      *
-     * NOTE: Attributes added via providers do no change th up-to-date status of the task.
-     *   Providers are therefore usfeul to add attributes such as build time.
+     * NOTE: Attributes added via providers do no change the up-to-date status of the task.
+     *   Providers are therefore useful to add attributes such as build time.
      *
      * @return List of attribute providers.
      */
@@ -946,11 +944,9 @@ class AbstractAsciidoctorTask extends DefaultTask {
             it instanceof Dependency
         } as List<Dependency>
 
-        Set<File> closurePaths = Transform.toSet(asciidoctorj.extensions.findAll {
-            it instanceof Closure
-        },{
+        Set<File> closurePaths = Transform.toSet(findExtensionClosures()){
             getClassLocation(it.class)
-        })
+        }
 
         if (!closurePaths.empty) {
             // Jumping through hoops to make extensions based upon closures to work.
@@ -1018,5 +1014,11 @@ class AbstractAsciidoctorTask extends DefaultTask {
 
         attrs.putAll(defaultAttrs)
         evaluateProviders(attrs)
+    }
+
+    private List<Closure> findExtensionClosures() {
+        asciidoctorj.extensions.findAll {
+            it instanceof Closure
+        } as List<Closure>
     }
 }
