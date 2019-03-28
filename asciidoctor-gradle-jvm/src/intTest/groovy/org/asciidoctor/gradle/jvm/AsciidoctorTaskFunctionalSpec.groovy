@@ -192,7 +192,7 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
 
         then:
         result.contains("missing converter for backend 'abc'. Processing aborted")
-        result.contains('org.asciidoctor.internal.AsciidoctorCoreException: org.jruby.exceptions.NotImplementedError')
+        result.contains('org.asciidoctor.jruby.internal.AsciidoctorCoreException: org.jruby.exceptions.NotImplementedError')
         !result.contains('ArrayIndexOutOfBoundsException')
     }
 

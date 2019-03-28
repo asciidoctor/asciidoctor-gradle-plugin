@@ -20,7 +20,6 @@ import org.asciidoctor.ast.StructuralNode
 import org.asciidoctor.extension.BlockProcessor
 import org.asciidoctor.extension.Reader
 
-
 @CompileStatic
 class Small extends BlockProcessor {
     Small(String name, Map<String, Object> config) {
