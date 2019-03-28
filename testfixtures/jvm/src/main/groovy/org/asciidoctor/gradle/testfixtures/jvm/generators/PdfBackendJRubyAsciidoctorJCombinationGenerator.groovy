@@ -58,11 +58,7 @@ class PdfBackendJRubyAsciidoctorJCombinationGenerator {
             Combination.of(AJ20_ABSOLUTE_MAXIMUM, SERIES_20, true),
             Combination.of(AJ20_ABSOLUTE_MINIMUM, SERIES_20, true),
             Combination.of(AJ20_SAFE_MAXIMUM, SERIES_20, true),
-            Combination.of(AJ20_SAFE_MINIMUM, SERIES_20, true),
-            Combination.of(AJ16_ABSOLUTE_MAXIMUM, SERIES_16, true),
-            Combination.of(AJ16_ABSOLUTE_MINIMUM, SERIES_16, true),
-            Combination.of(AJ16_SAFE_MAXIMUM, SERIES_16, true),
-            Combination.of(AJ16_SAFE_MINIMUM, SERIES_16, true)
+            Combination.of(AJ20_SAFE_MINIMUM, SERIES_20, true)
         ]
         combinations.toUnique()
     }
