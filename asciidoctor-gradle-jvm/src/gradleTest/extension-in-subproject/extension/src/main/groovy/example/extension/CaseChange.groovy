@@ -17,7 +17,7 @@ package example.extension
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.Asciidoctor
-import org.asciidoctor.extension.spi.ExtensionRegistry
+import org.asciidoctor.jruby.extension.spi.ExtensionRegistry
 
 @CompileStatic
 class CaseChange implements ExtensionRegistry {
