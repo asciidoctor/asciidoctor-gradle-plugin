@@ -16,13 +16,12 @@
 
 apply plugin: 'java-gradle-plugin'
 apply plugin: 'com.gradle.plugin-publish'
-//apply plugin: 'com.jfrog.bintray'
 
 ext {
     pluginIdPrefix = 'org.asciidoctor'
 
     pluginExtraText = (version.contains('-alpha') || version.contains('-beta')) ?
-        " (If you need a production-ready version of the AsciidoctorJ plugin for Gradle use a 1.5.x release of 'org.asciidoctor.convert' instead)"
+        " (If you need a production-ready version of the AsciidoctorJ plugin for Gradle use a 2.x release of 'org.asciidoctor.convert' instead)"
         : ''
 
 
@@ -65,146 +64,14 @@ ext {
                 }
             }
         }
-
-//        bintray.pkg.labels = (['asciidoctor', 'gradle', 'plugin'] + providedTags)
-//        bintray.pkg.version.attributes = ['gradle-plugin': "${providedId}:org.asciidoctor:asciidoctor-gradle-plugin"]
     }
 }
-
-jar {
-    manifest {
-        attributes(
-            'Built-By': System.properties['user.name'],
-            'Created-By': buildCreatedBy,
-//            'Build-Date': buildDate,
-//            'Build-Time': buildTime,
-            'Build-Revision': buildRevision,
-            'Specification-Title': project.name,
-            'Specification-Version': project.version,
-            'Specification-Vendor': project.name,
-            'Implementation-Title': project.name,
-            'Implementation-Version': project.version,
-            'Implementation-Vendor': project.name
-        )
-    }
-
-    metaInf {
-        from file('.')
-        include 'LICENSE'
-    }
-}
-
-ext {
-    pomConfig = {
-        name project.name
-        description project.project_description
-        url project.project_website
-        inceptionYear '2013'
-        licenses {
-            license([:]) {
-                name 'The Apache Software License, Version 2.0'
-                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                distribution 'repo'
-            }
-        }
-        scm {
-            url project.project_vcs
-        }
-        developers {
-            developer {
-                id 'mojavelinux'
-                name 'Dan Allen'
-                roles {
-                    role 'Asciidoctor Founder and Benevolent Dictator'
-                    role 'Open Source Hero'
-                }
-            }
-            [
-                aalmiray: 'Andres Almiray',
-                noamt   : 'Noam Tenne',
-                bmuschko: 'Benjamin Muschko',
-                ysb33r:   'Schalk W. Cronjé'
-            ].each { devId, devName ->
-                developer {
-                    id devId
-                    name devName
-                    roles {
-                        role 'Developer'
-                    }
-                }
-            }
-        }
-        contributors {
-            [
-                tombujok   : 'Tom Bujok',
-                jlupi      : 'Lukasz Pielak',
-                dvyazelenko: 'Dmitri Vyazelenko',
-                rwinch     : 'Rob Winch',
-                Skyr       : 'Stefan Schlott',
-                sclassen   : 'Stephan Classen',
-                McPringle  : 'Marcus Fihlon',
-                msgilligan : 'Sean Gilligan',
-                afolmert   : 'Adam Folmert',
-                mrhaki     : 'Hubert Klein Ikkink',
-                bobbytank42: 'Robert Panzer',
-                oti        : 'Otmar Humbel',
-                anschmi    : 'Andreas Schmidt'
-            ].each { devId, devName ->
-                contributor {
-                    name devName
-                    roles {
-                        role 'contributor'
-                    }
-                }
-            }
-        }
-    }
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-            afterEvaluate {
-                artifact sourcesJar.baseName
-                artifact javadocJar.baseName
-            }
-            pom.withXml {
-                asNode().children().last() + pomConfig
-                asNode().appendNode('description', project.project_description)
-            }
-        }
-    }
-}
-
-
-//bintray {
-//    user = bintrayUsername
-//    key = bintrayKey
-//    publications = ['mavenJava']
-//    dryRun = bintrayDryRun.toBoolean()
-//    pkg {
-//        userOrg = bintrayOrg
-//        repo = bintrayRepo
-//        name = project.name
-//        desc = project.project_description
-//        licenses = ['Apache-2.0']
-////        labels = ['asciidoctor', 'gradle', 'plugin']
-//        websiteUrl = project.project_website
-//        issueTrackerUrl = project.project_issues
-//        vcsUrl = project.project_vcs
-//        publicDownloadNumbers = true
-////        version {
-////            attributes = ['gradle-plugin': 'org.asciidoctor.convert:org.asciidoctor:asciidoctor-gradle-plugin']
-////        }
-//    }
-//}
 
 pluginBundle {
-    website = project.project_website
-    vcsUrl = project.project_vcs
-    description = project.project_description
-    tags = ['asciidoctor']
+    website = config.info.links.website
+    vcsUrl = config.info.links.scm
+    description = config.info.description
+    tags = config.info.tags
 
     mavenCoordinates {
         groupId = project.group
@@ -212,6 +79,4 @@ pluginBundle {
         version = project.version
     }
 }
-
-// task publishRelease(dependsOn: [bintrayUpload, publishPlugins]) {}
 

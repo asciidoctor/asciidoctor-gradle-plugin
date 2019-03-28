@@ -16,14 +16,11 @@
 
 plugins {
     id 'com.gradle.build-scan' version '2.0.2'
-    id 'com.jfrog.bintray' version '1.8.0' apply false
-    id 'net.nemerosa.versioning' version '2.6.1' apply false
-    id 'com.github.ben-manes.versions' version '0.17.0' apply false
+    id 'org.kordamp.gradle.project' version '0.15.1' apply false
     id 'com.gradle.plugin-publish' version '0.9.10' apply false
-    id 'com.github.hierynomus.license' version '0.14.0' apply false
     id 'com.github.kt3k.coveralls' version '2.8.2' apply false
     id 'net.ossindex.audit' version '0.1.1' apply false
-    id 'org.kordamp.jdeps' version '0.2.0' apply false
+    id 'org.kordamp.gradle.jdeps' version '0.5.0' apply false
     id 'fi.linuxbox.download.worker' version '0.3' apply false
     id 'org.ysb33r.ivypot' version '0.9' apply false
     id 'org.ysb33r.os' version '0.9' apply false
@@ -34,7 +31,7 @@ plugins {
 }
 
 buildScan {
-    termsOfServiceUrl   = 'https://gradle.com/terms-of-service'
+    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
     termsOfServiceAgree = 'yes'
 
     buildFinished { buildResult ->
@@ -44,18 +41,9 @@ buildScan {
     }
 }
 
-import java.text.SimpleDateFormat
 import org.gradle.util.GradleVersion
 
-apply plugin: 'net.nemerosa.versioning'
-
-ext {
-    buildTimeAndDate = new Date()
-    buildDate = new SimpleDateFormat('yyyy-MM-dd').format(buildTimeAndDate)
-    buildTime = new SimpleDateFormat('HH:mm:ss.SSSZ').format(buildTimeAndDate)
-    buildRevision = versioning.info.commit
-    buildCreatedBy = "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})".toString()
-}
+apply from: 'gradle/project-config.gradle'
 
 allprojects {
     ext {
@@ -80,36 +68,37 @@ allprojects {
 
 subprojects {
 
-    apply plugin : 'org.ysb33r.os'
+    apply plugin: 'org.ysb33r.os'
 
-    if( project.name != 'testfixtures-offline-repo') {
+    if (project.name != 'testfixtures-offline-repo') {
         apply plugin: 'groovy'
         apply plugin: 'idea'
         apply plugin: 'org.ysb33r.cloudci.appveyor.testreporter'
+        apply plugin: 'org.kordamp.gradle.jar'
+        apply plugin: 'org.kordamp.gradle.build-info'
 
         if (!project.name.startsWith('testfixture')) {
-            apply plugin: 'maven-publish'
-            apply plugin: 'com.github.ben-manes.versions'
             apply plugin: 'net.ossindex.audit'
-            apply plugin: 'org.kordamp.jdeps'
+            apply plugin: 'org.kordamp.gradle.jdeps'
+            apply plugin: 'org.kordamp.gradle.groovydoc'
 
-            if(!(project.name in withoutCodeCoverage)) {
+            if (!(project.name in withoutCodeCoverage)) {
                 apply plugin: 'jacoco'
 
                 jacoco {
-                    if(JavaVersion.current().isJava11Compatible() && GradleVersion.version(toolVersion) < GradleVersion.version('0.8.2')) {
+                    if (JavaVersion.current().isJava11Compatible() && GradleVersion.version(toolVersion) < GradleVersion.version('0.8.2')) {
                         toolVersion = '0.8.2'
                     }
                 }
             }
-         }
+        }
 
         apply from: "${rootProject.projectDir}/gradle/standard-repositories.gradle"
         apply from: "${rootProject.projectDir}/gradle/code-quality.gradle"
 
         if (!project.name.startsWith('testfixture')) {
 
-            if ( !(project.name in withoutIntegrationTests ) ) {
+            if (!(project.name in withoutIntegrationTests)) {
                 apply from: "${rootProject.projectDir}/gradle/integration-tests.gradle"
             }
 
@@ -124,24 +113,24 @@ subprojects {
                 apply from: "${rootProject.projectDir}/gradle/ci.gradle"
             }
 
-            dependencyUpdates.resolutionStrategy = {
-                componentSelection { rules ->
-                    rules.all { selection ->
-                        boolean rejected = ['beta', 'rc', 'cr', 'm'].any { qualifier ->
-                            selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
-                        }
-                        if (rejected) {
-                            selection.reject('Release candidate')
-                        }
-                    }
-                }
-            }
+//            dependencyUpdates.resolutionStrategy = {
+//                componentSelection { rules ->
+//                    rules.all { selection ->
+//                        boolean rejected = ['beta', 'rc', 'cr', 'm'].any { qualifier ->
+//                            selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+//                        }
+//                        if (rejected) {
+//                            selection.reject('Release candidate')
+//                        }
+//                    }
+//                }
+//            }
 
             audit {
                 failOnError = false
             }
 
-            if ( !(project.name in withoutCompatibilityTests ) ) {
+            if (!(project.name in withoutCompatibilityTests)) {
                 apply from: "${rootProject.projectDir}/gradle/compatibility-tests.gradle"
             }
         }
@@ -164,7 +153,7 @@ subprojects {
     }
 }
 
-apply from : 'gradle/coveralls.gradle'
+apply from: 'gradle/coveralls.gradle'
 
 //idea {
 //    extended {

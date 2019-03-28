@@ -1,0 +1,126 @@
+apply plugin: 'org.kordamp.gradle.base'
+apply plugin: 'org.kordamp.gradle.build-info'
+
+config {
+
+    release = true //!project.version.endsWith('-SNAPSHOT')
+
+    info {
+        description = 'A collection of Gradle plugins that uses Asciidoctor to process AsciiDoc source files within the project'
+        inceptionYear = '2013'
+
+        links {
+            website      = 'https://github.com/asciidoctor/asciidoctor-gradle-plugin'
+            issueTracker = 'https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues'
+            scm          = 'https://github.com/asciidoctor/asciidoctor-gradle-plugin.git'
+        }
+
+        tags = ['asciidoctor']
+
+        people {
+            person {
+                id = 'mojavelinux'
+                name = 'Dan Allen'
+                roles = [
+                    'developer',
+                    'Asciidoctor Founder and Benevolent Dictator',
+                    'Open Source Hero'
+                ]
+            }
+            person {
+                id = 'aalmiray'
+                name = 'Andres Almiray'
+                roles = ['author', 'developer']
+            }
+            person {
+                id = 'ysb33r'
+                name = 'Schalk W. Cronjé'
+                roles = ['author', 'developer']
+            }
+            person {
+                id = 'noamt'
+                name = 'Noam Tenne'
+                roles = ['developer']
+            }
+            person {
+                id = 'bmuschko'
+                name = 'Benjamin Muschko'
+                roles = ['developer']
+            }
+            person {
+                id = 'tombujok'
+                name = 'Tom Bujok'
+                roles = ['contributor']
+            }
+            person {
+                id = 'jlupi'
+                name = 'Lukasz Pielak'
+                roles = ['contributor']
+            }
+            person {
+                id = 'rwinch'
+                name = 'Rob Winch'
+                roles = ['contributor']
+            }
+            person {
+                id = 'dvyazelenko'
+                name = 'Dmitri Vyazelenko'
+                roles = ['contributor']
+            }
+            person {
+                id = 'Skyr'
+                name = 'Stefan Schlott'
+                roles = ['contributor']
+            }
+            person {
+                id = 'sclassen'
+                name = 'Stephan Classen'
+                roles = ['contributor']
+            }
+            person {
+                id = 'McPringle'
+                name = 'Marcus Fihlon'
+                roles = ['contributor']
+            }
+            person {
+                id = 'msgilligan'
+                name = 'Sean Gilligan'
+                roles = ['contributor']
+            }
+            person {
+                id = 'afolmert'
+                name = 'Adam Folmert'
+                roles = ['contributor']
+            }
+            person {
+                id = 'mrhaki'
+                name = 'Hubert Klein Ikkink'
+                roles = ['contributor']
+            }
+            person {
+                id = 'bobbytank42'
+                name = 'TRobert Panzer'
+                roles = ['contributor']
+            }
+            person {
+                id = 'oti'
+                name = 'Otmar Humbel'
+                roles = ['contributor']
+            }
+            person {
+                id = 'anschmi'
+                name = 'Andreas Schmidt'
+                roles = ['contributor']
+            }
+        }
+    }
+    licensing {
+        licenses {
+            license {
+                id = 'Apache-2.0'
+            }
+        }
+    }
+
+
+}

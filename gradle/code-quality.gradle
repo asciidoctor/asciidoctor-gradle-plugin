@@ -15,7 +15,7 @@
  */
 
 apply plugin : 'codenarc'
-apply plugin : 'com.github.hierynomus.license'
+apply plugin : 'org.kordamp.gradle.licensing'
 
 license {
     header = rootProject.file('config/HEADER')
@@ -25,8 +25,8 @@ license {
         java   = 'SLASHSTAR_STYLE'
         groovy = 'SLASHSTAR_STYLE'
     }
-    ext.year = project.copyrightYear
-    excludes(['**/*.ad', '**/*.asciidoc', '**/*.adoc', '**/fake.txt'])
+//    ext.year = project.copyrightYear
+    excludes(['**/*.ad', '**/*.asciidoc', '**/*.adoc', '**/fake.txt', '**/*.zip'])
 }
 
 codenarc {
