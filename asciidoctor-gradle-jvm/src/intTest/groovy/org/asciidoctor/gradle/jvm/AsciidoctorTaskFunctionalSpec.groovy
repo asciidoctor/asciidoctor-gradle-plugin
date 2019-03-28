@@ -85,14 +85,14 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         true         | AJ20_ABSOLUTE_MINIMUM | SERIES_20       | true
         true         | AJ20_SAFE_MINIMUM     | SERIES_20       | true
         true         | AJ20_SAFE_MINIMUM     | SERIES_20       | true
-        true         | AJ20_SAFE_MAXIMUM     | SERIES_20 | true
-        true         | AJ20_SAFE_MAXIMUM     | SERIES_20 | true
-        false        | AJ20_ABSOLUTE_MINIMUM | SERIES_20 | true
-        false        | AJ20_SAFE_MINIMUM     | SERIES_20 | true
-        false        | AJ20_SAFE_MAXIMUM     | SERIES_20 | true
-        false        | AJ20_SAFE_MAXIMUM     | SERIES_20 | true
-        true         | AJ20_ABSOLUTE_MAXIMUM | SERIES_20 | true
-        false        | AJ20_ABSOLUTE_MAXIMUM | SERIES_20 | true
+        true         | AJ20_SAFE_MAXIMUM     | SERIES_20       | true
+        true         | AJ20_SAFE_MAXIMUM     | SERIES_20       | true
+        false        | AJ20_ABSOLUTE_MINIMUM | SERIES_20       | true
+        false        | AJ20_SAFE_MINIMUM     | SERIES_20       | true
+        false        | AJ20_SAFE_MAXIMUM     | SERIES_20       | true
+        false        | AJ20_SAFE_MAXIMUM     | SERIES_20       | true
+        true         | AJ20_ABSOLUTE_MAXIMUM | SERIES_20       | true
+        false        | AJ20_ABSOLUTE_MAXIMUM | SERIES_20       | true
     }
 
     @Timeout(value = 90)
