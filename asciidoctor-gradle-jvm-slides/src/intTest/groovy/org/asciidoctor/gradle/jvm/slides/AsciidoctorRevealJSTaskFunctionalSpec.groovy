@@ -22,7 +22,7 @@ import org.gradle.testkit.runner.BuildResult
 @SuppressWarnings(['DuplicateStringLiteral', 'DuplicateListLiteral'])
 class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
 
-    final static String JRUBY_TEST_VERSION = JRubyTestVersions.AJ16_SAFE_MAXIMUM
+    final static String JRUBY_TEST_VERSION = JRubyTestVersions.AJ20_SAFE_MAXIMUM
     final static String REVEALJS_DIR_NAME = 'reveal.js'
     final static String DEFAULT_REVEALJS_PATH = "build/docs/asciidocRevealJs/${REVEALJS_DIR_NAME}"
 

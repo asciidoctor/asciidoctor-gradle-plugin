@@ -26,7 +26,7 @@ import spock.lang.Unroll
 @SuppressWarnings(['DuplicateStringLiteral', 'MethodName', 'DuplicateListLiteral'])
 class AsciidoctorEpubTaskFunctionalSpec extends FunctionalSpecification {
 
-    final static String JRUBY_TEST_VERSION = JRubyTestVersions.AJ16_SAFE_MAXIMUM
+    final static String JRUBY_TEST_VERSION = JRubyTestVersions.AJ20_SAFE_MAXIMUM
 
     void setup() {
         createTestProject()
