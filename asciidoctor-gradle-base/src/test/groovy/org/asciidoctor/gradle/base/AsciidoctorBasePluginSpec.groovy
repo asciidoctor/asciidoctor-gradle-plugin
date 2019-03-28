@@ -15,6 +15,7 @@
  */
 package org.asciidoctor.gradle.base
 
+import org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
