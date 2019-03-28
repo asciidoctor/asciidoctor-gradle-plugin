@@ -50,11 +50,11 @@ class AsciidoctorjVersionProcessModeGenerator {
 
     static List<VersionProcess> get() {
         if (System.getenv('APPVEYOR') || System.getenv('TRAVIS')) {
-            [AsciidoctorjTestVersions.SERIES_20, AsciidoctorjTestVersions.SERIES_16].collect {
+            [AsciidoctorjTestVersions.SERIES_20, AsciidoctorjTestVersions.SERIES_20].collect {
                 VersionProcess.of(it, JAVA_EXEC)
             }.toUnique()
         } else {
-            [AsciidoctorjTestVersions.SERIES_20, AsciidoctorjTestVersions.SERIES_16].collect { it ->
+            [AsciidoctorjTestVersions.SERIES_20, AsciidoctorjTestVersions.SERIES_20].collect { it ->
                 [
                     VersionProcess.of(it, JAVA_EXEC),
                     VersionProcess.of(it, IN_PROCESS),

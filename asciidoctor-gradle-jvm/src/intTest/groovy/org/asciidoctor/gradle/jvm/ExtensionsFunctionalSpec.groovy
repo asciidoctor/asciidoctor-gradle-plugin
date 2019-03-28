@@ -254,7 +254,7 @@ asciidoctor {
         resultFile.text.contains('and write this in lowercase')
 
         where:
-        version = SERIES_16
+        version = SERIES_20
         processMode = 'JAVA_EXEC'
 
         and:
@@ -272,7 +272,7 @@ asciidoctor {
         String versionConfig = """
             asciidoctorj {
                 version = '${version}'
-                groovyDslVersion = '${version == SERIES_20 ? GROOVYDSL_SERIES_20 : GROOVYDSL_SERIES_16}'
+                groovyDslVersion = '${version == SERIES_20 ? GROOVYDSL_SERIES_20 : GROOVYDSL_SERIES_20}'
             }
         """
 

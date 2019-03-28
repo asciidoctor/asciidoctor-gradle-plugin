@@ -33,12 +33,12 @@ class AsciidoctorExtensionSpec extends Specification {
 
     void 'Default version should be the same as AsciidoctorJExtension'() {
         expect:
-        project.extensions.asciidoctorj.version == AsciidoctorjTestVersions.SERIES_16
+        project.extensions.asciidoctorj.version == AsciidoctorjTestVersions.SERIES_20
     }
 
     void 'Default GroovyDSL version should be the same as AsciidoctorJExtension'() {
         expect:
-        project.extensions.asciidoctorj.groovyDslVersion == AsciidoctorjTestVersions.GROOVYDSL_SERIES_16
+        project.extensions.asciidoctorj.groovyDslVersion == AsciidoctorjTestVersions.GROOVYDSL_SERIES_20
     }
 
 }
