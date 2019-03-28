@@ -29,10 +29,11 @@ import org.asciidoctor.log.LogHandler
 
 import javax.inject.Inject
 
+import static org.asciidoctor.jruby.AsciidoctorJRuby.Factory.create
+
 /** Actual executor used for running an Asciidoctorj instance.
  *
- * @since 2.0.0
- * @author Schalk W. Cronje
+ * @since 2.0.0* @author Schalk W. Cronje
  */
 @CompileStatic
 @Log4j
@@ -87,7 +88,7 @@ class AsciidoctorJExecuter extends ExecutorBase implements Runnable {
     private void runSingle() {
         ExecutorConfiguration runConfiguration = runConfigurations[0]
 
-        Asciidoctor asciidoctor = Asciidoctor.Factory.create(
+        Asciidoctor asciidoctor = create(
             runConfiguration.gemPath.empty ? null : runConfiguration.gemPath
         )
 
@@ -129,8 +130,8 @@ class AsciidoctorJExecuter extends ExecutorBase implements Runnable {
         String combinedGemPath = runConfigurations*.gemPath.join(File.pathSeparator)
 
         Asciidoctor asciidoctor = (combinedGemPath.empty || combinedGemPath == File.pathSeparator) ?
-            Asciidoctor.Factory.create() :
-            Asciidoctor.Factory.create(combinedGemPath)
+            create() :
+            create(combinedGemPath)
 
         runConfigurations.each { runConfiguration ->
             for (require in runConfiguration.requires) {
