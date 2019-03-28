@@ -21,24 +21,16 @@ ext {
     downloadOnlyPdfVersion = readAsciidoctorjExtVersion('DEFAULT_PDF_VERSION')
     downloadOnlyEpubVersion = readAsciidoctorjExtVersion('DEFAULT_EPUB_VERSION')
 
-    // TODO: This logic can go once we get 1.6 out of alpha
-    asciidoctorjHasApiJar = { ver ->
-        !( ver ==~ /1\.6\.0-alpha\.[123456]/ )
-    }
-
     asciidoctorjTestVersion = [
         series20: readAsciidoctorjTestVersion('SERIES_20'),
-        series16: readAsciidoctorjTestVersion('SERIES_16')
     ]
 
     groovyDslTestVersion = [
         series20: readAsciidoctorjTestVersion('GROOVYDSL_SERIES_20'),
-        series16: readAsciidoctorjTestVersion('GROOVYDSL_SERIES_16')
     ]
 
     diagramTestVersion = [
         series20: readAsciidoctorjTestVersion('DIAGRAM_SERIES_20'),
-        series16: readAsciidoctorjTestVersion('DIAGRAM_SERIES_16'),
     ]
 }
 
@@ -47,10 +39,7 @@ asciidoctorjTestVersion.keySet().each {
     configurations.create(config)
     dependencies.add(config, "org.asciidoctor:asciidoctorj:${asciidoctorjTestVersion[it]}")
 
-    if (asciidoctorjHasApiJar(asciidoctorjTestVersion[it])) {
-        dependencies.add(config, "org.asciidoctor:asciidoctorj-api:${asciidoctorjTestVersion[it]}")
-    }
-
+    dependencies.add(config, "org.asciidoctor:asciidoctorj-api:${asciidoctorjTestVersion[it]}")
     dependencies.add(config, "org.asciidoctor:asciidoctorj-groovy-dsl:${groovyDslTestVersion[it]}")
     dependencies.add(config, "org.asciidoctor:asciidoctorj-diagram:${diagramTestVersion[it]}")
 }

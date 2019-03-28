@@ -25,22 +25,16 @@ import groovy.transform.CompileStatic
 class JRubyTestVersions {
 
     // These lines are read by the build script.
-    // AJ16: AciidoctorJ 1.6.x
     // AJ20: AciidoctorJ 2.0.x
     // ABSOLUTE_MINIMUM The lowest JRuby to test against (compatibility not guaranteed)
     // ABSOLUTE_MINIMUM The highest JRuby to test against (compatibility not guaranteed)
     // SAFE_MINIMUM The lowest known compatible version of JRuby
     // SAFE_MAXIMUM The highest known compatible version of JRuby
     // ----------------------------------------------------------
-    public final static String AJ20_ABSOLUTE_MINIMUM = '9.2.0.0'
-    public final static String AJ20_SAFE_MINIMUM = '9.2.3.0'
-    public final static String AJ20_SAFE_MAXIMUM = '9.2.4.0'
-    public final static String AJ20_ABSOLUTE_MAXIMUM = '9.2.4.0'
-
-    public final static String AJ16_ABSOLUTE_MINIMUM = '9.2.5.0'
-    public final static String AJ16_SAFE_MINIMUM = '9.2.5.0'
-    public final static String AJ16_SAFE_MAXIMUM = '9.2.6.0'
-    public final static String AJ16_ABSOLUTE_MAXIMUM = '9.2.6.0'
+    public final static String AJ20_ABSOLUTE_MINIMUM = '9.2.5.0'
+    public final static String AJ20_SAFE_MINIMUM = '9.2.5.0'
+    public final static String AJ20_SAFE_MAXIMUM = '9.2.6.0'
+    public final static String AJ20_ABSOLUTE_MAXIMUM = '9.2.6.0'
     // ----------------------------------------------------------
 
 }
