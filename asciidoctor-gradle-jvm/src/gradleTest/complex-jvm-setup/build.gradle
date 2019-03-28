@@ -9,7 +9,7 @@ repositories {
 }
 
 asciidoctorj {
-    diagramVersion '1.5.4.1'
+    diagramVersion '1.5.16'
     logLevel 'INFO'
 }
 

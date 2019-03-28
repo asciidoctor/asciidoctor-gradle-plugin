@@ -24,6 +24,8 @@ import org.asciidoctor.gradle.internal.ExecutorLogLevel
 import org.asciidoctor.groovydsl.AsciidoctorExtensions
 import org.asciidoctor.log.LogHandler
 
+import static org.asciidoctor.jruby.AsciidoctorJRuby.Factory.create
+
 /** Runs Asciidoctor as an externally invoked Java process.
  *
  * @since 2.0.0
@@ -76,11 +78,8 @@ class AsciidoctorJavaExec extends ExecutorBase {
 
     private Asciidoctor getAsciidoctorInstance() {
         String combinedGemPath = runConfigurations*.gemPath.findAll { it }.join(File.pathSeparator)
-        if (combinedGemPath.empty || combinedGemPath == File.pathSeparator) {
-            Asciidoctor.Factory.create()
-        } else {
-            Asciidoctor.Factory.create(combinedGemPath)
-        }
+        boolean noGemPath = combinedGemPath.empty || combinedGemPath == File.pathSeparator
+        noGemPath ? create() : create(combinedGemPath)
     }
 
     private void addRequires(Asciidoctor asciidoctor) {

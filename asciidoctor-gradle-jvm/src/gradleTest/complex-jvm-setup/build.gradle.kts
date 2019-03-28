@@ -15,7 +15,7 @@ repositories {
 }
 
 asciidoctorj {
-    setDiagramVersion("1.5.4.1")
+    setDiagramVersion("1.5.16")
     logLevel = LogLevel.INFO
 }
 
