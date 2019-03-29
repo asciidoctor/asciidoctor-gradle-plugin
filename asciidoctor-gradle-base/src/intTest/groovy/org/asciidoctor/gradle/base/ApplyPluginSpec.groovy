@@ -13,22 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.testfixtures.jvm
+package org.asciidoctor.gradle.base
 
-import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.base.internal.FunctionalSpecification
 
-/**
- * @since 2.0.0
- * @author Schalk W. Cronjé
- */
-@CompileStatic
-class AsciidoctorjTestVersions {
+class ApplyPluginSpec extends FunctionalSpecification {
 
-    // These lines are read by the build script.
-    public final static String SERIES_16 = '1.6.2'
-    public final static String SERIES_20 = '1.6.0-RC.2'
-    public final static String GROOVYDSL_SERIES_16 = '1.6.0'
-    public final static String GROOVYDSL_SERIES_20 = '1.6.0-alpha.2'
-    public final static String DIAGRAM_SERIES_16 = '1.5.12'
-    public final static String DIAGRAM_SERIES_20 = '1.5.8'
+    void 'Apply the base plugin in a Kotlin DSL'() {
+
+        given:
+        getKotlinBuildFile('')
+
+        when:
+        getGradleRunnerForKotlin(['tasks', '-s']).build()
+
+        then:
+        noExceptionThrown()
+    }
+
+    void 'Apply the base plugin in a Groovy DSL'() {
+
+        given:
+        getGroovyBuildFile('', 'base')
+
+        when:
+        getGradleRunner(['tasks']).build()
+
+        then:
+        noExceptionThrown()
+    }
 }

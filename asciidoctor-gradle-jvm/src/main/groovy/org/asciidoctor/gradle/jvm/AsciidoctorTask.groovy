@@ -91,7 +91,7 @@ class AsciidoctorTask extends AbstractAsciidoctorTask {
      * If the backends contain {@code docbook} then {@code *docbook*.xml} is added.
      * If the backend contain {@code html5} then {@code *docbook*.html} is added.
      *
-     * @return Defaui
+     * @return Default pattern set.
      */
     @Override
     protected PatternSet getDefaultSecondarySourceDocumentPattern() {

@@ -91,7 +91,7 @@ class RequiresFunctionalSpec extends FunctionalSpecification {
         """)
 
         when:
-        final BuildResult firstInvocationResult = getGradleRunner(DEFAULT_ARGS).build()
+        final BuildResult firstInvocationResult = getGradleRunner(['-i'] + DEFAULT_ARGS).build()
         File outputFolder = new File(testProjectDir.root, 'build/docs/asciidoc')
         File outputFile = new File(outputFolder, 'ditaa.html')
 

@@ -1,6 +1,6 @@
 = Asciidoctor Gradle Plugin
 Andres Almiray <https://github.com/aalmiray[@aalmiray]>
-:version: 2.0.0-rc.1
+:version: 2.0.0
 :version-published: 2.0.0-rc.1
 :asciidoc-url: http://asciidoc.org
 :asciidoctor-url: http://asciidoctor.org
@@ -37,7 +37,6 @@ ifdef::env-github[]
 NOTE: `master` now represents the code for the latest 2.x release of these plugins. Development for for 2.x is against the link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/development-2.0[development-2.0] branch. PRs are preferably taking against that branch. The 1.5.x series of the plugin is now in maintenance only mode. PRs for that should be raised against the https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/maintenance-1.5[maintenance-1.5] branch.
 endif::[]
 
-
 ifdef::status[]
 image:http://img.shields.io/travis/{project-full-path}/{github-branch}.svg[Build Status, link=https://travis-ci.org/{project-full-path}]
 image:https://ci.appveyor.com/api/projects/status/db102rphsu5lviv6/branch/{github-branch}?svg=true&passingText={github-branch}%20-%20OK&failingText={github-branch}%20-%20Fails&pendingText={github-branch}%20-%20Pending[Build Status, link=https://ci.appveyor.com/project/{project-full-path}/branch/{github-branch}]
@@ -50,9 +49,7 @@ The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to 
 
 NOTE: This started as a port of the {asciidoctor-maven-plugin}[Asciidoctor Maven Plugin] project founded by {lightguard}[@LightGuard] and relies on {asciidoctorj}[{asciidoctorj-name}] founded by {lordofthejars}[@lordofthejars]. In fact the 1.5.x series of the {plugin-name} can still be considered a port. However the 2.x series and beyond is a complete departure with functionality far exceeding any plugins for another build tool. This new series allows for the creations of a true DocuOps pipeline by bringing together Gradle as a powerful and generic build tool and Asciidoctor as an agile and lightweight document generator.
 
-NOTE: The https://github.com/gradle/kotlin-dsl[Gradle Kotlin DSL] is not properly supported by this plugin yet but it can be used with the GKD. Examples and workarounds are described below.
-
-NOTE: This collection of plugins requires at least Gradle 4.0 & JDK 8.0 to run. If you need prior Gradle or JDK support please use a plugin from the 1.5.x release series.
+NOTE: This collection of plugins requires at least Gradle 4.0, JDK 8.0 and AsciidoctorJ 1.6.0 to run. If you need prior Gradle,  JDK or AsciidoctorJ support please use a plugin from the 1.5.x or 1.6.x release series.
 
 == Known Issues
 
@@ -62,13 +59,7 @@ This is still an alpha development, so expect some issues. These are the main on
   (KF8+EPUB3 or EPUB3+KF8) the conversion takes place in.
 * KF8 conversions fails under Windows. (Related to asciidoctor/asciidoctorj#659 & jruby/jruby#4943)
 * Does not work with JDK9 (but does with JDK10).
-
-ifndef::env-site[]
-== Contributing
-
-Are you interested in contributing to this project? If so please read link:HACKING.adoc[HACKING] before sending in a patch.
-Thank you!
-endif::[]
+* Not compatible with {kotlindsl} on Gradle *5.2.1* and *5.3*. See https://github.com/gradle/kotlin-dsl/issues/1353[KOTLIN-DSL-1353].
 
 == Installation
 
@@ -228,7 +219,7 @@ asciidoctorj { <1>
 ----
 <1> This can be globally on the project extension or locally on the task's extension.
 
-Or in the Gradle Kotlin DSL:
+Or in the {kotlindsl}:
 
 [source,kotlin]
 .build.gradle.kts
@@ -248,7 +239,7 @@ tasks {
   }
 }
 ----
-<1> This is an example of setting ti on the task extension in Kotlin.
+<1> This is an example of setting it on the task extension in Kotlin.
 
 The following attributes are automatically set by the `asciidoctorj` extension:
 
@@ -364,7 +355,7 @@ asciidoctor {
 
 Paths defined in this PatternSet are resolved relative to the `sourceDir`.
 
-For the Gradle Kotlin DSL a workaround is needed:footnoteref:[kotlin-delegate,The method delegates to a type that Kotlin cannot infer that from the byte-code. The function `delegateClosureOf<T>()` from the GKD is used to provide the information to Kotlin.]
+For the {kotlindsl} a workaround is needed:footnoteref:[kotlin-delegate,The method delegates to a type that Kotlin cannot infer that from the byte-code. The function `delegateClosureOf<T>()` from the GKD is used to provide the information to Kotlin.]
 
 [source,kotlin]
 .build.gradle.kts
@@ -407,7 +398,8 @@ Files will be copied to below `+${outputDir}/${backend}+` (or just `+${outputDir
 
 Unlike `sourceDir` files can be copied from anywhere in the filesystem.
 
-For the Gradle Kotlin DSL, the example above looks like this:footnoteref:[kotlin-delegate]
+For the {kotlindsl}, the example above looks like this:footnoteref:[kotlin-delegate]
+
 [source,kotlin]
 .build.gradle.kts
 ----
@@ -448,8 +440,8 @@ copyNoResources()
 
 All tasks can control how Asciidoctor conversions are being run via the `inProcess` property. This is early days, an choose for your build will depend very much on your context, but the following has already become clear:
 
-* `IN_PROCESS` and `OUT_OF_PROCESS` shuold theoretically run faster, especially if you continuously rebuild the same documentation. Gradle workers are the underlying implementation for these two options
-* The safe option is always `JAVA_EXEC`. For lower memory consumption this is by far the safer option. It is also the only way we can get the Windows-based tests for tjhis plugin completed on Appveyor. It you run a lot of builds the penalty statr-up time might become an issue for you.
+* `IN_PROCESS` and `OUT_OF_PROCESS` should theoretically run faster, especially if you continuously rebuild the same documentation. Gradle workers are the underlying implementation for these two options
+* The safe option is always `JAVA_EXEC`. For lower memory consumption this is by far the safer option. (It is also the only way we can get the Windows-based tests for this plugin to complete on Appveyor & Travis CI). It you run a lot of builds the penalty start-up time might become an issue for you.
 
 NOTE: In certain cases the plugin will overrule your choice as it has some built-in rules for special cases. In such cases it will log a warning that it has done that.
 
@@ -564,7 +556,7 @@ Caused by: java.lang.UnsatisfiedLinkError: /path/to/openjdk10/lib/libfontmanager
   Reason: image not found
 ----
 
-The solutionn is to install `freetype` via HomeBrew or MacPorts. You might also need to do something (ridiculous) such as
+The solution is to install `freetype` via HomeBrew or MacPorts. You might also need to do something (ridiculous) such as
 
 [source,bash]
 ----
@@ -601,7 +593,7 @@ asciidoctorj {
 When applying `org.asciidoctor.jvm.revealjs` support is added for creating slides using Asciidoctor & Reveal.js. The plugin configures:
 
 * Create a task called `asciidoctorRevealJs`.
-* Create an extension called `revealjs` which i s sued for configuring the version of Reveal.js as well as a template.
+* Create an extension called `revealjs` which is used for configuring the version of Reveal.js as well as a template.
 * Create an extension called `revealjsPlugins` which will allow for downloading additional Reveal.js plugins.
 * Output source to "${buildDir}/docs/asciidocRevealJs"
 * Copy all resources to the output directory including Reveal.js templates.
@@ -612,7 +604,7 @@ The `AsciidoctorRevealJSTask` task type has the following additional methods:
 [horizontal]
 revealjsOptions:: Configure special Reveal.js options.
   Can be configured via Closure or Action. See <<RevealJSOptions>> for more details.
-templateDir:: Location where the template directory will be locate don disk before Asciidoctor processing starts.
+templateDir:: Location where the template directory will be located on disk before Asciidoctor processing starts.
 theme:: The Reveal.js theme to use.
   The theme must match one from the template.
 
@@ -620,7 +612,7 @@ The version of the Reveal.js GEM and the Reveal.js template is configured via th
 
 [source,groovy]
 ----
-revealsjs {
+revealjs {
   version = '1.1.3' // <1>
 
   templateGitHub {  // <2>
@@ -640,6 +632,16 @@ If not specified, sensible defaults are provided.
 
 Various options can be configured for Reveal.js. Although these can be set as attributes directly, it is far better to set them on the task as advantage can be taken of Gradle task caching and file resolving.
 
+[source,groovy]
+----
+asciidoctorRevealJs {
+  revealjsOptions { // <1>
+    controls = true
+  }
+}
+----
+<1> Use `revealjsOptions` block for configuration with any of the below options.
+
 [horizontal]
 autoslideInterval:: Delay in milliseconds between automatically proceeding to the next slide.
   Disabled when set to `0` (the default). This value can still be overwritten on a per-slide basis by setting a `data-autoslide` attribute on a slide.
@@ -658,7 +660,7 @@ flagEmbedded:: Flags if the presentation is running in an embedded mode ( contai
   Type is boolean.
 fragments:: Use fragments globally.
   Type is boolean.
-highlightJsThemeLocation:: Highlight.js theme loca`tion.
+highlightJsThemeLocation:: Highlight.js theme location.
   Can be anything convertible to a file or URI.
 keyboardShortcuts::Enable keyboard shortcuts for navigation.
   Type is boolean.
@@ -783,11 +785,11 @@ sourceDir:: where the asciidoc sources are.
 sources:: specify which Asciidoctor source files to include by using an
   http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.html[Ant-style PatternSet].
 
-NOTE: Even though the DSL remains the same with this task, the internals have been changed to use the same `JAVA_EXEC` mechanism of the `org.asciidoctor.jvm.convert` plugins. The problems which the 1.5.x series suffered with classpaths anions disappearing shuol dnow be a thing of the past.
+NOTE: Even though the DSL remains the same with this task, the internals have been changed to use the same `JAVA_EXEC` mechanism of the `org.asciidoctor.jvm.convert` plugins. The problems which the 1.5.x series suffered with classpaths anions disappearing should now be a thing of the past.
 
 == Kindlegen plugin
 
-Producing KF* formats via the EPUB extension requires `kindlegen` to be installed. This plugin provides the capability of bootstrapping `kindlegen` on Windows, MAx & Linux without the user having to do anything.
+Producing KF* formats via the EPUB extension requires `kindlegen` to be installed. This plugin provides the capability of bootstrapping `kindlegen` on Windows, Mac & Linux without the user having to do anything.
 
 There is a base plugin `org.asciidoctor.kindlegen.base` which just provides a `kindlegen` extension. In order to use it
 you will need to agree to the Amazon terms of usage. To confirm this you need to configure
@@ -795,13 +797,13 @@ you will need to agree to the Amazon terms of usage. To confirm this you need to
 [source,groovy]
 ----
 kindlegen {
-  agreeTotermsOfUse = true
+  agreeToTermsOfUse = true
 }
 ----
 
-If you do not them the plugin will refuse to botostrap `kindlegen`.
+If you do not, then the plugin will refuse to bootstrap `kindlegen`.
 
-NOTE: The base plugin is automatically applied by the EPUB plugin. If you only produce EPUB3 formats with the EPUB plugin you do not have to agree to usage of `kindlegen`.
+NOTE: The base plugin is automatically applied by the EPUB plugin. If you only produce EPUB3 formats with the EPUB plugin you do not have to agree to the usage of `kindlegen`.
 
 ifndef::env-site[]
 == Development
@@ -812,7 +814,7 @@ endif::[]
 == Adding Custom Extensions
 
 Starting with version 1.5.0 you were able to write your own Asciidoctor extensions in Groovy, or any other JVM language
-for that matter. Now with the 2.0.0 you are even more flixibility in allowsin extensions to be applied on a per task basis on globally. There are several options for you to make it happen.
+for that matter. Now with the 2.0.0 you have even more flexibility in that extensions can be applied on a per task basis on globally. There are several options available to make it happen.
 
 === As External Library
 

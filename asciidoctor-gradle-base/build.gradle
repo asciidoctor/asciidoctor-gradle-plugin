@@ -23,8 +23,10 @@ configurePlugin 'org.asciidoctor.base',
 
 pluginManager.withPlugin('jacoco') {
     jacocoTestReport {
-        executionData = (fileTree('.') { exclude '**' })
+        executionData.setFrom(fileTree('.') { exclude '**' })
         executionData test
         dependsOn test
     }
 }
+
+configurations.gradleTestCompile.transitive = false

@@ -87,12 +87,10 @@ abstract class ExecutorBase {
                 mergedOptions[Options.TO_FILE] = new File(toDir, toFile.name).absolutePath
             }
 
-            // Note: Directories passed as relative to work around issue #83
-            // Asciidoctor cannot handle absolute paths in Windows properly
             Map<String, Object> newAttrs = [:]
             newAttrs.putAll(attributes)
-            newAttrs['gradle-projectdir'] = getRelativePath(projectDir, file.parentFile)
-            newAttrs['gradle-rootdir'] = getRelativePath(rootDir, file.parentFile)
+            newAttrs['gradle-projectdir'] = projectDir.absolutePath
+            newAttrs['gradle-rootdir'] = rootDir.absolutePath
 
             if(legacyAttributes) {
                 newAttrs['projectdir'] = newAttrs['gradle-projectdir']
@@ -124,17 +122,19 @@ abstract class ExecutorBase {
      * @return
      */
     protected List<Object> rehydrateExtensions(final Object registry, final List<Object> exts) {
-        exts.collect {
-            switch (it) {
+        final List<Object> availableExtensions = []
+        for( Object ext in exts)  {
+            switch (ext) {
                 case Closure:
-                    Closure rehydrated = ((Closure) it).rehydrate(registry, null, null)
+                    Closure rehydrated = ((Closure) ext).rehydrate(registry, null, null)
                     rehydrated.resolveStrategy = Closure.DELEGATE_ONLY
-                    (Object) rehydrated
+                    availableExtensions.add((Object) rehydrated)
                     break
                 default:
-                    it
+                    availableExtensions.add(ext)
             }
-        } as List<Object>
+        }
+        availableExtensions
     }
 
     /** Creates a log handler for Asciidoctor

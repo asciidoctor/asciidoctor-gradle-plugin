@@ -35,6 +35,14 @@ codenarc {
     sourceSets = [project.sourceSets.main]
 }
 
+//
+//tasks.withType(CodeNarc) { codenarcSourceSetTask ->
+//    def reportName = (codenarcSourceSetTask.name - "codenarc").uncapitalize()
+//    def ideReport = reports.add(org.gradle.api.reporting.internal.TaskGeneratedSingleFileReport.TaskGeneratedSingleFileReport, "ide", reports.task)
+//    ideReport.enabled = true
+//    ideReport.destination = file( "${project.codenarc.reportsDir}/${reportName}.ide.txt")
+//}
+
 pluginManager.withPlugin('jacoco') {
     jacocoTestReport {
         reports {
@@ -45,3 +53,16 @@ pluginManager.withPlugin('jacoco') {
     }
 }
 
+
+task codenarcAll {
+    group 'verification'
+    description 'Lifecycle task for all codenarc tasks'
+}
+
+tasks.withType(CodeNarc) { t ->
+    tasks.codenarcAll.dependsOn t
+
+    if(t.name =~ /.+GradleTest.*/) {
+        t.enabled = false
+    }
+}

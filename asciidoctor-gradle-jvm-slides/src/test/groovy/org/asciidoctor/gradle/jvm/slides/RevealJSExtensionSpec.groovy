@@ -130,6 +130,11 @@ class RevealJSExtensionSpec extends Specification {
             }
 
             @Override
+            def <S> Provider<S> flatMap(Transformer<? extends Provider<? extends S>, ? super File> transformer) {
+                null
+            }
+
+            @Override
             boolean isPresent() {
                 false
             }

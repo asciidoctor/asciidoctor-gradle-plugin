@@ -6,16 +6,23 @@ cache:
         - $HOME/.gradle
         - .gradle/
         - testfixtures/offline-repo/build/root
+matrix:
+    include:
+        - jdk: openjdk11
 
-before_script:
-    - ./gradlew --version
+stages:
+    - quality
+    - check
+    - report
 
-script:
-    - ./gradlew --console=plain --warning-mode=all --scan build jacocoRootReport
-
-jdk:
-    - openjdk8
-    - openjdk11
-
-after_success:
-    - ./gradlew coveralls
+jobs:
+    include:
+      - stage: quality
+        script: ./gradlew --console=plain license
+        name: 'Licensing'
+      - script: ./gradlew --console=plain codenarcAll
+        name: 'Coding style'
+      - stage: check
+        name: 'Build and test'
+        script: ./gradlew --console=plain --scan test intTest remoteTest gradleTest jacocoRootReport
+        after_success: ./gradlew coveralls

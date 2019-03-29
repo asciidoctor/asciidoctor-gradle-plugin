@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.jvm.slides
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AsciidoctorUtils
+import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask
 import org.gradle.api.Action
 import org.gradle.api.file.CopySpec
@@ -263,6 +264,7 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
             }
         }
 
+        attrs.put 'source-highlighter@', 'highlightjs'
         attrs
     }
 
@@ -333,9 +335,9 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
     private void generatePluginList(File targetFile,String relativePath) {
         targetFile.parentFile.mkdirs()
 
-        String pluginList = plugins.collect { String fullName ->
+        String pluginList = Transform.toList(plugins,{ String fullName ->
             "{ src: '${relativePath}/${fullName}' }"
-        }.join(',\n')
+        }).join(',\n')
 
         targetFile.withWriter { Writer w ->
             w.println pluginList
@@ -361,9 +363,9 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
     }
 
     private Set<String> getPluginBundles() {
-        plugins.collect {
+        Transform.toSet(plugins) {
             it.split('/', 2)[0]
-        } as Set
+        }
     }
 
     private Set<ResolvedRevealJSPlugin> getResolvedPlugins() {

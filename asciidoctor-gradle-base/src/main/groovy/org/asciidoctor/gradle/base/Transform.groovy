@@ -13,22 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.testfixtures.jvm
+package org.asciidoctor.gradle.base
 
 import groovy.transform.CompileStatic
 
-/**
- * @since 2.0.0
- * @author Schalk W. Cronjé
+import java.util.function.Function
+import java.util.stream.Collectors
+
+/** Transforms a collection to another collection.
+ *
+ * @since 2.0
  */
 @CompileStatic
-class AsciidoctorjTestVersions {
+class Transform {
+    static <I,O> List<O> toList(final Collection<I> collection, Function<I,O> tx ) {
+        collection.stream().map(tx).collect(Collectors.toList())
+    }
 
-    // These lines are read by the build script.
-    public final static String SERIES_16 = '1.6.2'
-    public final static String SERIES_20 = '1.6.0-RC.2'
-    public final static String GROOVYDSL_SERIES_16 = '1.6.0'
-    public final static String GROOVYDSL_SERIES_20 = '1.6.0-alpha.2'
-    public final static String DIAGRAM_SERIES_16 = '1.5.12'
-    public final static String DIAGRAM_SERIES_20 = '1.5.8'
+    static <I,O> Set<O> toSet(final Collection<I> collection, Function<I,O> tx ) {
+        collection.stream().map(tx).collect(Collectors.toSet())
+    }
+
+    static <I,O> Set<O> toSet(final Iterable<I> collection, Function<I,O> tx ) {
+        collection.toList().stream().map(tx).collect(Collectors.toSet())
+    }
 }
