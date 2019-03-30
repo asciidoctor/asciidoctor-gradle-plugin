@@ -1,0 +1,15 @@
+apply plugin: 'org.kordamp.gradle.source-jar'
+
+task sourcesJar(type: Jar) {
+    group 'Build'
+    description 'An archive of the source code'
+    classifier 'sources'
+    from sourceSets.main.allSource
+}
+
+jar.finalizedBy sourcesJar
+
+artifacts {
+    sourcesJar
+}
+

@@ -116,7 +116,14 @@ config {
     }
     groovydoc {
         replaceJavadoc = true
+        options {
+            windowTitle = "$project.name $project.version API"
+            docTitle = "$project.name $project.version API"
+            header = "$project.name $project.version API"
+            footer = "Copyright &copy; ${copyrightYear} the original author or authors. All rights reserved."
+        }
     }
+
     licensing {
         licenses {
             license {

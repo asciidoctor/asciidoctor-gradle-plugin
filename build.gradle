@@ -106,6 +106,7 @@ subprojects {
             apply from: "${rootProject.projectDir}/gradle/publishing.gradle"
             apply from: "${rootProject.projectDir}/gradle/gradle-plugin-dependencies.gradle"
             apply from: "${rootProject.projectDir}/gradle/gradle-plugin-documentation.gradle"
+            apply from: "${rootProject.projectDir}/gradle/gradle-plugin-sources.gradle"
 
             if (project.name.startsWith('asciidoctor-gradle-jvm')) {
                 apply from: "${rootProject.projectDir}/gradle/asciidoctorj-versions.gradle"
