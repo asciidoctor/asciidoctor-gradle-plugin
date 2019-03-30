@@ -114,6 +114,9 @@ config {
             }
         }
     }
+    groovydoc {
+        replaceJavadoc = true
+    }
     licensing {
         licenses {
             license {
@@ -121,6 +124,4 @@ config {
             }
         }
     }
-
-
 }

@@ -80,7 +80,6 @@ subprojects {
         if (!project.name.startsWith('testfixture')) {
             apply plugin: 'net.ossindex.audit'
             apply plugin: 'org.kordamp.gradle.jdeps'
-            apply plugin: 'org.kordamp.gradle.groovydoc'
 
             if (!(project.name in withoutCodeCoverage)) {
                 apply plugin: 'jacoco'
@@ -94,7 +93,8 @@ subprojects {
         }
 
         apply from: "${rootProject.projectDir}/gradle/standard-repositories.gradle"
-        apply from: "${rootProject.projectDir}/gradle/code-quality.gradle"
+        apply from: "${rootProject.projectDir}/gradle/licensing.gradle"
+        apply from: "${rootProject.projectDir}/gradle/codenarc.gradle"
 
         if (!project.name.startsWith('testfixture')) {
 
