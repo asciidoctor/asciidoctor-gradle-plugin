@@ -662,9 +662,9 @@ fragments:: Use fragments globally.
   Type is boolean.
 highlightJsThemeLocation:: Highlight.js theme location.
   Can be anything convertible to a file or URI.
-keyboardShortcuts::Enable keyboard shortcuts for navigation.
+keyboardShortcuts:: Enable keyboard shortcuts for navigation.
   Type is boolean.
-loop: Loop the presentation..
+loop:: Loop the presentation..
   Type is boolean.
 mouseWheel:: Enable slide navigation via mouse wheel.
   Type is boolean.
