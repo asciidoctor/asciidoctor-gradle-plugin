@@ -16,8 +16,11 @@
 package org.asciidoctor.gradle.jvm
 
 import groovy.transform.CompileStatic
+import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+
+import static org.ysb33r.grolifant.api.TaskProvider.registerTask
 
 /**
  * @since 2.0.0
@@ -27,13 +30,18 @@ import org.gradle.api.Project
 class AsciidoctorJPlugin implements Plugin<Project> {
 
     void apply(Project project) {
-        project.with {
-            apply plugin : 'org.asciidoctor.jvm.base'
+        project.apply plugin: 'org.asciidoctor.jvm.base'
 
-            tasks.create('asciidoctor', AsciidoctorTask) {
-                group = AsciidoctorJBasePlugin.TASK_GROUP
-                description = 'Generic task to convert AsciiDoc files and copy related resources'
+        Action asciidoctorDefaults = new Action<AsciidoctorTask>() {
+            @Override
+            void execute(AsciidoctorTask asciidoctorTask) {
+                asciidoctorTask.with {
+                    group = AsciidoctorJBasePlugin.TASK_GROUP
+                    description = 'Generic task to convert AsciiDoc files and copy related resources'
+                }
             }
         }
+
+        registerTask(project, 'asciidoctor', AsciidoctorTask, asciidoctorDefaults)
     }
 }

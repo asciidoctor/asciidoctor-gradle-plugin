@@ -15,6 +15,7 @@
  */
 package org.asciidoctor.gradle.jvm
 
+
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
@@ -390,7 +391,6 @@ class AsciidoctorTaskSpec extends Specification {
         then: 'Default patterns are ignored'
         fileCollection.contains(new File(srcDir, secSrc).canonicalFile)
     }
-
 
     void 'When attribute providers are registered on the task, then global ones will not be used.'() {
         when:

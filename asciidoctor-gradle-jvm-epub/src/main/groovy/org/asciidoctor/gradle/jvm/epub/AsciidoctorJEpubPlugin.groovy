@@ -18,8 +18,12 @@ package org.asciidoctor.gradle.jvm.epub
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.jvm.AsciidoctorJBasePlugin
 import org.asciidoctor.gradle.jvm.AsciidoctorJExtension
+import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.ysb33r.grolifant.api.TaskProvider
+
+import static org.asciidoctor.gradle.jvm.AsciidoctorJExtension.DEFAULT_EPUB_VERSION
 
 
 /** Provides additional conventions for building EPUBs.
@@ -40,11 +44,18 @@ class AsciidoctorJEpubPlugin implements Plugin<Project> {
             apply plugin : 'org.asciidoctor.jvm.base'
             apply plugin : 'org.asciidoctor.kindlegen.base'
 
-            AsciidoctorEpubTask task = tasks.create('asciidoctorEpub', AsciidoctorEpubTask)
-            task.group = AsciidoctorJBasePlugin.TASK_GROUP
-            task.description = 'Convert AsciiDoc files to EPUB3/KF8 formats'
-            task.outputDir = { "${project.buildDir}/docs/asciidocEpub"}
-            extensions.getByType(AsciidoctorJExtension).epubVersion = AsciidoctorJExtension.DEFAULT_EPUB_VERSION
+            extensions.getByType(AsciidoctorJExtension).epubVersion = DEFAULT_EPUB_VERSION
+
+            Action epubDefaults = new Action<AsciidoctorEpubTask> () {
+                @Override
+                void execute(AsciidoctorEpubTask task) {
+                    task.group = AsciidoctorJBasePlugin.TASK_GROUP
+                    task.description = 'Convert AsciiDoc files to EPUB3/KF8 formats'
+                    task.outputDir = { "${task.project.buildDir}/docs/asciidocEpub"}
+                }
+            }
+
+            TaskProvider.registerTask( project, 'asciidoctorEpub', AsciidoctorEpubTask, epubDefaults)
         }
     }
 }
