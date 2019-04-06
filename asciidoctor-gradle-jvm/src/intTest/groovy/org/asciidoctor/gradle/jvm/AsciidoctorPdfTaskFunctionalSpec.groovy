@@ -16,7 +16,7 @@
 package org.asciidoctor.gradle.jvm
 
 import org.asciidoctor.gradle.internal.FunctionalSpecification
-import org.asciidoctor.gradle.testfixtures.jvm.generators.PdfBackendJRubyAsciidoctorJCombinationGenerator
+import org.asciidoctor.gradle.testfixtures.generators.PdfBackendJRubyAsciidoctorJCombinationGenerator
 import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Unroll
 

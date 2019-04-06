@@ -13,15 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.testfixtures.jvm
+package org.asciidoctor.gradle.base
 
-/** Enumeration to support the two DSLs available to Gradle.
- *
+import groovy.transform.CompileStatic
+import org.gradle.api.GradleException
+
+/**
+ * @since 3.0 (Moved from org.asciidoctor.gradle.jvm)
  * @author Schalk W. Cronjé
- *
- * @since 2.0
  */
-enum DslType {
-    GROOVY_DSL,
-    KOTLIN_DSL
+@CompileStatic
+class AsciidoctorExecutionException extends GradleException {
+
+    AsciidoctorExecutionException(final String msg) {
+        super(msg)
+    }
+
+    AsciidoctorExecutionException(final String msg, Throwable t) {
+        super(msg, t)
+    }
 }

@@ -13,30 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.jvm
+package org.asciidoctor.gradle.testfixtures
 
-import groovy.transform.CompileStatic
-
-/** Ways of execuring Asciidoctor processes.
+/** Enumeration to support the two DSLs available to Gradle.
  *
- * @since 2.0.0
  * @author Schalk W. Cronjé
+ *
+ * @since 2.0
  */
-@CompileStatic
-enum ProcessMode {
-
-    /** Use Gradle worker in-process.
-     *
-     */
-    IN_PROCESS,
-
-    /** Use out-of-process Gradle worker.
-     *
-     */
-    OUT_OF_PROCESS,
-
-    /** Use a classic out-of-process Java execution.
-     *
-     */
-    JAVA_EXEC
+enum DslType {
+    GROOVY_DSL,
+    KOTLIN_DSL
 }

@@ -16,7 +16,7 @@
 package org.asciidoctor.gradle.jvm.slides
 
 import org.asciidoctor.gradle.jvm.slides.internal.FunctionalSpecification
-import org.asciidoctor.gradle.testfixtures.jvm.JRubyTestVersions
+import org.asciidoctor.gradle.testfixtures.JRubyTestVersions
 import org.gradle.testkit.runner.BuildResult
 
 class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {

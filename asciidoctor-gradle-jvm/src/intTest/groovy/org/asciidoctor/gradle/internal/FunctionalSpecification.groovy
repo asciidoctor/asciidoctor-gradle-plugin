@@ -17,17 +17,17 @@ package org.asciidoctor.gradle.internal
 
 import groovy.transform.CompileStatic
 import org.apache.commons.io.FileUtils
-import org.asciidoctor.gradle.testfixtures.jvm.DslType
-import org.asciidoctor.gradle.testfixtures.jvm.FunctionalTestSetup
+import org.asciidoctor.gradle.testfixtures.DslType
+import org.asciidoctor.gradle.testfixtures.FunctionalTestSetup
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
-import static org.asciidoctor.gradle.testfixtures.jvm.DslType.GROOVY_DSL
-import static org.asciidoctor.gradle.testfixtures.jvm.DslType.KOTLIN_DSL
-import static org.asciidoctor.gradle.testfixtures.jvm.FunctionalTestSetup.getOfflineRepositoriesGroovyDsl
-import static org.asciidoctor.gradle.testfixtures.jvm.FunctionalTestSetup.getOfflineRepositoriesKotlinDsl
+import static org.asciidoctor.gradle.testfixtures.DslType.GROOVY_DSL
+import static org.asciidoctor.gradle.testfixtures.DslType.KOTLIN_DSL
+import static org.asciidoctor.gradle.testfixtures.FunctionalTestSetup.getOfflineRepositoriesGroovyDsl
+import static org.asciidoctor.gradle.testfixtures.FunctionalTestSetup.getOfflineRepositoriesKotlinDsl
 
 class FunctionalSpecification extends Specification {
 

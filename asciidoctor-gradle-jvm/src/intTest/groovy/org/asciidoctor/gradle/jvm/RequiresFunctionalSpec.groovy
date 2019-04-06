@@ -20,7 +20,7 @@ import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
 import spock.lang.Timeout
 
-import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.DIAGRAM_SERIES_20
+import static org.asciidoctor.gradle.testfixtures.AsciidoctorjTestVersions.DIAGRAM_SERIES_20
 
 /**
  * @author Schalk W. Cronjé

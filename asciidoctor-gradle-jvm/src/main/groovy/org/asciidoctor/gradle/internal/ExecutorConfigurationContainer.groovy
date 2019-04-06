@@ -35,7 +35,7 @@ class ExecutorConfigurationContainer implements Serializable {
 
     /** Writes a collection of {@link ExecutorConfiguration} to a file.
      *
-     * @param destinationFile File to serialise exector configurations.
+     * @param destinationFile File to serialise exec-tor configurations.
      * @param configs Executor configurations.
      */
     static void toFile(final File destinationFile, final Iterable<ExecutorConfiguration> configs) {
