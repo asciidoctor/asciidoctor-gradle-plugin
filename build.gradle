@@ -68,6 +68,7 @@ allprojects {
         ]
 
         withoutCompatibilityTests = [
+            'asciidoctor-gradle-js',
             'kindlegen-gradle'
         ]
 

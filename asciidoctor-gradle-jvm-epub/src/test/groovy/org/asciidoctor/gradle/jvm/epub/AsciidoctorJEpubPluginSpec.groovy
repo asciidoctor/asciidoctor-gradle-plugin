@@ -15,6 +15,7 @@
  */
 package org.asciidoctor.gradle.jvm.epub
 
+import org.asciidoctor.gradle.testfixtures.AsciidoctorjTestVersions
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification

@@ -17,8 +17,8 @@ package org.asciidoctor.gradle.jvm
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.base.AbstractImplementationEngineExtension
 import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
-import org.asciidoctor.gradle.base.SafeMode
 import org.asciidoctor.gradle.base.Transform
 import org.gradle.api.Action
 import org.gradle.api.GradleException
@@ -32,7 +32,6 @@ import org.gradle.api.artifacts.ResolutionStrategy
 import org.gradle.api.file.FileCollection
 import org.gradle.api.logging.LogLevel
 import org.gradle.util.GradleVersion
-import org.ysb33r.grolifant.api.AbstractCombinedProjectTaskExtension
 import org.ysb33r.grolifant.api.OperatingSystem
 
 import java.util.regex.Pattern
@@ -52,7 +51,7 @@ import static org.ysb33r.grolifant.api.StringUtils.stringize
 @CompileStatic
 @SuppressWarnings('MethodCount')
 @NonExtensible
-class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
+class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
 
     // ------------------------------------------------------------------------gw --s
     // Be careful about modifying the keyword ordering in these six lines.
@@ -88,7 +87,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     private Boolean injectGuavaJar
 
     private final Map<String, Object> options = [:]
-    private final Map<String, Object> attributes = [:]
     private final List<Object> jrubyRequires = []
     private final List<Object> asciidoctorExtensions = []
     private final List<Object> gemPaths = []
@@ -98,15 +96,12 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     private final AsciidoctorJModules modules
 
     private boolean onlyTaskOptions = false
-    private boolean onlyTaskAttributes = false
     private boolean onlyTaskRequires = false
     private boolean onlyTaskExtensions = false
     private boolean onlyTaskGems = false
     private boolean onlyTaskWarnings = false
 
     private LogLevel logLevel
-
-    private SafeMode safeMode
 
     /** Attach extension to a project.
      *
@@ -120,7 +115,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         this.attributes['gradle-project-group'] = { project.group ?: '' }
         this.attributes['gradle-project-version'] = { project.version ?: '' }
 
-        this.safeMode = SafeMode.UNSAFE
         this.version = DEFAULT_ASCIIDOCTORJ_VERSION
         this.modules = new AsciidoctorJModules(this)
     }
@@ -348,70 +342,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         this.options.putAll(m)
     }
 
-    /** Returns all of the Asciidoctor options.
-     *
-     */
-    Map<String, Object> getAttributes() {
-        stringizeMapRecursive(this.attributes, onlyTaskOptions) { AsciidoctorJExtension it ->
-            it.attributes
-        }
-    }
-
-    /** Apply a new set of Asciidoctor attributes, clearing any attributes previously set.
-     *
-     * This can be set globally for all Asciidoctor tasks in a project. If this is set in a task
-     * it will override the global attributes.
-     *
-     * @param m Map with new options
-     */
-    void setAttributes(Map m) {
-        this.attributes.clear()
-        this.attributes.putAll(m)
-
-        if (task) {
-            onlyTaskAttributes = true
-        }
-    }
-
-    /** Add additional Asciidoctor attributes.
-     *
-     * This can be set globally for all Asciidoctor tasks in a project. If this is set in a task
-     * it will use this attributes in the task in addition to any global attributes.
-     *
-     * @param m Map with new options
-     */
-    void attributes(Map m) {
-        this.attributes.putAll(m)
-    }
-
-    /** Returns a list of additional attribute providers.
-     *
-     * @return List of providers. Can be empty. Never {@code null}.
-     */
-    List<AsciidoctorAttributeProvider> getAttributeProviders() {
-        if (task) {
-            this.attributeProviders.empty ? extFromProject.attributeProviders : this.attributeProviders
-        } else {
-            this.attributeProviders
-        }
-    }
-
-    /** Adds an additional attribute provider.
-     *
-     * @param provider
-     */
-    void attributeProvider(AsciidoctorAttributeProvider provider) {
-        this.attributeProviders.add(provider)
-    }
-
-    /** Adds a closure as an additional attribute provider.
-     *
-     * @param provider A closure must return a Map<String,Object>
-     */
-    void attributeProvider(Closure provider) {
-        attributeProvider(provider as AsciidoctorAttributeProvider)
-    }
-
     /** Returns the set of Ruby modules to be included.
      *
      * @since 1.5.0
@@ -484,38 +414,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      */
     String asGemPath() {
         getGemPaths().files*.toString().join(OS.pathSeparator)
-    }
-
-    /** Returns the ASciidoctor SafeMode under which a conversion will be run.
-     *
-     * @return Asciidoctor Safe Mode
-     */
-    SafeMode getSafeMode() {
-        (task && this.safeMode || !task) ? this.safeMode : extFromProject.safeMode
-    }
-
-    /** Set Asciidoctor safe mode.
-     *
-     * @param mode An instance of Asciidoctor SafeMode.
-     */
-    void setSafeMode(SafeMode mode) {
-        this.safeMode = mode
-    }
-
-    /** Set Asciidoctor safe mode.
-     *
-     * @param mode A valid integer representing a Safe Mode
-     */
-    void setSafeMode(int mode) {
-        this.safeMode = SafeMode.safeMode(mode)
-    }
-
-    /** Set Asciidoctor safe mode.
-     *
-     * @param mode A valid string representing a Safe Mode
-     */
-    void setSafeMode(String mode) {
-        this.safeMode = SafeMode.valueOf(mode.toUpperCase())
     }
 
     /** Returns a runConfiguration of the configured AsciidoctorJ dependencies.
@@ -779,76 +677,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         } else {
             project.dependencies.create(notation)
         }
-    }
-
-    private Collection<String> stringizeList(
-        Collection<Object> list,
-        boolean fromTaskOnly,
-        Closure<Collection<String>> other
-    ) {
-        if (!task || fromTaskOnly) {
-            stringize(list)
-        } else if (list.isEmpty()) {
-            other.call(extFromProject)
-        } else {
-            List<Object> newOptions = []
-            newOptions.addAll(other.call(extFromProject))
-            newOptions.addAll(list)
-            stringize(newOptions)
-        }
-    }
-
-    private Map<String, Object> stringizeMapRecursive(
-        Map<String, Object> map,
-        boolean fromTaskOnly,
-        Closure<Map<String, Object>> other
-    ) {
-        if (!task || fromTaskOnly) {
-            stringizeScalarMapItems(map)
-        } else if (map.isEmpty()) {
-            other.call(extFromProject)
-        } else {
-            Map<String, Object> newOptions = [:]
-            newOptions.putAll(other.call(extFromProject))
-            newOptions.putAll(map)
-            stringizeScalarMapItems(newOptions)
-        }
-    }
-
-    private List<Object> stringizeScalarListItems(List<Object> list) {
-        Transform.toList(list) { item ->
-            switch (item) {
-                case List:
-                    return stringizeScalarListItems((List) item)
-                case Map:
-                    return stringizeScalarMapItems((Map) item)
-                case boolean:
-                case Boolean:
-                    return (Boolean) item
-                case File:
-                    return ((File) item).absolutePath
-                default:
-                    return stringize(item)
-            }
-        }
-    }
-
-    private Map<String, Object> stringizeScalarMapItems(Map<String, Object> map) {
-        map.collectEntries { String key, Object item ->
-            switch (item) {
-                case List:
-                    return [key, stringizeScalarListItems((List) item)]
-                case Map:
-                    return [key, stringizeScalarMapItems((Map) item)]
-                case boolean:
-                case Boolean:
-                    return [key, ((Boolean) item)]
-                case File:
-                    return [key, ((File) item).absolutePath]
-                default:
-                    return [key, stringize(item)]
-            }
-        } as Map<String, Object>
     }
 
     private AsciidoctorJExtension getExtFromProject() {

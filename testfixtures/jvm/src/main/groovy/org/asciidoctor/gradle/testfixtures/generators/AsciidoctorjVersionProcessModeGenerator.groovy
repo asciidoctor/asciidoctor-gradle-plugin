@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.testfixtures.jvm.generators
+package org.asciidoctor.gradle.testfixtures.generators
 
 import groovy.transform.CompileStatic
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.Sortable
-import org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions
 
 /** A test fixture generator class for AsciidoctorJ version & process mode.
  *

@@ -16,7 +16,7 @@
 package org.asciidoctor.gradle.jvm.epub
 
 import org.asciidoctor.gradle.jvm.epub.internal.FunctionalSpecification
-import org.asciidoctor.gradle.testfixtures.jvm.JRubyTestVersions
+import org.asciidoctor.gradle.testfixtures.JRubyTestVersions
 import org.gradle.testkit.runner.BuildResult
 import spock.lang.IgnoreIf
 import spock.lang.Issue

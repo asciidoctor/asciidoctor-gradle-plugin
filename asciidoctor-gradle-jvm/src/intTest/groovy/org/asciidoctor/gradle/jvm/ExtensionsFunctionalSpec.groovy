@@ -16,7 +16,7 @@
 package org.asciidoctor.gradle.jvm
 
 import org.asciidoctor.gradle.internal.FunctionalSpecification
-import org.asciidoctor.gradle.testfixtures.jvm.generators.AsciidoctorjVersionProcessModeGenerator
+import org.asciidoctor.gradle.testfixtures.generators.AsciidoctorjVersionProcessModeGenerator
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
@@ -25,8 +25,7 @@ import spock.lang.Timeout
 import spock.lang.Unroll
 
 @java.lang.SuppressWarnings('NoWildcardImports')
-import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.*
-import static org.asciidoctor.gradle.testfixtures.jvm.generators.AsciidoctorjVersionProcessModeGenerator.IN_PROCESS
+import static org.asciidoctor.gradle.testfixtures.AsciidoctorjTestVersions.*
 
 @SuppressWarnings(['LineLength'])
 class ExtensionsFunctionalSpec extends FunctionalSpecification {
@@ -194,8 +193,7 @@ asciidoctor {
         outputFile.text.startsWith('Hi, Mom')
 
         where:
-        // Removing 'IN_PROCESS' because it causes a JFFI crash in a full test run.
-        model << AsciidoctorjVersionProcessModeGenerator.get().findAll { it.processMode != IN_PROCESS }
+        model << AsciidoctorjVersionProcessModeGenerator.get()
     }
 
     @Timeout(value = 90)
