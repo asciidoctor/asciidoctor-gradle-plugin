@@ -21,9 +21,9 @@ import spock.lang.Issue
 import spock.lang.Timeout
 import spock.lang.Unroll
 
-import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.SERIES_20
+import static org.asciidoctor.gradle.testfixtures.AsciidoctorjTestVersions.SERIES_20
 @java.lang.SuppressWarnings('NoWildcardImports')
-import static org.asciidoctor.gradle.testfixtures.jvm.JRubyTestVersions.*
+import static org.asciidoctor.gradle.testfixtures.JRubyTestVersions.*
 
 class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
 

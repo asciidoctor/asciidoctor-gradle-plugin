@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.testfixtures.jvm.generators
+package org.asciidoctor.gradle.testfixtures.generators
 
 import groovy.transform.CompileStatic
 import groovy.transform.EqualsAndHashCode
@@ -21,9 +21,9 @@ import groovy.transform.Sortable
 import groovy.transform.TupleConstructor
 
 @java.lang.SuppressWarnings('NoWildcardImports')
-import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.*
+import static org.asciidoctor.gradle.testfixtures.AsciidoctorjTestVersions.*
 @java.lang.SuppressWarnings('NoWildcardImports')
-import static org.asciidoctor.gradle.testfixtures.jvm.JRubyTestVersions.*
+import static org.asciidoctor.gradle.testfixtures.JRubyTestVersions.*
 
 /** A test fixture generator class for combining versions of AsciidoctorJ & JRuby for
  * PDF backend testing.

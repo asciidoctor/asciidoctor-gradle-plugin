@@ -1,11 +1,11 @@
 import fi.linuxbox.gradle.download.worker.DownloadWorkerTask
 
-apply plugin : 'base'
-apply plugin : 'fi.linuxbox.download.worker'
-apply plugin : 'org.ysb33r.os'
-apply plugin : 'org.ysb33r.ivypot'
+apply plugin: 'base'
+apply plugin: 'fi.linuxbox.download.worker'
+apply plugin: 'org.ysb33r.os'
+apply plugin: 'org.ysb33r.ivypot'
 
-apply from : "${rootProject.projectDir}/gradle/kindlegen-versions.gradle"
+apply from: "${rootProject.projectDir}/gradle/kindlegen-versions.gradle"
 
 syncRemoteRepositories {
 
@@ -21,6 +21,7 @@ syncRemoteRepositories {
         // Put this first as sometimes Ivy hits a hiccup on JCenter()
         mavenCentral()
         jcenter()
+        maven { url 'https://plugins.gradle.org/m2/' }
 
         if (version.endsWith('-SNAPSHOT')) {
             mavenLocal()
@@ -61,7 +62,7 @@ syncRemoteRepositories {
         }
     }
 
-    onlyIf { ! gradle.startParameter.offline }
+    onlyIf { !gradle.startParameter.offline }
 }
 
 ext {
@@ -76,7 +77,7 @@ ext {
     kindleGenBinaryUrl = "http://kindlegen.s3.amazonaws.com/${kindleGenPackageName}"
 }
 
-task cacheKindleGenBinary( type : DownloadWorkerTask ) {
+task cacheKindleGenBinary(type: DownloadWorkerTask) {
     group 'Off-line repository'
     description 'Cache kindlegen archive off-line for testing'
 
@@ -88,7 +89,7 @@ task cacheKindleGenBinary( type : DownloadWorkerTask ) {
     }
 
     enabled = OS.windows || OS.linux || OS.macOsX
-    onlyIf { ! gradle.startParameter.offline }
+    onlyIf { !gradle.startParameter.offline }
 }
 
 task buildOfflineRepositories {
@@ -98,7 +99,7 @@ task buildOfflineRepositories {
     dependsOn syncRemoteRepositories, cacheKindleGenBinary
 }
 
-task cleanRepo( type : Delete ) {
+task cleanRepo(type: Delete) {
     delete project.ext.offlineRepoRoot
 }
 

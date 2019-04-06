@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle.jvm
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.base.OutputOptions
 import org.gradle.api.Action
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.workers.WorkerExecutor
@@ -54,7 +55,7 @@ class AsciidoctorTask extends AbstractAsciidoctorTask {
 
     /** Configures output options for this task.
      *
-     * @param cfg Closure which will delegate to a {@link OutputOptions} instance.
+     * @param cfg Closure which will delegate to a {@link org.asciidoctor.gradle.base.OutputOptions} instance.
      */
     void outputOptions(Closure cfg) {
         Closure configurator = (Closure) cfg.clone()
@@ -65,7 +66,7 @@ class AsciidoctorTask extends AbstractAsciidoctorTask {
 
     /** Configures output options for this task.
      *
-     * @param cfg Action which will be passed an instances of {@link OutputOptions} to configure.
+     * @param cfg Action which will be passed an instances of {@link org.asciidoctor.gradle.base.OutputOptions} to configure.
      */
     void outputOptions(Action<OutputOptions> cfg) {
         cfg.execute(this.configuredOutputOptions)

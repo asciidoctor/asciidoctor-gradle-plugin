@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.testfixtures.jvm
+package org.asciidoctor.gradle.testfixtures
 
 import groovy.transform.CompileStatic
 
