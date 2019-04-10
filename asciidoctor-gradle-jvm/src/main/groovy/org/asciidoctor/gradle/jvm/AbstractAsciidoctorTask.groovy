@@ -646,12 +646,20 @@ class AbstractAsciidoctorTask extends DefaultTask {
      * @return A collection of default attributes.
      */
     protected Map<String, Object> getTaskSpecificDefaultAttributes(File workingSourceDir) {
-        [
+        Map<String, Object> attrs = [
             includedir: (Object) workingSourceDir.absolutePath,
-            revnumber : (Object) project.version,
-            'gradle-project-group' : (Object) project.group,
             'gradle-project-name': (Object) project.name
         ]
+
+        if(project.version != null) {
+            attrs.put('revnumber', (Object) project.version)
+        }
+
+        if(project.group != null) {
+            attrs.put('gradle-project-group', (Object) project.group)
+        }
+
+        attrs
     }
 
     /** The default PatternSet that will be used if {@code sources} was never called
