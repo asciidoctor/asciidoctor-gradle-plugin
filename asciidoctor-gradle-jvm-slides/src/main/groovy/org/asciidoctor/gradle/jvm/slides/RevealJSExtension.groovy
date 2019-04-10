@@ -34,7 +34,7 @@ class RevealJSExtension {
 
     final static String NAME = 'revealjs'
     final static String DEFAULT_VERSION = '2.0.0'
-    final static String DEFAULT_TEMPLATE_VERSION = '3.7.0'
+    final static String DEFAULT_TEMPLATE_VERSION = '3.8.0'
     final static Version FIRST_VERSION_WITH_PLUGIN_SUPPORT = Version.of('2.0.0')
 
     private String version = DEFAULT_VERSION
