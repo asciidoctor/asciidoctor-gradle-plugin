@@ -264,7 +264,7 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
             }
         }
 
-        attrs.put 'source-highlighter@', 'highlightjs'
+        attrs.put 'source-highlighter', 'highlightjs'
         attrs
     }
 
