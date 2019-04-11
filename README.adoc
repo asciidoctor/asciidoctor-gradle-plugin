@@ -1,6 +1,6 @@
 = Asciidoctor Gradle Plugin
 Andres Almiray <https://github.com/aalmiray[@aalmiray]>
-:version: 2.0.0
+:version: 2.1.0
 :version-published: 2.0.0
 :asciidoc-url: http://asciidoc.org
 :asciidoctor-url: http://asciidoctor.org
@@ -997,4 +997,37 @@ asciidoctor.doLast {
     }
 }
 ----
+
+=== Using Pygments source highlighter
+
+NOTE: You need to have Python 2.x installed on a system or in a container for Pygments to work.
+
+[source,groovy]
+[subs=attributes+]
+----
+plugins {
+  id 'org.asciidoctor.jvm.pdf' version '{version-published}'
+  id 'org.asciidoctor.jvm.gems' version '{version-published}'
+}
+
+repositories {
+    jcenter()
+    maven { url 'http://rubygems-proxy.torquebox.org/releases' }
+}
+
+dependencies {
+  asciidoctorGems 'rubygems:pygments:1.2.1'
+}
+
+asciidoctorPdf {
+  dependsOn asciidoctorGemsPrepare
+  sourceDir 'docs'
+
+  asciidoctorj {
+    requires 'pygments'
+    attributes 'source-highlighter' : 'pygments'
+  }
+}
+----
+
 
