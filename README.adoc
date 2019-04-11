@@ -716,7 +716,7 @@ Gradle injected a number of attributes into the build. Some of these names have 
 | `project-name` | `gradle-project-name` | Yes | The name of the current Gradle subproject. (Or the root project in case of a single project).
 | `project-group` | `gradle-project-group` | Yes | The project/artifact group if it is defined.
 | `project-version` | `revnumber` | Yes | The project version if it is defined.
-| - | `gradle-relative-srcdir` | No | The relative path from the parent of the current document that is being processed to the source document root. It is calcluated as moving from the current document towards the root. FOr instance `src/docs/asciidoc/subdir/sample.adoc` will set this attribute to `..` if `sourceDir` == `sr/docs/asciidoc`.
+| - | `gradle-relative-srcdir` | No | The relative path from the parent of the current document that is being processed to the source document root. It is calcluated as moving from the current document towards the root. For instance `src/docs/asciidoc/subdir/sample.adoc` will set this attribute to `..` if `sourceDir` == `src/docs/asciidoc`.
 |===
 
 Substituable attributes means that the build script author can change those attributes by setting them explicitly.
