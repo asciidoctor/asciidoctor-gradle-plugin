@@ -91,6 +91,7 @@ abstract class ExecutorBase {
             newAttrs.putAll(attributes)
             newAttrs['gradle-projectdir'] = projectDir.absolutePath
             newAttrs['gradle-rootdir'] = rootDir.absolutePath
+            newAttrs['gradle-relative-srcdir'] = getRelativePath(sourceDir,file.parentFile) ?: '.'
 
             if(legacyAttributes) {
                 newAttrs['projectdir'] = newAttrs['gradle-projectdir']

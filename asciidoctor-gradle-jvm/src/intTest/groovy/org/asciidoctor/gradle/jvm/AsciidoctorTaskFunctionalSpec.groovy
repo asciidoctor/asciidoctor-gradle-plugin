@@ -156,6 +156,24 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         noExceptionThrown()
     }
 
+    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/292')
+    void 'Special gradle attributes are adapted per document'() {
+        given:
+        getBuildFile('''
+            asciidoctor {
+                sourceDir 'src/docs/asciidoc'
+            }
+        ''')
+
+        when:
+        getGradleRunner(DEFAULT_ARGS).build()
+        String sample2 = new File(testProjectDir.root, 'build/docs/asciidoc/subdir/sample2.html').text
+
+        then:
+        sample2.contains('gradle-relative-srcdir = [..]')
+
+    }
+
     File getBuildFile(String extraContent) {
         getJvmConvertGroovyBuildFile("""
 asciidoctorj {
