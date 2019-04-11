@@ -32,6 +32,8 @@ class RemoteSpecification extends Specification {
     static final String OUTPUT_DOCBOOK = 'index.xml'
     static final String HTML = 'html5'
     static final String DOCBOOK = 'docbook'
+    static final String INVALID_1 = 'abc'
+    static final String INVALID_2 = 'def'
 
     @Rule
     TemporaryFolder testProjectDir
