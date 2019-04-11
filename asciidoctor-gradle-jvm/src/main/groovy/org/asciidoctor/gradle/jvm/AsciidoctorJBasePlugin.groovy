@@ -16,13 +16,16 @@
 package org.asciidoctor.gradle.jvm
 
 import groovy.transform.CompileStatic
+import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.tasks.diagnostics.DependencyReportTask
 
+import static org.ysb33r.grolifant.api.TaskProvider.registerTask
+
 /**
- * @since 2.0.0
- * @author Schalk W. Cronjé
+ * @since 2.0.0* @author Schalk W. Cronjé
  */
 @CompileStatic
 class AsciidoctorJBasePlugin implements Plugin<Project> {
@@ -36,11 +39,12 @@ class AsciidoctorJBasePlugin implements Plugin<Project> {
 
             AsciidoctorJExtension asciidoctorj = extensions.create AsciidoctorJExtension.NAME, AsciidoctorJExtension, project
 
-            tasks.create(DEPS_REPORT, DependencyReportTask)
-
-            afterEvaluate {
-                ((DependencyReportTask) tasks.getByName(DEPS_REPORT)).configurations = [asciidoctorj.configuration].toSet()
-            }
+            registerTask(project, DEPS_REPORT, DependencyReportTask, new Action<Task>() {
+                @Override
+                void execute(Task task) {
+                    ((DependencyReportTask) task).configurations = [asciidoctorj.configuration].toSet()
+                }
+            })
         }
     }
 }

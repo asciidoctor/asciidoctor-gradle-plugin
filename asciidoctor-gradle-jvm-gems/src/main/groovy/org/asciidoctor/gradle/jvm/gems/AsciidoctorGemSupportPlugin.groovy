@@ -16,13 +16,16 @@
 package org.asciidoctor.gradle.jvm.gems
 
 import com.github.jrubygradle.JRubyPluginExtension
-import com.github.jrubygradle.JRubyPrepare
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.jvm.AsciidoctorJExtension
+import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import org.ysb33r.grolifant.api.TaskProvider
+
+import static org.ysb33r.grolifant.api.TaskProvider.registerTask
 
 /** Plugin that simplifies that management of external GEMs.
  *
@@ -39,33 +42,42 @@ import org.gradle.api.artifacts.Configuration
 @CompileStatic
 class AsciidoctorGemSupportPlugin implements Plugin<Project> {
 
-    static final String GEM_CONFIGURATION = 'asciidoctorGems'
-    static final String GEMPREP_TASK = 'asciidoctorGemsPrepare'
+    public static final String GEM_CONFIGURATION = 'asciidoctorGems'
+    public static final String GEMPREP_TASK = 'asciidoctorGemsPrepare'
 
     @Override
     void apply(Project project) {
         project.apply plugin: 'org.asciidoctor.jvm.base'
         Configuration gemConfig = project.configurations.maybeCreate(GEM_CONFIGURATION)
 
-        AsciidoctorGemPrepare prepTask = project.tasks.create(GEMPREP_TASK, AsciidoctorGemPrepare)
-        project.extensions.getByType(AsciidoctorJExtension).gemPaths { prepTask.outputDir }
-
-        prepTask.with {
-            dependencies gemConfig
-            group = 'dependencies'
-            description = 'Prepare additional GEMs for AsciidoctorJ'
+        Action gemPrepDefaults = new Action<AsciidoctorGemPrepare>() {
+            @Override
+            void execute(AsciidoctorGemPrepare asciidoctorGemPrepare) {
+                asciidoctorGemPrepare.with {
+                    dependencies gemConfig
+                    group = 'dependencies'
+                    description = 'Prepare additional GEMs for AsciidoctorJ'
+                }
+            }
         }
 
-        workaroundEarlyEvaluationInPrepareTask(prepTask)
+        TaskProvider<AsciidoctorGemPrepare> prepTask = registerTask(project, GEMPREP_TASK, AsciidoctorGemPrepare, gemPrepDefaults)
+        project.extensions.getByType(AsciidoctorJExtension).gemPaths { prepTask.get().outputDir }
+
+        workaroundEarlyEvaluationInPrepareTask(project, prepTask)
         playNiceWithJrubyGradle(project)
     }
 
     @CompileDynamic
-    private void workaroundEarlyEvaluationInPrepareTask(JRubyPrepare prepTask) {
-        prepTask.project.afterEvaluate {
-            prepTask.with {
-                outputDir = prepTask.project.file("${prepTask.project.buildDir}/asciidoctorGems")
+    private void workaroundEarlyEvaluationInPrepareTask(Project project, TaskProvider<AsciidoctorGemPrepare> prepTask) {
+        project.afterEvaluate {
+            Action updater = new Action<AsciidoctorGemPrepare>() {
+                @Override
+                void execute(AsciidoctorGemPrepare asciidoctorGemPrepare) {
+                    asciidoctorGemPrepare.outputDir = project.file("${project.buildDir}/asciidoctorGems")
+                }
             }
+            prepTask.configure(updater)
         }
     }
 
