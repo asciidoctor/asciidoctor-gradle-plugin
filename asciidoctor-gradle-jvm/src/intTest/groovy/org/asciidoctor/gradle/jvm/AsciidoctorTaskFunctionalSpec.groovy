@@ -174,6 +174,28 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
 
     }
 
+    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/234')
+    void 'Run conversion with an unknown backend using JAVA_EXEC'() {
+        given:
+        getBuildFile('''
+        asciidoctor {
+            inProcess = JAVA_EXEC
+            outputOptions {
+                backends = ['html5', 'abc', 'xyz']
+            }
+            sourceDir 'src/docs/asciidoc'
+        }
+        ''')
+
+        when:
+        String result = getGradleRunner(DEFAULT_ARGS).buildAndFail().output
+
+        then:
+        result.contains("missing converter for backend 'abc'. Processing aborted")
+        result.contains('org.asciidoctor.internal.AsciidoctorCoreException: org.jruby.exceptions.NotImplementedError')
+        !result.contains('ArrayIndexOutOfBoundsException')
+    }
+
     File getBuildFile(String extraContent) {
         getJvmConvertGroovyBuildFile("""
 asciidoctorj {
