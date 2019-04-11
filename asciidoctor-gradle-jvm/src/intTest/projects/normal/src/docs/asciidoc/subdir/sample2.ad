@@ -23,3 +23,12 @@ NOTE: This is test, only a test.
 * Item 2
 * Item 3
 
+== Attributes
+
+* gradle-projectdir = [{gradle-projectdir}]
+* gradle-rootdir = [{gradle-rootdir}]
+* gradle-relative-srcdir = [{gradle-relative-srcdir}]
+
+
+
+
