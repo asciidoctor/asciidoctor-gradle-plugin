@@ -58,6 +58,7 @@ class AsciidoctorEpubTask extends AbstractAsciidoctorTask {
         copyNoResources()
         inProcess = JAVA_EXEC
         kindleGenExtension = project.extensions.getByType(KindleGenExtension)
+        sourceDir = 'src/docs/asciidocEpub'
     }
 
     /** The eBook formats that needs to be generated.

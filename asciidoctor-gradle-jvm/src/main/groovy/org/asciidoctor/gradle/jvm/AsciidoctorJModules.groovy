@@ -16,13 +16,10 @@
 package org.asciidoctor.gradle.jvm
 
 import org.asciidoctor.gradle.base.AsciidoctorModuleDefinition
+import org.asciidoctor.gradle.base.ModuleNotFoundException
 import org.gradle.api.Action
 import org.ysb33r.grolifant.api.StringUtils
 
-import static org.asciidoctor.gradle.jvm.AsciidoctorJExtension.DEFAULT_DIAGRAM_VERSION
-import static org.asciidoctor.gradle.jvm.AsciidoctorJExtension.DEFAULT_EPUB_VERSION
-import static org.asciidoctor.gradle.jvm.AsciidoctorJExtension.DEFAULT_GROOVYDSL_VERSION
-import static org.asciidoctor.gradle.jvm.AsciidoctorJExtension.DEFAULT_PDF_VERSION
 import static org.ysb33r.grolifant.api.ClosureUtils.configureItem
 
 /** Define versions for standard AsciidoctorJ modules.
@@ -38,15 +35,15 @@ class AsciidoctorJModules {
     private final AsciidoctorModuleDefinition diagram
     private final AsciidoctorModuleDefinition groovyDsl
 
-    AsciidoctorJModules(AsciidoctorJExtension asciidoctorjs) {
-        this.pdf = Module.of('pdf', DEFAULT_PDF_VERSION)
-        this.epub = Module.of('epub', DEFAULT_EPUB_VERSION)
-        this.diagram = Module.of('diagram', DEFAULT_DIAGRAM_VERSION) { value ->
+    AsciidoctorJModules(AsciidoctorJExtension asciidoctorjs, Map<String, String> defaultVersions) {
+        this.pdf = Module.of('pdf', defaultVersions['asciidoctorj.pdf'])
+        this.epub = Module.of('epub', defaultVersions['asciidoctorj.epub'])
+        this.diagram = Module.of('diagram', defaultVersions['asciidoctorj.diagram']) { value ->
             if (value != null) {
                 asciidoctorjs.requires('asciidoctor-diagram')
             }
         }
-        this.groovyDsl = Module.of('groovyDsl', DEFAULT_GROOVYDSL_VERSION)
+        this.groovyDsl = Module.of('groovyDsl', defaultVersions['asciidoctorj.groovydsl'])
 
         [pdf, epub, diagram, groovyDsl].each {
             index[it.name] = it
@@ -101,6 +98,9 @@ class AsciidoctorJModules {
         }
 
         private Module(final String name, final Object defaultVersion, Action<Object> setAction = null) {
+            if (defaultVersion == null) {
+                throw new ModuleNotFoundException("Default version for ${name} cannot be null")
+            }
             this.name = name
             this.defaultVersion = defaultVersion
             this.setAction = setAction

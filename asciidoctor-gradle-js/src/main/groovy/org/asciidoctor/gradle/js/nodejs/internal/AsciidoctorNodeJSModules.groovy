@@ -22,8 +22,6 @@ import org.asciidoctor.gradle.js.base.internal.BaseAsciidoctorJSModules
 import org.asciidoctor.gradle.js.nodejs.AsciidoctorJSExtension
 import org.gradle.api.Action
 
-import static org.asciidoctor.gradle.js.base.AbstractAsciidoctorJSExtension.DEFAULT_DOCBOOK_VERSION
-
 /** Define versions for standard AsciidoctorJS modules.
  *
  * @author Schalk W. Cronjé
@@ -41,11 +39,11 @@ class AsciidoctorNodeJSModules extends BaseAsciidoctorJSModules implements Ascii
      *
      * @param asciidoctorjs Extension that this module is attached to.
      */
-    AsciidoctorNodeJSModules(AsciidoctorJSExtension asciidoctorjs) {
+    AsciidoctorNodeJSModules(AsciidoctorJSExtension asciidoctorjs, Map<String, String> versionMap) {
         super(
             Module.of(
                 'docbook',
-                DEFAULT_DOCBOOK_VERSION,
+                versionMap['asciidoctorjs.docbook'],
                 PackageDescriptor.of(SCOPE_ASCIIDOCTOR, 'docbook-converter')
             )
         )

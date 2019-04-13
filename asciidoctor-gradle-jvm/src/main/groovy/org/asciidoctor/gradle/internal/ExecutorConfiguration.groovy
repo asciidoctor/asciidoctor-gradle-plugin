@@ -22,7 +22,8 @@ import java.util.regex.Pattern
 
 /** Configuration for running Asciidoctor
  *
- * @since 2.0.0* @author Schalk W. Cronjé
+ * @author Schalk W. Cronjé
+ * @since 2.0.0
  */
 @CompileStatic
 @SuppressWarnings(['CloneableWithoutClone'])

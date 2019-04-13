@@ -77,6 +77,11 @@ sourceSets {
     }
 }
 
+generateModuleVersions {
+    basename = 'asciidoctorj-extension'
+    propertyNames ~/^asciidoctorj$/, ~/^asciidoctorj\./
+}
+
 dependencies {
     remoteTestCompile "org.asciidoctor:asciidoctorj:${compileOnlyAsciidoctorJVersion}"
     remoteTestCompile project(':testfixtures-jvm')

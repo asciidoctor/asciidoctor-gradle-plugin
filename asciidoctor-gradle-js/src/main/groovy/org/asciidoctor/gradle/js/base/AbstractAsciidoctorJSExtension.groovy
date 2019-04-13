@@ -34,10 +34,7 @@ import static org.ysb33r.grolifant.api.StringUtils.stringize
 @CompileStatic
 abstract class AbstractAsciidoctorJSExtension extends AbstractImplementationEngineExtension {
 
-    public final static String DEFAULT_ASCIIDOCTORJS_VERSION = '2.0.2'
-    public final static String DEFAULT_DOCBOOK_VERSION = '2.0.0'
-
-    private Object version = DEFAULT_ASCIIDOCTORJS_VERSION
+    private Object version
     private final AsciidoctorJSModules modules
 
     /** Version of AsciidoctorJS that should be used.
@@ -97,8 +94,9 @@ abstract class AbstractAsciidoctorJSExtension extends AbstractImplementationEngi
      * @param project
      */
     protected AbstractAsciidoctorJSExtension(Project project) {
-        super(project)
+        super(project, 'asciidoctorjs-extension')
         this.modules = createModulesConfiguration()
+        this.version = defaultVersionMap['asciidoctorjs']
     }
 
     /** Attach extension to a task.

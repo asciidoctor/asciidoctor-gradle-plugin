@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle.testfixtures
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.testfixtures.internal.TestFixtureVersionLoader
 import org.gradle.testkit.runner.GradleRunner
 import org.ysb33r.grolifant.api.OperatingSystem
 
@@ -122,6 +123,10 @@ class FunctionalTestSetup {
         } else {
             $/apply( from = "${repo.absolutePath}")/$
         }
+    }
+
+    static File getOfflineRepo() {
+        new File(TestFixtureVersionLoader.VERSIONS['offline-repo-location'])
     }
 
     static private final String BACKSLASH = '\\'

@@ -174,7 +174,27 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         sample2.contains('gradle-relative-srcdir = [..]')
     }
 
-    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/234')
+    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/2324')
+    void 'Run conversion with an unknown backend'() {
+        given:
+        getBuildFile('''
+        asciidoctor {
+            outputOptions {
+                backends = ['html5', 'abc', 'xyz']
+            }
+            sourceDir 'src/docs/asciidoc'
+        }
+        ''')
+
+        when:
+        String result = getGradleRunner(DEFAULT_ARGS).buildAndFail().output
+
+        then:
+        result.contains("missing converter for backend 'abc'. Processing aborted")
+        result.contains('org.asciidoctor.jruby.internal.AsciidoctorCoreException: org.jruby.exceptions.NotImplementedError')
+    }
+
+    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/2324')
     @SuppressWarnings('LineLength')
     void 'Run conversion with an unknown backend using JAVA_EXEC'() {
         given:

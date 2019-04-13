@@ -26,6 +26,7 @@ class AsciidoctorRevealJSTaskSpec extends Specification {
 
     void 'Configure revealjs task'() {
         given:
+        project.apply plugin: 'org.asciidoctor.jvm.base'
         AsciidoctorJRevealJSTask revealjsTask = project.tasks.create('foo', AsciidoctorJRevealJSTask)
 
         when:

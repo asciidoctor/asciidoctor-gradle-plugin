@@ -114,7 +114,7 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
      */
     @SuppressWarnings('UnnecessaryGetter')
     Configuration getConfiguration() {
-        final String docbook =  moduleVersion(modules.docbook)
+        final String docbook = moduleVersion(modules.docbook)
         final List<SelfResolvingDependency> deps = [createDependency(PACKAGE_ASCIIDOCTOR, getVersion())]
 
         if (docbook) {
@@ -149,7 +149,7 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
      */
     @Override
     protected AsciidoctorJSModules createModulesConfiguration() {
-        new AsciidoctorNodeJSModules(this)
+        new AsciidoctorNodeJSModules(this, defaultVersionMap)
     }
 
     private List<NpmDependency> getAllAdditionalRequires() {
