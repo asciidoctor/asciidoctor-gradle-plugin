@@ -18,6 +18,8 @@ package org.asciidoctor.gradle.jvm.slides
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AsciidoctorUtils
 import org.asciidoctor.gradle.base.Transform
+import org.asciidoctor.gradle.base.slides.Profile
+import org.asciidoctor.gradle.base.slides.SlidesToExportAware
 import org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask
 import org.gradle.api.Action
 import org.gradle.api.file.CopySpec
@@ -31,17 +33,15 @@ import org.ysb33r.grolifant.api.Version
 import javax.inject.Inject
 
 import static org.asciidoctor.gradle.jvm.slides.RevealJSExtension.FIRST_VERSION_WITH_PLUGIN_SUPPORT
-import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 
 /**
  * @since 2.0
  */
-@CacheableTask
 @CompileStatic
-class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
+class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements SlidesToExportAware {
 
-    static final String PLUGIN_CONFIGURATION_FILENAME = 'revealjs-plugin-configuration.js'
-    static final String PLUGIN_LIST_FILENAME = 'revealjs-plugins.js'
+    public static final String PLUGIN_CONFIGURATION_FILENAME = 'revealjs-plugin-configuration.js'
+    public static final String PLUGIN_LIST_FILENAME = 'revealjs-plugins.js'
 
     private static final String BACKEND_NAME = 'revealjs'
 
@@ -62,6 +62,10 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
         this.revealjsOptions = new RevealJSOptions(project)
         configuredOutputOptions.backends = [BACKEND_NAME]
         copyAllResources()
+
+        inputs.file( { RevealJSOptions opt -> opt.highlightJsThemeIfFile }.curry(this.revealjsOptions) ).optional()
+        inputs.file( { RevealJSOptions opt -> opt.parallaxBackgroundImageIfFile }.
+                curry(this.revealjsOptions) ).optional()
     }
 
     /** Options for Reveal.JS slides.
@@ -91,7 +95,6 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
      * @return
      */
     @InputDirectory
-    @PathSensitive(RELATIVE)
     File getTemplateSourceDir() {
         revealjsExtension.templateProvider.get()
     }
@@ -205,9 +208,8 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
      *
      * @return Location of file. Can be {@code null}
      */
-    @Optional
     @InputFile
-    @PathSensitive(RELATIVE)
+    @Optional
     File getPluginConfigurationFile() {
         this.pluginConfigurationFile ? project.file(this.pluginConfigurationFile) : null
     }
@@ -218,6 +220,12 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
      */
     void setPluginConfigurationFile(Object f) {
         this.pluginConfigurationFile = f
+    }
+
+    @Internal
+    @Override
+    Profile getProfile() {
+        Profile.REVEAL_JS
     }
 
     @Override

@@ -51,11 +51,11 @@ class RevealJSPluginExtension extends AbstractDownloadableComponent<LocalRevealJ
      */
     @Override
     protected Closure convertible(final LocalRevealJSPlugin component) {
-        { ->
+        { Project project1 ->
             new ResolvedRevealJSPlugin() {
                 @Override
                 File getLocation() {
-                    project.file(component.location)
+                    project1.file(component.location)
                 }
 
                 @Override
@@ -63,7 +63,7 @@ class RevealJSPluginExtension extends AbstractDownloadableComponent<LocalRevealJ
                     StringUtils.stringize(component.name)
                 }
             }
-        }
+        }.curry(project)
     }
 
     /** Instantiates a resolved component.

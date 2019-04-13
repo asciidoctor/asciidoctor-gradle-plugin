@@ -18,8 +18,9 @@ package org.asciidoctor.gradle.testfixtures
 import groovy.transform.CompileStatic
 
 /**
+ * @author Schalk W. Cronjé
+ *
  * @since 2.0.0
-* @author Schalk W. Cronjé
 */
 @CompileStatic
 class JRubyTestVersions {

@@ -1,3 +1,8 @@
+generateModuleVersions {
+    basename = 'revealjs-extension'
+    propertyNames ~/^revealjs\./
+}
+
 dependencies {
     compile project(':asciidoctor-gradle-base')
     compile project(':asciidoctor-gradle-jvm-gems')

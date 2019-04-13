@@ -7,7 +7,7 @@ dependencies {
 }
 
 intTest {
-    systemProperties 'org.asciidoctor.gradle.kindlegen.uri': offlineRepoBinariesRoot.toURI()
+    systemProperties 'org.asciidoctor.gradle.kindlegen.uri': "${offlineRepoBinariesRoot}/kindlegen".toURI()
     systemProperties TEST_PROJECTS_DIR: file('src/intTest/projects')
 }
 

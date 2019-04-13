@@ -31,11 +31,12 @@ import static org.asciidoctor.gradle.testfixtures.FunctionalTestSetup.getOffline
 
 class FunctionalSpecification extends Specification {
 
-    @SuppressWarnings('LineLength')
-    static
-        final String TEST_PROJECTS_DIR = System.getProperty('TEST_PROJECTS_DIR', './asciidoctor-gradle-jvm/src/intTest/projects')
-    static
-    final String TEST_REPO_DIR = System.getProperty('OFFLINE_REPO', './testfixtures/offline-repo/build/repo')
+    public static final String TEST_PROJECTS_DIR = System.getProperty(
+            'TEST_PROJECTS_DIR',
+            './src/intTest/projects'
+    )
+    public static
+    final String TEST_REPO_DIR = FunctionalTestSetup.offlineRepo.absolutePath
 
     @Rule
     TemporaryFolder testProjectDir
@@ -50,7 +51,8 @@ class FunctionalSpecification extends Specification {
 
     @SuppressWarnings(['BuilderMethodWithSideEffects'])
     void createTestProject(String docGroup = 'normal') {
-        FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, docGroup), testProjectDir.root)
+        File srcDir = new File(TEST_PROJECTS_DIR, docGroup).absoluteFile
+        FileUtils.copyDirectory(srcDir, testProjectDir.root)
     }
 
     @CompileStatic

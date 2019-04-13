@@ -380,11 +380,10 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
     /** Configure Java fork options prior to execution
      *
      * The default method will copy anything configured via {@link #forkOptions(Closure c)} or
-     * {@link #forkOptions(Action c)} to the rpovided {@link JavaForkOptions}.
+     * {@link #forkOptions(Action c)} to the provided {@link JavaForkOptions}.
      *
      * @param pfo Fork options to be configured.
      */
-    @SuppressWarnings('UnusedMethodParameter')
     protected void configureForkOptions(JavaForkOptions pfo) {
         this.javaForkOptions.copyTo(pfo)
     }

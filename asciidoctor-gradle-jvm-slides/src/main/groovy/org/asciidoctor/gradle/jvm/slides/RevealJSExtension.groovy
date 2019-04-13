@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.jvm.slides
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.GitHubArchive
+import org.asciidoctor.gradle.base.ModuleVersionLoader
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
@@ -33,20 +34,22 @@ import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClos
 class RevealJSExtension {
 
     final static String NAME = 'revealjs'
-    final static String DEFAULT_VERSION = '2.0.0'
-    final static String DEFAULT_TEMPLATE_VERSION = '3.8.0'
     final static Version FIRST_VERSION_WITH_PLUGIN_SUPPORT = Version.of('2.0.0')
 
-    private String version = DEFAULT_VERSION
+    private String version
     private Provider<File> resolveRevealJs
     private final Project project
 
     RevealJSExtension(Project project) {
         this.project = project
+
+        Map<String,String> versionMap = ModuleVersionLoader.load('revealjs-extension')
+        this.version = versionMap['revealjs.gem']
+
         templateGitHub {
             organisation = 'hakimel'
             repository = 'reveal.js'
-            tag = { DEFAULT_TEMPLATE_VERSION }
+            tag = { versionMap['revealjs.template'] }
         }
     }
 

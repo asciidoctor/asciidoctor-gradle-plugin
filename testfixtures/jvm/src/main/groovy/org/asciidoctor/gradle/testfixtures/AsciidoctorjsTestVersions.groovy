@@ -17,14 +17,17 @@ package org.asciidoctor.gradle.testfixtures
 
 import groovy.transform.CompileStatic
 
-/**
- * @since 2.0.0
+import static org.asciidoctor.gradle.testfixtures.internal.TestFixtureVersionLoader.VERSIONS
+
+/** Version of Asciidoctor.js and associate modules that are available for
+ * Asciidoctor.js targeted tests.
+ *
  * @author Schalk W. Cronjé
+ *
+ * @since 2.0.0
  */
 @CompileStatic
 class AsciidoctorjsTestVersions {
-
-    // These lines are read by the build script.
-    public final static String SERIES_20 = '2.0.2'
-    public final static String DOCBOOK_SERIES_20 = '2.0.0'
+    public final static String SERIES_20 = VERSIONS['asciidoctorjs']
+    public final static String DOCBOOK_SERIES_20 = VERSIONS['asciidoctorjs.docbook']
 }

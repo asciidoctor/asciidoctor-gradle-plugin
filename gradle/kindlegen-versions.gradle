@@ -1,6 +1,0 @@
-ext {
-    kindleGenVer = (file("${project(':kindlegen-gradle').projectDir}/src/main/groovy/org/asciidoctor/gradle/kindlegen/KindleGenExtension.groovy").readLines()
-        .grep {
-        it =~ /final\s+static\s+String\s+DEFAULT_KINDLEGEN_VERSION\s+=/
-    })[0].replaceFirst(~/^(.+?["'])/, '').replaceFirst(~/(["'].*)$/, '')
-}

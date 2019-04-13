@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle.jvm.slides
 
 import org.asciidoctor.gradle.jvm.gems.AsciidoctorGemPrepare
+import org.asciidoctor.gradle.testfixtures.internal.TestFixtureVersionLoader
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ConfigurationContainer
 import org.gradle.api.artifacts.Dependency
@@ -46,7 +47,7 @@ class AsciidoctorRevealJSPluginSpec extends Specification {
         configurations.getByName(GEM_CONFIGURATION).dependencies.find { Dependency e ->
             e.group == 'rubygems'
             e.name == REVEALJS_GEM
-            e.version == RevealJSExtension.DEFAULT_VERSION
+            e.version == TestFixtureVersionLoader.VERSIONS['revealjs.gem']
         }
 
         and: 'Revels.js Asciiidoctor task is configured'

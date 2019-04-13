@@ -25,7 +25,7 @@ plugins {
     id 'net.ossindex.audit' version '0.1.1' apply false
     id 'org.kordamp.jdeps' version '0.2.0' apply false
     id 'fi.linuxbox.download.worker' version '0.3' apply false
-    id 'org.ysb33r.ivypot' version '0.9' apply false
+    id 'org.ysb33r.ivypot' version '0.10' apply false
     id 'org.ysb33r.os' version '0.9' apply false
     id 'org.ysb33r.cloudci' version '2.5' apply false
     id 'org.ysb33r.cloudci.appveyor.testreporter' version '2.5' apply false
@@ -34,7 +34,7 @@ plugins {
 }
 
 buildScan {
-    termsOfServiceUrl   = 'https://gradle.com/terms-of-service'
+    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
     termsOfServiceAgree = 'yes'
 
     buildFinished { buildResult ->
@@ -44,8 +44,9 @@ buildScan {
     }
 }
 
-import java.text.SimpleDateFormat
+
 import org.gradle.util.GradleVersion
+import java.text.SimpleDateFormat
 
 apply plugin: 'net.nemerosa.versioning'
 
@@ -64,50 +65,57 @@ allprojects {
         offlineRepoDescriptionFile = file("${offlineRepoRoot}/repositories.gradle")
 
         withoutIntegrationTests = [
+            'asciidoctor-gradle-jvm-gems',
             'kindlegen-gradle'
         ]
 
         withoutCompatibilityTests = [
-            'kindlegen-gradle'
+            'kindlegen-gradle',
+            'asciidoctor-gradle-slides-export'
         ]
 
         withoutCodeCoverage = [
+            'asciidoctor-gradle-slides-export'
         ]
     }
 }
 
 subprojects {
 
-    apply plugin : 'org.ysb33r.os'
+    apply plugin: AsciidoctorGradleModuleVersions
+    apply plugin: 'org.ysb33r.os'
 
-    if( project.name != 'testfixtures-offline-repo') {
+    if (project.name != 'testfixtures-offline-repo') {
         apply plugin: 'groovy'
         apply plugin: 'idea'
         apply plugin: 'org.ysb33r.cloudci.appveyor.testreporter'
 
         if (!project.name.startsWith('testfixture')) {
+
+            apply plugin: AsciidoctorGradlePluginProject
             apply plugin: 'maven-publish'
             apply plugin: 'com.github.ben-manes.versions'
             apply plugin: 'net.ossindex.audit'
             apply plugin: 'org.kordamp.jdeps'
+            apply plugin: 'org.ysb33r.ivypot.binary.base'
 
-            if(!(project.name in withoutCodeCoverage)) {
+            if (!(project.name in withoutCodeCoverage)) {
                 apply plugin: 'jacoco'
 
                 jacoco {
-                    if(JavaVersion.current().isJava11Compatible() && GradleVersion.version(toolVersion) < GradleVersion.version('0.8.2')) {
+                    if (JavaVersion.current().isJava11Compatible() && GradleVersion.version(toolVersion) < GradleVersion.version('0.8.2')) {
                         toolVersion = '0.8.2'
                     }
                 }
             }
-         }
+        }
 
         apply from: "${rootProject.projectDir}/gradle/standard-repositories.gradle"
         apply from: "${rootProject.projectDir}/gradle/code-quality.gradle"
 
         if (!project.name.startsWith('testfixture')) {
 
-            if ( !(project.name in withoutIntegrationTests ) ) {
+            if (!(project.name in withoutIntegrationTests)) {
                 apply from: "${rootProject.projectDir}/gradle/integration-tests.gradle"
             }
 
@@ -139,7 +147,7 @@ subprojects {
                 failOnError = false
             }
 
-            if ( !(project.name in withoutCompatibilityTests ) ) {
+            if (!(project.name in withoutCompatibilityTests)) {
                 apply from: "${rootProject.projectDir}/gradle/compatibility-tests.gradle"
             }
         }
@@ -148,7 +156,6 @@ subprojects {
             sourceCompatibility = project.sourceCompatibility
             targetCompatibility = project.targetCompatibility
         }
-
 
         project.tasks.withType(Test) {
             testLogging {
@@ -162,18 +169,4 @@ subprojects {
     }
 }
 
-apply from : 'gradle/coveralls.gradle'
-
-task syncWrapper( type : Copy ) {
-    from 'gradle', {
-        include 'wrapper/**'
-    }
-    into 'docs/gradle'
-}
-
-wrapper {
-    finalizedBy syncWrapper
-}
-
-tasks.idea.dependsOn syncWrapper
-
+apply from: 'gradle/coveralls.gradle'

@@ -5,7 +5,9 @@ apply plugin: 'fi.linuxbox.download.worker'
 apply plugin: 'org.ysb33r.os'
 apply plugin: 'org.ysb33r.ivypot'
 
-apply from: "${rootProject.projectDir}/gradle/kindlegen-versions.gradle"
+repositories {
+	jcenter()
+}
 
 syncRemoteRepositories {
 
@@ -14,6 +16,7 @@ syncRemoteRepositories {
 
     repoRoot project.ext.offlineRepoRoot
 
+    inputs.file file("${rootProject.projectDir}/module-versions.properties")
     outputs.files project.ext.offlineRepoDescriptionFile
     outputs.files file("${project.ext.offlineRepoDescriptionFile}.kts")
 
@@ -27,6 +30,17 @@ syncRemoteRepositories {
             mavenLocal()
         }
     }
+
+    binaryRepositories {
+        kindlegen {
+            rootUri = 'http://kindlegen.s3.amazonaws.com/'
+            artifactPattern = '[module]_[classifier]_v[revision].[ext]'
+        }
+        nodejs {
+            rootUri = 'https://nodejs.org/dist/'
+            artifactPattern = 'v[revision]/[module]-v[revision]-[classifier].[ext]'
+        }
+   }
 
     addAllProjects()
 
@@ -65,38 +79,12 @@ syncRemoteRepositories {
     onlyIf { !gradle.startParameter.offline }
 }
 
-ext {
-    kindleGenPackageName = { ->
-        String fileName = OS.macOsX ? 'KindleGen' : 'kindlegen'
-        String fileExt = OS.linux ? 'tar.gz' : 'zip'
-        String fileOs = OS.linux ? 'linux_2.6_i386' : (OS.windows ? 'win32' : 'Mac_i386')
-
-        "${fileName}_${fileOs}_v${kindleGenVer}.${fileExt}"
-    }.call()
-
-    kindleGenBinaryUrl = "http://kindlegen.s3.amazonaws.com/${kindleGenPackageName}"
-}
-
-task cacheKindleGenBinary(type: DownloadWorkerTask) {
-    group 'Off-line repository'
-    description 'Cache kindlegen archive off-line for testing'
-
-    from kindleGenBinaryUrl
-    to "${offlineRepoBinariesRoot}/${kindleGenPackageName}"
-
-    doFirst {
-        logger.info("Caching ${kindleGenBinaryUrl}")
-    }
-
-    enabled = OS.windows || OS.linux || OS.macOsX
-    onlyIf { !gradle.startParameter.offline }
-}
 
 task buildOfflineRepositories {
     group 'Off-line repository'
     description 'Cache dependencies off-line for testing'
 
-    dependsOn syncRemoteRepositories, cacheKindleGenBinary
+    dependsOn syncRemoteRepositories
 }
 
 task cleanRepo(type: Delete) {

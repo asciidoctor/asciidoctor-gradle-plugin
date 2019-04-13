@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.jvm
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AbstractImplementationEngineExtension
+import org.asciidoctor.gradle.base.ModuleNotFoundException
 import org.asciidoctor.gradle.base.Transform
 import org.gradle.api.Action
 import org.gradle.api.GradleException
@@ -51,19 +52,6 @@ import static org.ysb33r.grolifant.api.StringUtils.stringize
 @NonExtensible
 class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
 
-    // ------------------------------------------------------------------------gw --s
-    // Be careful about modifying the keyword ordering in these six lines.
-    // They are parsed by the build script to set up some compilation dependencies.
-    // It is also a good idea that DEFAULT_ASCIIDOCTORJ_VERSION  matches one of
-    // the values in testfixtures-jvm.
-    // ------------------------------------------------------------------------
-    final static String DEFAULT_ASCIIDOCTORJ_VERSION = '2.0.0-RC.3'
-    final static String DEFAULT_GROOVYDSL_VERSION = '1.6.0'
-    final static String DEFAULT_PDF_VERSION = '1.5.0-alpha.16'
-    final static String DEFAULT_EPUB_VERSION = '1.5.0-alpha.9'
-    final static String DEFAULT_DIAGRAM_VERSION = '1.5.16'
-    // ------------------------------------------------------------------------
-
     static final String ASCIIDOCTORJ_GROUP = 'org.asciidoctor'
     static final String ASCIIDOCTORJ_CORE_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj"
     static final String ASCIIDOCTORJ_GROOVY_DSL_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-groovy-dsl"
@@ -75,6 +63,7 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     static final String JRUBY_DEPENDENCY = 'org.jruby:jruby'
 
     final static String NAME = 'asciidoctorj'
+    final static String ASCIIDOCTOR_DEPENDENCY_PROPERTY_NAME = 'asciidoctorj'
 
     static final OperatingSystem OS = OperatingSystem.current()
     public static final boolean GUAVA_REQUIRED_FOR_EXTERNALS = GradleVersion.current() >= GradleVersion.version('4.8')
@@ -106,9 +95,15 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
      */
     @SuppressWarnings('ThisReferenceEscapesConstructor')
     AsciidoctorJExtension(Project project) {
-        super(project)
-        this.version = DEFAULT_ASCIIDOCTORJ_VERSION
-        this.modules = new AsciidoctorJModules(this)
+        super(project, 'asciidoctorj-extension')
+        this.version = defaultVersionMap[ASCIIDOCTOR_DEPENDENCY_PROPERTY_NAME]
+        this.modules = new AsciidoctorJModules(this, defaultVersionMap)
+
+        if (this.version == null) {
+            throw new ModuleNotFoundException('Default version for AsciidoctorJ must be defined. ' +
+                'Please report a bug at https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues'
+            )
+        }
     }
 
     /** Attach extension to a task.
@@ -118,7 +113,7 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     @SuppressWarnings('ThisReferenceEscapesConstructor')
     AsciidoctorJExtension(Task task) {
         super(task, NAME)
-        this.modules = new AsciidoctorJModules(this)
+        this.modules = new AsciidoctorJModules(this, defaultVersionMap)
     }
 
     /** Whether the Guava JAR that ships with the Gradle distribution should be injected into the

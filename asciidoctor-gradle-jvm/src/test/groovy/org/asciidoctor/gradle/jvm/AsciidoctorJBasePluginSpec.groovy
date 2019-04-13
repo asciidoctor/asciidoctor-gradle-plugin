@@ -15,13 +15,18 @@
  */
 package org.asciidoctor.gradle.jvm
 
+import org.asciidoctor.gradle.base.ModuleVersionLoader
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.diagnostics.DependencyReportTask
 import org.gradle.testfixtures.ProjectBuilder
+import spock.lang.Shared
 import spock.lang.Specification
 
 class AsciidoctorJBasePluginSpec extends Specification {
+
+    @Shared
+    Map<String,String> versionMap = ModuleVersionLoader.load('asciidoctorj-extension')
 
     Project project = ProjectBuilder.builder().build()
 
@@ -35,7 +40,7 @@ class AsciidoctorJBasePluginSpec extends Specification {
 
         then:
         verifyAll {
-            ext.version == AsciidoctorJExtension.DEFAULT_ASCIIDOCTORJ_VERSION
+            ext.version == asciidoctorJVersion
             ext.modules.groovyDsl.version == null
             ext.modules.pdf.version == null
             ext.modules.epub.version == null
@@ -67,8 +72,8 @@ class AsciidoctorJBasePluginSpec extends Specification {
 
         then:
         verifyAll {
-            ext.version == AsciidoctorJExtension.DEFAULT_ASCIIDOCTORJ_VERSION
-            ext.modules.groovyDsl.version == AsciidoctorJExtension.DEFAULT_GROOVYDSL_VERSION
+            ext.version == asciidoctorJVersion
+            ext.modules.groovyDsl.version == versionMap['asciidoctorj.groovydsl']
         }
     }
 
@@ -99,10 +104,14 @@ class AsciidoctorJBasePluginSpec extends Specification {
 
         then:
         verifyAll {
-            ext.version == AsciidoctorJExtension.DEFAULT_ASCIIDOCTORJ_VERSION
+            ext.version == asciidoctorJVersion
             ext.modules.groovyDsl.version == null
             taskExt.version == '1.2.3'
             taskExt.modules.groovyDsl.version == '4.5.6'
         }
+    }
+
+    String getAsciidoctorJVersion() {
+        versionMap['asciidoctorj']
     }
 }
