@@ -47,11 +47,6 @@ configurePlugin 'org.asciidoctor.jvm.base',
     'Base plugin for all AsciidoctorJ tasks & extensions. Provides the asciidoctorj project extension.',
     ['asciidoctorj']
 
-configurePlugin 'org.asciidoctor.convert',
-    'AsciidoctorJ Compatibility Plugin',
-    'Compatibility AsciidoctorJ plugin for those upgrading from 1.5.x',
-    ['asciidoctorj', 'html5', 'docbook', 'pdf', 'epub3']
-
 configurePlugin 'org.asciidoctor.jvm.convert',
     'AsciidoctorJ General Purpose Document Conversion Plugin',
     'Provides asciidoctor task and conventions',
