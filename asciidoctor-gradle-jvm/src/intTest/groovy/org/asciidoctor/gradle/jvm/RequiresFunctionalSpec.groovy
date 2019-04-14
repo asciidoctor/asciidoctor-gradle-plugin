@@ -20,7 +20,7 @@ import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
 import spock.lang.Timeout
 
-import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.DIAGRAM_SERIES_16
+import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.DIAGRAM_SERIES_20
 
 /**
  * @author Schalk W. Cronjé
@@ -73,7 +73,7 @@ class RequiresFunctionalSpec extends FunctionalSpecification {
         }
 
         dependencies {
-            diagram 'org.asciidoctor:asciidoctorj-diagram:${DIAGRAM_SERIES_16}'
+            diagram 'org.asciidoctor:asciidoctorj-diagram:${DIAGRAM_SERIES_20}'
         }
         
         asciidoctor {
@@ -113,7 +113,7 @@ class RequiresFunctionalSpec extends FunctionalSpecification {
     File getBuildFile(String sourceName, String extraContent) {
         getJvmConvertGroovyBuildFile("""
             asciidoctorj {
-                diagramVersion = '${DIAGRAM_SERIES_16}'
+                diagramVersion = '${DIAGRAM_SERIES_20}'
             }
             
             asciidoctor {

@@ -21,7 +21,6 @@ import spock.lang.Issue
 import spock.lang.Timeout
 import spock.lang.Unroll
 
-import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.SERIES_16
 import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.SERIES_20
 @java.lang.SuppressWarnings('NoWildcardImports')
 import static org.asciidoctor.gradle.testfixtures.jvm.JRubyTestVersions.*
@@ -81,17 +80,17 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         where:
         parallelMode | jrubyVer              | asciidoctorjVer | compatible
         true         | AJ20_ABSOLUTE_MINIMUM | SERIES_20       | true
-        true         | AJ16_ABSOLUTE_MINIMUM | SERIES_16       | true
+        true         | AJ20_ABSOLUTE_MINIMUM | SERIES_20       | true
         true         | AJ20_SAFE_MINIMUM     | SERIES_20       | true
-        true         | AJ16_SAFE_MINIMUM     | SERIES_16       | true
-        true         | AJ20_SAFE_MAXIMUM     | SERIES_20       | true
-        true         | AJ16_SAFE_MAXIMUM     | SERIES_16       | true
-        false        | AJ20_ABSOLUTE_MINIMUM | SERIES_20       | true
-        false        | AJ20_SAFE_MINIMUM     | SERIES_20       | true
-        false        | AJ20_SAFE_MAXIMUM     | SERIES_20       | true
-        false        | AJ16_SAFE_MAXIMUM     | SERIES_16       | true
-        true         | AJ20_ABSOLUTE_MAXIMUM | SERIES_20       | true
-        false        | AJ16_ABSOLUTE_MAXIMUM | SERIES_16       | true
+        true         | AJ20_SAFE_MINIMUM     | SERIES_20       | true
+        true         | AJ20_SAFE_MAXIMUM     | SERIES_20 | true
+        true         | AJ20_SAFE_MAXIMUM     | SERIES_20 | true
+        false        | AJ20_ABSOLUTE_MINIMUM | SERIES_20 | true
+        false        | AJ20_SAFE_MINIMUM     | SERIES_20 | true
+        false        | AJ20_SAFE_MAXIMUM     | SERIES_20 | true
+        false        | AJ20_SAFE_MAXIMUM     | SERIES_20 | true
+        true         | AJ20_ABSOLUTE_MAXIMUM | SERIES_20 | true
+        false        | AJ20_ABSOLUTE_MAXIMUM | SERIES_20 | true
     }
 
     @Timeout(value = 90)
@@ -192,14 +191,14 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
 
         then:
         result.contains("missing converter for backend 'abc'. Processing aborted")
-        result.contains('org.asciidoctor.internal.AsciidoctorCoreException: org.jruby.exceptions.NotImplementedError')
+        result.contains('org.asciidoctor.jruby.internal.AsciidoctorCoreException: org.jruby.exceptions.NotImplementedError')
         !result.contains('ArrayIndexOutOfBoundsException')
     }
 
     File getBuildFile(String extraContent) {
         getJvmConvertGroovyBuildFile("""
 asciidoctorj {
-    jrubyVersion = '${AJ16_SAFE_MAXIMUM}'
+    jrubyVersion = '${AJ20_SAFE_MAXIMUM}'
 }
 
 ${extraContent}
