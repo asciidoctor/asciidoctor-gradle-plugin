@@ -25,7 +25,8 @@ configurations {
 
 dependencies {
     compile project(':asciidoctor-gradle-base')
-    compile "gradle.plugin.org.ysb33r.gradle:nodejs-gradle-plugin:${nodejsGradleVersion}"
+    compile "org.ysb33r.gradle:nodejs-gradle-plugin:${nodejsGradleVersion}"
+    //compile "gradle.plugin.org.ysb33r.gradle:nodejs-gradle-plugin:${nodejsGradleVersion}"
 }
 
 configurePlugin 'org.asciidoctor.js.base',

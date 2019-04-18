@@ -16,7 +16,12 @@
 package org.asciidoctor.gradle.js
 
 import org.asciidoctor.gradle.js.internal.FunctionalSpecification
+import org.asciidoctor.gradle.testfixtures.AsciidoctorjsTestVersions
+import org.asciidoctor.gradle.testfixtures.generators.AsciidoctorjsVersionGenerator
+import spock.lang.PendingFeature
+import spock.lang.Unroll
 
+import static org.asciidoctor.gradle.testfixtures.AsciidoctorjsTestVersions.DOCBOOK_SERIES_20
 import static org.asciidoctor.gradle.testfixtures.AsciidoctorjsTestVersions.SERIES_20
 
 @SuppressWarnings('MethodName')
@@ -28,88 +33,10 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         createTestProject()
     }
 
-    void 'Built-in backends (asciidoctor.js=#asciidoctorjsVer)'() {
-        given:
-        getBuildFile("""
-            asciidoctor {
-
-                outputOptions {
-                    backends 'html5', 'docbook'
-                }
-
-                asciidoctorjs {
-                    version = '${asciidoctorjsVer}'
-                }
-
-                logDocuments = true
-                sourceDir 'src/docs/asciidoc'
-            }
-        """)
-
-        when:
-        getGradleRunner(DEFAULT_ARGS).build()
-
-        then: 'u content is generated as HTML and XML'
-        verifyAll {
-            new File(testProjectDir.root, 'build/docs/asciidoc/html5/sample.html').exists()
-            new File(testProjectDir.root, 'build/docs/asciidoc/html5/subdir/sample2.html').exists()
-            new File(testProjectDir.root, 'build/docs/asciidoc/docbook/sample.xml').exists()
-            !new File(testProjectDir.root, 'build/docs/asciidoc/docinfo/docinfo.xml').exists()
-            !new File(testProjectDir.root, 'build/docs/asciidoc/docinfo/sample-docinfo.xml').exists()
-            !new File(testProjectDir.root, 'build/docs/asciidoc/html5/subdir/_include.html').exists()
-        }
-
-        where:
-        asciidoctorjsVer << [SERIES_20]
-    }
-//
-//    @Timeout(value = 90)
-//    void 'Support attributes in various formats'() {
-//        given:
-//        getBuildFile("""
-//            asciidoctorj {
-//                attributes attr1 : 'a string',
-//                    attr2 : "A GString",
-//                    attr10 : [ 'a', 2, 5 ]
-//
-//                attributeProvider {
-//                    [ attr50 : 'value' ]
-//                }
-//            }
-//
-//            asciidoctor {
-//                ${defaultProcessModeForAppveyor}
-//
-//                outputOptions {
-//                    backends 'html5'
-//                }
-//                logDocuments = true
-//                sourceDir 'src/docs/asciidoc'
-//
-//                asciidoctorj {
-//                    attributes attr3 : new File('abc'),
-//                        attr4 : { 'a closure' },
-//                        attr20 : [ a : 1 ],
-//                        attrProvider : providers.provider( { 'a string provider' } )
-//                }
-//            }
-//        """)
-//        when:
-//        getGradleRunner(DEFAULT_ARGS).build()
-//
-//        then:
-//        noExceptionThrown()
-//    }
-//
     void 'Can run in subprocess build mode (Groovy DSL)'() {
         given:
         getBuildFile('''
-            asciidoctorjs {
-//                logLevel = 'INFO'
-            }
-
             asciidoctor {
-
                 outputOptions {
                     backends 'html5'
                 }
@@ -123,6 +50,44 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         then:
         new File(testProjectDir.root, "build/docs/asciidoc/sample.html").exists()
         new File(testProjectDir.root, "build/docs/asciidoc/subdir/sample2.html").exists()
+    }
+
+    @PendingFeature
+    @Unroll
+    void 'Built-in HTML backend + added DOCBOOK backend (asciidoctor.js=#versions.version, docbook=#versions.docbookVersion)'() {
+        given:
+        getBuildFile("""
+            asciidoctor {
+
+                outputOptions {
+                    backends 'html5', 'docbook'
+                }
+
+                asciidoctorjs {
+                    version = '${versions.version}'
+                    docbookVersion = '${versions.docbookVersion}'
+                }
+
+                logDocuments = true
+                sourceDir 'src/docs/asciidoc'
+            }
+        """)
+
+        when:
+        getGradleRunner(DEFAULT_ARGS).withDebug(true).build()
+
+        then: 'u content is generated as HTML and XML'
+        verifyAll {
+            new File(testProjectDir.root, 'build/docs/asciidoc/html5/sample.html').exists()
+            new File(testProjectDir.root, 'build/docs/asciidoc/html5/subdir/sample2.html').exists()
+            new File(testProjectDir.root, 'build/docs/asciidoc/docbook/sample.xml').exists()
+            !new File(testProjectDir.root, 'build/docs/asciidoc/docinfo/docinfo.xml').exists()
+            !new File(testProjectDir.root, 'build/docs/asciidoc/docinfo/sample-docinfo.xml').exists()
+            !new File(testProjectDir.root, 'build/docs/asciidoc/html5/subdir/_include.html').exists()
+        }
+
+        where:
+        versions << AsciidoctorjsVersionGenerator.random
     }
 
     File getBuildFile(String extraContent) {
