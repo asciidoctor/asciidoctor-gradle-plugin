@@ -1,10 +1,26 @@
+/*
+ * Copyright 2013-2019 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.asciidoctor.gradle.js
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AbstractAsciidoctorBaseTask
+import org.asciidoctor.gradle.base.internal.Workspace
 import org.asciidoctor.gradle.js.internal.AsciidoctorJSResolver
 import org.asciidoctor.gradle.js.internal.AsciidoctorJSRunner
-import org.gradle.api.file.FileTree
+import org.gradle.api.file.CopySpec
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
@@ -30,36 +46,11 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
     @TaskAction
     void processAsciidocSources() {
         validateConditions()
-//
-        File workingSourceDir
-        FileTree sourceTree
-//
-//        if (this.withIntermediateWorkDir) {
-//            File tmpDir = getIntermediateWorkDir()
-//            prepareTempWorkspace(tmpDir)
-//            workingSourceDir = tmpDir
-//            sourceTree = getSourceFileTreeFrom(tmpDir)
-//        } else {
-        workingSourceDir = getSourceDir()
-        sourceTree = getSourceFileTree()
-//        }
-//
-        Set<File> sourceFiles = sourceTree.files
-//
-//        Map<String, ExecutorConfiguration> executorConfigurations
-//
-        runWithSubprocess(workingSourceDir, sourceFiles)
-//        if (finalProcessMode != JAVA_EXEC) {
-//            executorConfigurations = runWithWorkers(workingSourceDir, sourceFiles)
-//        } else {
-//            executorConfigurations = runWithJavaExec(workingSourceDir, sourceFiles)
-//        }
-//
-//        copyResourcesByBackend(executorConfigurations.values())
+        asciidoctorjs.configuration.resolve()
+        Workspace workspace = prepareWorkspace()
+        Set<File> sourceFiles = workspace.sourceTree.files
 
-        // NOTE: Map<String,String> attributes = prepareAttributes(workingSourceDir)
-        // NOTE: runner = getAsciidoctorJSRunnerFor(backend,attributes)
-        // runner.convert(sourceFILES)
+        runWithSubprocess(workspace.workingSourceDir, sourceFiles)
 
     }
 
@@ -121,7 +112,8 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
             getOutputDirFor(backend),
             attributes,
             asciidoctorjs.requires,
-            Optional.empty()
+            Optional.empty(),
+            logDocuments
         )
     }
 
@@ -135,56 +127,16 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         Map<String, List<File>> conversionGroups = sourceFileGroupedByRelativePath
         Map<String, String> finalAttributes = prepareAttributes(workingSourceDir)
         File asciidoctorjsExe = resolveAsciidoctorjsExe()
+        Optional<List<String>> copyResources = getCopyResourcesForBackends()
+        CopySpec rcs = resourceCopySpec
+
         for (String backend : configuredOutputOptions.backends) {
             conversionGroups.each { String relativePath, List<File> sourceGroup ->
                 getAsciidoctorJSRunnerFor(asciidoctorjsExe, backend, finalAttributes).convert(sourceGroup.toSet(), relativePath)
             }
+            if (copyResources.present && (copyResources.get().empty || backend in copyResources.get())) {
+                copyResourcesByBackend(backend, workingSourceDir, getOutputDirFor(backend))
+            }
         }
     }
-//    private void configureWorker(
-//        final String displayName,
-//        final WorkerConfiguration config,
-//        //final FileCollection asciidoctorClasspath,
-//        final ExecutorConfigurationContainer ecContainer
-//    ) {
-//        config.isolationMode = /*inProcess == IN_PROCESS ? CLASSLOADER : */ PROCESS
-//        //config.classpath = asciidoctorClasspath
-//        config.displayName = displayName
-//        config.params(
-//            ecContainer
-//        )
-//        // configureForkOptions(config.forkOptions)
-//    }
-
-//        private Map<String, ExecutorConfiguration> runWithWorkers(
-//        final File workingSourceDir, final Set<File> sourceFiles) {
-//            logger.info "Running Asciidoctor.js with workers."
-//            /*
-//                Map<String, ExecutorConfiguration> executorConfigurations = getExecutorConfigurations(workingSourceDir, sourceFiles)
-//                if (parallelMode) {
-//                    executorConfigurations.each { String configName, ExecutorConfiguration executorConfiguration ->
-//                        worker.submit(AsciidoctorJExecuter) { WorkerConfiguration config ->
-//                            configureWorker(
-//                                "Asciidoctor (task=${name}) conversion for ${configName}",
-//                                config,
-//                                asciidoctorClasspath,
-//                                new ExecutorConfigurationContainer(executorConfiguration)
-//                            )
-//                        }
-//                    }
-//                } else {
-//
-//                    worker.submit(AsciidoctorJExecuter) { WorkerConfiguration config ->
-//                        configureWorker(
-//                            "Asciidoctor (task=${name}) conversions for ${executorConfigurations.keySet().join(', ')}",
-//                            config,
-//                            asciidoctorClasspath,
-//                            new ExecutorConfigurationContainer(executorConfigurations.values())
-//                        )
-//                    }
-//                }
-//                executorConfigurations
-//             */
-//    }
-
 }

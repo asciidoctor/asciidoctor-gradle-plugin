@@ -13,26 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.js
+package org.asciidoctor.gradle.js.internal
 
 import groovy.transform.CompileStatic
-import org.gradle.api.Project
-import org.gradle.api.Task
-import org.ysb33r.gradle.nodejs.NodeJSExtension
 
-/** An extension to configure Node.js.
+/** Describes a NPM package without a version
  *
- * @since 3.0
+ * @author Schalkw W. Cronjé
+ * @since 3.0.0
  */
 @CompileStatic
-class AsciidoctorJSNodeExtension extends NodeJSExtension {
-    public final static String NAME = 'asciidoctorNodejs'
+class PackageDescriptor {
+    final String name
+    final String scope
 
-    AsciidoctorJSNodeExtension(Project project) {
-        super(project)
+    @Override
+    String toString() {
+        if(scope) {
+            "@${scope}/${name}"
+        } else {
+            name
+        }
     }
 
-    AsciidoctorJSNodeExtension(Task task) {
-        super(task, NAME)
+    static PackageDescriptor of(final String name) {
+        of(null, name)
+    }
+
+    static PackageDescriptor of(final String scope, final String name) {
+        new PackageDescriptor(scope, name)
+    }
+
+    private PackageDescriptor(final String scope, final String name) {
+        this.name = name
+        this.scope = scope
     }
 }
