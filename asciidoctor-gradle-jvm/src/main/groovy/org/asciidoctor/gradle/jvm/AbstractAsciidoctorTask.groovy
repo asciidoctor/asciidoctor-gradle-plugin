@@ -25,6 +25,8 @@ import org.asciidoctor.gradle.base.basedir.BaseDirFollowsProject
 import org.asciidoctor.gradle.base.basedir.BaseDirFollowsRootProject
 import org.asciidoctor.gradle.base.basedir.BaseDirIsFixedPath
 import org.asciidoctor.gradle.base.AsciidoctorExecutionException
+import org.asciidoctor.gradle.base.Transform
+import org.asciidoctor.gradle.base.internal.Workspace
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
 import org.asciidoctor.gradle.internal.ExecutorUtils
@@ -89,17 +91,6 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
     private
     final org.ysb33r.grolifant.api.JavaForkOptions javaForkOptions = new org.ysb33r.grolifant.api.JavaForkOptions()
 
-    private Object baseDir
-    private Object srcDir
-    private Object outDir
-    private PatternSet sourceDocumentPattern
-    private PatternSet secondarySourceDocumentPattern
-    private CopySpec resourceCopy
-
-    private List<String> copyResourcesForBackends = []
-    private boolean withIntermediateWorkDir = false
-    private PatternSet intermediateArtifactPattern
-
     /** Run Asciidoctor conversions in or out of process
      *
      * Valid options are {@link #IN_PROCESS}, {@link #OUT_OF_PROCESS} and {@link #JAVA_EXEC}.
@@ -146,17 +137,6 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
      */
     void forkOptions(Action<org.ysb33r.grolifant.api.JavaForkOptions> configurator) {
         configurator.execute(this.javaForkOptions)
-    }
-
-    /** Returns a list of all output directories by backend
-     *
-     * @since 1.5.1
-     */
-    @OutputDirectories
-    Set<File> getBackendOutputDirectories() {
-        Transform.toSet(configuredOutputOptions.backends) {
-            String it -> getOutputDirFor(it)
-        }
     }
 
     /** Returns all of the Asciidoctor options.
@@ -287,74 +267,20 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         this.asciidocConfigurations.addAll(configs)
     }
 
-    /** Some extensionRegistry such as {@code ditaa} creates images in the source directory.
-     *
-     * Use this setting to copy all sources and resources to an intermediate work directory
-     * before processing starts. This will keep the source directory pristine
-     */
-    void useIntermediateWorkDir() {
-        withIntermediateWorkDir = true
-    }
-
-    /** The document conversion might generate additional artifacts that could
-     * require copying to the final destination.
-     *
-     * An example is use of {@code ditaa} diagram blocks. These artifacts can be specified
-     * in this block. Use of the option implies {@link #useIntermediateWorkDir}.
-     * If {@link #copyNoResources} is set or {@link #copyResourcesOnlyIf(String ...)} does not
-     * match the backend, no copy will occur.
-     *
-     * @param cfg Configures a {@link PatternSet} with a base directory of the intermediate working
-     * directory.
-     */
-    void withIntermediateArtifacts(@DelegatesTo(PatternSet) Closure cfg) {
-        useIntermediateWorkDir()
-        if (this.intermediateArtifactPattern == null) {
-            this.intermediateArtifactPattern = new PatternSet()
-        }
-        executeDelegatingClosure(this.intermediateArtifactPattern, cfg)
-    }
-
-    /** Additional artifacts created by Asciidoctor that might require copying.
-     *
-     * @param cfg Action that configures a {@link PatternSet}.
-     *
-     * @see {@link #withIntermediateArtifacts(Closure cfg)}
-     */
-    void withIntermediateArtifacts(final Action<PatternSet> cfg) {
-        useIntermediateWorkDir()
-        if (this.intermediateArtifactPattern == null) {
-            this.intermediateArtifactPattern = new PatternSet()
-        }
-        cfg.execute(this.intermediateArtifactPattern)
-    }
-
     @SuppressWarnings('UnnecessaryGetter')
     @TaskAction
     void processAsciidocSources() {
         validateConditions()
 
-        File workingSourceDir
-        FileTree sourceTree
-
-        if (this.withIntermediateWorkDir) {
-            File tmpDir = getIntermediateWorkDir()
-            prepareTempWorkspace(tmpDir)
-            workingSourceDir = tmpDir
-            sourceTree = getSourceFileTreeFrom(tmpDir)
-        } else {
-            workingSourceDir = getSourceDir()
-            sourceTree = getSourceFileTree()
-        }
-
-        Set<File> sourceFiles = sourceTree.files
+        Workspace workspace = prepareWorkspace()
+        Set<File> sourceFiles = workspace.sourceTree.files
 
         Map<String, ExecutorConfiguration> executorConfigurations
 
         if (finalProcessMode != JAVA_EXEC) {
-            executorConfigurations = runWithWorkers(workingSourceDir, sourceFiles)
+            executorConfigurations = runWithWorkers(workspace.workingSourceDir, sourceFiles)
         } else {
-            executorConfigurations = runWithJavaExec(workingSourceDir, sourceFiles)
+            executorConfigurations = runWithJavaExec(workspace.workingSourceDir, sourceFiles)
         }
 
         copyResourcesByBackend(executorConfigurations.values())
@@ -378,7 +304,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
 
         addInputProperty 'required-ruby-modules', { asciidoctorj.requires }
         addInputProperty 'gemPath', { asciidoctorj.asGemPath() }
-        addInputProperty 'trackBaseDir', { getBaseDir().absolutePath }
+        addInputProperty 'trackBaseDir', { AbstractAsciidoctorTask t -> t.getBaseDir().absolutePath }.curry(this)
 
         inputs.files { asciidoctorj.gemPaths }
         inputs.files { filesFromCopySpec(resourceCopySpec) }
@@ -491,23 +417,6 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         }
     }
 
-    @CompileDynamic
-    private void prepareTempWorkspace(final File tmpDir) {
-        if (tmpDir.exists()) {
-            tmpDir.deleteDir()
-        }
-        tmpDir.mkdirs()
-        project.copy {
-            into tmpDir
-            from sourceFileTree
-            with resourceCopySpec
-        }
-    }
-
-    private File getIntermediateWorkDir() {
-        project.file("${project.buildDir}/tmp/${FileUtils.toSafeFileName(this.name)}.intermediate")
-    }
-
     private String getGemPath() {
         asciidoctorj.asGemPath()
     }
@@ -596,24 +505,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         CopySpec rcs = resourceCopySpec
         for (ExecutorConfiguration ec : executorConfigurations) {
             if (ec.copyResources) {
-                logger.info "Copy resources for '${ec.backendName}' to ${ec.outputDir}"
-
-                @SuppressWarnings('LineLength')
-                FileTree ps = this.intermediateArtifactPattern ? project.fileTree(ec.sourceDir).matching(this.intermediateArtifactPattern) : null
-
-                project.copy(new Action<CopySpec>() {
-                    @Override
-                    void execute(CopySpec copySpec) {
-                        copySpec.with {
-                            into ec.outputDir
-                            with rcs
-
-                            if (ps != null) {
-                                from ps
-                            }
-                        }
-                    }
-                })
+                copyResourcesByBackend(ec.backendName,ec.sourceDir,ec.outputDir)
             }
         }
     }

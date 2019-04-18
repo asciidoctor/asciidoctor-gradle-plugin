@@ -2,6 +2,7 @@ package org.asciidoctor.gradle.base
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.base.internal.Workspace
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
@@ -10,6 +11,7 @@ import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileTree
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.util.PatternSet
+import org.ysb33r.grolifant.api.FileUtils
 
 import java.nio.file.Path
 import java.util.Optional
@@ -32,6 +34,9 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
     private PatternSet secondarySourceDocumentPattern
     private CopySpec resourceCopy
     private List<String> copyResourcesForBackends = []
+    private boolean withIntermediateWorkDir = false
+    private PatternSet intermediateArtifactPattern
+
 
     @Nested
     protected final OutputOptions configuredOutputOptions = new OutputOptions()
@@ -260,6 +265,59 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         Optional.ofNullable(this.copyResourcesForBackends)
     }
 
+    /** Some extensions such as {@code ditaa} creates images in the source directory.
+     *
+     * Use this setting to copy all sources and resources to an intermediate work directory
+     * before processing starts. This will keep the source directory pristine
+     */
+    void useIntermediateWorkDir() {
+        withIntermediateWorkDir = true
+    }
+
+    /** The document conversion might generate additional artifacts that could
+     * require copying to the final destination.
+     *
+     * An example is use of {@code ditaa} diagram blocks. These artifacts can be specified
+     * in this block. Use of the option implies {@link #useIntermediateWorkDir}.
+     * If {@link #copyNoResources} is set or {@link #copyResourcesOnlyIf(String ...)} does not
+     * match the backend, no copy will occur.
+     *
+     * @param cfg Configures a {@link PatternSet} with a base directory of the intermediate working
+     * directory.
+     */
+    void withIntermediateArtifacts(@DelegatesTo(PatternSet) Closure cfg) {
+        useIntermediateWorkDir()
+        if (this.intermediateArtifactPattern == null) {
+            this.intermediateArtifactPattern = new PatternSet()
+        }
+        executeDelegatingClosure(this.intermediateArtifactPattern, cfg)
+    }
+
+    /** Additional artifacts created by Asciidoctor that might require copying.
+     *
+     * @param cfg Action that configures a {@link PatternSet}.
+     *
+     * @see {@link #withIntermediateArtifacts(Closure cfg)}
+     */
+    void withIntermediateArtifacts(final Action<PatternSet> cfg) {
+        useIntermediateWorkDir()
+        if (this.intermediateArtifactPattern == null) {
+            this.intermediateArtifactPattern = new PatternSet()
+        }
+        cfg.execute(this.intermediateArtifactPattern)
+    }
+
+    /** Returns a list of all output directories by backend
+     *
+     * @since 1.5.1
+     */
+    @OutputDirectories
+    Set<File> getBackendOutputDirectories() {
+        Transform.toSet(configuredOutputOptions.backends) {
+            String it -> getOutputDirFor(it)
+        }
+    }
+
     /** Gets the CopySpec for additional resources
      * If {@code resources} was never called, it will return a default CopySpec otherwise it will return the
      * one built up via successive calls to {@code resources}
@@ -407,6 +465,46 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         inputs.property propName, value
     }
 
+    /** Prepares a workspace prior to conversion.
+     *
+     * @return A presentaion of the working source directory and the source tree.
+     */
+    protected Workspace prepareWorkspace() {
+        if (this.withIntermediateWorkDir) {
+            File tmpDir = getIntermediateWorkDir()
+            prepareTempWorkspace(tmpDir)
+            Workspace.builder().workingSourceDir(tmpDir).sourceTree(getSourceFileTreeFrom(tmpDir)).build()
+        } else {
+            Workspace.builder().workingSourceDir(getSourceDir()).sourceTree(getSourceFileTree()).build()
+        }
+    }
+
+    /** Copy resources for a backed name.
+     *
+     * @param backendName Name of backend for which resources are copied
+     * @param sourceDir Source directory of resources
+     * @param outputDir Final output directory.
+     */
+    protected void copyResourcesByBackend(final String backendName, final File sourceDir, final File outputDir) {
+        CopySpec rcs = resourceCopySpec
+        logger.info "Copy resources for '${backendName}' to ${outputDir}"
+
+        FileTree ps = this.intermediateArtifactPattern ? project.fileTree(sourceDir).matching(this.intermediateArtifactPattern) : null
+        project.copy(new Action<CopySpec>() {
+            @Override
+            void execute(CopySpec copySpec) {
+                copySpec.with {
+                    into outputDir
+                    with rcs
+
+                    if (ps != null) {
+                        from ps
+                    }
+                }
+            }
+        })
+    }
+
     /** Name of the implementation engine.
      *
      * @return
@@ -443,5 +541,20 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         }
     }
 
+    @CompileDynamic
+    private void prepareTempWorkspace(final File tmpDir) {
+        if (tmpDir.exists()) {
+            tmpDir.deleteDir()
+        }
+        tmpDir.mkdirs()
+        project.copy {
+            into tmpDir
+            from sourceFileTree
+            with resourceCopySpec
+        }
+    }
 
+    private File getIntermediateWorkDir() {
+        project.file("${project.buildDir}/tmp/${FileUtils.toSafeFileName(this.name)}.intermediate")
+    }
 }

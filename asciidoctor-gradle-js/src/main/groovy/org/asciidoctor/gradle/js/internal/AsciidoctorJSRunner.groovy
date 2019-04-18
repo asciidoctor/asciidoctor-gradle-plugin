@@ -1,11 +1,29 @@
+/*
+ * Copyright 2013-2019 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.asciidoctor.gradle.js.internal
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import groovy.transform.stc.ClosureParams
 import org.asciidoctor.gradle.base.SafeMode
 import org.asciidoctor.gradle.base.Transform
 import org.gradle.api.Project
+import org.gradle.process.ExecSpec
 import org.ysb33r.gradle.nodejs.NodeJSExecSpec
+import org.ysb33r.gradle.nodejs.impl.NodeJSExecutor
 
 /** Executes an instance of Asciidoctor.Js
  *
@@ -24,12 +42,15 @@ class AsciidoctorJSRunner {
         File destinationDir,
         Map<String, String> attributes,
         Set<String> requires,
-        Optional<String> doctype
+        Optional<String> doctype,
+        boolean logDocuments
     ) {
         this.project = project
         this.asciidoctorjs = asciidoctorjs
         this.nodejs = nodejs
         this.destinationDir = destinationDir
+        this.logDocuments = logDocuments
+
         this.arguments = [
             '-b', backend,
             '-S', safeMode.toString().toLowerCase(Locale.US),
@@ -53,22 +74,26 @@ class AsciidoctorJSRunner {
         convert([source] as Set, relativeOutputPath)
     }
 
-    @CompileDynamic
     void convert(Set<File> sources, String relativeOutputPath) {
-        Closure configurator = { NodeJSExecSpec spec ->
+        Closure configurator = { ExecSpec spec ->
             spec.with {
                 executable nodejs
-                script(asciidoctorjs.absolutePath)
-                scriptArgs(arguments)
-                scriptArgs('-D', (relativeOutputPath.empty ? destinationDir : new File(destinationDir, relativeOutputPath)).absolutePath)
-                scriptArgs('--')
-                scriptArgs(Transform.toList(sources) {
+                args(asciidoctorjs.absolutePath)
+                args(arguments)
+                args('-D', (relativeOutputPath.empty ? destinationDir : new File(destinationDir, relativeOutputPath)).absolutePath)
+                args('--')
+                args(Transform.toList(sources) {
                     it.absolutePath
                 })
+                setEnvironment(NodeJSExecutor.defaultEnvironment)
             }
         }
 
-        project.nodeexec configurator
+        if(logDocuments) {
+            project.logger.info("Converting ${sources*.name.join(', ')}")
+        }
+
+        project.exec(configurator)
     }
 
     private final List<String> arguments
@@ -76,6 +101,7 @@ class AsciidoctorJSRunner {
     private final File nodejs
     private final File asciidoctorjs
     private final File destinationDir
+    private final boolean logDocuments
     private static final String QUOTE = "'"
 
 //    --embedded, -e          suppress enclosing document structure and output an embedded document [boolean] [default: false]
