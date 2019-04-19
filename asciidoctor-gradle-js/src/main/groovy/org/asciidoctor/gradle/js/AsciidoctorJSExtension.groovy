@@ -25,6 +25,8 @@ import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.SelfResolvingDependency
 import org.ysb33r.gradle.nodejs.dependencies.npm.NpmSelfResolvingDependency
 
+import static org.ysb33r.grolifant.api.StringUtils.stringize
+
 /**
  * @since 3.0
  */
@@ -37,8 +39,8 @@ class AsciidoctorJSExtension extends AbstractImplementationEngineExtension {
     private final static PackageDescriptor PACKAGE_ASCIIDOCTOR = PackageDescriptor.of('asciidoctor')
     private final static PackageDescriptor PACKAGE_DOCBOOK = PackageDescriptor.of('asciidoctor', 'docbook-converter')
 
-    String version = DEFAULT_ASCIIDOCTORJS_VERSION
-    String docbookVersion
+    private Object version = DEFAULT_ASCIIDOCTORJS_VERSION
+    private Optional<Object> docbookVersion
 
     AsciidoctorJSExtension(Project project) {
         super(project)
@@ -52,6 +54,58 @@ class AsciidoctorJSExtension extends AbstractImplementationEngineExtension {
         super(task, NAME)
     }
 
+    /** Version of AsciidoctorJS that should be used.
+     *
+     */
+    String getVersion() {
+        if (task) {
+            this.version ? stringize(this.version) : extFromProject.getVersion()
+        } else {
+            stringize(this.version)
+        }
+    }
+
+    /** Set a new version to use.
+     *
+     * @param v New version to be used. Can be of anything that be be resolved by {@link stringize ( Object o )}
+     */
+    void setVersion(Object v) {
+        this.version = v
+    }
+
+
+    /** Version of the Docbook converter that should be used.
+     *
+     * @return Version of extension DSL or {@code null} if extensions will not be used.
+     */
+    String getDocbookVersion() {
+        if (task) {
+            if (this.docbookVersion != null && this.docbookVersion.present) {
+                stringize(this.docbookVersion.get())
+            } else {
+                extFromProject.docbookVersion
+            }
+        } else {
+            this.docbookVersion?.present ? stringize(this.docbookVersion.get()) : null
+        }
+    }
+
+    /** Set a new Docbook converter version to use.
+     *
+     * Implies {@link #useDocbook}, but sets a custom version rather than a default.
+     *
+     * @param v Groovy DSL version.
+     */
+    void setDocbookVersion(Object v) {
+        this.docbookVersion = Optional.of(v)
+    }
+
+    /** Enables Docbook conversion with whichever docbook vesion is the default.
+     *
+      */
+    void useDocbook() {
+        setDocbookVersion(DEFAULT_DOCBOOK_VERSION)
+    }
 
     /** Returns the set of NPM packages to be included except for the asciidoctor.js package.
      *
@@ -60,12 +114,11 @@ class AsciidoctorJSExtension extends AbstractImplementationEngineExtension {
     Set<String> getRequires() {
         Set<String> reqs = [].toSet()
 
-        if (docbookVersion) {
+        final String docbook = getDocbookVersion()
+        if (docbook) {
             reqs.add(PACKAGE_DOCBOOK.toString())
         }
-//        stringizeList(this.nodejsRequires, onlyTaskRequires) { AsciidoctorJSExtension it ->
-//            it.requires.toList()
-//        }.toSet()
+
         reqs
     }
 
@@ -74,10 +127,11 @@ class AsciidoctorJSExtension extends AbstractImplementationEngineExtension {
      * @return
      */
     Configuration getConfiguration() {
-        List<SelfResolvingDependency> deps = [createDependency(PACKAGE_ASCIIDOCTOR, version)]
+        final String docbook = getDocbookVersion()
+        final List<SelfResolvingDependency> deps = [createDependency(PACKAGE_ASCIIDOCTOR, getVersion())]
 
-        if (docbookVersion) {
-            deps.add(createDependency(PACKAGE_DOCBOOK, docbookVersion))
+        if (docbook) {
+            deps.add(createDependency(PACKAGE_DOCBOOK, docbook))
         }
 
         project.configurations.detachedConfiguration(
@@ -86,19 +140,11 @@ class AsciidoctorJSExtension extends AbstractImplementationEngineExtension {
     }
 
     private AsciidoctorJSNodeExtension getNodejs() {
-        if (task) {
-            task.project.extensions.getByType(AsciidoctorJSNodeExtension) // FIXME to point to task
-        } else {
-            project.extensions.getByType(AsciidoctorJSNodeExtension)
-        }
+        project.extensions.getByType(AsciidoctorJSNodeExtension)
     }
 
     private AsciidoctorJSNpmExtension getNpm() {
-        if (task) {
-            task.project.extensions.getByType(AsciidoctorJSNpmExtension) // FIXME to point to task
-        } else {
-            project.extensions.getByType(AsciidoctorJSNpmExtension)
-        }
+        project.extensions.getByType(AsciidoctorJSNpmExtension)
     }
 
     private SelfResolvingDependency createDependency(final PackageDescriptor pkg, final String version) {
@@ -120,4 +166,10 @@ class AsciidoctorJSExtension extends AbstractImplementationEngineExtension {
 
         new NpmSelfResolvingDependency(project, nodejs, npm, description)
     }
+
+    private AsciidoctorJSExtension getExtFromProject() {
+        task ? (AsciidoctorJSExtension) projectExtension : this
+    }
+
+
 }
