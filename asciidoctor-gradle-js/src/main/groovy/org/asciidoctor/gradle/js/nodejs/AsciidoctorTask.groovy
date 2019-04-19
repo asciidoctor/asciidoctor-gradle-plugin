@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.js
+package org.asciidoctor.gradle.js.nodejs
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.OutputOptions
+import org.asciidoctor.gradle.js.nodejs.AbstractAsciidoctorNodeJSTask
 import org.gradle.api.Action
 import org.gradle.workers.WorkerExecutor
 import org.ysb33r.grolifant.api.FileUtils
@@ -29,7 +30,7 @@ import static groovy.lang.Closure.DELEGATE_FIRST
  * @since 3.0
  */
 @CompileStatic
-class AsciidoctorTask extends AbstractAsciidoctorTask {
+class AsciidoctorTask extends AbstractAsciidoctorNodeJSTask {
 
     @Inject
     AsciidoctorTask(WorkerExecutor we) {
