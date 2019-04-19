@@ -109,11 +109,6 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     @SuppressWarnings('ThisReferenceEscapesConstructor')
     AsciidoctorJExtension(Project project) {
         super(project)
-
-        this.attributes['gradle-project-name'] = project.name
-        this.attributes['gradle-project-group'] = { project.group ?: '' }
-        this.attributes['gradle-project-version'] = { project.version ?: '' }
-
         this.version = DEFAULT_ASCIIDOCTORJ_VERSION
         this.modules = new AsciidoctorJModules(this)
     }
@@ -245,6 +240,7 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     /** Set a new {@code asciidoctorj-diagram} version to use.
      *
      * Setting this will automatically add {@code} to list of {@code requires}.
+     * Implies {@link #useDiagram}, but sets a custom version.
      *
      * @param v {@code asciidoctorj-diagram} version.
      * @deprecated Use{@code getModules( ).getDiagram( ).setVersion}.
@@ -253,6 +249,15 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     void setDiagramVersion(Object v) {
         warnVersionMethodDeprecated('setDiagramVersion', 'getModules().getDiagram().setVersion')
         modules.diagram.version = v
+    }
+
+    /** Enables use of {@code @asciidoctorj-diagram}. Using whatever the
+     * default version for this plugin is.
+     *
+     * @since 3.0
+     */
+    void useDiagram() {
+        setDiagramVersion(DEFAULT_DIAGRAM_VERSION)
     }
 
     /** Version of the Asciidoctor EPUB that should be used.
