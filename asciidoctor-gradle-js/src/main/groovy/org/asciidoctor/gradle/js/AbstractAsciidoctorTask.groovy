@@ -98,7 +98,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         } as Map<String, Object>
     }
 
-    private AsciidoctorJSRunner getAsciidoctorJSRunnerFor(File asciidoctorjsExe, final String backend, Map<String, String> attributes) {
+    private AsciidoctorJSRunner getAsciidoctorJSRunnerFor(AsciidoctorJSRunner.FileLocations asciidoctorjsExe, final String backend, Map<String, String> attributes) {
         new AsciidoctorJSRunner(
             nodejs.resolvableNodeExecutable.executable,
             project,
@@ -107,7 +107,6 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
             asciidoctorjs.safeMode,
             getBaseDir(),
             getOutputDirFor(backend),
-            npm.homeDirectory,
             attributes,
             asciidoctorjs.requires,
             Optional.empty(),
@@ -115,10 +114,11 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         )
     }
 
-    private File resolveAsciidoctorjsExe() {
-        File packageJson = new File(npm.homeDirectory, 'package.json')
+    private AsciidoctorJSRunner.FileLocations resolveAsciidoctorjsEnvironment() {
+        File home = asciidoctorjs.toolingWorkDir
+        File packageJson = new File(home, 'package.json')
         if (!packageJson.exists()) {
-            npm.homeDirectory.mkdirs()
+            home.mkdirs()
             NpmExecutor.initPkgJson(
                 "${project.name}-${name}",
                 project.version ? StringUtils.stringize(project.version) : 'UNDEFINED',
@@ -129,7 +129,10 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         }
 
         asciidoctorjs.configuration.resolve()
-        new File(npm.homeDirectory, 'node_modules/@asciidoctor/cli/bin/asciidoctor')
+        new AsciidoctorJSRunner.FileLocations(
+            executable: new File(npm.homeDirectory, 'node_modules/@asciidoctor/cli/bin/asciidoctor'),
+            workingDir: home
+        )
     }
 
     private void runWithSubprocess(final File workingSourceDir, final Set<File> sourceFiles) {
@@ -137,13 +140,13 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
 
         Map<String, List<File>> conversionGroups = sourceFileGroupedByRelativePath
         Map<String, String> finalAttributes = prepareAttributes(workingSourceDir)
-        File asciidoctorjsExe = resolveAsciidoctorjsExe()
+        AsciidoctorJSRunner.FileLocations asciidoctorjsEnv = resolveAsciidoctorjsEnvironment()
         Optional<List<String>> copyResources = getCopyResourcesForBackends()
         CopySpec rcs = resourceCopySpec
 
         for (String backend : configuredOutputOptions.backends) {
             conversionGroups.each { String relativePath, List<File> sourceGroup ->
-                getAsciidoctorJSRunnerFor(asciidoctorjsExe, backend, finalAttributes).convert(sourceGroup.toSet(), relativePath)
+                getAsciidoctorJSRunnerFor(asciidoctorjsEnv, backend, finalAttributes).convert(sourceGroup.toSet(), relativePath)
             }
             if (copyResources.present && (copyResources.get().empty || backend in copyResources.get())) {
                 copyResourcesByBackend(backend, workingSourceDir, getOutputDirFor(backend))
