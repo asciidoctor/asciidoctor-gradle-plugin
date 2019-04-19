@@ -17,7 +17,6 @@ package org.asciidoctor.gradle.js
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AbstractImplementationEngineExtension
-import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.js.internal.PackageDescriptor
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -35,7 +34,7 @@ import static org.ysb33r.grolifant.api.StringUtils.stringize
 @CompileStatic
 class AsciidoctorJSExtension extends AbstractImplementationEngineExtension {
     public final static String NAME = 'asciidoctorjs'
-    public final static String DEFAULT_ASCIIDOCTORJS_VERSION = '2.0.0'
+    public final static String DEFAULT_ASCIIDOCTORJS_VERSION = '2.0.2'
     public final static String DEFAULT_DOCBOOK_VERSION = '2.0.0'
 
     private final static PackageDescriptor PACKAGE_ASCIIDOCTOR = PackageDescriptor.of('asciidoctor')
@@ -191,7 +190,7 @@ class AsciidoctorJSExtension extends AbstractImplementationEngineExtension {
 
     private List<NpmDependency> getAllAdditionalRequires() {
         if (task) {
-            if(onlyTaskRequires) {
+            if (onlyTaskRequires) {
                 this.additionalRequires
             } else {
                 List<NpmDependency> reqs = []
