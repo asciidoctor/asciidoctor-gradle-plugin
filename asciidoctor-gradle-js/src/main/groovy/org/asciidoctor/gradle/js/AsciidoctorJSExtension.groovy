@@ -32,7 +32,7 @@ import org.ysb33r.gradle.nodejs.dependencies.npm.NpmSelfResolvingDependency
 class AsciidoctorJSExtension extends AbstractImplementationEngineExtension {
     public final static String NAME = 'asciidoctorjs'
     public final static String DEFAULT_ASCIIDOCTORJS_VERSION = '2.0.0'
-    public final static String DEFAULT_DOCBOOK_VERSION = '2.0.0-rc.1'
+    public final static String DEFAULT_DOCBOOK_VERSION = '2.0.0'
 
     private final static PackageDescriptor PACKAGE_ASCIIDOCTOR = PackageDescriptor.of('asciidoctor')
     private final static PackageDescriptor PACKAGE_DOCBOOK = PackageDescriptor.of('asciidoctor', 'docbook-converter')
