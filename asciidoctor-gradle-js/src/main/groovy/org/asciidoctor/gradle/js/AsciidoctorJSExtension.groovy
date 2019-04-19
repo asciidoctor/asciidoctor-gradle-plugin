@@ -17,14 +17,13 @@ package org.asciidoctor.gradle.js
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AbstractImplementationEngineExtension
-import org.asciidoctor.gradle.js.internal.AsciidoctorJSResolver
 import org.asciidoctor.gradle.js.internal.PackageDescriptor
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.SelfResolvingDependency
-import org.ysb33r.gradle.nodejs.impl.npm.NpmSelfResolvingDependency
+import org.ysb33r.gradle.nodejs.dependencies.npm.NpmSelfResolvingDependency
 
 /**
  * @since 3.0
@@ -35,7 +34,7 @@ class AsciidoctorJSExtension extends AbstractImplementationEngineExtension {
     public final static String DEFAULT_ASCIIDOCTORJS_VERSION = '2.0.0'
     public final static String DEFAULT_DOCBOOK_VERSION = '2.0.0-rc.1'
 
-    private final static PackageDescriptor PACKAGE_ASCIIDOCTOR = PackageDescriptor.of(AsciidoctorJSResolver.PACKAGE_ASCIIDOCTOR)
+    private final static PackageDescriptor PACKAGE_ASCIIDOCTOR = PackageDescriptor.of('asciidoctor')
     private final static PackageDescriptor PACKAGE_DOCBOOK = PackageDescriptor.of('asciidoctor', 'docbook-converter')
 
     String version = DEFAULT_ASCIIDOCTORJS_VERSION
@@ -61,7 +60,7 @@ class AsciidoctorJSExtension extends AbstractImplementationEngineExtension {
     Set<String> getRequires() {
         Set<String> reqs = [].toSet()
 
-        if(docbookVersion) {
+        if (docbookVersion) {
             reqs.add(PACKAGE_DOCBOOK.toString())
         }
 //        stringizeList(this.nodejsRequires, onlyTaskRequires) { AsciidoctorJSExtension it ->
@@ -109,10 +108,10 @@ class AsciidoctorJSExtension extends AbstractImplementationEngineExtension {
     private SelfResolvingDependency createDependency(final String name, final String version, final String scope) {
 
         Map<String, Object> description = [
-            name: name,
-            tag : version,
-            type: 'dev',
-            'install-args': ['--no-bin-links','--no-package-lock']
+            name          : name,
+            tag           : version,
+            type          : 'dev',
+            'install-args': ['--no-bin-links', '--no-package-lock', '--loglevel=error']
         ] as Map<String, Object>
 
         if (scope) {

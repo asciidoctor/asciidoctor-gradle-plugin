@@ -15,15 +15,13 @@
  */
 package org.asciidoctor.gradle.js.internal
 
-import groovy.transform.CompileDynamic
+
 import groovy.transform.CompileStatic
-import groovy.transform.stc.ClosureParams
 import org.asciidoctor.gradle.base.SafeMode
 import org.asciidoctor.gradle.base.Transform
 import org.gradle.api.Project
 import org.gradle.process.ExecSpec
-import org.ysb33r.gradle.nodejs.NodeJSExecSpec
-import org.ysb33r.gradle.nodejs.impl.NodeJSExecutor
+import org.ysb33r.gradle.nodejs.utils.NodeJSExecutor
 
 /** Executes an instance of Asciidoctor.Js
  *
@@ -40,6 +38,7 @@ class AsciidoctorJSRunner {
         SafeMode safeMode,
         File baseDir,
         File destinationDir,
+        File workingDir,
         Map<String, String> attributes,
         Set<String> requires,
         Optional<String> doctype,
@@ -50,6 +49,7 @@ class AsciidoctorJSRunner {
         this.nodejs = nodejs
         this.destinationDir = destinationDir
         this.logDocuments = logDocuments
+        this.nodeWorkingDir = workingDir
 
         this.arguments = [
             '-b', backend,
@@ -86,6 +86,7 @@ class AsciidoctorJSRunner {
                     it.absolutePath
                 })
                 setEnvironment(NodeJSExecutor.defaultEnvironment)
+                workingDir = nodeWorkingDir
             }
         }
 
@@ -101,6 +102,7 @@ class AsciidoctorJSRunner {
     private final File nodejs
     private final File asciidoctorjs
     private final File destinationDir
+    private final File nodeWorkingDir
     private final boolean logDocuments
     private static final String QUOTE = "'"
 

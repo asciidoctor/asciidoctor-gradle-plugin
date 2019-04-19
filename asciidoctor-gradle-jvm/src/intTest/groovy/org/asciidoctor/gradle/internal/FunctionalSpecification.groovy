@@ -45,7 +45,7 @@ class FunctionalSpecification extends Specification {
 
     @CompileStatic
     GradleRunner getGradleRunner(List<String> taskNames = ['asciidoctor']) {
-        FunctionalTestSetup.getGradleRunner(testProjectDir.root, taskNames)
+        FunctionalTestSetup.getGradleRunner(GROOVY_DSL, testProjectDir.root, taskNames)
     }
 
     @SuppressWarnings(['BuilderMethodWithSideEffects'])

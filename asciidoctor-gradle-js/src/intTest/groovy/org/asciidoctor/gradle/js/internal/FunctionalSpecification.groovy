@@ -40,8 +40,13 @@ class FunctionalSpecification extends Specification {
     TemporaryFolder testProjectDir
 
     @CompileStatic
-    GradleRunner getGradleRunner(List<String> taskNames = ['asciidoctor']) {
-        FunctionalTestSetup.getGradleRunner(testProjectDir.root, taskNames)
+    GradleRunner getGroovyGradleRunner(List<String> taskNames = ['asciidoctor']) {
+        FunctionalTestSetup.getGradleRunner(GROOVY_DSL, testProjectDir.root, taskNames)
+    }
+
+    @CompileStatic
+    GradleRunner getKotlinGradleRunner(List<String> taskNames = ['asciidoctor']) {
+        FunctionalTestSetup.getGradleRunner(KOTLIN_DSL, testProjectDir.root, taskNames)
     }
 
     @SuppressWarnings(['FactoryMethodName', 'BuilderMethodWithSideEffects'])
