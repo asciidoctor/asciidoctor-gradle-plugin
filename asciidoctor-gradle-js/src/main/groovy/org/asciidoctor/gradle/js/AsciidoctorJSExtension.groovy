@@ -17,12 +17,14 @@ package org.asciidoctor.gradle.js
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AbstractImplementationEngineExtension
+import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.js.internal.PackageDescriptor
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.SelfResolvingDependency
+import org.ysb33r.gradle.nodejs.NpmDependency
 import org.ysb33r.gradle.nodejs.dependencies.npm.NpmSelfResolvingDependency
 
 import static org.ysb33r.grolifant.api.StringUtils.stringize
@@ -41,6 +43,9 @@ class AsciidoctorJSExtension extends AbstractImplementationEngineExtension {
 
     private Object version = DEFAULT_ASCIIDOCTORJS_VERSION
     private Optional<Object> docbookVersion
+    private List<NpmDependency> additionalRequires = []
+
+    private boolean onlyTaskRequires = false
 
     AsciidoctorJSExtension(Project project) {
         super(project)
@@ -67,7 +72,7 @@ class AsciidoctorJSExtension extends AbstractImplementationEngineExtension {
 
     /** Set a new version to use.
      *
-     * @param v New version to be used. Can be of anything that be be resolved by {@link stringize ( Object o )}
+     * @param v New version to be used. Can be of anything that be resolved by {@link org.ysb33r.grolifant.api.StringUtils.stringize}.
      */
     void setVersion(Object v) {
         this.version = v
@@ -100,11 +105,41 @@ class AsciidoctorJSExtension extends AbstractImplementationEngineExtension {
         this.docbookVersion = Optional.of(v)
     }
 
-    /** Enables Docbook conversion with whichever docbook vesion is the default.
+    /** Enables Docbook conversion with whichever docbook version is the default.
      *
-      */
+     */
     void useDocbook() {
         setDocbookVersion(DEFAULT_DOCBOOK_VERSION)
+    }
+
+    /** Adds an additional NPM package that is required
+     *
+     * @param name Name of package
+     * @param tag Tag of package
+     */
+    void require(final String name, final String tag) {
+        this.additionalRequires.add(new NpmDependency(name, tag))
+    }
+
+    /** Adds an additional NPM package that is required
+     *
+     * @param scope Scope of package
+     * @param name Name of package
+     * @param tag Tag of package
+     */
+    void require(final String scope, final String name, final String tag) {
+        this.additionalRequires.add(new NpmDependency(scope, name, tag))
+    }
+
+    /** Removes any previous requires.
+     *
+     * If set on a task extension, no requires from global will be used.
+     */
+    void clearRequires() {
+        if (task) {
+            onlyTaskRequires = true
+        }
+        additionalRequires.clear()
     }
 
     /** Returns the set of NPM packages to be included except for the asciidoctor.js package.
@@ -123,8 +158,10 @@ class AsciidoctorJSExtension extends AbstractImplementationEngineExtension {
     }
 
     /** A configuration containing all required NPM packages.
+     * The configuration will differ between global state and task state if the task has set
+     * different requires or different docbook versions.
      *
-     * @return
+     * @return All resolvable NPM dependencies including {@code asciidoctor.js}.
      */
     Configuration getConfiguration() {
         final String docbook = getDocbookVersion()
@@ -137,6 +174,54 @@ class AsciidoctorJSExtension extends AbstractImplementationEngineExtension {
         project.configurations.detachedConfiguration(
             deps.toArray() as Dependency[]
         )
+    }
+
+    /** The suggested working directory that the implementation tool should use.
+     *
+     * For instance if the implementaiotn tool is Node.js with NPM, the directory
+     * will usually be the same for all tasks, but in cases where different
+     * versions of NPM packages are used by tasks then the working directory will be different
+     * for the specific task.
+     *
+     * @return Suggested working directory.
+     */
+    File getToolingWorkDir() {
+        versionsDifferFromGlobal() ? new File(npm.homeDirectory.parentFile, "${project.name}-${task.name}") : npm.homeDirectory
+    }
+
+    private List<NpmDependency> getAllAdditionalRequires() {
+        if (task) {
+            if(onlyTaskRequires) {
+                this.additionalRequires
+            } else {
+                List<NpmDependency> reqs = []
+                reqs.addAll(extFromProject.additionalRequires)
+                reqs.addAll(this.additionalRequires)
+                reqs
+            }
+        } else {
+            this.additionalRequires
+        }
+    }
+
+    private boolean versionsDifferFromGlobal() {
+        if (task) {
+            if (getVersion() != extFromProject.getVersion() ||
+                getDocbookVersion() != extFromProject.getDocbookVersion()
+            ) {
+                true
+            } else {
+                List<NpmDependency> global = extFromProject.allAdditionalRequires
+                this.additionalRequires.find { NpmDependency depLocal ->
+                    global.find { NpmDependency depGlobal ->
+                        depGlobal.scope == depLocal.scope && depGlobal.packageName == depLocal.packageName &&
+                            depGlobal.tagName != depLocal.tagName
+                    }
+                } != null
+            }
+        } else {
+            false
+        }
     }
 
     private AsciidoctorJSNodeExtension getNodejs() {

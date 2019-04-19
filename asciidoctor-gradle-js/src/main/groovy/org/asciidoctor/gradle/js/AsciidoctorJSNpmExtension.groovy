@@ -30,8 +30,7 @@ class AsciidoctorJSNpmExtension extends NpmExtension {
 
     AsciidoctorJSNpmExtension(Project project) {
         super(project)
-//        localConfig = {new File(project.buildDir,"/tmp/${NAME}/npmrc")}
-        homeDirectory = {new File(project.buildDir,"/tmp/${NAME}")}
+        homeDirectory = {new File(project.buildDir,"/tmp/npm/${project.name}")}
     }
 
     AsciidoctorJSNpmExtension(Task task) {

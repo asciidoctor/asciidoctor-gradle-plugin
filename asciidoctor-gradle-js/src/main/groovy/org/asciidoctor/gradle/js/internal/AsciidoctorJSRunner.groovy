@@ -33,23 +33,22 @@ class AsciidoctorJSRunner {
     AsciidoctorJSRunner(
         File nodejs,
         Project project,
-        File asciidoctorjs,
+        FileLocations asciidoctorjs,
         String backend,
         SafeMode safeMode,
         File baseDir,
         File destinationDir,
-        File workingDir,
         Map<String, String> attributes,
         Set<String> requires,
         Optional<String> doctype,
         boolean logDocuments
     ) {
         this.project = project
-        this.asciidoctorjs = asciidoctorjs
+        this.asciidoctorjs = asciidoctorjs.executable
         this.nodejs = nodejs
         this.destinationDir = destinationDir
         this.logDocuments = logDocuments
-        this.nodeWorkingDir = workingDir
+        this.nodeWorkingDir = asciidoctorjs.workingDir
 
         this.arguments = [
             '-b', backend,
@@ -105,6 +104,12 @@ class AsciidoctorJSRunner {
     private final File nodeWorkingDir
     private final boolean logDocuments
     private static final String QUOTE = "'"
+
+
+    static class FileLocations {
+        File executable
+        File workingDir
+    }
 
 //    --embedded, -e          suppress enclosing document structure and output an embedded document [boolean] [default: false]
 //    --no-header-footer, -s  suppress enclosing document structure and output an embedded document
