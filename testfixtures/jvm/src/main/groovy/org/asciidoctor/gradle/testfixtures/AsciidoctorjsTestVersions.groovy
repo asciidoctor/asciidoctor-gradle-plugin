@@ -26,5 +26,5 @@ class AsciidoctorjsTestVersions {
 
     // These lines are read by the build script.
     public final static String SERIES_20 = '2.0.0'
-    public final static String DOCBOOK_SERIES_20 = '2.0.0-rc.1'
+    public final static String DOCBOOK_SERIES_20 = '2.0.0'
 }

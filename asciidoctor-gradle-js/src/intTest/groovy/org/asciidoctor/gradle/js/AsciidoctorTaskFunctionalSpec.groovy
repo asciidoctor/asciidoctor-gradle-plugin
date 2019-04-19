@@ -48,7 +48,6 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         new File(testProjectDir.root, "build/docs/asciidoc/subdir/sample2.html").exists()
     }
 
-    @PendingFeature
     @Unroll
     void 'Built-in HTML backend + added DOCBOOK backend (asciidoctor.js=#versions.version, docbook=#versions.docbookVersion)'() {
         given:
