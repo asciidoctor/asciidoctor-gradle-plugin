@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.js
+package org.asciidoctor.gradle.js.nodejs
 
-import org.asciidoctor.gradle.js.internal.FunctionalSpecification
+import org.asciidoctor.gradle.js.nodejs.internal.FunctionalSpecification
 import org.asciidoctor.gradle.testfixtures.generators.AsciidoctorjsVersionGenerator
-import spock.lang.PendingFeature
 import spock.lang.Unroll
 
 @SuppressWarnings('MethodName')

@@ -13,33 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.js
+package org.asciidoctor.gradle.js.nodejs
 
 import groovy.transform.CompileStatic
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.ysb33r.gradle.nodejs.NpmExtension
+import org.ysb33r.gradle.nodejs.NodeJSExtension
 
-/** An extension to configure Npm.
+/** An extension to configure Node.js.
  *
  * @since 3.0
  */
 @CompileStatic
-class AsciidoctorJSNpmExtension extends NpmExtension {
-    public final static String NAME = 'asciidoctorNpm'
+class AsciidoctorJSNodeExtension extends NodeJSExtension {
+    public final static String NAME = 'asciidoctorNodejs'
 
-    AsciidoctorJSNpmExtension(Project project) {
+    AsciidoctorJSNodeExtension(Project project) {
         super(project)
-        homeDirectory = {new File(project.buildDir,"/tmp/npm/${project.name}")}
     }
 
-    AsciidoctorJSNpmExtension(Task task) {
+    AsciidoctorJSNodeExtension(Task task) {
         super(task, NAME)
     }
-
-    @Override
-    protected String getNodeJsExtensionName() {
-        AsciidoctorJSNodeExtension.NAME
-    }
-
 }
