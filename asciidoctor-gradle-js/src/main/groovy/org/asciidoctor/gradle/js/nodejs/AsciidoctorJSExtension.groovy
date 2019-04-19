@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.js
+package org.asciidoctor.gradle.js.nodejs
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.base.AbstractImplementationEngineExtension
-import org.asciidoctor.gradle.js.internal.PackageDescriptor
+import org.asciidoctor.gradle.js.base.AbstractAsciidoctorJSExtension
+import org.asciidoctor.gradle.js.nodejs.internal.PackageDescriptor
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
@@ -26,22 +26,16 @@ import org.gradle.api.artifacts.SelfResolvingDependency
 import org.ysb33r.gradle.nodejs.NpmDependency
 import org.ysb33r.gradle.nodejs.dependencies.npm.NpmSelfResolvingDependency
 
-import static org.ysb33r.grolifant.api.StringUtils.stringize
-
 /**
  * @since 3.0
  */
 @CompileStatic
-class AsciidoctorJSExtension extends AbstractImplementationEngineExtension {
+class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
     public final static String NAME = 'asciidoctorjs'
-    public final static String DEFAULT_ASCIIDOCTORJS_VERSION = '2.0.2'
-    public final static String DEFAULT_DOCBOOK_VERSION = '2.0.0'
 
     private final static PackageDescriptor PACKAGE_ASCIIDOCTOR = PackageDescriptor.of('asciidoctor')
     private final static PackageDescriptor PACKAGE_DOCBOOK = PackageDescriptor.of('asciidoctor', 'docbook-converter')
 
-    private Object version = DEFAULT_ASCIIDOCTORJS_VERSION
-    private Optional<Object> docbookVersion
     private List<NpmDependency> additionalRequires = []
 
     private boolean onlyTaskRequires = false
@@ -56,59 +50,6 @@ class AsciidoctorJSExtension extends AbstractImplementationEngineExtension {
      */
     AsciidoctorJSExtension(Task task) {
         super(task, NAME)
-    }
-
-    /** Version of AsciidoctorJS that should be used.
-     *
-     */
-    String getVersion() {
-        if (task) {
-            this.version ? stringize(this.version) : extFromProject.getVersion()
-        } else {
-            stringize(this.version)
-        }
-    }
-
-    /** Set a new version to use.
-     *
-     * @param v New version to be used. Can be of anything that be resolved by {@link org.ysb33r.grolifant.api.StringUtils.stringize}.
-     */
-    void setVersion(Object v) {
-        this.version = v
-    }
-
-
-    /** Version of the Docbook converter that should be used.
-     *
-     * @return Version of extension DSL or {@code null} if extensions will not be used.
-     */
-    String getDocbookVersion() {
-        if (task) {
-            if (this.docbookVersion != null && this.docbookVersion.present) {
-                stringize(this.docbookVersion.get())
-            } else {
-                extFromProject.docbookVersion
-            }
-        } else {
-            this.docbookVersion?.present ? stringize(this.docbookVersion.get()) : null
-        }
-    }
-
-    /** Set a new Docbook converter version to use.
-     *
-     * Implies {@link #useDocbook}, but sets a custom version rather than a default.
-     *
-     * @param v Groovy DSL version.
-     */
-    void setDocbookVersion(Object v) {
-        this.docbookVersion = Optional.of(v)
-    }
-
-    /** Enables Docbook conversion with whichever docbook version is the default.
-     *
-     */
-    void useDocbook() {
-        setDocbookVersion(DEFAULT_DOCBOOK_VERSION)
     }
 
     /** Adds an additional NPM package that is required
@@ -254,6 +195,4 @@ class AsciidoctorJSExtension extends AbstractImplementationEngineExtension {
     private AsciidoctorJSExtension getExtFromProject() {
         task ? (AsciidoctorJSExtension) projectExtension : this
     }
-
-
 }

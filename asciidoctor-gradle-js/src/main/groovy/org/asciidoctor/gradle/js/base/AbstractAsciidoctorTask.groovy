@@ -13,18 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.testfixtures
+package org.asciidoctor.gradle.js.base
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.base.AbstractAsciidoctorBaseTask
 
-/**
- * @since 2.0.0
+/** Base class for all Asciidoctor tasks utilising asciidoctor.js in some form.
+ *
  * @author Schalk W. Cronjé
+ * @since 3.0
  */
 @CompileStatic
-class AsciidoctorjsTestVersions {
-
-    // These lines are read by the build script.
-    public final static String SERIES_20 = '2.0.2'
-    public final static String DOCBOOK_SERIES_20 = '2.0.0'
+abstract class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
 }

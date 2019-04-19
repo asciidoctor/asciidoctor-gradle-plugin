@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.js
+package org.asciidoctor.gradle.js.nodejs
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.base.AbstractAsciidoctorBaseTask
 import org.asciidoctor.gradle.base.internal.Workspace
-import org.asciidoctor.gradle.js.internal.AsciidoctorJSRunner
+import org.asciidoctor.gradle.js.base.AbstractAsciidoctorTask
+import org.asciidoctor.gradle.js.nodejs.internal.AsciidoctorJSRunner
 import org.gradle.api.file.CopySpec
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Internal
@@ -35,7 +35,7 @@ import org.ysb33r.grolifant.api.StringUtils
  * @since 3.0
  */
 @CompileStatic
-class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
+class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
 
     private final WorkerExecutor worker
     private final AsciidoctorJSExtension asciidoctorjs
@@ -57,7 +57,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
      * @param we {@link WorkerExecutor}. This is usually injected into the
      *   constructor of the subclass.
      */
-    protected AbstractAsciidoctorTask(WorkerExecutor we) {
+    protected AbstractAsciidoctorNodeJSTask(WorkerExecutor we) {
         this.worker = we
         this.asciidoctorjs = this.extensions.create(AsciidoctorJSExtension.NAME, AsciidoctorJSExtension, this)
         this.nodejs = project.extensions.getByType(AsciidoctorJSNodeExtension)
@@ -130,7 +130,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
 
         asciidoctorjs.configuration.resolve()
         new AsciidoctorJSRunner.FileLocations(
-            executable: new File(npm.homeDirectory, 'node_modules/@asciidoctor/cli/bin/asciidoctor'),
+            executable: new File(home, 'node_modules/asciidoctor/bin/asciidoctor'),
             workingDir: home
         )
     }

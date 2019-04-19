@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.js
+package org.asciidoctor.gradle.js.nodejs
 
 import groovy.transform.CompileStatic
 import org.gradle.api.Action
@@ -21,14 +21,12 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.ysb33r.grolifant.api.TaskProvider
 
-import static org.asciidoctor.gradle.js.AsciidoctorJSBasePlugin.TASK_GROUP
-
 /** Adds a task called asciidoctor.
  *
  * @since 3.0
  */
 @CompileStatic
-class AsciidoctorJSPlugin implements Plugin<Project> {
+class AsciidoctorNodeJSPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         project.with {
