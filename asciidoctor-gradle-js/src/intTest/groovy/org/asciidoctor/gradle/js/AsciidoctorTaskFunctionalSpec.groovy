@@ -16,13 +16,9 @@
 package org.asciidoctor.gradle.js
 
 import org.asciidoctor.gradle.js.internal.FunctionalSpecification
-import org.asciidoctor.gradle.testfixtures.AsciidoctorjsTestVersions
 import org.asciidoctor.gradle.testfixtures.generators.AsciidoctorjsVersionGenerator
 import spock.lang.PendingFeature
 import spock.lang.Unroll
-
-import static org.asciidoctor.gradle.testfixtures.AsciidoctorjsTestVersions.DOCBOOK_SERIES_20
-import static org.asciidoctor.gradle.testfixtures.AsciidoctorjsTestVersions.SERIES_20
 
 @SuppressWarnings('MethodName')
 class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
@@ -45,7 +41,7 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         ''')
 
         when:
-        getGradleRunner(DEFAULT_ARGS).withDebug(true).build()
+        getGroovyGradleRunner(DEFAULT_ARGS).build()
 
         then:
         new File(testProjectDir.root, "build/docs/asciidoc/sample.html").exists()
@@ -74,7 +70,7 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         """)
 
         when:
-        getGradleRunner(DEFAULT_ARGS).withDebug(true).build()
+        getGroovyGradleRunner(DEFAULT_ARGS).build()
 
         then: 'u content is generated as HTML and XML'
         verifyAll {

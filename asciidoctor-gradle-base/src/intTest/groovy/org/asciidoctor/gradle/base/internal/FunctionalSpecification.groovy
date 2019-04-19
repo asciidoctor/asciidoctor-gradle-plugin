@@ -46,12 +46,12 @@ class FunctionalSpecification extends Specification {
 
     @CompileStatic
     GradleRunner getGradleRunner(List<String> taskNames = ['tasks']) {
-        FunctionalTestSetup.getGradleRunner(testProjectDir.root, taskNames)
+        FunctionalTestSetup.getGradleRunner(GROOVY_DSL, testProjectDir.root, taskNames)
     }
 
     @CompileStatic
     GradleRunner getGradleRunnerForKotlin(List<String> taskNames = ['tasks']) {
-        getGradleRunner(taskNames).withDebug(false)
+        FunctionalTestSetup.getGradleRunner(KOTLIN_DSL, testProjectDir.root, taskNames)
     }
 
     @SuppressWarnings(['BuilderMethodWithSideEffects'])

@@ -56,25 +56,11 @@ class FunctionalTestSetup {
         pluginClasspathResource.readLines().collect { new File(it) }
     }
 
-    /** Obtains an instance of {@code GradleRunner} with the appropriate default set for
-     * testing Asciidoctor plugins.
-     *
-     * @param projectDir Temporary project directory
-     * @param testClass Test class
-     * @param projectSubdirName Name of actual project path on disk, not the temporary project directory
-     * @param taskNames Task names and arguments for Gradle
-     * @return A Gradle runner
-     */
-    static GradleRunner getGradleRunner(
-        final File projectDir, final Class testClass, final String projectSubdirName, List<String> taskNames) {
-        getGradleRunner(projectDir, loadPluginClassPath(testClass, projectSubdirName), taskNames)
+    static GradleRunner getGradleRunner(DslType dsl, File projectDir, List<String> taskNames) {
+        getGradleRunner(dsl, projectDir, null, taskNames)
     }
 
-    static GradleRunner getGradleRunner(File projectDir, List<String> taskNames) {
-        getGradleRunner(projectDir, null, taskNames)
-    }
-
-    static GradleRunner getGradleRunner(File projectDir, List<File> pluginClasspath, List<String> taskNames) {
+    static GradleRunner getGradleRunner(DslType dsl, File projectDir, List<File> pluginClasspath, List<String> taskNames) {
         List<String> eventualTaskNames = []
         eventualTaskNames.addAll(taskNames)
 
@@ -87,6 +73,7 @@ class FunctionalTestSetup {
             .withArguments(taskNames)
             .forwardOutput()
 
+        dsl == DslType.GROOVY_DSL ? runner.withDebug(true) : runner.withDebug(false)
         pluginClasspath ? runner.withPluginClasspath(pluginClasspath) : runner.withPluginClasspath()
     }
 
