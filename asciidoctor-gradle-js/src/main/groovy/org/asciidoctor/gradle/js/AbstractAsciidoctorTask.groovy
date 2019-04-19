@@ -18,7 +18,6 @@ package org.asciidoctor.gradle.js
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AbstractAsciidoctorBaseTask
 import org.asciidoctor.gradle.base.internal.Workspace
-import org.asciidoctor.gradle.js.internal.AsciidoctorJSResolver
 import org.asciidoctor.gradle.js.internal.AsciidoctorJSRunner
 import org.gradle.api.file.CopySpec
 import org.gradle.api.provider.Provider
@@ -27,6 +26,7 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.workers.WorkerExecutor
 import org.ysb33r.gradle.nodejs.NodeJSExtension
 import org.ysb33r.gradle.nodejs.NpmExtension
+import org.ysb33r.gradle.nodejs.utils.npm.NpmExecutor
 import org.ysb33r.grolifant.api.MapUtils
 import org.ysb33r.grolifant.api.StringUtils
 
@@ -39,14 +39,12 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
 
     private final WorkerExecutor worker
     private final AsciidoctorJSExtension asciidoctorjs
-    private final AsciidoctorJSResolver asciidoctorJSResolver
     private final NodeJSExtension nodejs
     private final NpmExtension npm
 
     @TaskAction
     void processAsciidocSources() {
         validateConditions()
-        asciidoctorjs.configuration.resolve()
         Workspace workspace = prepareWorkspace()
         Set<File> sourceFiles = workspace.sourceTree.files
 
@@ -64,7 +62,6 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         this.asciidoctorjs = this.extensions.create(AsciidoctorJSExtension.NAME, AsciidoctorJSExtension, this)
         this.nodejs = project.extensions.getByType(AsciidoctorJSNodeExtension)
         this.npm = project.extensions.getByType(AsciidoctorJSNpmExtension)
-        this.asciidoctorJSResolver = new AsciidoctorJSResolver(project, nodejs, npm)
     }
 
     @Override
@@ -110,6 +107,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
             asciidoctorjs.safeMode,
             getBaseDir(),
             getOutputDirFor(backend),
+            npm.homeDirectory,
             attributes,
             asciidoctorjs.requires,
             Optional.empty(),
@@ -118,7 +116,20 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
     }
 
     private File resolveAsciidoctorjsExe() {
-        asciidoctorJSResolver.getExecutable(asciidoctorjs.version).executable
+        File packageJson = new File(npm.homeDirectory, 'package.json')
+        if (!packageJson.exists()) {
+            npm.homeDirectory.mkdirs()
+            NpmExecutor.initPkgJson(
+                "${project.name}-${name}",
+                project.version ? StringUtils.stringize(project.version) : 'UNDEFINED',
+                project,
+                nodejs,
+                npm
+            )
+        }
+
+        asciidoctorjs.configuration.resolve()
+        new File(npm.homeDirectory, 'node_modules/@asciidoctor/cli/bin/asciidoctor')
     }
 
     private void runWithSubprocess(final File workingSourceDir, final Set<File> sourceFiles) {
