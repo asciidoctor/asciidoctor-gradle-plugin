@@ -13,6 +13,6 @@ asciidoctorj {
 }
 
 asciidoctor {
-    docExtensions 'asciidocExt'
+    configurations 'asciidocExt'
     inProcess JAVA_EXEC
 }

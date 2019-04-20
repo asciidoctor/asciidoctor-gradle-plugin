@@ -290,7 +290,8 @@ Please use one of the following instead instead as current behaviour will no lon
 
     /** Returns the current set of Asciidoctor backends that will be used for document generation
      *
-     * @since 0.7.1* @deprecated
+     * @since 0.7.1
+     * @deprecated
      */
     @Optional
     @Input
