@@ -18,12 +18,13 @@ package org.asciidoctor.gradle.jvm.slides
 import org.asciidoctor.gradle.jvm.slides.internal.FunctionalSpecification
 import org.asciidoctor.gradle.testfixtures.jvm.JRubyTestVersions
 import org.gradle.testkit.runner.BuildResult
-import spock.lang.PendingFeature
 
 @SuppressWarnings(['DuplicateStringLiteral', 'DuplicateListLiteral'])
 class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
 
     final static String JRUBY_TEST_VERSION = JRubyTestVersions.AJ16_SAFE_MAXIMUM
+    final static String REVEALJS_DIR_NAME = 'reveal.js'
+    final static String DEFAULT_REVEALJS_PATH = "build/docs/asciidocRevealJs/${REVEALJS_DIR_NAME}"
 
     void setup() {
         createTestProject('revealjs')
@@ -39,10 +40,10 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
         then:
         verifyAll {
             new File(testProjectDir.root, 'build/docs/asciidocRevealJs/revealjs.html').exists()
-            new File(testProjectDir.root, 'build/docs/asciidocRevealJs/reveal.js/css').exists()
-            new File(testProjectDir.root, 'build/docs/asciidocRevealJs/reveal.js/lib').exists()
-            new File(testProjectDir.root, 'build/docs/asciidocRevealJs/reveal.js/plugin').exists()
-            new File(testProjectDir.root, 'build/docs/asciidocRevealJs/reveal.js/js').exists()
+            new File(testProjectDir.root, "${DEFAULT_REVEALJS_PATH}/css").exists()
+            new File(testProjectDir.root, "${DEFAULT_REVEALJS_PATH}/lib").exists()
+            new File(testProjectDir.root, "${DEFAULT_REVEALJS_PATH}/plugin").exists()
+            new File(testProjectDir.root, "${DEFAULT_REVEALJS_PATH}/js").exists()
         }
     }
 
@@ -66,12 +67,11 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
         verifyAll {
             new File(testProjectDir.root, 'build/docs/asciidocRevealJs/revealjs.html').exists()
             new File(testProjectDir.root, 'build/github-cache/hakimel/reveal.js/3.6.0').exists()
-            new File(testProjectDir.root, 'build/docs/asciidocRevealJs/reveal.js/js/reveal.js').text.contains('var VERSION = \'3.6.0\';')
+            new File(testProjectDir.root, "${DEFAULT_REVEALJS_PATH}/js/reveal.js").text.contains('var VERSION = \'3.6.0\';')
         }
     }
 
     // Only supported with reveal.js > 1.1.3
-    @PendingFeature
     void 'Run a revealJS generator with plugins'() {
         given:
         getBuildFile('''
@@ -93,20 +93,20 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
 
         when:
         build()
-        File revealjsHtml = new File(testProjectDir.root, 'build/docs/asciidocRevealJs/revealjs.html')
-        File pluginList = new File(testProjectDir.root, 'build/docs/asciidocRevealJs/reveal.js/revealjs-plugins.js')
-        File pluginConfig = new File(testProjectDir.root, 'build/docs/asciidocRevealJs/reveal.js/revealjs-plugin-configuration.js')
+        String revealjsHtml = new File(testProjectDir.root, 'build/docs/asciidocRevealJs/revealjs.html').text
+        String pluginConfig = new File(testProjectDir.root, 'src/docs/asciidoc/empty-plugin-configuration.js').text
+        File pluginList = new File(testProjectDir.root, "${DEFAULT_REVEALJS_PATH}/revealjs-plugins.js")
 
         then:
         verifyAll {
-            !revealjsHtml.text.contains("src: 'reveal.js/plugin/notes/notes.js'")
-            revealjsHtml.text.contains("src: 'reveal.js/plugin/print-pdf/print-pdf.js'")
-            pluginList.text.contains('reveal.js/plugin/rajgoel/chart/Chart.js')
-            pluginConfig.exists()
-            new File(testProjectDir.root, 'build/docs/asciidocRevealJs/reveal.js/plugin/rajgoel/chart/Chart.js').exists()
+            !pluginList.exists()
+            !revealjsHtml.contains('plugin/notes/notes')
+            revealjsHtml.contains("src: '${REVEALJS_DIR_NAME}/plugin/print-pdf/")
+            revealjsHtml.contains("src: '${REVEALJS_DIR_NAME}/plugin/rajgoel/chart/Chart.js'")
+            revealjsHtml.contains(pluginConfig)
+            new File(testProjectDir.root, "${DEFAULT_REVEALJS_PATH}/plugin/rajgoel/chart/Chart.js").exists()
         }
     }
-
 
     @SuppressWarnings('FactoryMethodName')
     BuildResult build() {
@@ -144,14 +144,5 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
     }
 
 }
-
-//    /** Adds files to a {@link CopySpec} for copying to final artifact.
-//     *
-//     * @param cs CopySpec to enhance.
-//     */
-//    void enhanceCopySpec(CopySpec cs) {
-//        copyActionFor(cs, parallaxBackgroundImageIfFile, getParallaxBackgroundImageRelativePath())
-//        copyActionFor(cs, highlightJsThemeLocationIfFile, getHighlightJsThemeRelativePath())
-//        copyActionFor(cs, customThemeLocationIfFile, getCustomThemeRelativePath())
 
 

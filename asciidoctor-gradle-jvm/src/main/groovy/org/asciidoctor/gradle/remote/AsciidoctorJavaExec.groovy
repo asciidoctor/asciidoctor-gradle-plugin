@@ -75,7 +75,7 @@ class AsciidoctorJavaExec extends ExecutorBase {
     }
 
     private Asciidoctor getAsciidoctorInstance() {
-        String combinedGemPath = runConfigurations*.gemPath.join(File.pathSeparator)
+        String combinedGemPath = runConfigurations*.gemPath.findAll { it }.join(File.pathSeparator)
         if (combinedGemPath.empty || combinedGemPath == File.pathSeparator) {
             Asciidoctor.Factory.create()
         } else {

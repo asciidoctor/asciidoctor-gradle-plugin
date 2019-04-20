@@ -1,6 +1,6 @@
 = Asciidoctor Gradle Plugin
 Andres Almiray <https://github.com/aalmiray[@aalmiray]>
-:version: 2.0.0
+:version: 2.1.0
 :version-published: 2.0.0
 :asciidoc-url: http://asciidoc.org
 :asciidoctor-url: http://asciidoctor.org
@@ -43,6 +43,7 @@ image:https://ci.appveyor.com/api/projects/status/db102rphsu5lviv6/branch/{githu
 image:http://img.shields.io/coveralls/{project-full-path}/{github-branch}.svg[Coverage Status, link=https://coveralls.io/r/{project-full-path}]
 image:http://img.shields.io/badge/license-ASF2-blue.svg[Apache License 2, link=http://www.apache.org/licenses/LICENSE-2.0.txt]
 image:https://api.bintray.com/packages/asciidoctor/maven/{project-name}/images/download.svg[Download, link=https://bintray.com/asciidoctor/maven/{project-name}]
+image:https://gitlab.com/asciidoctor/asciidoctor-gradle-plugin/badges/master/pipeline.svg[link="https://gitlab.com/asciidoctor/asciidoctor-gradle-plugin/commits/master",title="pipeline status"]
 endif::[]
 
 The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to convert all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
@@ -705,7 +706,7 @@ If you used `separateOutputDirs`, yout need to change that to `outputOptions.sep
 
 The base directory is now set to the directory of the root project. This may influence how your includes are processed. Either set `baseDir` to specific directory or or use the `includedir` which is automatically calculates to be the correct source directory.
 
-Gradle injected a number of attributes into the build. These names have now been changed to indicate that they are injected:
+Gradle injected a number of attributes into the build. Some of these names have been changed from 1.5/1.6. to indicate that they are injected:
 
 [cols="4*"]
 |===
@@ -715,6 +716,7 @@ Gradle injected a number of attributes into the build. These names have now been
 | `project-name` | `gradle-project-name` | Yes | The name of the current Gradle subproject. (Or the root project in case of a single project).
 | `project-group` | `gradle-project-group` | Yes | The project/artifact group if it is defined.
 | `project-version` | `revnumber` | Yes | The project version if it is defined.
+| - | `gradle-relative-srcdir` | No | The relative path from the parent of the current document that is being processed to the source document root. It is calcluated as moving from the current document towards the root. For instance `src/docs/asciidoc/subdir/sample.adoc` will set this attribute to `..` if `sourceDir` == `src/docs/asciidoc`.
 |===
 
 Substituable attributes means that the build script author can change those attributes by setting them explicitly.
@@ -995,4 +997,37 @@ asciidoctor.doLast {
     }
 }
 ----
+
+=== Using Pygments source highlighter
+
+NOTE: You need to have Python 2.x installed on a system or in a container for Pygments to work.
+
+[source,groovy]
+[subs=attributes+]
+----
+plugins {
+  id 'org.asciidoctor.jvm.pdf' version '{version-published}'
+  id 'org.asciidoctor.jvm.gems' version '{version-published}'
+}
+
+repositories {
+    jcenter()
+    maven { url 'http://rubygems-proxy.torquebox.org/releases' }
+}
+
+dependencies {
+  asciidoctorGems 'rubygems:pygments:1.2.1'
+}
+
+asciidoctorPdf {
+  dependsOn asciidoctorGemsPrepare
+  sourceDir 'docs'
+
+  asciidoctorj {
+    requires 'pygments'
+    attributes 'source-highlighter' : 'pygments'
+  }
+}
+----
+
 

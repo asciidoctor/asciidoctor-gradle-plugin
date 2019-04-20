@@ -16,8 +16,12 @@
 package org.asciidoctor.gradle.jvm
 
 import groovy.transform.CompileStatic
+import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+
+import static org.asciidoctor.gradle.jvm.AsciidoctorJExtension.DEFAULT_PDF_VERSION
+import static org.ysb33r.grolifant.api.TaskProvider.registerTask
 
 /** Provides additional conventions for building PDFs.
  *
@@ -37,13 +41,19 @@ class AsciidoctorJPdfPlugin implements Plugin<Project> {
             apply plugin: 'org.asciidoctor.jvm.base'
 
             extensions.create(AsciidoctorPdfThemesExtension.NAME, AsciidoctorPdfThemesExtension, project)
+            extensions.getByType(AsciidoctorJExtension).pdfVersion = DEFAULT_PDF_VERSION
 
-            AsciidoctorPdfTask task = tasks.create('asciidoctorPdf', AsciidoctorPdfTask)
-            task.group = AsciidoctorJBasePlugin.TASK_GROUP
-            task.description = 'Convert AsciiDoc files to PDF format'
-            task.outputDir = { "${project.buildDir}/docs/asciidocPdf" }
-            extensions.getByType(AsciidoctorJExtension).pdfVersion = AsciidoctorJExtension.DEFAULT_PDF_VERSION
-
+            Action pdfDefaults = new Action<AsciidoctorPdfTask>() {
+                @Override
+                void execute(AsciidoctorPdfTask task) {
+                    task.with {
+                        group = AsciidoctorJBasePlugin.TASK_GROUP
+                        description = 'Convert AsciiDoc files to PDF format'
+                        outputDir = { "${project.buildDir}/docs/asciidocPdf" }
+                    }
+                }
+            }
+            registerTask(project, 'asciidoctorPdf', AsciidoctorPdfTask, pdfDefaults)
         }
     }
 }

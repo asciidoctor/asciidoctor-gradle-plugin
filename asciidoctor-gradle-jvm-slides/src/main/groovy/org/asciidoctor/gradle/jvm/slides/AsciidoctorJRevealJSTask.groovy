@@ -21,13 +21,9 @@ import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask
 import org.gradle.api.Action
 import org.gradle.api.file.CopySpec
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.InputFile
-import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.Nested
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.OutputDirectory
+
+@java.lang.SuppressWarnings('NoWildcardImports')
+import org.gradle.api.tasks.*
 import org.gradle.workers.WorkerExecutor
 import org.ysb33r.grolifant.api.StringUtils
 import org.ysb33r.grolifant.api.Version
@@ -229,6 +225,7 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
         checkRevealJsVersion()
         processTemplateResources()
         super.processAsciidocSources()
+        cleanupPluginTempFiles()
     }
 
     /** A task may add some default attributes.
@@ -246,25 +243,28 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
         Map<String, Object> attrs = super.getTaskSpecificDefaultAttributes(workingSourceDir)
 
         attrs.putAll revealjsdir: getTemplateRelativeDir(),
-            revealjs_theme: getTheme()
+            revealjs_theme: getTheme(),
+            'source-highlighter': 'highlightjs'
 
         attrs.putAll revealjsOptions.asAttributeMap
 
-        if(pluginSupportAvailable) {
+        if (pluginSupportAvailable) {
             this.builtinPlugins.each { String pluginName, Boolean state ->
-                attrs.put "revealjs_plugins_${pluginName}".toString(), state.toString()
+                attrs.put(
+                    "revealjs_plugin_${pluginName}".toString(),
+                    (state ? 'enabled' : 'disabled')
+                )
             }
 
             if (!requiredPlugins.empty) {
-                attrs.put 'revealjs_plugins', pluginListLocation
+                attrs.put 'revealjs_plugins', pluginListFile.absolutePath
 
                 if (getPluginConfigurationFile() != null) {
-                    attrs.put 'revealjs_plugins_configuration', pluginConfigurationLocation
+                    attrs.put 'revealjs_plugins_configuration', getPluginConfigurationFile().absolutePath
                 }
             }
         }
 
-        attrs.put 'source-highlighter@', 'highlightjs'
         attrs
     }
 
@@ -272,7 +272,7 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
      * Enhances the default operation from {@link AbstractAsciidoctorTask#getResourceCopySpec}
      * to also include any custom background images and themes.
      *
-     * @return A {@link CopySpec}. Never {@code null}.
+     * @return A{@link CopySpec}. Never {@code null}.
      */
     @Override
     protected CopySpec getResourceCopySpec() {
@@ -291,7 +291,6 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
         final File fromSource = templateSourceDir
         final File target = templateDir
         final Set<ResolvedRevealJSPlugin> fromPlugins = resolvedPlugins
-        final File configLocation = getPluginConfigurationFile()
 
         project.copy(new Action<CopySpec>() {
             @Override
@@ -307,19 +306,17 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
                         cs.into "plugin/${plugin.name}"
                     }
                 }
-
-                if(!fromPlugins.empty && configLocation != null) {
-                    copySpec.from configLocation, { CopySpec cs ->
-                        cs.rename( configLocation.name, PLUGIN_CONFIGURATION_FILENAME )
-                    }
-                }
             }
         })
 
-        if(!fromPlugins.empty) {
-            final String relativePath = pluginListLocation
-            generatePluginList(new File(target,relativePath),relativePath)
+        if (!fromPlugins.empty) {
+            final String relativePathForPlugins = "${templateRelativeDir}/plugin"
+            generatePluginList(pluginListFile, relativePathForPlugins)
         }
+    }
+
+    private void cleanupPluginTempFiles() {
+        pluginListFile.delete()
     }
 
     @Internal
@@ -332,11 +329,11 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
         project.extensions.getByType(RevealJSPluginExtension)
     }
 
-    private void generatePluginList(File targetFile,String relativePath) {
+    private void generatePluginList(File targetFile, String relativePathForPlugins) {
         targetFile.parentFile.mkdirs()
 
-        String pluginList = Transform.toList(plugins,{ String fullName ->
-            "{ src: '${relativePath}/${fullName}' }"
+        String pluginList = Transform.toList(plugins, { String fullName ->
+            "{ src: '${relativePathForPlugins}/${fullName}' }"
         }).join(',\n')
 
         targetFile.withWriter { Writer w ->
@@ -345,7 +342,7 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
     }
 
     private void checkRevealJsVersion() {
-        if(!pluginSupportAvailable) {
+        if (!pluginSupportAvailable) {
             project.logger.warn("You are using Reveal.Js converter version ${revealjsExtension.version}, which does not support plugins. Any plugin settings will be ignored.")
         }
     }
@@ -354,12 +351,8 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
         Version.of(revealjsExtension.version) >= FIRST_VERSION_WITH_PLUGIN_SUPPORT
     }
 
-    private String getPluginListLocation() {
-        "${templateRelativeDir}/${PLUGIN_LIST_FILENAME}"
-    }
-
-    private String getPluginConfigurationLocation() {
-        "${templateRelativeDir}/${PLUGIN_CONFIGURATION_FILENAME}"
+    private File getPluginListFile() {
+        new File(templateDir, PLUGIN_LIST_FILENAME)
     }
 
     private Set<String> getPluginBundles() {
@@ -369,13 +362,13 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
     }
 
     private Set<ResolvedRevealJSPlugin> getResolvedPlugins() {
-        if(isPluginSupportAvailable()) {
+        if (isPluginSupportAvailable()) {
             final RevealJSPluginExtension pluginExtension = revealsjsPluginExtension
-            pluginBundles.collect {
+            Transform.toSet(pluginBundles) {
                 pluginExtension.getByName(it)
-            } as Set
+            }
         } else {
-            [] as Set
+            [].toSet()
         }
     }
 }
