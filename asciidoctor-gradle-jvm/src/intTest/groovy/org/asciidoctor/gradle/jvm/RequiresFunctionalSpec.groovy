@@ -113,7 +113,9 @@ class RequiresFunctionalSpec extends FunctionalSpecification {
     File getBuildFile(String sourceName, String extraContent) {
         getJvmConvertGroovyBuildFile("""
             asciidoctorj {
-                diagramVersion = '${DIAGRAM_SERIES_16}'
+                modules {
+                    diagram.version = '${DIAGRAM_SERIES_16}'
+                }
             }
             
             asciidoctor {

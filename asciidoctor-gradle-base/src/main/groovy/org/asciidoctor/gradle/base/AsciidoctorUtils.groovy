@@ -29,8 +29,8 @@ import static groovy.lang.Closure.DELEGATE_FIRST
 @CompileStatic
 class AsciidoctorUtils {
 
-    static final OperatingSystem OS = OperatingSystem.current()
-    static final String UNDERSCORE_LED_FILES = '**/_*'
+    public static final OperatingSystem OS = OperatingSystem.current()
+    public static final String UNDERSCORE_LED_FILES = '**/_*'
 
     static final Spec<? super File> ACCEPT_ONLY_FILES = new Spec<File>() {
         @Override

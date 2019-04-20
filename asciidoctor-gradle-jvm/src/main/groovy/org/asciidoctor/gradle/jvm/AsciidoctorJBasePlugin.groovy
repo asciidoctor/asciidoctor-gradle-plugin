@@ -25,7 +25,9 @@ import org.gradle.api.tasks.diagnostics.DependencyReportTask
 import static org.ysb33r.grolifant.api.TaskProvider.registerTask
 
 /**
- * @since 2.0.0* @author Schalk W. Cronjé
+* @author Schalk W. Cronjé
+*
+* @since 2.0.0
  */
 @CompileStatic
 class AsciidoctorJBasePlugin implements Plugin<Project> {
