@@ -48,7 +48,7 @@ class ExtensionsFunctionalSpec extends FunctionalSpecification {
             model.processMode, model.version, """
 asciidoctor {
     asciidoctorj {
-         extensions {
+         docExtensions {
             block(name: "BIG", contexts: [":paragraph"]) {
                 parent, reader, attributes ->
                 def upperLines = reader.readLines()*.toUpperCase()
@@ -92,7 +92,7 @@ asciidoctor {
 asciidoctor {
 
     asciidoctorj {
-        extensions '''
+        docExtensions '''
 block(name: 'BIG', contexts: [':paragraph']) {
         parent, reader, attributes ->
         def upperLines = reader.readLines()
@@ -136,7 +136,7 @@ block('small') {
             model.processMode, model.version, """
 asciidoctor {
     asciidoctorj {
-        extensions file('src/docs/asciidoc/blockMacro.groovy')
+        docExtensions file('src/docs/asciidoc/blockMacro.groovy')
     }
 }
 """)
@@ -164,7 +164,7 @@ asciidoctor {
         getBuildFile(
             model.processMode, model.version, '''
         asciidoctorj {
-            extensions {
+            docExtensions {
                 postprocessor { document, output ->
                     return "Hi, Mom" + output 
                 }
@@ -203,7 +203,7 @@ asciidoctor {
             model.processMode, model.version, """
 asciidoctor {
     asciidoctorj {
-        extensions '''
+        docExtensions '''
             postprocessor {
                 document, output ->
                     if (output.contains("blacklisted")) {

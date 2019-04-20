@@ -67,7 +67,7 @@ import static org.ysb33r.grolifant.api.StringUtils.stringize
 class AsciidoctorCompatibilityTask extends DefaultTask {
     private static final String PATH_SEPARATOR = OperatingSystem.current().pathSeparator
     private static
-    final String MIGRATE_GEMS_MSG = 'When upgrading GEMs, \'requires\' will need to be set via the asciidoctorj project and task extensions. Use  setGemPaths method in extension(s) to set GEM paths.'
+    final String MIGRATE_GEMS_MSG = 'When upgrading GEMs, \'requires\' will need to be set via the asciidoctorj project and task docExtensions. Use  setGemPaths method in extension(s) to set GEM paths.'
 
     private static final String DEFAULT_BACKEND = AsciidoctorBackend.HTML5.id
     private boolean baseDirSetToNull
@@ -294,7 +294,7 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
      */
     @Deprecated
     void extensions(Object... exts) {
-        migrationMessage('extensions', 'Extensions will need to be set via the asciidoctorj project and task extensions')
+        migrationMessage('docExtensions', 'Extensions will need to be set via the asciidoctorj project and task docExtensions')
         if (!exts) return // null check
         asciidoctorExtensions.addAll(exts as List)
     }
@@ -307,7 +307,7 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
     @SuppressWarnings('ConfusingMethodName')
     @Deprecated
     void gemPath(Object... f) {
-        migrationMessage('gemPath', 'GEM paths will need to be set via the asciidoctorj project and task extensions using the gemPaths method')
+        migrationMessage('gemPath', 'GEM paths will need to be set via the asciidoctorj project and task docExtensions using the gemPaths method')
         if (!f) return // null check
         this.gemPaths.addAll(f as List)
     }
