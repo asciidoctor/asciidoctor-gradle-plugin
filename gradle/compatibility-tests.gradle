@@ -34,7 +34,6 @@ gradleTest {
     if (tasks.findByName('intTest')) {
         mustRunAfter 'intTest'
     }
-
     enabled = !gradle.startParameter.offline
 
     dependsOn ':testfixtures-offline-repo:buildOfflineRepositories'

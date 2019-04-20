@@ -157,12 +157,12 @@ attributeProvider:: Register an additional provider of attributes.
   Attribute providers are a means of adding attributes that will not affect the up-to-date status of tasks.
 epubVersion:: {asciidoctorj-epub-name} version.
   If not specified asciidoctorj-epub will not be on the classpath. If you plan to use the EPUB backend, then you need to set a version here.
-extensions:: Groovy DSL extensions.
-  Use `extensions` to add one or more extensions. Use `setExtensions` to replace the current set of extensions with a new set.
+docExtensions:: Groovy DSL extensions.
+  Use `docExtensions` to add one or more extensions. Use `setDocExtensions` to replace the current set of extensions with a new set.
   Extensions can be any kind of object that is serialisable, although in most cases they will be strings or files.
   If extensions are detached dependencies, they will not be serialised, but rather will be placed on the classpath in
   order that {asciidoctorj-name} can pick them up automatically.
-fatalWarnings: Patterns for {asciidoctorj-name} log messages that shuold be treated as fatal errors.
+fatalWarnings: Patterns for {asciidoctorj-name} log messages that should be treated as fatal errors.
   The list is empty be default. Use `setFatalWarnings` to clear any existing patterns or to decouple a task's configuration from the global
   configuration. Use `fatalWarnings` to add more patterns. Pass `missingIncludes()` to add the common use-case of
   missing include files.
@@ -911,7 +911,7 @@ plugins {
 }
 
 asciidoctorj {
-    extensions project(':extension')
+    docExtensions project(':extension')
 }
 ----
 
@@ -922,13 +922,13 @@ In the less-common case where extension is not supplied via the default configur
 
 The next option is to define extensions directly in the build script.
 This approach is based on the project asciidoctorj-groovy-dsl that allows to define Asciidoctor extensions in Groovy.
-An extension is registered via the `extensions` element.
+An extension is registered via the `docExtensions` element.
 
 [source,groovy]
 .build.gradle
 ----
 asciidoctorj {
-    extensions {
+    docExtensions {
         block(name: "BIG", contexts: [":paragraph"]) {
             parent, reader, attributes ->
             def upperLines = reader.readLines()
@@ -949,7 +949,7 @@ Groovy extensions can also be included as files.
 .build.gradle
 ----
 asciidoctorj {
-    extensions file('big.groovy')
+    docExtensions file('big.groovy')
 }
 ----
 

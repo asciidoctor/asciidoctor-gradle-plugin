@@ -20,11 +20,7 @@ import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
 import org.asciidoctor.gradle.base.SafeMode
 import org.asciidoctor.gradle.base.Transform
-import org.gradle.api.Action
-import org.gradle.api.GradleException
-import org.gradle.api.NonExtensible
-import org.gradle.api.Project
-import org.gradle.api.Task
+import org.gradle.api.*
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.DependencyResolveDetails
@@ -43,8 +39,7 @@ import static org.ysb33r.grolifant.api.StringUtils.stringize
  *
  * It can be used as both a project and a task extension.
  *
- * @since 2.0
- * @author Schalk W. Cronjé
+ * @since 2.0* @author Schalk W. Cronjé
  */
 @CompileStatic
 @SuppressWarnings('MethodCount')
@@ -141,7 +136,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      * @return {@code true} if JAR should be injected.
      */
     boolean getInjectInternalGuavaJar() {
-        if(task) {
+        if (task) {
             this.injectGuavaJar == null ? extFromProject.injectInternalGuavaJar : this.injectGuavaJar
         } else {
             this.injectGuavaJar == null ? GUAVA_REQUIRED_FOR_EXTERNALS : this.injectGuavaJar
@@ -178,7 +173,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
 
     /** Version of the Groovy Extension DSL that should be used.
      *
-     * @return Version of extension DSL or {@code null} if extensions will not be used.
+     * @return Version of extension DSL or {@code null} if docExtensions will not be used.
      */
     String getGroovyDslVersion() {
         if (task) {
@@ -395,7 +390,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      * @return List of providers. Can be empty. Never {@code null}.
      */
     List<AsciidoctorAttributeProvider> getAttributeProviders() {
-        if(task) {
+        if (task) {
             this.attributeProviders.empty ? extFromProject.attributeProviders : this.attributeProviders
         } else {
             this.attributeProviders
@@ -579,20 +574,47 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         configuration
     }
 
+    /**
+     * @deprecated Use {@link #getDocExtensions}
+     */
+    @Deprecated
+    List<Object> getExtensions() {
+        warnExtensionsDeprecated('getExtensions','getDocExtensions')
+        getDocExtensions()
+    }
+
+    /**
+     * @deprecated Use {@link #asciidoctorExtensions}
+     */
+    @Deprecated
+    void extensions(Object... exts) {
+        warnExtensionsDeprecated('extensions','docExtensions')
+        docExtensions(exts)
+    }
+
+    /**
+     * @deprecated Use {@link #setDocExtensions}
+     */
+    @Deprecated
+    void setExtensions(Iterable<Object> newExtensions) {
+        warnExtensionsDeprecated('setExtensions','setDocExtensions')
+        setDocExtensions(newExtensions)
+    }
+
     /** Return extensionRegistry.
      *
      * These extensionRegistry are not registered at this call. That action is left
      * to the specific task at its execution time.
      *
-     * @return
+     * @return All extensions that should be registered on a conversion.
      */
-    List<Object> getExtensions() {
+    List<Object> getDocExtensions() {
         if (!task || onlyTaskExtensions) {
             this.asciidoctorExtensions
         } else if (this.asciidoctorExtensions.empty) {
-            extFromProject.extensions
+            extFromProject.docExtensions
         } else {
-            extFromProject.extensions + this.asciidoctorExtensions
+            extFromProject.docExtensions + this.asciidoctorExtensions
         }
     }
 
@@ -600,7 +622,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      * either contain Asciidoctor Groovy DSL closures or files
      * with content conforming to the Asciidoctor Groovy DSL.
      */
-    void extensions(Object... exts) {
+    void docExtensions(Object... exts) {
         addExtensions(exts as List)
     }
 
@@ -609,7 +631,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      * If this is declared on a task extension all extention from the global
      * project extension will be ignored.
      */
-    void setExtensions(Iterable<Object> newExtensions) {
+    void setDocExtensions(Iterable<Object> newExtensions) {
         asciidoctorExtensions.clear()
         addExtensions(newExtensions as List)
         onlyTaskExtensions = true
@@ -801,7 +823,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         }
     }
 
-    /** Adds extensions to the existing container.
+    /** Adds docExtensions to the existing container.
      *
      * Also sets the Groovy DSL version if required.
      *
@@ -812,16 +834,16 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         asciidoctorExtensions.addAll(dehydrateExtensions(newExtensions))
     }
 
-    /** Prepare extensions for serialisation.
+    /** Prepare docExtensions for serialisation.
      *
      * This takes care of dehydrating any closures.
      *
-     * @param exts List of extensions
-     * @return List of extensions suitable for serialization.
+     * @param exts List of docExtensions
+     * @return List of docExtensions suitable for serialization.
      *
      */
     private List<Object> dehydrateExtensions(final List<Object> exts) {
-        Transform.toList(exts){
+        Transform.toList(exts) {
             switch (it) {
                 case Closure:
                     ((Closure) it).dehydrate()
@@ -842,18 +864,21 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
 
     @SuppressWarnings('Instanceof')
     private List<Pattern> patternize(final List<Object> patterns) {
-        Transform.toList(patterns){
-            (Pattern)(it instanceof Pattern ? it : ~/${stringize(it)}/)
+        Transform.toList(patterns) {
+            (Pattern) (it instanceof Pattern ? it : ~/${stringize(it)}/)
         }
     }
 
     @CompileDynamic
     @SuppressWarnings('DuplicateStringLiteral')
-    Closure excludeTransitiveAsciidoctorJ() {
+    private Closure excludeTransitiveAsciidoctorJ() {
         return {
             exclude(group: ASCIIDOCTORJ_GROUP, module: 'asciidoctorj')
             exclude(group: ASCIIDOCTORJ_GROUP, module: 'asciidoctorj-api')
         }
+    }
 
+    private void warnExtensionsDeprecated(String oldMethod, String newMethod) {
+        getProject().logger.warn "${oldMethod} is deprecated and will be removed in 3.0 of this plugin suite. Use ${newMethod} instead"
     }
 }

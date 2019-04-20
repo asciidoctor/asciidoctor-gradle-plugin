@@ -71,7 +71,7 @@ JRuby:
 Asciidoctor:
   ${options.size()} options
   ${attributes.size()} attributes
-  ${asciidoctorExtensions?.size() ?: 0} extensions
+  ${asciidoctorExtensions?.size() ?: 0} docExtensions
   logDocuments = ${logDocuments}, copyResources = ${copyResources}, safeMode = ${safeModeLevel}
 """
     }

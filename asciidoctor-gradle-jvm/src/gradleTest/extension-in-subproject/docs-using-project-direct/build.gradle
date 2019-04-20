@@ -5,7 +5,7 @@ repositories {
 }
 
 asciidoctorj {
-    extensions project(':extension')
+    docExtensions project(':extension')
 }
 
 asciidoctor {

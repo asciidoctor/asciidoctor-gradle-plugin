@@ -152,7 +152,7 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
 
     /** Name one or more reveal.js plugins to activate.
      *
-     * Plugins must match bundle names registered in the {@code revealjsPlugins} extensions.
+     * Plugins must match bundle names registered in the {@code revealjsPlugins} docExtensions.
      * If selected plugins from a bundle is requires then they can be specified as {@code 'bundleName/pluginName'}.
      *
      * @param p List of plugins. Must be convertible to string.
@@ -163,7 +163,7 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
 
     /** Name one or more reveal.js plugins to activate.
      *
-     * Plugins must match bundle names registered in the {@code revealjsPlugins} extensions.
+     * Plugins must match bundle names registered in the {@code revealjsPlugins} docExtensions.
      * If selected plugins from a bundle is requires then they can be specified as {@code 'bundleName/pluginName'}.
      *
      * @param p List of plugins. Must be convertible to string.
@@ -174,7 +174,7 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
 
     /** Set reveal.js plugins to activate.
      *
-     * Plugins must match bundle names registered in the {@code revealjsPlugins} extensions.
+     * Plugins must match bundle names registered in the {@code revealjsPlugins} docExtensions.
      * If selected plugins from a bundle is requires then they can be specified as {@code 'bundleName/pluginName'}.
      *
      * @param p List of plugins. Must be convertible to string.

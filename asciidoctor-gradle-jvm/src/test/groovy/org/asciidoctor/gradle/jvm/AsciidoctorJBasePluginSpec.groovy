@@ -64,7 +64,7 @@ class AsciidoctorJBasePluginSpec extends Specification {
 
         AsciidoctorJExtension ext = project.extensions.getByName(AsciidoctorJExtension.NAME)
 
-        ext.extensions '1'
+        ext.docExtensions '1'
 
         then:
         verifyAll {
@@ -101,6 +101,5 @@ class AsciidoctorJBasePluginSpec extends Specification {
             taskExt.version == '1.2.3'
             taskExt.groovyDslVersion == '4.5.6'
         }
-
     }
 }

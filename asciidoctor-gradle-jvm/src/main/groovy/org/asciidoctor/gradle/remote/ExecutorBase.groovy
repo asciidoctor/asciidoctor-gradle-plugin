@@ -116,10 +116,10 @@ abstract class ExecutorBase {
         base.toPath().relativize(target.toPath()).toFile().toString()
     }
 
-    /** Rehydrates extensions that were serialised.
+    /** Rehydrates docExtensions that were serialised.
      *
      * @param registry Asciidoctor GroovyDSL registry instance.
-     * @param exts List of extensions to rehydrate.
+     * @param exts List of docExtensions to rehydrate.
      * @return
      */
     protected List<Object> rehydrateExtensions(final Object registry, final List<Object> exts) {
