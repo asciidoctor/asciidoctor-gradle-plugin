@@ -199,18 +199,9 @@ class ResourcesFunctionalSpec extends FunctionalSpecification {
         }
     }
 
-
     File getBuildFile(final String extraContent) {
 
-
         getJvmConvertGroovyBuildFile("""           
-            asciidoctor {
-//                sourceDir 'src/docs/asciidoc'
-//                sources {
-//                    include '${ASCIIDOC_FILE}'
-//                }
-            }
-            
             ${extraContent}
         """
         )

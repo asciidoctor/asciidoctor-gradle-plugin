@@ -37,9 +37,9 @@ class AsciidoctorJBasePluginSpec extends Specification {
         then:
         verifyAll {
             ext.version == AsciidoctorJExtension.DEFAULT_ASCIIDOCTORJ_VERSION
-            ext.groovyDslVersion == null
-            ext.pdfVersion == null
-            ext.epubVersion == null
+            ext.modules.groovyDsl.version == null
+            ext.modules.pdf.version == null
+            ext.modules.epub.version == null
         }
     }
 
@@ -69,7 +69,7 @@ class AsciidoctorJBasePluginSpec extends Specification {
         then:
         verifyAll {
             ext.version == AsciidoctorJExtension.DEFAULT_ASCIIDOCTORJ_VERSION
-            ext.groovyDslVersion == AsciidoctorJExtension.DEFAULT_GROOVYDSL_VERSION
+            ext.modules.groovyDsl.version == AsciidoctorJExtension.DEFAULT_GROOVYDSL_VERSION
         }
     }
 
@@ -89,7 +89,11 @@ class AsciidoctorJBasePluginSpec extends Specification {
             foo {
                 asciidoctorj {
                     version '1.2.3'
-                    groovyDslVersion '4.5.6'
+                    modules {
+                        groovyDsl {
+                            version '4.5.6'
+                        }
+                    }
                 }
             }
         }
@@ -97,9 +101,9 @@ class AsciidoctorJBasePluginSpec extends Specification {
         then:
         verifyAll {
             ext.version == AsciidoctorJExtension.DEFAULT_ASCIIDOCTORJ_VERSION
-            ext.groovyDslVersion == null
+            ext.modules.groovyDsl.version == null
             taskExt.version == '1.2.3'
-            taskExt.groovyDslVersion == '4.5.6'
+            taskExt.modules.groovyDsl.version == '4.5.6'
         }
     }
 }

@@ -155,8 +155,6 @@ attributes:: {asciidoctorj-epub-name} attributes.
   Attribute values are lazy-evaluated to strings.
 attributeProvider:: Register an additional provider of attributes.
   Attribute providers are a means of adding attributes that will not affect the up-to-date status of tasks.
-epubVersion:: {asciidoctorj-epub-name} version.
-  If not specified asciidoctorj-epub will not be on the classpath. If you plan to use the EPUB backend, then you need to set a version here.
 docExtensions:: Groovy DSL extensions.
   Use `docExtensions` to add one or more extensions. Use `setDocExtensions` to replace the current set of extensions with a new set.
   Extensions can be any kind of object that is serialisable, although in most cases they will be strings or files.
@@ -171,18 +169,15 @@ gemPaths:: One or more gem installation directories (separated by the system pat
   Use `asGemPath` to obtain a path string, separated by platform-specific separator.
   Type: FileCollection, but any collection of objects convertible with `project.files` can be passed
   Default: empty
-groovyDslVersion:: Version of Groovy Extensions DSL.
-  If not specified and no extensions are specified, Groovy DSL will not be used. However, if any extensions are added without setting an explicit version and default version will be used.
 jrubyVersion:: Minimum version of JRuby to be used.
   The exact version that will be used could be higher due to {asciidoctorj-name} having a transitive dependency that is newer.
 logLevel:: The log level at which AsciidoctorJ will log.
   This is specified as a Gradle logging level. The plugin will translate it to the appropriate AsciidoctorJ logging level.
   Default is `project.logger.level`.
-options: {asciidoctorj-name} options.
+modules:: Configuration for version of specific compoenents and converters that can be used.
+options:: {asciidoctorj-name} options.
   Use `options` to append and `setOptions` to replace any current options with a new set.
   Options are evaluated as late as possible.
-pdfVersion:: {asciidoctorj-pdf-name} version.
-  If not specified asciidoctorj-pdf will not be on the classpath. If you plan to use the PDF backend, then you need to set a version here.
 requires:: The set of Ruby modules to be included.
   Use `requires` to append. Use `setRequires` or `requires=['name']` to overwrite.
   Default: empty.
@@ -196,7 +191,7 @@ version:: Asciidoctorj version.
 
 === Options & Attributes
 
-The following options may be set using the extensions' `options` property
+The following options may be set using the extension's `options` property
 
  * header_footer - boolean
  * template_dirs - List<String>
@@ -276,6 +271,49 @@ Attribute values defined on the build file will win over values defined on the d
 this behavior by appending an `@` at the end of the value when defined in the build file. Please refer to
 link:http://asciidoctor.org/docs/user-manual/#attribute-assignment-precedence[Attribute assignment precedence, window="_blank"]
 for more information.
+
+=== Versions of components
+
+The modules block currently supports four elements
+
+[source,groovy]
+.build.gradle
+----
+asciidoctorj {
+  modules {
+    pdf { // <1>
+      version '1.2.3'
+    }
+    epub { // <2>
+      version '1.2.3'
+    }
+    diagram { // <3>
+      version '1.2.3'
+    }
+    groovyDsl { // <4>
+      version '1.2.3'
+    }
+  }
+}
+----
+<1> {asciidoctorj-epub-name} version. If not specified asciidoctorj-epub will not be on the classpath. If you plan to use the EPUB backend and not using the EPUB plugin, then you need to set a version here.
+<2> {asciidoctorj-pdf-name} version. If not specified asciidoctorj-pdf will not be on the classpath. If you plan to use the PDF backend and not using the PDF plugin, then you need to set a version here.
+<3> See <<diagram,AsciidoctorJ Diagram>>,
+<4> Version of Groovy Extensions DSL. If not specified and no extensions are specified, Groovy DSL will not be used. However, if any extensions are added without setting an explicit version and default version will be used.
+
+
+When using the {kotlin-dsl} the same settings can be achieved use something similar `getModules().getPdf().version("1.2.3")`. In a similar fashion shortcuts can be achived in the {groovy-dsl}:
+
+[source,groovy]
+----
+asciidoctorj {
+  modules {
+    pdf.version '1.2.3'
+  }
+
+  modules.pdf.version '1.2.3'
+}
+----
 
 == AsciidoctorJ tasks
 
@@ -535,6 +573,7 @@ ebookFormats:: The epub formats to generate.
 
 NOTE: KF8 formats cannot be generated under Windows at present.
 
+[[diagram]]
 == Using AsciidoctorJ Diagram
 
 The new plugins have built-in support for `asciidoctorj-diagram`. Simply add the following to the project or task extension and
@@ -543,7 +582,9 @@ diagramming will be available. If it is not set the `asciidoctorj-diagram` JAR w
 [source,groovy]
 ----
 asciidoctorj {
-    diagramVersion '1.5.4.1'
+    modules {
+       diagram.version '1.5.4.1'
+    }
 }
 ----
 
