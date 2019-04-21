@@ -32,6 +32,12 @@ import spock.lang.Specification
  * @author Patrick Reimers
  * @author Markus Schlichting
  */
+// Suppressing a number of warnings rather than fixing as this
+// test will be removed in 3.0.0
+@SuppressWarnings([
+    'LineLength',
+    'MethodReturnTypeRequired'
+])
 class AsciidoctorPluginSpec extends Specification {
     private static final String ASCIIDOCTOR = 'asciidoctor'
     private static final String BINTRAY = 'BintrayJCenter'

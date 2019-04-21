@@ -28,7 +28,7 @@ class FunctionalSpecification extends Specification {
     @Shared
     List<File> pluginClasspath
 
-    def setupSpec() {
+    void setupSpec() {
         def pluginClasspathResource = getClass().classLoader.getResource('plugin-classpath.txt')
         if (pluginClasspathResource == null) {
             pluginClasspathResource = new File('./build/createClasspathManifest/plugin-classpath.txt')

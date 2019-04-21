@@ -24,9 +24,7 @@ class AsciidoctorUtilsSpec extends Specification {
     static String s = File.separator
 
     @Unroll
-    @SuppressWarnings(['MethodName','DuplicateStringLiteral'])
-    def 'Find relative paths of #target to #base'() {
-
+    void 'Find relative paths of #target to #base'() {
         expect:
         AsciidoctorUtils.getRelativePath(new File(target), new File(base)) == relative
 

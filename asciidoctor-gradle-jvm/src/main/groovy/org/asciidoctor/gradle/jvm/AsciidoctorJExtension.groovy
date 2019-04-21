@@ -111,6 +111,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      *
      * @param project
      */
+    @SuppressWarnings('ThisReferenceEscapesConstructor')
     AsciidoctorJExtension(Project project) {
         super(project)
 
@@ -127,6 +128,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      *
      * @param task
      */
+    @SuppressWarnings('ThisReferenceEscapesConstructor')
     AsciidoctorJExtension(Task task) {
         super(task, NAME)
         this.modules = new AsciidoctorJModules(this)
@@ -340,7 +342,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      *
      * @param m Map with new options
      */
-    @SuppressWarnings('ConfusingMethodName')
     void options(Map m) {
         checkForAttributesInOptions(m)
         this.options.putAll(m)
@@ -378,7 +379,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      *
      * @param m Map with new options
      */
-    @SuppressWarnings('ConfusingMethodName')
     void attributes(Map m) {
         this.attributes.putAll(m)
     }
@@ -440,7 +440,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      *
      * @param b One or more ruby modules to be included
      */
-    @SuppressWarnings('ConfusingMethodName')
     void requires(Object... b) {
         this.jrubyRequires.addAll(b)
     }
@@ -473,12 +472,12 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      *
      * @param f Path objects that can be be converted with {@code project.file}.
      */
-    @SuppressWarnings('ConfusingMethodName')
     void gemPaths(Object... f) {
         this.gemPaths.addAll(f)
     }
 
-    /** Returns the list of paths to be used for GEM installations in a format that is suitable for assignment to {@code GEM_HOME}
+    /** Returns the list of paths to be used for GEM installations in a format that is
+     * suitable for assignment to {@code GEM_HOME}
      *
      * Calling this will cause gemPath to be resolved immediately.
      */
@@ -522,7 +521,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      *
      * @return A non-attached runConfiguration.
      */
-    @SuppressWarnings('DuplicateStringLiteral')
     Configuration getConfiguration() {
         final String gDslVer = finalGroovyDslVersion
         final String pdfVer = finalPdfVersion
@@ -754,7 +752,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      *
      * @since 2.2.0
      */
-    @SuppressWarnings('ConfusingMethodName')
     void modules(@DelegatesTo(AsciidoctorJModules) Closure cfg) {
         configureItem(this.modules, cfg)
     }
@@ -765,23 +762,23 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      *
      * @since 2.2.0
      */
-    @SuppressWarnings('ConfusingMethodName')
     void modules(Action<AsciidoctorJModules> cfg) {
         cfg.execute(this.modules)
     }
 
-    @SuppressWarnings('FactoryMethodName')
     private Dependency createDependency(final String notation, final Closure configurator = null) {
         if (configurator) {
             project.dependencies.create(notation, configurator)
-
         } else {
             project.dependencies.create(notation)
-
         }
     }
 
-    private Collection<String> stringizeList(Collection<Object> list, boolean fromTaskOnly, Closure<Collection<String>> other) {
+    private Collection<String> stringizeList(
+        Collection<Object> list,
+        boolean fromTaskOnly,
+        Closure<Collection<String>> other
+    ) {
         if (!task || fromTaskOnly) {
             stringize(list)
         } else if (list.isEmpty()) {
@@ -794,7 +791,11 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         }
     }
 
-    private Map<String, Object> stringizeMapRecursive(Map<String, Object> map, boolean fromTaskOnly, Closure<Map<String, Object>> other) {
+    private Map<String, Object> stringizeMapRecursive(
+        Map<String, Object> map,
+        boolean fromTaskOnly,
+        Closure<Map<String, Object>> other
+    ) {
         if (!task || fromTaskOnly) {
             stringizeScalarMapItems(map)
         } else if (map.isEmpty()) {
@@ -946,10 +947,12 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         }
     }
 
+    @SuppressWarnings('LineLength')
     private void warnVersionMethodDeprecated(final String oldMethod, final String newMethod) {
         project.logger.warn("${NAME}.${oldMethod} is deprecated and will be removed in 3.0. Use ${NAME}.${newMethod} instead.")
     }
 
+    @SuppressWarnings('LineLength')
     private void warnExtensionsDeprecated(String oldMethod, String newMethod) {
         project.logger.warn "${oldMethod} is deprecated and will be removed in 3.0 of this plugin suite. Use ${newMethod} instead"
     }

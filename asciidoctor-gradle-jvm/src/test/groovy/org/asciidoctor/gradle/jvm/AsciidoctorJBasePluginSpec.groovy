@@ -21,7 +21,6 @@ import org.gradle.api.tasks.diagnostics.DependencyReportTask
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
-@SuppressWarnings(['MethodName', 'DuplicateStringLiteral', 'DuplicateMapLiteral'])
 class AsciidoctorJBasePluginSpec extends Specification {
 
     Project project = ProjectBuilder.builder().build()

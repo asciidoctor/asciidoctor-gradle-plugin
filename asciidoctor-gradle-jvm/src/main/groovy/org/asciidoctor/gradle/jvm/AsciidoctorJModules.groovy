@@ -15,7 +15,6 @@
  */
 package org.asciidoctor.gradle.jvm
 
-
 import org.asciidoctor.gradle.base.AsciidoctorModuleDefinition
 import org.gradle.api.Action
 import org.ysb33r.grolifant.api.StringUtils
@@ -26,7 +25,6 @@ import static org.ysb33r.grolifant.api.ClosureUtils.configureItem
  *
  * @since 2.2.0
  */
-@SuppressWarnings(['ConfusingMethodName', 'ClassName'])
 class AsciidoctorJModules {
     private final AsciidoctorModuleDefinition pdf
     private final AsciidoctorModuleDefinition epub
@@ -77,7 +75,6 @@ class AsciidoctorJModules {
     }
 
     private static class Module implements AsciidoctorModuleDefinition {
-
         private Optional<Object> version = Optional.empty()
         private final Object defaultVersion
         private final Action<Object> setAction

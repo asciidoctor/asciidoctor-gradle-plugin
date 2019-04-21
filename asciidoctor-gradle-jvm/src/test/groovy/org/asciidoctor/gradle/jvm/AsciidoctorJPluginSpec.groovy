@@ -19,7 +19,6 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
-@SuppressWarnings(['MethodName', 'DuplicateStringLiteral', 'DuplicateMapLiteral'])
 class AsciidoctorJPluginSpec extends Specification {
 
     Project project = ProjectBuilder.builder().build()
@@ -36,6 +35,4 @@ class AsciidoctorJPluginSpec extends Specification {
             project.tasks.getByName('asciidoctor') instanceof AsciidoctorTask
         }
     }
-
-
 }

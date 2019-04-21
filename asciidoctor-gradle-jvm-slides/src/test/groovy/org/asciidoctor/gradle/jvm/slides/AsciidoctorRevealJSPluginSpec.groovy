@@ -28,13 +28,11 @@ import static org.asciidoctor.gradle.jvm.gems.AsciidoctorGemSupportPlugin.GEM_CO
 import static org.asciidoctor.gradle.jvm.slides.AsciidoctorRevealJSBasePlugin.REVEALJS_GEM
 import static org.asciidoctor.gradle.jvm.slides.AsciidoctorRevealJSPlugin.REVEALJS_TASK
 
-@SuppressWarnings(['MethodName','Instanceof'])
 class AsciidoctorRevealJSPluginSpec extends Specification {
 
     Project project = ProjectBuilder.builder().build()
 
     void 'Can apply plugin'() {
-
         given:
         ConfigurationContainer configurations = project.configurations
         TaskContainer tasks = project.tasks

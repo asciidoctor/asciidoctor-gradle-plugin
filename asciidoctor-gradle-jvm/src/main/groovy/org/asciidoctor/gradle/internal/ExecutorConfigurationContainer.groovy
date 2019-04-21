@@ -19,8 +19,7 @@ import groovy.transform.CompileStatic
 
 /** Contains a number of executor configurations.
  *
- * @since 2.0.0
- * @author Schalk W. Cronjé
+ * @since 2.0.0* @author Schalk W. Cronjé
  */
 @CompileStatic
 class ExecutorConfigurationContainer implements Serializable {
@@ -39,7 +38,7 @@ class ExecutorConfigurationContainer implements Serializable {
      * @param destinationFile File to serialise exector configurations.
      * @param configs Executor configurations.
      */
-    static void toFile(final File destinationFile,final Iterable<ExecutorConfiguration> configs) {
+    static void toFile(final File destinationFile, final Iterable<ExecutorConfiguration> configs) {
         destinationFile.withOutputStream { fout ->
             new ObjectOutputStream(fout).withCloseable { oos ->
                 oos.writeObject(

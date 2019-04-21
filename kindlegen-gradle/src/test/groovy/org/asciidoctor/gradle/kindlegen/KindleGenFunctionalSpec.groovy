@@ -43,7 +43,6 @@ class KindleGenFunctionalSpec extends FunctionalSpecification {
     }
 
     void 'Download and cache kindlegen'() {
-
         given:
         new File(testProjectDir.root, 'build.gradle').text = """
 plugins {
@@ -56,9 +55,9 @@ kindlegen {
 
 task getKindleGen {
     doLast {
-        println kindlegen.resolvableExecutable.executable 
+        println kindlegen.resolvableExecutable.executable
     }
-}        
+}
 """
 
         when:

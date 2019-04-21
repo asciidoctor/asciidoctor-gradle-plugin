@@ -85,7 +85,6 @@ class AsciidoctorJExecuter extends ExecutorBase implements Runnable {
 
     @SuppressWarnings('CatchThrowable')
     private void runSingle() {
-
         ExecutorConfiguration runConfiguration = runConfigurations[0]
 
         Asciidoctor asciidoctor = Asciidoctor.Factory.create(
@@ -113,19 +112,21 @@ class AsciidoctorJExecuter extends ExecutorBase implements Runnable {
                     log.info("Converting ${file}")
                 }
                 asciidoctor.convertFile(file, normalisedOptionsFor(file, runConfiguration))
-            } catch (Throwable t) {
-                throw new AsciidoctorRemoteExecutionException("ERROR: Running Asciidoctor whilst attempting to process ${file} using backend ${runConfiguration.backendName}", t)
+            } catch (Throwable exception) {
+                throw new AsciidoctorRemoteExecutionException(
+                    "ERROR: Running Asciidoctor whilst attempting to process ${file} " +
+                        "using backend ${runConfiguration.backendName}",
+                    exception
+                )
             }
         }
 
         failOnWarnings()
     }
 
-    @SuppressWarnings(['CatchThrowable', 'DuplicateStringLiteral'])
+    @SuppressWarnings(['CatchThrowable'])
     private void runMultiple() {
-
         String combinedGemPath = runConfigurations*.gemPath.join(File.pathSeparator)
-
 
         Asciidoctor asciidoctor = (combinedGemPath.empty || combinedGemPath == File.pathSeparator) ?
             Asciidoctor.Factory.create() :
@@ -152,19 +153,20 @@ class AsciidoctorJExecuter extends ExecutorBase implements Runnable {
                         log.info("Converting ${file}")
                     }
                     asciidoctor.convertFile(file, normalisedOptionsFor(file, runConfiguration))
-                } catch (Throwable t) {
-                    throw new AsciidoctorRemoteExecutionException("Error running Asciidoctor whilst attempting to process ${file} using backend ${runConfiguration.backendName}", t)
+                } catch (Throwable exception) {
+                    throw new AsciidoctorRemoteExecutionException('Error running Asciidoctor whilst attempting to ' +
+                        "process ${file} using backend ${runConfiguration.backendName}",
+                        exception
+                    )
                 }
             }
 
             failOnWarnings()
-
         }
     }
 
     @CompileDynamic
     private void registerExtensions(Object asciidoctor, List<Object> exts) {
-
         AsciidoctorExtensions extensionRegistry = new AsciidoctorExtensions()
 
         for (Object ext in rehydrateExtensions(extensionRegistry, exts)) {
@@ -218,6 +220,4 @@ class AsciidoctorJExecuter extends ExecutorBase implements Runnable {
 
         // TODO: Find a way of logging classpath in JDK9 & 10
     }
-
-
 }

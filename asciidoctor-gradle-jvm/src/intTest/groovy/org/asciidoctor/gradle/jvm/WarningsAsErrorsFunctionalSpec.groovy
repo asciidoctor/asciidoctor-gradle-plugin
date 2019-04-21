@@ -21,7 +21,6 @@ import org.gradle.testkit.runner.BuildResult
 import spock.lang.Ignore
 import spock.lang.Unroll
 
-@SuppressWarnings('MethodName')
 class WarningsAsErrorsFunctionalSpec extends FunctionalSpecification {
 
     void setup() {
@@ -30,18 +29,17 @@ class WarningsAsErrorsFunctionalSpec extends FunctionalSpecification {
 
     @Unroll
     void 'Warnings can be treated as errors (#model, Groovy DSL)'() {
-
         given:
         getJvmConvertGroovyBuildFile("""
         asciidoctorj {
             fatalWarnings missingIncludes()
             version = '${model.version}'
         }
-        
-        asciidoctor {      
-            inProcess ${model.processMode}  
+
+        asciidoctor {
+            inProcess ${model.processMode}
             sources {
-                include 'sample.adoc'                
+                include 'sample.adoc'
             }
         }
         """)
@@ -55,28 +53,26 @@ class WarningsAsErrorsFunctionalSpec extends FunctionalSpecification {
 
         where:
         model << AsciidoctorjVersionProcessModeGenerator.get()
-
     }
 
     @Unroll
     @Ignore
     void 'Warnings can be treated as errors (#model, Kotlin DSL)'() {
-
         given:
         getJvmConvertKotlinBuildFile("""
         asciidoctorj {
             fatalWarnings(missingIncludes())
-            version = "${model.version}"        
+            version = "${model.version}"
         }
-        
-        asciidoctor {      
-            inProcess ProcessMode.${model.processMode}  
-            sources "sample.adoc"                
+
+        asciidoctor {
+            inProcess ProcessMode.${model.processMode}
+            sources "sample.adoc"
         }
         """)
 
         when:
-        BuildResult result = getGradleRunner(['asciidoctor','-s','-i']).buildAndFail()
+        BuildResult result = getGradleRunner(['asciidoctor', '-s', '-i']).buildAndFail()
 
         then:
         result.output.contains('ERROR: The following messages from AsciidoctorJ are treated as errors')
@@ -84,7 +80,5 @@ class WarningsAsErrorsFunctionalSpec extends FunctionalSpecification {
 
         where:
         model << AsciidoctorjVersionProcessModeGenerator.random
-
     }
-
 }

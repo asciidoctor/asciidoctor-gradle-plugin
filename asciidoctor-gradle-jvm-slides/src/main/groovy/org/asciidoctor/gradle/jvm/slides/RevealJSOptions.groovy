@@ -460,7 +460,6 @@ class RevealJSOptions {
      */
     @Input
     Map<String, String> getAsAttributeMap() {
-
         Map<String, Optional> allAttrs = [
             revealjs_controls            : controls,
             revealjs_progress            : progressBar,
@@ -495,7 +494,12 @@ class RevealJSOptions {
             attrs.put 'revealjs_parallaxBackgroundSize', getParallaxBackgroundSize()
         }
 
-        putFileOrUri(attrs, 'revealjs_parallaxBackgroundImage', this.parallaxBackgroundImage, getParallaxBackgroundImageRelativePath())
+        putFileOrUri(
+            attrs,
+            'revealjs_parallaxBackgroundImage',
+            this.parallaxBackgroundImage,
+            getParallaxBackgroundImageRelativePath()
+        )
         putFileOrUri(attrs, 'highlightjs-theme', this.highlightJsTheme, getHighlightJsThemeRelativePath())
         putFileOrUri(attrs, 'revealjs_customtheme', this.customTheme, getCustomThemeRelativePath())
 
@@ -531,19 +535,17 @@ class RevealJSOptions {
         }
     }
 
-    @SuppressWarnings('Instanceof')
     private File getIfFile(Object fileOrUri) {
-        def image = asFileOrWebUri(fileOrUri)
-        image instanceof File ? (File)image : null
+        Object image = asFileOrWebUri(fileOrUri)
+        image instanceof File ? (File) image : null
     }
 
-    @SuppressWarnings('Instanceof')
     private URI getIfUri(Object fileOrUri) {
-        def image = asFileOrWebUri(fileOrUri)
-        image instanceof URI ? (URI)image : null
+        Object image = asFileOrWebUri(fileOrUri)
+        image instanceof URI ? (URI) image : null
     }
 
-    private putFileOrUri(
+    private void putFileOrUri(
         final Map<String, String> attrs, final String attrName, final Object fileOrUri, final String relPath) {
         File pFile = getIfFile(fileOrUri)
         URI pUri = getIfUri(fileOrUri)
@@ -574,7 +576,7 @@ class RevealJSOptions {
                 }
                 break
             case String:
-                ( ((String)candidate) =~/^(?i:https?):.+/) ? ((String) candidate).toURI() : project.file(candidate)
+                (((String) candidate) =~ /^(?i:https?):.+/) ? ((String) candidate).toURI() : project.file(candidate)
                 break
             default:
                 asFileOrWebUri(StringUtils.stringize(candidate))

@@ -18,7 +18,6 @@ package org.asciidoctor.gradle.remote
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
 import org.asciidoctor.gradle.remote.internal.RemoteSpecification
 
-@SuppressWarnings('MethodName')
 class AsciidoctorJExecutorSpec extends RemoteSpecification {
 
     void 'Can execute a worked-based conversion from a single backend'() {
@@ -37,7 +36,11 @@ class AsciidoctorJExecutorSpec extends RemoteSpecification {
     void 'Can execute a worked-based conversion from multiple backends'() {
         given:
         Map asciidoc = getProject(testProjectDir.root)
-        ExecutorConfigurationContainer ecc = getContainerMultipleEntries(asciidoc.src, asciidoc.outputDir, asciidoc.gemPath)
+        ExecutorConfigurationContainer ecc = getContainerMultipleEntries(
+            asciidoc.src,
+            asciidoc.outputDir,
+            asciidoc.gemPath
+        )
         AsciidoctorJExecuter aje = new AsciidoctorJExecuter(ecc)
 
         when:

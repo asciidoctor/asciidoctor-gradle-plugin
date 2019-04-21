@@ -20,7 +20,6 @@ import org.asciidoctor.gradle.testfixtures.jvm.generators.PdfBackendJRubyAsciido
 import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Unroll
 
-@SuppressWarnings('MethodName')
 class AsciidoctorPdfTaskFunctionalSpec extends FunctionalSpecification {
 
     static final String DEFAULT_TASK = 'asciidoctorPdf'
@@ -30,14 +29,13 @@ class AsciidoctorPdfTaskFunctionalSpec extends FunctionalSpecification {
         createTestProject()
     }
 
-    @SuppressWarnings('DuplicateStringLiteral')
     @Unroll
     void 'Run a PDF generator with intermediateWorkDir=#intermediateMode and parallel=#parallelMode'() {
         given:
         getBuildFile("""
 asciidoctorPdf {
     sourceDir 'src/docs/asciidoc'
-    
+
     ${intermediateMode ? 'useIntermediateWorkDir()' : ''}
     parallelMode ${parallelMode}
 }
@@ -69,12 +67,12 @@ asciidoctorPdf {
     ${defaultProcessModeForAppveyor}
 
     asciidoctorj {
-        version = '${combination.asciidoctorjVer}'  
+        version = '${combination.asciidoctorjVer}'
         jrubyVersion = '${combination.jrubyVer}'
 
         ${getResolutionStrategy(combination.asciidoctorjVer, combination.jrubyVer)}
     }
-    
+
     sourceDir 'src/docs/asciidoc'
 }
 """)
@@ -90,14 +88,13 @@ asciidoctorPdf {
         combination << PdfBackendJRubyAsciidoctorJCombinationGenerator.get()
     }
 
-    @SuppressWarnings('DuplicateStringLiteral')
     void 'Pdf generation can be run in JAVA_EXEC process mode'() {
         given:
         getBuildFile("""
         asciidoctorPdf {
             sourceDir 'src/docs/asciidoc'
-        
-            inProcess = JAVA_EXEC    
+
+            inProcess = JAVA_EXEC
         }
         """)
 
@@ -108,7 +105,6 @@ asciidoctorPdf {
         verifyAll {
             new File(testProjectDir.root, DEFAULT_OUTPUT_FILE).exists()
         }
-
     }
 
     void 'Custom theme for PDF'() {
@@ -116,19 +112,19 @@ asciidoctorPdf {
         getBuildFile("""
         pdfThemes {
             local 'basic', {
-                styleDir = 'src/docs/asciidoc/pdf-theme' 
+                styleDir = 'src/docs/asciidoc/pdf-theme'
             }
         }
-        
+
         asciidoctorPdf {
             theme 'basic'
             sourceDir 'src/docs/asciidoc'
-            fontsDir 'src/docs/asciidoc/pdf-theme' 
+            fontsDir 'src/docs/asciidoc/pdf-theme'
         }
         """)
 
         when:
-        getGradleRunner([DEFAULT_TASK,'-i']).build()
+        getGradleRunner([DEFAULT_TASK, '-i']).build()
 
         then:
         verifyAll {
@@ -152,7 +148,6 @@ ${extraContent}
 
     String getResolutionStrategy(final String asciidoctorjVer, final String jrubyVer) {
         if (asciidoctorjVer.startsWith('1.6') && jrubyVer.startsWith('9.')) {
-
             """resolutionStrategy { ResolutionStrategy rs ->
                 rs.eachDependency { details ->
                     if (details.requested.name == 'jruby-complete') {
@@ -164,6 +159,5 @@ ${extraContent}
         } else {
             ''
         }
-
     }
 }

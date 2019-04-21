@@ -24,7 +24,6 @@ import org.gradle.testkit.runner.TaskOutcome
 /**
  * @author Rene Groeschke
  */
-@SuppressWarnings(['MethodName', 'DuplicateStringLiteral'])
 class CompatExtensionMultiuseFunctionalSpec extends FunctionalSpecification {
 
     static final String TEST_PROJECTS_DIR = FunctionalSpecification.TEST_PROJECTS_DIR
@@ -33,21 +32,21 @@ class CompatExtensionMultiuseFunctionalSpec extends FunctionalSpecification {
         testProjectDir.root.mkdirs()
     }
 
-    def 'Postprocessor extensions are registered and preserved across multiple builds'() {
+    void 'Postprocessor extensions are registered and preserved across multiple builds'() {
         given: 'A build file that declares extensions'
         def buildFile = testProjectDir.newFile('build.gradle')
         buildFile << """
         plugins {
             id 'org.asciidoctor.convert'
         }
-        
+
         asciidoctor {
             extensions {
                 postprocessor { document, output ->
-                    return 'Hi, Mom' + output 
+                    return 'Hi, Mom' + output
                 }
             }
-            
+
             sources {
                 include 'sample.adoc'
             }
@@ -56,7 +55,7 @@ class CompatExtensionMultiuseFunctionalSpec extends FunctionalSpecification {
 
         and: 'Some source files'
         FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, 'extensions'), testProjectDir.root)
-        final buildDir = new File(testProjectDir.root, 'build')
+        final File buildDir = new File(testProjectDir.root, 'build')
 
         when:
         final BuildResult firstInvocationResult = GradleRunner.create()

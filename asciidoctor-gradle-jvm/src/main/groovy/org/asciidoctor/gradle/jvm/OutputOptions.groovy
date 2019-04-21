@@ -69,7 +69,6 @@ class OutputOptions {
      *
      * @param addBackends Additional backends
      */
-    @SuppressWarnings('ConfusingMethodName')
     void backends(String... addBackends) {
         this.backends.addAll addBackends
     }

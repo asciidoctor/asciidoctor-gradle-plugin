@@ -17,7 +17,6 @@ package org.asciidoctor.gradle.remote
 
 import spock.lang.Specification
 
-@SuppressWarnings(['MethodName', 'DuplicateStringLiteral'])
 class AsciidoctorRemoteExecutionExceptionSpec extends Specification {
 
     void 'Can create AsciidoctorRemoteExecutionException from a message'() {

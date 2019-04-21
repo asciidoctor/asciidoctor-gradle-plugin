@@ -23,12 +23,15 @@ import org.ysb33r.grolifant.api.OperatingSystem
 import spock.lang.Specification
 
 class FunctionalSpecification extends Specification {
-    static
-    final String TEST_PROJECTS_DIR = System.getProperty('TEST_PROJECTS_DIR') ?: './asciidoctor-gradle-jvm-slides/src/intTest/projects'
-    static
-    final String TEST_REPO_DIR = System.getProperty('OFFLINE_REPO') ?: './testfixtures/offline-repo/build/repo'
-    static
-    final OperatingSystem OS = OperatingSystem.current()
+    public static final String TEST_PROJECTS_DIR = System.getProperty(
+        'TEST_PROJECTS_DIR',
+        './asciidoctor-gradle-jvm-slides/src/intTest/projects'
+    )
+    public static final String TEST_REPO_DIR = System.getProperty(
+        'OFFLINE_REPO',
+        './testfixtures/offline-repo/build/repo'
+    )
+    public static final OperatingSystem OS = OperatingSystem.current()
 
     @Rule
     TemporaryFolder testProjectDir
@@ -42,7 +45,7 @@ class FunctionalSpecification extends Specification {
             .withDebug(true)
     }
 
-    @SuppressWarnings(['FactoryMethodName', 'BuilderMethodWithSideEffects'])
+    @SuppressWarnings(['BuilderMethodWithSideEffects'])
     void createTestProject(String docGroup) {
         FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, docGroup), testProjectDir.root)
     }
@@ -50,7 +53,9 @@ class FunctionalSpecification extends Specification {
     String getOfflineRepositories() {
         File repo = new File(TEST_REPO_DIR, 'repositories.gradle')
         if (!repo.exists()) {
-            throw new FileNotFoundException("${repo} not found. Run ':testfixture-offline-repo:buildOfflineRepositories' build task")
+            throw new FileNotFoundException(
+                "${repo} not found. Run ':testfixture-offline-repo:buildOfflineRepositories' build task"
+            )
         }
 
         if (OS.windows) {

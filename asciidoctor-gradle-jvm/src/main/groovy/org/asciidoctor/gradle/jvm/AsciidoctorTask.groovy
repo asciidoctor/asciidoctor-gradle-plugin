@@ -99,10 +99,10 @@ class AsciidoctorTask extends AbstractAsciidoctorTask {
 
         Set<String> backends = this.configuredOutputOptions.backends
 
-        if(backends.find { it.startsWith('html') }) {
+        if (backends.find { it.startsWith('html') }) {
             ps.include '*docinfo*.html'
         }
-        if(backends.find { it.startsWith('docbook') }) {
+        if (backends.find { it.startsWith('docbook') }) {
             ps.include '*docinfo*.xml'
         }
 

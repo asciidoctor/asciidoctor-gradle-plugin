@@ -18,11 +18,11 @@ package org.asciidoctor.gradle.jvm
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
+import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
 import org.asciidoctor.gradle.internal.ExecutorUtils
 import org.asciidoctor.gradle.internal.JavaExecUtils
-import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.remote.AsciidoctorJExecuter
 import org.asciidoctor.gradle.remote.AsciidoctorJavaExec
 import org.gradle.api.Action
@@ -49,7 +49,10 @@ import org.ysb33r.grolifant.api.StringUtils
 
 import java.nio.file.Path
 
-import static org.asciidoctor.gradle.base.AsciidoctorUtils.*
+import static org.asciidoctor.gradle.base.AsciidoctorUtils.UNDERSCORE_LED_FILES
+import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClosure
+import static org.asciidoctor.gradle.base.AsciidoctorUtils.getClassLocation
+import static org.asciidoctor.gradle.base.AsciidoctorUtils.getSourceFileTree
 import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 import static org.gradle.workers.IsolationMode.CLASSLOADER
 import static org.gradle.workers.IsolationMode.PROCESS
@@ -57,8 +60,7 @@ import static org.ysb33r.grolifant.api.FileUtils.filesFromCopySpec
 
 /** Base class for all AsciidoctorJ tasks.
  *
- * @since 2.0.0
- * @author Schalk W. Cronjé
+ * @since 2.0.0* @author Schalk W. Cronjé
  * @author Manuel Prinz
  */
 @SuppressWarnings('MethodCount')
@@ -201,7 +203,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
 
     /** Returns a FileTree containing all of the source documents
      *
-     * @return If {@code sources} was never called then all asciidoc source files below {@code sourceDir} will
+     * @return If{@code sources} was never called then all asciidoc source files below {@code sourceDir} will
      * be included.
      *
      * @since 1.5.1
@@ -337,7 +339,6 @@ class AbstractAsciidoctorTask extends DefaultTask {
      *
      * @param m Map with new options
      */
-    @SuppressWarnings('ConfusingMethodName')
     void options(Map m) {
         asciidoctorj.options(m)
     }
@@ -539,7 +540,6 @@ class AbstractAsciidoctorTask extends DefaultTask {
     @SuppressWarnings('UnnecessaryGetter')
     @TaskAction
     void processAsciidocSources() {
-
         checkForInvalidSourceDocuments()
         checkForIncompatiblePathRoots()
 
@@ -574,6 +574,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      * @param we {@link WorkerExecutor}. This is usually injected into the
      *   constructor of the subclass.
      */
+    @SuppressWarnings('ThisReferenceEscapesConstructor')
     protected AbstractAsciidoctorTask(WorkerExecutor we) {
         this.worker = we
         this.asciidoctorj = extensions.create(AsciidoctorJExtension.NAME, AsciidoctorJExtension, this)
@@ -595,7 +596,10 @@ class AbstractAsciidoctorTask extends DefaultTask {
         final Set<File> sourceFiles
     ) {
         configuredOutputOptions.backends.collectEntries { String activeBackend ->
-            ["backend=${activeBackend}".toString(), getExecutorConfigurationFor(activeBackend, workingSourceDir, sourceFiles)]
+            [
+                "backend=${activeBackend}".toString(),
+                getExecutorConfigurationFor(activeBackend, workingSourceDir, sourceFiles)
+            ]
         }
     }
 
@@ -614,6 +618,8 @@ class AbstractAsciidoctorTask extends DefaultTask {
         final File workingSourceDir,
         final Set<File> sourceFiles
     ) {
+        final List<String> crfb = this.copyResourcesForBackends
+        boolean copyResources =  crfb != null && (crfb.empty || backendName in crfb)
         new ExecutorConfiguration(
             sourceDir: workingSourceDir,
             sourceTree: sourceFiles,
@@ -629,7 +635,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
             fatalMessagePatterns: asciidoctorj.fatalWarnings,
             asciidoctorExtensions: (asciidoctorJExtensions.findAll { !(it instanceof Dependency) }),
             requires: requires,
-            copyResources: this.copyResourcesForBackends != null && (this.copyResourcesForBackends.empty || backendName in this.copyResourcesForBackends),
+            copyResources: copyResources,
             executorLogLevel: ExecutorUtils.getExecutorLogLevel(asciidoctorj.logLevel),
             safeModeLevel: asciidoctorj.safeMode.level
         )
@@ -639,7 +645,8 @@ class AbstractAsciidoctorTask extends DefaultTask {
      *
      * If the user specifies any of these attributes, then those attributes will not be utilised.
      *
-     * The default implementation will add {@code includedir}, {@code revnumber}, {@code gradle-project-group}, {@code gradle-project-name}
+     * The default implementation will add {@code includedir}, {@code revnumber},
+     * {@code gradle-project-group}, {@code gradle-project-name}
      *
      * @param workingSourceDir Directory where source files are located.
      *
@@ -647,15 +654,15 @@ class AbstractAsciidoctorTask extends DefaultTask {
      */
     protected Map<String, Object> getTaskSpecificDefaultAttributes(File workingSourceDir) {
         Map<String, Object> attrs = [
-            includedir: (Object) workingSourceDir.absolutePath,
+            includedir           : (Object) workingSourceDir.absolutePath,
             'gradle-project-name': (Object) project.name
         ]
 
-        if(project.version != null) {
+        if (project.version != null) {
             attrs.put('revnumber', (Object) project.version)
         }
 
-        if(project.group != null) {
+        if (project.group != null) {
             attrs.put('gradle-project-group', (Object) project.group)
         }
 
@@ -692,7 +699,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      * By default anything below {@code $sourceDir/images} will be included.
      *
      *
-     * @return A {@link CopySpec}. Never {@code null}.
+     * @return A{@link CopySpec}. Never {@code null}.
      */
     @CompileDynamic
     @Internal
@@ -708,7 +715,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      * If {@code resources} was never called, it will return a default CopySpec otherwise it will return the
      * one built up via successive calls to {@code resources}
      *
-     * @return A {@link CopySpec}. Never {@code null}.
+     * @return A{@link CopySpec}. Never {@code null}.
      */
     @Internal
     protected CopySpec getResourceCopySpec() {
@@ -803,7 +810,8 @@ class AbstractAsciidoctorTask extends DefaultTask {
     @Internal
     protected ProcessMode getFinalProcessMode() {
         if (inProcess != JAVA_EXEC && GradleVersion.current() < GradleVersion.version(('4.3'))) {
-            logger.warn 'Gradle API classpath leakage will cause issues with Gradle < 4.3. Switching to JAVA_EXEC instead.'
+            logger.warn('Gradle API classpath leakage will cause issues with Gradle < 4.3. ' +
+                'Switching to JAVA_EXEC instead.')
             JAVA_EXEC
         } else {
             this.inProcess
@@ -845,7 +853,9 @@ class AbstractAsciidoctorTask extends DefaultTask {
         Path outputRoot = outputDir.toPath().root
 
         if (sourceRoot != baseRoot || outputRoot != baseRoot) {
-            throw new AsciidoctorExecutionException('sourceDir, outputDir and baseDir needs to have the same root filesystem for AsciidoctorJ to function correctly. This is typically caused on Winwdows where everything is not on the same drive letter.')
+            throw new AsciidoctorExecutionException('sourceDir, outputDir and baseDir needs to have the same root ' +
+                'filesystem for AsciidoctorJ to function correctly. ' + '' +
+                'This is typically caused on Winwdows where everything is not on the same drive letter.')
         }
     }
 
@@ -857,7 +867,12 @@ class AbstractAsciidoctorTask extends DefaultTask {
         final File workingSourceDir, final Set<File> sourceFiles) {
         FileCollection asciidoctorClasspath = configurations
         logger.info "Running AsciidoctorJ with workers. Classpath = ${asciidoctorClasspath.files}"
-        Map<String, ExecutorConfiguration> executorConfigurations = getExecutorConfigurations(workingSourceDir, sourceFiles)
+
+        Map<String, ExecutorConfiguration> executorConfigurations = getExecutorConfigurations(
+            workingSourceDir,
+            sourceFiles
+        )
+
         if (parallelMode) {
             executorConfigurations.each { String configName, ExecutorConfiguration executorConfiguration ->
                 worker.submit(AsciidoctorJExecuter) { WorkerConfiguration config ->
@@ -870,7 +885,6 @@ class AbstractAsciidoctorTask extends DefaultTask {
                 }
             }
         } else {
-
             worker.submit(AsciidoctorJExecuter) { WorkerConfiguration config ->
                 configureWorker(
                     "Asciidoctor (task=${name}) conversions for ${executorConfigurations.keySet().join(', ')}",
@@ -902,8 +916,15 @@ class AbstractAsciidoctorTask extends DefaultTask {
         final File workingSourceDir,
         final Set<File> sourceFiles
     ) {
-        FileCollection javaExecClasspath = JavaExecUtils.getJavaExecClasspath(project, configurations, asciidoctorj.injectInternalGuavaJar)
-        Map<String, ExecutorConfiguration> executorConfigurations = getExecutorConfigurations(workingSourceDir, sourceFiles)
+        FileCollection javaExecClasspath = JavaExecUtils.getJavaExecClasspath(
+            project,
+            configurations,
+            asciidoctorj.injectInternalGuavaJar
+        )
+        Map<String, ExecutorConfiguration> executorConfigurations = getExecutorConfigurations(
+            workingSourceDir,
+            sourceFiles
+        )
         File execConfigurationData = JavaExecUtils.writeExecConfigurationData(this, executorConfigurations.values())
 
         logger.debug("Serialised AsciidoctorJ configuration to ${execConfigurationData}")
@@ -928,7 +949,9 @@ class AbstractAsciidoctorTask extends DefaultTask {
             if (ec.copyResources) {
                 logger.info "Copy resources for '${ec.backendName}' to ${ec.outputDir}"
 
+                @SuppressWarnings('LineLength')
                 FileTree ps = this.intermediateArtifactPattern ? project.fileTree(ec.sourceDir).matching(this.intermediateArtifactPattern) : null
+
                 project.copy(new Action<CopySpec>() {
                     @Override
                     void execute(CopySpec copySpec) {
@@ -952,7 +975,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
             it instanceof Dependency
         } as List<Dependency>
 
-        Set<File> closurePaths = Transform.toSet(findExtensionClosures()){
+        Set<File> closurePaths = Transform.toSet(findExtensionClosures()) {
             getClassLocation(it.class)
         }
 
@@ -974,7 +997,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
     }
 
     private List<File> ifNoGroovyAddLocal(final List<Dependency> deps) {
-        if(deps.find {
+        if (deps.find {
             it.name == 'groovy-all' || it.name == 'groovy'
         }) {
             []
@@ -996,29 +1019,29 @@ class AbstractAsciidoctorTask extends DefaultTask {
         cfg
     }
 
-    private Map<String,Object> evaluateProviders(final Map<String,Object> initialMap) {
+    private Map<String, Object> evaluateProviders(final Map<String, Object> initialMap) {
         initialMap.collectEntries { String k, Object v ->
-            if(v instanceof Provider) {
-                [k,v.get()]
-            }  else {
-                [k,v]
+            if (v instanceof Provider) {
+                [k, v.get()]
+            } else {
+                [k, v]
             }
-        } as Map<String,Object>
+        } as Map<String, Object>
     }
 
-    private Map<String,Object> preparePreserialisedAttributes(final File workingSourceDir) {
-        Map<String,Object> attrs = [:]
+    private Map<String, Object> preparePreserialisedAttributes(final File workingSourceDir) {
+        Map<String, Object> attrs = [:]
         attrs.putAll(attributes)
         attributeProviders.each {
             attrs.putAll(it.attributes)
         }
         Set<String> userDefinedAttrKeys = attrs.keySet()
 
-        Map<String, Object> defaultAttrs = getTaskSpecificDefaultAttributes(workingSourceDir).findAll { k,v ->
+        Map<String, Object> defaultAttrs = getTaskSpecificDefaultAttributes(workingSourceDir).findAll { k, v ->
             !userDefinedAttrKeys.contains(k)
-        }.collectEntries { k,v ->
-            [ "${k}@".toString(), v instanceof Serializable ? v : StringUtils.stringize(v) ]
-        } as Map<String,Object>
+        }.collectEntries { k, v ->
+            ["${k}@".toString(), v instanceof Serializable ? v : StringUtils.stringize(v)]
+        } as Map<String, Object>
 
         attrs.putAll(defaultAttrs)
         evaluateProviders(attrs)

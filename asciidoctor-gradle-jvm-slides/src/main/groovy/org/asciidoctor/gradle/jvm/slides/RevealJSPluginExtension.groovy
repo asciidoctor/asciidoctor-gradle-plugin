@@ -43,7 +43,8 @@ class RevealJSPluginExtension extends AbstractDownloadableComponent<LocalRevealJ
         new LocalRevealJSPlugin()
     }
 
-    /** Create a closure that will convert an instance of a {@code LocalRevealsJSPlugin} into a {@code ResolvedRevealJsPlugin}.
+    /** Create a closure that will convert an instance of a {@code LocalRevealsJSPlugin}
+     * into a {@code ResolvedRevealJsPlugin}.
      *
      * @param component Component to be converted.
      * @return Converting closure.

@@ -20,15 +20,13 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
-@SuppressWarnings(['MethodName','DuplicateStringLiteral'])
 class AsciidoctorRevealJSTaskSpec extends Specification {
 
     Project project = ProjectBuilder.builder().build()
 
     void 'Configure revealjs task'() {
-
         given:
-        AsciidoctorJRevealJSTask revealjsTask = project.tasks.create('foo',AsciidoctorJRevealJSTask)
+        AsciidoctorJRevealJSTask revealjsTask = project.tasks.create('foo', AsciidoctorJRevealJSTask)
 
         when:
         revealjsTask.with {
@@ -41,7 +39,7 @@ class AsciidoctorRevealJSTaskSpec extends Specification {
             }
         }
 
-        revealjsTask.revealjsOptions( new Action<RevealJSOptions>() {
+        revealjsTask.revealjsOptions(new Action<RevealJSOptions>() {
             @Override
             void execute(RevealJSOptions revealJSOptions) {
                 revealJSOptions.mouseWheel = true

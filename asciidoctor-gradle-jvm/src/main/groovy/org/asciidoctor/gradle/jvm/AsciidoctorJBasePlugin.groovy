@@ -39,7 +39,11 @@ class AsciidoctorJBasePlugin implements Plugin<Project> {
         project.with {
             apply plugin: 'org.asciidoctor.base'
 
-            AsciidoctorJExtension asciidoctorj = extensions.create AsciidoctorJExtension.NAME, AsciidoctorJExtension, project
+            AsciidoctorJExtension asciidoctorj = extensions.create(
+                AsciidoctorJExtension.NAME,
+                AsciidoctorJExtension,
+                project
+            )
 
             registerTask(project, DEPS_REPORT, DependencyReportTask, new Action<Task>() {
                 @Override

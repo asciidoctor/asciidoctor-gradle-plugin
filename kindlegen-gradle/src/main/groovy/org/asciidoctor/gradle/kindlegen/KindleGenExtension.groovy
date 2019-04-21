@@ -32,8 +32,7 @@ import static org.asciidoctor.gradle.kindlegen.KindleGenDownloader.KINDLEGEN_BAS
 /** Extension for configuring the path to {@code kindlegen} or a version which will then
  * be bootstrapped by Gradle.
  *
- * @since 2.0.0
- * @author Schalk W. Cronjé
+ * @since 2.0.0* @author Schalk W. Cronjé
  */
 @CompileStatic
 class KindleGenExtension extends AbstractToolExtension {
@@ -66,7 +65,10 @@ class KindleGenExtension extends AbstractToolExtension {
     @Override
     ResolvableExecutable getResolvableExecutable() {
         if (!agreeToTermsOfUse) {
-            throw new GradleException('You need to agree to Amazon\'s terms of usage for KindleGen. Set kindlegen.agreeToTermsOfUse=true. For more details on the ToU see https://www.amazon.com/gp/feature.html?docId=1000599251')
+            throw new GradleException(
+                'You need to agree to Amazon\'s terms of usage for KindleGen. Set kindlegen.agreeToTermsOfUse=true. ' +
+                    'For more details on the ToU see https://www.amazon.com/gp/feature.html?docId=1000599251'
+            )
         }
         super.resolvableExecutable
     }
