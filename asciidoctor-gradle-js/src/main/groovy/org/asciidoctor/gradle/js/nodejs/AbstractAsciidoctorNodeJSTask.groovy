@@ -20,7 +20,6 @@ import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
 import org.asciidoctor.gradle.base.internal.Workspace
 import org.asciidoctor.gradle.js.base.AbstractAsciidoctorTask
 import org.asciidoctor.gradle.js.nodejs.internal.AsciidoctorJSRunner
-import org.gradle.api.file.CopySpec
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
@@ -33,6 +32,8 @@ import org.ysb33r.grolifant.api.MapUtils
 import org.ysb33r.grolifant.api.StringUtils
 
 /** Base class for all Asciidoctor tasks using Asciidoctor.js as rendering engine.
+ *
+ * @author Schalk W. Cronjé
  *
  * @since 3.0
  */
@@ -92,10 +93,7 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
     void processAsciidocSources() {
         validateConditions()
         Workspace workspace = prepareWorkspace()
-        Set<File> sourceFiles = workspace.sourceTree.files
-
-        runWithSubprocess(workspace.workingSourceDir, sourceFiles)
-
+        runWithSubprocess(workspace.workingSourceDir)
     }
 
     /** Initialises the core an Asciidoctor task
@@ -144,6 +142,7 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
         } as Map<String, Object>
     }
 
+    @SuppressWarnings('UnnecessaryGetter')
     private AsciidoctorJSRunner getAsciidoctorJSRunnerFor(AsciidoctorJSRunner.FileLocations asciidoctorjsExe, final String backend, Map<String, String> attributes) {
         new AsciidoctorJSRunner(
             nodejs.resolvableNodeExecutable.executable,
@@ -181,14 +180,14 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
         )
     }
 
-    private void runWithSubprocess(final File workingSourceDir, final Set<File> sourceFiles) {
-        logger.info "Running Asciidoctor.js with subprocess."
+    @SuppressWarnings('UnnecessaryGetter')
+    private void runWithSubprocess(final File workingSourceDir) {
+        logger.info 'Running Asciidoctor.js with subprocess.'
 
         Map<String, List<File>> conversionGroups = sourceFileGroupedByRelativePath
         Map<String, String> finalAttributes = prepareAttributes(workingSourceDir)
         AsciidoctorJSRunner.FileLocations asciidoctorjsEnv = resolveAsciidoctorjsEnvironment()
         Optional<List<String>> copyResources = getCopyResourcesForBackends()
-        CopySpec rcs = resourceCopySpec
 
         for (String backend : configuredOutputOptions.backends) {
             conversionGroups.each { String relativePath, List<File> sourceGroup ->

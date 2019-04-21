@@ -45,4 +45,10 @@ public interface AsciidoctorModuleDefinition {
      *   The latter usually implies that the specific component is not needed.
      */
     String getVersion();
+
+    /** Whether the component has been allocated a version.
+     *
+     * @return {@code true} if the component has been defined
+     */
+    boolean isDefined();
 }
