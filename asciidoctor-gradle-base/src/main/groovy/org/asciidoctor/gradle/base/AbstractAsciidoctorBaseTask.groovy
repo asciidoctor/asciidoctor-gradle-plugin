@@ -37,7 +37,6 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
     private boolean withIntermediateWorkDir = false
     private PatternSet intermediateArtifactPattern
 
-
     @Nested
     protected final OutputOptions configuredOutputOptions = new OutputOptions()
 
@@ -46,7 +45,6 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      */
     @Console
     boolean logDocuments = false
-
 
     /** Sets the new Asciidoctor parent source directory.
      *
