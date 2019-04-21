@@ -318,6 +318,33 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         }
     }
 
+    /** Shortcut method for obtaining attributes.
+     *
+     * In most implementations this will just access the {@code getAttributes} method
+     * on the appropriate task extension derived from {@link AbstractImplementationEngineExtension}
+     *
+     * @return Access to attributes hashmap
+     */
+    abstract Map<String, Object> getAttributes()
+
+    /** Shortcut method to apply a new set of Asciidoctor attributes, clearing any attributes previously set.
+     *
+     * In most implementations this will just access the {@code setAttributes} method
+     * on the appropriate task extension derived from {@link AbstractImplementationEngineExtension}
+     *
+     * @param m Map with new options
+     */
+    abstract void setAttributes(Map<String, Object> m)
+
+    /** Shortcut method to add additional asciidoctor attributes.
+     *
+     * In most implementations this will just access the {@code attributes} method
+     * on the appropriate task extension derived from {@link AbstractImplementationEngineExtension}
+     *
+     * @param m Map with new options
+     */
+    abstract void attributes(Map<String, Object> m)
+
     /** Gets the CopySpec for additional resources
      * If {@code resources} was never called, it will return a default CopySpec otherwise it will return the
      * one built up via successive calls to {@code resources}
