@@ -30,12 +30,10 @@ class AsciidoctorTaskSpec extends Specification {
     private static final String ASCIIDOCTOR = 'asciidoctor'
     Project project = ProjectBuilder.builder().withName('test').build()
 
-    def setup() {
-
+    void setup() {
         project.allprojects {
             apply plugin: 'org.asciidoctor.js.base'
         }
-
     }
 
     void 'Can log documents when processed'() {
@@ -113,7 +111,6 @@ class AsciidoctorTaskSpec extends Specification {
         task.sourceDir.absolutePath == project.projectDir.absolutePath
     }
 
-
     void "When setting sourceDir via assignment"() {
         when:
         AsciidoctorTask task = asciidoctorTask {
@@ -122,7 +119,6 @@ class AsciidoctorTaskSpec extends Specification {
 
         then:
         task.sourceDir.absolutePath == project.projectDir.absolutePath
-
     }
 
     void "When setting sourceDir via setSourceDir"() {
@@ -141,7 +137,7 @@ class AsciidoctorTaskSpec extends Specification {
         final String secSrc = 'secondary.txt'
 
         srcDir.mkdirs()
-        new File(srcDir,secSrc).text = 'foo'
+        new File(srcDir, secSrc).text = 'foo'
 
         when: 'Secondary sources are specified'
         AsciidoctorTask task = asciidoctorTask {
@@ -155,7 +151,6 @@ class AsciidoctorTaskSpec extends Specification {
         then: 'Default patterns are ignored'
         fileCollection.contains(new File(srcDir, secSrc).canonicalFile)
     }
-
 
     void 'When attribute providers are registered on the task, then global ones will not be used.'() {
         when:

@@ -46,11 +46,6 @@ import org.ysb33r.grolifant.api.StringUtils
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClosure
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.getClassLocation
-import static org.asciidoctor.gradle.base.AsciidoctorUtils.UNDERSCORE_LED_FILES
-import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClosure
-import static org.asciidoctor.gradle.base.AsciidoctorUtils.getClassLocation
-import static org.asciidoctor.gradle.base.AsciidoctorUtils.getSourceFileTree
-import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 import static org.gradle.workers.IsolationMode.CLASSLOADER
 import static org.gradle.workers.IsolationMode.PROCESS
 import static org.ysb33r.grolifant.api.FileUtils.filesFromCopySpec

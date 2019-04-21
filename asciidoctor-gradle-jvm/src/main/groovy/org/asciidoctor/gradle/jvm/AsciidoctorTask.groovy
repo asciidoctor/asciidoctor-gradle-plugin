@@ -66,7 +66,8 @@ class AsciidoctorTask extends AbstractAsciidoctorTask {
 
     /** Configures output options for this task.
      *
-     * @param cfg Action which will be passed an instances of {@link org.asciidoctor.gradle.base.OutputOptions} to configure.
+     * @param cfg Action which will be passed an instances of {@link org.asciidoctor.gradle.base.OutputOptions}
+     *   to configure.
      */
     void outputOptions(Action<OutputOptions> cfg) {
         cfg.execute(this.configuredOutputOptions)

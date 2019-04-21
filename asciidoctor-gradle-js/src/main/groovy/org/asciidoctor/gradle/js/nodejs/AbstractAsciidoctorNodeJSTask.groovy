@@ -101,6 +101,7 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
      * @param we {@link WorkerExecutor}. This is usually injected into the
      *   constructor of the subclass.
      */
+    @SuppressWarnings('ThisReferenceEscapesConstructor')
     protected AbstractAsciidoctorNodeJSTask(WorkerExecutor we) {
         this.worker = we
         this.asciidoctorjs = this.extensions.create(AsciidoctorJSExtension.NAME, AsciidoctorJSExtension, this)
@@ -143,7 +144,11 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
     }
 
     @SuppressWarnings('UnnecessaryGetter')
-    private AsciidoctorJSRunner getAsciidoctorJSRunnerFor(AsciidoctorJSRunner.FileLocations asciidoctorjsExe, final String backend, Map<String, String> attributes) {
+    private AsciidoctorJSRunner getAsciidoctorJSRunnerFor(
+        final AsciidoctorJSRunner.FileLocations asciidoctorjsExe,
+        final String backend,
+        final Map<String, String> attributes
+    ) {
         new AsciidoctorJSRunner(
             nodejs.resolvableNodeExecutable.executable,
             project,
@@ -191,7 +196,11 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
 
         for (String backend : configuredOutputOptions.backends) {
             conversionGroups.each { String relativePath, List<File> sourceGroup ->
-                getAsciidoctorJSRunnerFor(asciidoctorjsEnv, backend, finalAttributes).convert(sourceGroup.toSet(), relativePath)
+                getAsciidoctorJSRunnerFor(
+                    asciidoctorjsEnv,
+                    backend,
+                    finalAttributes
+                ).convert(sourceGroup.toSet(), relativePath)
             }
             if (copyResources.present && (copyResources.get().empty || backend in copyResources.get())) {
                 copyResourcesByBackend(backend, workingSourceDir, getOutputDirFor(backend))
