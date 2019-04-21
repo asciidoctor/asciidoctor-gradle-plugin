@@ -1,16 +1,15 @@
-// tag::using-two-plugins-three-backends[]
+// tag::using-multiple-backends-for-js[]
 plugins {
-    id 'org.asciidoctor.jvm.convert'
-    id 'org.asciidoctor.jvm.pdf'
+    id 'org.asciidoctor.js.convert'
 }
 
 repositories {
     jcenter()
 }
 
-asciidoctorj {
+asciidoctorjs {
     modules {
-        diagram.version '1.5.16'    
+        docbook.use()
     }
     logLevel 'INFO'
 }
@@ -29,21 +28,11 @@ asciidoctor {
         include 'images/**'
     }
 
-    copyResourcesOnlyIf 'html5'
     useIntermediateWorkDir()
 }
 
-asciidoctorPdf {
-    inProcess OUT_OF_PROCESS
-    logDocuments true
-    sourceDir 'src/docs/asciidoc'
-
-    sources {
-        include 'subdir/sample2.ad'
-    }
-}
-// end::using-two-plugins-three-backends[]
+// end::using-multiple-backends-for-js[]
 
 task runGradleTest {
-    dependsOn asciidoctor, asciidoctorPdf
+    dependsOn asciidoctor
 }
