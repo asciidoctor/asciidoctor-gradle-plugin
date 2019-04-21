@@ -31,5 +31,3 @@ class AsciidoctorBasePlugin implements Plugin<Project> {
         project.apply plugin: 'base'
     }
 }
-
-

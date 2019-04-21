@@ -22,13 +22,11 @@ import spock.lang.Specification
 import static org.asciidoctor.gradle.jvm.gems.AsciidoctorGemSupportPlugin.GEMPREP_TASK
 import static org.asciidoctor.gradle.jvm.gems.AsciidoctorGemSupportPlugin.GEM_CONFIGURATION
 
-@SuppressWarnings(['MethodName'])
 class AsciidoctorGemSupportPluginSpec extends Specification {
 
     Project project = ProjectBuilder.builder().build()
 
     void 'Can apply plugin'() {
-
         when:
         project.apply plugin : 'org.asciidoctor.jvm.gems'
         project.evaluate()

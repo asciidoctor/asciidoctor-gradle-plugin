@@ -15,7 +15,6 @@
  */
 package org.asciidoctor.gradle.jvm
 
-
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
@@ -30,7 +29,6 @@ import spock.lang.Specification
  * @author Marcus Fihlon
  * @author Schalk W. Cronjé
  */
-@SuppressWarnings(['MethodName', 'DuplicateStringLiteral', 'DuplicateMapLiteral'])
 class AsciidoctorTaskSpec extends Specification {
     private static final String ASCIIDOCTOR = 'asciidoctor'
     private static final String ASCIIDOC_RESOURCES_DIR = 'asciidoctor-gradle-jvm/src/test/resources/src/asciidoc'
@@ -47,8 +45,7 @@ class AsciidoctorTaskSpec extends Specification {
 
     PrintStream originSystemOut
 
-    def setup() {
-
+    void setup() {
         project.allprojects {
             apply plugin: 'org.asciidoctor.jvm.base'
         }
@@ -169,7 +166,10 @@ class AsciidoctorTaskSpec extends Specification {
     void "Mixing string legacy form of attributes with options with assignment, produces an exception"() {
         when:
         asciidoctorTask {
-            options = [doctype: 'book', attributes: 'toc=right source-highlighter=coderay toc-title=Table\\ of\\ Contents']
+            options = [
+                doctype: 'book',
+                attributes: 'toc=right source-highlighter=coderay toc-title=Table\\ of\\ Contents'
+            ]
         }
 
         then:
@@ -293,7 +293,6 @@ class AsciidoctorTaskSpec extends Specification {
         task.sourceDir.absolutePath == project.projectDir.absolutePath
     }
 
-
     void "When setting sourceDir via assignment"() {
         when:
         AsciidoctorTask task = asciidoctorTask {
@@ -303,7 +302,6 @@ class AsciidoctorTaskSpec extends Specification {
         then:
         task.sourceDir.absolutePath == project.projectDir.absolutePath
         task.sourceDir.absolutePath == project.projectDir.absolutePath
-
     }
 
     void "When setting sourceDir via setSourceDir"() {

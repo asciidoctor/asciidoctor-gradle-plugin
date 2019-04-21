@@ -61,7 +61,12 @@ class AsciidoctorGemSupportPlugin implements Plugin<Project> {
             }
         }
 
-        TaskProvider<AsciidoctorGemPrepare> prepTask = registerTask(project, GEMPREP_TASK, AsciidoctorGemPrepare, gemPrepDefaults)
+        TaskProvider<AsciidoctorGemPrepare> prepTask = registerTask(
+            project,
+            GEMPREP_TASK,
+            AsciidoctorGemPrepare,
+            gemPrepDefaults
+        )
         project.extensions.getByType(AsciidoctorJExtension).gemPaths { prepTask.get().outputDir }
 
         workaroundEarlyEvaluationInPrepareTask(project, prepTask)

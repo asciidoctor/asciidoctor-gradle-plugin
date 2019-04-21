@@ -26,7 +26,7 @@ import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.*
 import static org.asciidoctor.gradle.testfixtures.jvm.JRubyTestVersions.*
 
 /** A test fixture generator class for combining versions of AsciidoctorJ & JRuby for
- *PDF backend testing.
+ * PDF backend testing.
  *
  * @since 2.0
  */
@@ -42,13 +42,14 @@ class PdfBackendJRubyAsciidoctorJCombinationGenerator {
         final String asciidoctorjVer
         final Boolean compatible
 
-        @Override
-        String toString() {
-            "PDF backend is ${compatible ? '' : 'not '}compatible with AsciidoctorJ=${asciidoctorjVer} + min JRuby=${jrubyVer}"
+        static Combination of(final String v, final String p, boolean b) {
+            new Combination(v, p, b)
         }
 
-        static Combination of(final String v, final String p, boolean b) {
-            new Combination(v,p,b)
+        @Override
+        @SuppressWarnings('LineLength')
+        String toString() {
+            "PDF backend is ${compatible ? '' : 'not '}compatible with AsciidoctorJ=${asciidoctorjVer} + min JRuby=${jrubyVer}"
         }
     }
 

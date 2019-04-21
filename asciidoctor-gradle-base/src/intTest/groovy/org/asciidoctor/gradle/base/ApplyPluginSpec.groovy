@@ -20,7 +20,6 @@ import org.asciidoctor.gradle.base.internal.FunctionalSpecification
 class ApplyPluginSpec extends FunctionalSpecification {
 
     void 'Apply the base plugin in a Kotlin DSL'() {
-
         given:
         getKotlinBuildFile('')
 
@@ -32,7 +31,6 @@ class ApplyPluginSpec extends FunctionalSpecification {
     }
 
     void 'Apply the base plugin in a Groovy DSL'() {
-
         given:
         getGroovyBuildFile('', 'base')
 

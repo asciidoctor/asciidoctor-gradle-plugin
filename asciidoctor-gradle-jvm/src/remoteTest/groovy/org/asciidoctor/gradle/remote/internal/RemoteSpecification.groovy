@@ -42,7 +42,7 @@ class RemoteSpecification extends Specification {
         File src = new File(base, 'src')
         File output = new File(base, 'out')
         File gemDir = new File(base, 'gems')
-        File src2 = new File(src,'subdir')
+        File src2 = new File(src, 'subdir')
 
         src2.mkdirs()
         output.mkdirs()
@@ -53,7 +53,7 @@ with text
 
 include::a-missing-include-file[]
 '''
-        new File(src2,INPUT_DOC2) << '''= A document
+        new File(src2, INPUT_DOC2) << '''= A document
 
 in a subdirectory
 '''
@@ -96,7 +96,7 @@ in a subdirectory
             projectDir: testProjectDir.root,
             rootDir: testProjectDir.root,
             baseDir: testProjectDir.root,
-            sourceTree: [srcFile, new File(srcFile.parentFile,"subdir/${INPUT_DOC2}")],
+            sourceTree: [srcFile, new File(srcFile.parentFile, "subdir/${INPUT_DOC2}")],
             logDocuments: altOptions,
             executorLogLevel: DEBUG,
             requires: requires,

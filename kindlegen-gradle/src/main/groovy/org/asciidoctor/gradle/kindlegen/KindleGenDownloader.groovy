@@ -28,17 +28,19 @@ import org.ysb33r.grolifant.api.os.Windows
 /** Performs the hard work of downloading and unpacking the {@code kindlegen}
  * distribution.
  *
- * @since 2.0.0
- * @author Schalk W. Cronjé
+ * @since 2.0.0* @author Schalk W. Cronjé
  */
 @CompileStatic
 class KindleGenDownloader extends AbstractDistributionInstaller {
 
     static final OperatingSystem OS = OperatingSystem.current()
-    static final String BASE_URI = System.getProperty('org.asciidoctor.gradle.kindlegen.uri') ?: 'http://kindlegen.s3.amazonaws.com'
+    static final String BASE_URI = System.getProperty(
+        'org.asciidoctor.gradle.kindlegen.uri',
+        'http://kindlegen.s3.amazonaws.com'
+    )
     static final String KINDLEGEN_BASE = 'kindlegen'
 
-    KindleGenDownloader( String distributionVersion, Project project) {
+    KindleGenDownloader(String distributionVersion, Project project) {
         super(KINDLEGEN_BASE, distributionVersion, 'native-binaries', project)
     }
 
@@ -49,7 +51,7 @@ class KindleGenDownloader extends AbstractDistributionInstaller {
      */
     @Override
     URI uriFromVersion(String version) {
-        switch(OS) {
+        switch (OS) {
             case Windows:
                 return "${BASE_URI}/kindlegen_win32_v${version}.zip".toURI()
             case Linux:
@@ -63,26 +65,24 @@ class KindleGenDownloader extends AbstractDistributionInstaller {
 
     /** Validates that the unpacked distribution is good.
      *
-     * <p> The default implementation simply checks that only one directory should exist and then uses that. You should override this
-     * method if your distribution in question does not follow the common practice of one top-level directory.
-     *
      * @param distDir Directory where distribution was unpacked to.
      * @param distributionDescription A descriptive name of the distribution
      * @return The directory where the real distribution now exists. In the default implementation it will be
      *   the single directory that exists below {@code distDir}.
      *
-     * @throw {@link org.ysb33r.grolifant.api.errors.DistributionFailedException} if distribution failed to meet criteria.
+     * @throw {@link org.ysb33r.grolifant.api.errors.DistributionFailedException} if distribution
+     *   failed to meet criteria.
      */
     @Override
     protected File getAndVerifyDistributionRoot(File distDir, String distributionDescription) {
-        if(!new File( distDir, kindleGenFileName)) {
+        if (!new File(distDir, kindleGenFileName)) {
             throw new DistributionFailedException("${kindleGenFileName} not found in ${distDir}")
         }
         distDir
     }
 
     private String getKindleGenFileName() {
-        switch(OS) {
+        switch (OS) {
             case Windows:
                 return "${KINDLEGEN_BASE}.exe"
             case Linux:

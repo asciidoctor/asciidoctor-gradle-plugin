@@ -25,7 +25,6 @@ import spock.lang.Unroll
  * @author Robert Panzer
  * @author Schalk W. Cronjé
  */
-@SuppressWarnings(['DuplicateStringLiteral', 'MethodName', 'Println'])
 class ExtensionsFunctionalSpec extends FunctionalSpecification {
 
     private static final String ASCIIDOC_BUILD_DIR = 'build/asciidocextensions'
@@ -35,13 +34,13 @@ class ExtensionsFunctionalSpec extends FunctionalSpecification {
 
     File resultFile
 
+    @SuppressWarnings('LineLength')
     void setup() {
         createTestProject('extensions')
         resultFile = new File(testProjectDir.root, "${ASCIIDOC_BUILD_DIR}/html5/${ASCIIDOC_INLINE_EXTENSIONS_RESULT_FILE}")
     }
 
     @Unroll
-    @SuppressWarnings('DuplicateListLiteral')
     void 'Compat Task: Should apply #description'() {
         given:
         getBuildFile(script)

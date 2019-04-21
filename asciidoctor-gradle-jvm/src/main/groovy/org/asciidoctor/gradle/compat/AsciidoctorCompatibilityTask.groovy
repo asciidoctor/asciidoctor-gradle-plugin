@@ -31,12 +31,12 @@ import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.FileTree
 import org.gradle.api.internal.file.copy.CopySpecInternal
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.Console
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectories
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.SkipWhenEmpty
@@ -73,7 +73,7 @@ import static org.ysb33r.grolifant.api.StringUtils.stringize
  * @author Robert Panzer
  */
 @Deprecated
-@SuppressWarnings(['MethodCount', 'Instanceof'])
+@SuppressWarnings(['MethodCount', 'Instanceof', 'LineLength'])
 @CompileStatic
 class AsciidoctorCompatibilityTask extends DefaultTask {
     private static final String PATH_SEPARATOR = OperatingSystem.current().pathSeparator
@@ -93,6 +93,21 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
     private PatternSet sourceDocumentPattern
     private CopySpec resourceCopy
     private boolean separateOutputDirs = true
+
+    @SuppressWarnings('CouldBeSwitchStatement')
+    static int resolveSafeModeLevel(Object safe, int defaultLevel = SafeMode.UNSAFE.level) {
+        if (safe == null) {
+            defaultLevel
+        } else if (safe instanceof SafeMode) {
+            safe.level
+        } else if (safe instanceof Number) {
+            SafeMode.safeMode(safe as Integer).level
+        } else if (safe instanceof CharSequence) {
+            SafeMode.valueOf(safe.toString().toUpperCase()).level
+        } else {
+            defaultLevel
+        }
+    }
 
     /** If set to true each backend will be output to a separate subfolder below {@code outputDir}
      * @since 1.5.1
@@ -155,9 +170,15 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
      */
     @SuppressWarnings('DuplicateStringLiteral')
     void setOptions(Map m) {
-        if (!m) return // null check
+        if (!m) {
+            return
+        } // null check
         if (m.containsKey('attributes')) {
-            migrationMessage('setOptions', """pay attention to these attributes found in options. Currently attributes will be replaced due to assignment. Please use one of the following instead instead as current behaviour will no longer be available when upgrading:
+            migrationMessage(
+                'setOptions',
+                """Pay attention to these attributes found in options.
+Currently attributes will be replaced due to assignment.
+Please use one of the following instead instead as current behaviour will no longer be available when upgrading:
    - 'attributes'
    - 'project.asciidoctorj.attributes'
    - '${name}.asciidoctorj.attributes'
@@ -181,9 +202,15 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
      */
     @SuppressWarnings('DuplicateStringLiteral')
     void options(Map m) {
-        if (!m) return // null check
+        if (!m) {
+            return
+        } // null check
         if (m.containsKey('attributes')) {
-            migrationMessage('setOptions', """pay attention to these attributes found in options. Currently these attributes added to exustign attributes. Please use one of the following instead instead as current behaviour will no longer be available when upgrading:
+            migrationMessage(
+                'setOptions',
+                """Pay attention to these attributes found in options.
+Currently these attributes are added to existing attributes.
+Please use one of the following instead instead as current behaviour will no longer be available when upgrading:
    - 'attributes'
    - 'project.asciidoctorj.attributes'
    - '${name}.asciidoctorj.attributes'
@@ -302,8 +329,13 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
      */
     @Deprecated
     void extensions(Object... exts) {
-        migrationMessage('docExtensions', 'Extensions will need to be set via the asciidoctorj project and task docExtensions')
-        if (!exts) return // null check
+        migrationMessage(
+            'docExtensions',
+            'Extensions will need to be set via the asciidoctorj project and task docExtensions'
+        )
+        if (!exts) {
+            return
+        } // null check
         asciidoctorExtensions.addAll(exts as List)
     }
 
@@ -314,8 +346,13 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
      */
     @Deprecated
     void gemPath(Object... f) {
-        migrationMessage('gemPath', 'GEM paths will need to be set via the asciidoctorj project and task docExtensions using the gemPaths method')
-        if (!f) return // null check
+        migrationMessage(
+            'gemPath',
+            'GEM paths will need to be set via the asciidoctorj project and task docExtensions using the gemPaths method'
+        )
+        if (!f) {
+            return
+        } // null check
         this.gemPaths.addAll(f as List)
     }
 
@@ -328,7 +365,9 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
     void setGemPath(Object... f) {
         migrationMessage('setGemPath(Object...)', MIGRATE_GEMS_MSG)
         this.gemPaths.clear()
-        if (!f) return // null check
+        if (!f) {
+            return
+        } // null check
         this.gemPaths.addAll(f as List)
     }
 
@@ -434,9 +473,9 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
     @OutputDirectories
     Set<File> getOutputDirectories() {
         if (separateOutputDirs) {
-            backends.stream().map({
+            backends.stream().map {
                 new File(outputDir, it)
-            }).collect(Collectors.toSet())
+            }.collect(Collectors.toSet())
         } else {
             [outputDir] as Set
         }
@@ -545,7 +584,6 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
     @TaskAction
     @CompileStatic
     void processAsciidocSources() {
-
         File output = outputDir
 
         final Map finalAttributes = [
@@ -562,7 +600,7 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
         }
         finalAttributes.putAll(attributes)
 
-        ExecutorConfigurationContainer ecc = new ExecutorConfigurationContainer(activeBackends().stream().map({ backend ->
+        ExecutorConfigurationContainer ecc = new ExecutorConfigurationContainer(activeBackends().stream().map { backend ->
             new ExecutorConfiguration(
                 sourceDir: sourceDir,
                 outputDir: outputBackendDir(output, backend),
@@ -583,13 +621,13 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
                 asciidoctorExtensions: dehydrateExtensions(getAsciidoctorExtensions()),
                 executorLogLevel: ExecutorLogLevel.WARN
             )
-        }).collect(Collectors.toList()))
+        }.collect(Collectors.toList()))
 
         Set<File> closurePaths = getAsciidoctorExtensions().findAll {
             it instanceof Closure
-        }.stream().map({
+        }.stream().map {
             getClassLocation(it.class)
-        }).collect(Collectors.toSet())
+        }.collect(Collectors.toSet())
         closurePaths.add(getClassLocation(org.gradle.internal.scripts.ScriptOrigin))
 
         FileCollection javaExecClasspath = project.files(
@@ -628,6 +666,18 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
         this.migrationMessages
     }
 
+    @CompileDynamic
+    protected static void processCollectionAttributes(Map attributes, List rawAttributes) {
+        for (Object attr in rawAttributes) {
+            if (attr instanceof CharSequence) {
+                String[] tokens = attr.toString().split('=', 2)
+                attributes.put(tokens[0], tokens.size() > 1 ? tokens[1] : '')
+            } else {
+                throw new InvalidUserDataException("Unsupported type for attribute ${attr}: ${attr.getClass()}")
+            }
+        }
+    }
+
     protected AsciidoctorCompatibilityTask() {
         srcDir = project.file('src/docs/asciidoc')
     }
@@ -636,95 +686,8 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
         this.backends.empty ? [DEFAULT_BACKEND].toSet() : this.backends
     }
 
-    private File outputBackendDir(final File outputDir, final String backend) {
-        separateOutputDirs ? new File(outputDir, FileUtils.toSafeFileName(backend)) : outputDir
-    }
-
     @CompileDynamic
-    private WorkResult copyResources(File outputDir, CopySpec spec) {
-        project.copy {
-            into outputDir
-            with spec
-        }
-    }
-
-    private void migrationMessage(final String currentMethod, final String upgradeInstructions) {
-        this.migrationMessages.add("You have used '${currentMethod}'. When upgrading you will need to: ${upgradeInstructions}".toString())
-    }
-
-    private void runJavaExec(File execConfigurationData, FileCollection javaExecClasspath) {
-        project.javaexec { JavaExecSpec jes ->
-//            configureForkOptions(jes)
-            logger.debug "Running AsciidoctorJ instance with environment: ${jes.environment}"
-            jes.main = AsciidoctorJavaExec.canonicalName
-            jes.classpath = javaExecClasspath
-            jes.args execConfigurationData.absolutePath
-        }
-    }
-
-    private List<Object> dehydrateExtensions(final List<Object> exts) {
-        Transform.toList(exts) {
-            switch (it) {
-                case Closure:
-                    ((Closure) it).dehydrate()
-                    break
-                default:
-                    it
-            }
-        }
-    }
-
-    @CompileDynamic
-    private static List stringifyList(List input) {
-        Transform.toList(input) { element ->
-            if (element instanceof CharSequence) {
-                element.toString()
-            } else if (element instanceof List) {
-                stringifyList(element)
-            } else if (element instanceof Map) {
-                stringifyMap(element)
-            } else if (element instanceof File) {
-                element.absolutePath
-            } else {
-                element
-            }
-        }
-    }
-
-    @CompileDynamic
-    private static Map stringifyMap(Map input) {
-        Map output = [:]
-        input.each { key, value ->
-            if (value instanceof CharSequence) {
-                output[key] = value.toString()
-            } else if (value instanceof List) {
-                output[key] = stringifyList(value)
-            } else if (value instanceof Map) {
-                output[key] = stringifyMap(value)
-            } else if (value instanceof File) {
-                output[key] = value.absolutePath
-            } else {
-                output[key] = value
-            }
-        }
-        output
-    }
-
-    @CompileDynamic
-    protected static void processCollectionAttributes(Map attributes, rawAttributes) {
-        for (attr in rawAttributes) {
-            if (attr instanceof CharSequence) {
-                def (k, v) = attr.toString().split('=', 2) as List
-                attributes.put(k, v != null ? v : '')
-            } else {
-                // QUESTION should we just coerce it to a String?
-                throw new InvalidUserDataException("Unsupported type for attribute ${attr}: ${attr.getClass()}")
-            }
-        }
-    }
-
     @SuppressWarnings(['DuplicateStringLiteral', 'DuplicateNumberLiteral'])
-    @CompileDynamic
     private static Map coerceLegacyAttributeFormats(Object attributes) {
         Map transformedMap = [:]
         switch (attributes) {
@@ -733,7 +696,7 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
                 break
             case CharSequence:
                 Transform.toList(attributes.replaceAll('([^\\\\]) ', '$1\0').replaceAll('\\\\ ', ' ').split('\0') as List) {
-                    def split = it.split('=')
+                    String[] split = it.split('=')
                     if (split.size() < 2) {
                         throw new InvalidUserDataException("Unsupported format for attributes: ${attributes}")
                     }
@@ -754,18 +717,80 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
         transformedMap
     }
 
-    @SuppressWarnings('Instanceof')
-    static int resolveSafeModeLevel(Object safe, int defaultLevel = SafeMode.UNSAFE.level) {
-        if (safe == null) {
-            defaultLevel
-        } else if (safe instanceof SafeMode) {
-            safe.level
-        } else if (safe instanceof Number) {
-            SafeMode.safeMode(safe as Integer).level
-        } else if (safe instanceof CharSequence) {
-            SafeMode.valueOf(safe.toString().toUpperCase()).level
-        } else {
-            defaultLevel
+    @CompileDynamic
+    @SuppressWarnings('CouldBeSwitchStatement')
+    private static List stringifyList(List input) {
+        Transform.toList(input) { element ->
+            if (element instanceof CharSequence) {
+                element.toString()
+            } else if (element instanceof List) {
+                stringifyList(element)
+            } else if (element instanceof Map) {
+                stringifyMap(element)
+            } else if (element instanceof File) {
+                element.absolutePath
+            } else {
+                element
+            }
+        }
+    }
+
+    @CompileDynamic
+    @SuppressWarnings('CouldBeSwitchStatement')
+    private static Map stringifyMap(Map input) {
+        Map output = [:]
+        input.each { key, value ->
+            if (value instanceof CharSequence) {
+                output[key] = value.toString()
+            } else if (value instanceof List) {
+                output[key] = stringifyList(value)
+            } else if (value instanceof Map) {
+                output[key] = stringifyMap(value)
+            } else if (value instanceof File) {
+                output[key] = value.absolutePath
+            } else {
+                output[key] = value
+            }
+        }
+        output
+    }
+
+    private File outputBackendDir(final File outputDir, final String backend) {
+        separateOutputDirs ? new File(outputDir, FileUtils.toSafeFileName(backend)) : outputDir
+    }
+
+    @CompileDynamic
+    private WorkResult copyResources(File outputDir, CopySpec spec) {
+        project.copy {
+            into outputDir
+            with spec
+        }
+    }
+
+    private void migrationMessage(final String currentMethod, final String upgradeInstructions) {
+        this.migrationMessages.add(
+            "You have used '${currentMethod}'. When upgrading you will need to: ${upgradeInstructions}".toString()
+        )
+    }
+
+    private void runJavaExec(File execConfigurationData, FileCollection javaExecClasspath) {
+        project.javaexec { JavaExecSpec jes ->
+            logger.debug "Running AsciidoctorJ instance with environment: ${jes.environment}"
+            jes.main = AsciidoctorJavaExec.canonicalName
+            jes.classpath = javaExecClasspath
+            jes.args execConfigurationData.absolutePath
+        }
+    }
+
+    private List<Object> dehydrateExtensions(final List<Object> exts) {
+        Transform.toList(exts) {
+            switch (it) {
+                case Closure:
+                    ((Closure) it).dehydrate()
+                    break
+                default:
+                    it
+            }
         }
     }
 }
