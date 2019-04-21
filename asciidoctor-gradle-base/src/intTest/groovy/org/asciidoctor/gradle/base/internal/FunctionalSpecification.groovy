@@ -49,7 +49,7 @@ class FunctionalSpecification extends Specification {
         getGradleRunner(taskNames).withDebug(false)
     }
 
-    @SuppressWarnings(['FactoryMethodName', 'BuilderMethodWithSideEffects'])
+    @SuppressWarnings(['BuilderMethodWithSideEffects'])
     void createTestProject(String docGroup = 'normal') {
         FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, docGroup), testProjectDir.root)
     }

@@ -92,7 +92,6 @@ class AsciidoctorEpubTask extends AbstractAsciidoctorTask {
      * @param formats List of formats. The plugin does not verify whether the eBook format
      *  is valid.
      */
-    @SuppressWarnings('ConfusingMethodName')
     void ebookFormats(String... formats) {
         this.ebookFormats.addAll(formats*.toLowerCase() as List)
     }

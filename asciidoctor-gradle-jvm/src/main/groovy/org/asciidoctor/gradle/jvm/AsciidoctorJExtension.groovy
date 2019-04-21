@@ -340,7 +340,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      *
      * @param m Map with new options
      */
-    @SuppressWarnings('ConfusingMethodName')
     void options(Map m) {
         checkForAttributesInOptions(m)
         this.options.putAll(m)
@@ -378,7 +377,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      *
      * @param m Map with new options
      */
-    @SuppressWarnings('ConfusingMethodName')
     void attributes(Map m) {
         this.attributes.putAll(m)
     }
@@ -440,7 +438,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      *
      * @param b One or more ruby modules to be included
      */
-    @SuppressWarnings('ConfusingMethodName')
     void requires(Object... b) {
         this.jrubyRequires.addAll(b)
     }
@@ -473,7 +470,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      *
      * @param f Path objects that can be be converted with {@code project.file}.
      */
-    @SuppressWarnings('ConfusingMethodName')
     void gemPaths(Object... f) {
         this.gemPaths.addAll(f)
     }
@@ -754,7 +750,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      *
      * @since 2.2.0
      */
-    @SuppressWarnings('ConfusingMethodName')
     void modules(@DelegatesTo(AsciidoctorJModules) Closure cfg) {
         configureItem(this.modules, cfg)
     }
@@ -765,12 +760,10 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      *
      * @since 2.2.0
      */
-    @SuppressWarnings('ConfusingMethodName')
     void modules(Action<AsciidoctorJModules> cfg) {
         cfg.execute(this.modules)
     }
 
-    @SuppressWarnings('FactoryMethodName')
     private Dependency createDependency(final String notation, final Closure configurator = null) {
         if (configurator) {
             project.dependencies.create(notation, configurator)

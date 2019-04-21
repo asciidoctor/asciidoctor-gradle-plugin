@@ -108,7 +108,6 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
         }
     }
 
-    @SuppressWarnings('FactoryMethodName')
     BuildResult build() {
         getGradleRunner(['asciidoctorRevealJs', '-s']).build()
     }

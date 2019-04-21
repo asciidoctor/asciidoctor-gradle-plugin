@@ -147,7 +147,6 @@ class AsciidoctorCompatibilityPlugin implements Plugin<Project> {
         }
     }
 
-    @SuppressWarnings('FactoryMethodName')
     static String createMigrationOutputMessage(final Set<String> messages) {
         StringWriter output = new StringWriter()
         output.withCloseable {
