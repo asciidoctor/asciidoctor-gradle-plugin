@@ -42,7 +42,7 @@ class FunctionalSpecification extends Specification {
             .withDebug(true)
     }
 
-    @SuppressWarnings(['FactoryMethodName', 'BuilderMethodWithSideEffects'])
+    @SuppressWarnings(['BuilderMethodWithSideEffects'])
     void createTestProject(String docGroup = 'epub3') {
         FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, docGroup), testProjectDir.root)
     }

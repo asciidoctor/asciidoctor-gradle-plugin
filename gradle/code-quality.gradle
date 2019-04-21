@@ -29,6 +29,10 @@ license {
     excludes(['**/*.ad', '**/*.asciidoc', '**/*.adoc', '**/fake.txt'])
 }
 
+dependencies {
+    codenarc "org.codenarc:CodeNarc:${codenarcVersion}"
+}
+
 codenarc {
     configFile = file("${rootProject.projectDir}/config/codenarc/codenarc.groovy")
     // run codenarc on production sources only

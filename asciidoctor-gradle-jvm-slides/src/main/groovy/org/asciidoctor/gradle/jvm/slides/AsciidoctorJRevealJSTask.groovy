@@ -74,7 +74,6 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
      *
      * @param configurator Configurating closure. Delegates to a RevealJSOptions object.
      */
-    @SuppressWarnings('ConfusingMethodName')
     void revealjsOptions(@DelegatesTo(RevealJSOptions) Closure configurator) {
         AsciidoctorUtils.executeDelegatingClosure(this.revealjsOptions, configurator)
     }
@@ -83,7 +82,6 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
      *
      * @param configurator Configurating action. Will be passed a RevealJSOptions object.
      */
-    @SuppressWarnings('ConfusingMethodName')
     void revealjsOptions(Action<RevealJSOptions> configurator) {
         configurator.execute(this.revealjsOptions)
     }

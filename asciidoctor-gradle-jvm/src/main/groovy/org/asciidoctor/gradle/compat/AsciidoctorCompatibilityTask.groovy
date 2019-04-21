@@ -255,7 +255,6 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
      * @param b One or more ruby modules to be included
      * @since 1.5.1
      */
-    @SuppressWarnings('ConfusingMethodName')
     @Deprecated
     void requires(Object... b) {
         migrationMessage('requires', MIGRATE_GEMS_MSG)
@@ -292,7 +291,6 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
      *
      * @since 1.5.1
      */
-    @SuppressWarnings('ConfusingMethodName')
     void backends(Object... b) {
         migrationMessage('backends', 'Use outputOptions.setbackends')
         this.backends.addAll(stringize(b as List))
@@ -314,7 +312,6 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
      * @param f A path object can be be converted with {@code project.file}.
      * @since 1.5.1
      */
-    @SuppressWarnings('ConfusingMethodName')
     @Deprecated
     void gemPath(Object... f) {
         migrationMessage('gemPath', 'GEM paths will need to be set via the asciidoctorj project and task docExtensions using the gemPaths method')

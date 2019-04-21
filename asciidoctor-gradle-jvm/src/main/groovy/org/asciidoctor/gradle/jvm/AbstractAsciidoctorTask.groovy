@@ -337,7 +337,6 @@ class AbstractAsciidoctorTask extends DefaultTask {
      *
      * @param m Map with new options
      */
-    @SuppressWarnings('ConfusingMethodName')
     void options(Map m) {
         asciidoctorj.options(m)
     }

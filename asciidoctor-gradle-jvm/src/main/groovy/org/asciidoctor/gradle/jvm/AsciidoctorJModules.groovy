@@ -26,7 +26,6 @@ import static org.ysb33r.grolifant.api.ClosureUtils.configureItem
  *
  * @since 2.2.0
  */
-@SuppressWarnings(['ConfusingMethodName', 'ClassName'])
 class AsciidoctorJModules {
     private final AsciidoctorModuleDefinition pdf
     private final AsciidoctorModuleDefinition epub

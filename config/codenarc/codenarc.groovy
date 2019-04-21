@@ -15,55 +15,393 @@
  */
 
 ruleset {
-    ruleset('rulesets/basic.xml') {
-        exclude 'EmptyCatchBlock'
-        exclude 'EmptyMethod'
-    }
-    ruleset('rulesets/imports.xml') {
-        exclude 'MisorderedStaticImports'
-    }
-    ruleset('rulesets/naming.xml') {
-        exclude 'PropertyName'
-        ClassName {
-            regex = '^[A-Z][a-zA-Z0-9]*$'
-        }
-        FieldName {
-            finalRegex = '^_?[a-z][a-zA-Z0-9]*$'
-            staticFinalRegex = '^[A-Z][A-Z_0-9]*$'
-        }
-        MethodName {
-            regex = '^[a-z][a-zA-Z0-9_]*$'
-            doNotApplyToFileNames = '*/test/*/*Spec.groovy,*/*Test/*/*Spec.groovy,*/test/*/*Specification.groovy,*/*Test/*/*Specification.groovy'
-        }
-        VariableName {
-            finalRegex = '^_?[a-z][a-zA-Z0-9]*$'
-        }
-    }
-    ruleset('rulesets/unused.xml')
-    ruleset('rulesets/exceptions.xml')
-    ruleset('rulesets/logging.xml')
-    ruleset('rulesets/braces.xml') {
-       exclude 'IfStatementBraces'
-    }
-    ruleset('rulesets/size.xml')  {
-        exclude 'CrapMetric'
-    }
-    ruleset('rulesets/unnecessary.xml')
-    ruleset('rulesets/dry.xml') {
-        DuplicateListLiteral {
-            doNotApplyToFileNames = '*/test/*/*Spec.groovy,*/*Test/*/*Spec.groovy,*/test/*/*Specification.groovy,*/*Test/*/*Specification.groovy'
-        }
-        DuplicateMapLiteral {
-            doNotApplyToFileNames = '*/test/*/*Spec.groovy,*/*Test/*/*Spec.groovy,*/test/*/*Specification.groovy,*/*Test/*/*Specification.groovy'
-        }
-        DuplicateNumberLiteral {
-            doNotApplyToFileNames = '*/test/*/*Spec.groovy,*/*Test/*/*Spec.groovy,*/test/*/*Specification.groovy,*/*Test/*/*Specification.groovy'
-        }
-        DuplicateStringLiteral {
-            doNotApplyToFileNames = '*/test/*/*Spec.groovy,*/*Test/*/*Spec.groovy,*/test/*/*Specification.groovy,*/*Test/*/*Specification.groovy'
-        }
-    }
-    ruleset('rulesets/design.xml') {
-        exclude 'Instanceof'
-    }
+//    ruleset('rulesets/naming.xml') {
+//        ClassName {
+//            regex = '^[A-Z][a-zA-Z0-9]*$'
+//        }
+//        FieldName {
+//            finalRegex = '^_?[a-z][a-zA-Z0-9]*$'
+//            staticFinalRegex = '^[A-Z][A-Z_0-9]*$'
+//        }
+//        MethodName {
+//            regex = '^[a-z][a-zA-Z0-9_]*$'
+//            doNotApplyToFileNames = '*/test/*/*Spec.groovy,*/*Test/*/*Spec.groovy,*/test/*/*Specification.groovy,*/*Test/*/*Specification.groovy'
+//        }
+//        VariableName {
+//            finalRegex = '^_?[a-z][a-zA-Z0-9]*$'
+//        }
+//    }
+//    ruleset('rulesets/dry.xml') {
+//        DuplicateListLiteral {
+//            doNotApplyToFileNames = '*/test/*/*Spec.groovy,*/*Test/*/*Spec.groovy,*/test/*/*Specification.groovy,*/*Test/*/*Specification.groovy'
+//        }
+//        DuplicateMapLiteral {
+//            doNotApplyToFileNames = '*/test/*/*Spec.groovy,*/*Test/*/*Spec.groovy,*/test/*/*Specification.groovy,*/*Test/*/*Specification.groovy'
+//        }
+//        DuplicateNumberLiteral {
+//            doNotApplyToFileNames = '*/test/*/*Spec.groovy,*/*Test/*/*Spec.groovy,*/test/*/*Specification.groovy,*/*Test/*/*Specification.groovy'
+//        }
+//        DuplicateStringLiteral {
+//            doNotApplyToFileNames = '*/test/*/*Spec.groovy,*/*Test/*/*Spec.groovy,*/test/*/*Specification.groovy,*/*Test/*/*Specification.groovy'
+//        }
+//    }
+
+
+    // rulesets/basic.xml
+    AssertWithinFinallyBlock
+    AssignmentInConditional
+    BigDecimalInstantiation
+    BitwiseOperatorInConditional
+    BooleanGetBoolean
+    BrokenNullCheck
+    BrokenOddnessCheck
+    ClassForName
+    ComparisonOfTwoConstants
+    ComparisonWithSelf
+    ConstantAssertExpression
+    ConstantIfExpression
+    ConstantTernaryExpression
+    DeadCode
+    DoubleNegative
+    DuplicateCaseStatement
+    DuplicateMapKey
+    DuplicateSetValue
+    EmptyClass
+    EmptyElseBlock
+    EmptyFinallyBlock
+    EmptyForStatement
+    EmptyIfStatement
+    EmptyInstanceInitializer
+    EmptyStaticInitializer
+    EmptySwitchStatement
+    EmptySynchronizedStatement
+    EmptyTryBlock
+    EmptyWhileStatement
+    EqualsAndHashCode
+    EqualsOverloaded
+    ExplicitGarbageCollection
+    ForLoopShouldBeWhileLoop
+    HardCodedWindowsFileSeparator
+    HardCodedWindowsRootDirectory
+    IntegerGetInteger
+    MultipleUnaryOperators
+    RandomDoubleCoercedToZero
+    RemoveAllOnSelf
+    ReturnFromFinallyBlock
+    ThrowExceptionFromFinallyBlock
+
+    // rulesets/braces.xml
+    ElseBlockBraces
+    ForStatementBraces
+    IfStatementBraces
+    WhileStatementBraces
+
+    // rulesets/comments.xml
+    ClassJavadoc
+    JavadocConsecutiveEmptyLines
+    JavadocEmptyAuthorTag
+    JavadocEmptyExceptionTag
+    JavadocEmptyFirstLine
+    JavadocEmptyLastLine
+    JavadocEmptyParamTag
+    JavadocEmptyReturnTag
+    JavadocEmptySeeTag
+    JavadocEmptySinceTag
+    JavadocEmptyThrowsTag
+    JavadocEmptyVersionTag
+
+    // rulesets/concurrency.xml
+    BusyWait
+    DoubleCheckedLocking
+    InconsistentPropertyLocking
+    InconsistentPropertySynchronization
+    NestedSynchronization
+    StaticCalendarField
+    StaticConnection
+    StaticDateFormatField
+    StaticMatcherField
+    StaticSimpleDateFormatField
+    SynchronizedMethod
+    SynchronizedOnBoxedPrimitive
+    SynchronizedOnGetClass
+    SynchronizedOnReentrantLock
+    SynchronizedOnString
+    SynchronizedOnThis
+    SynchronizedReadObjectMethod
+    SystemRunFinalizersOnExit
+    ThisReferenceEscapesConstructor
+    ThreadGroup
+    ThreadLocalNotStaticFinal
+    ThreadYield
+    UseOfNotifyMethod
+    VolatileArrayField
+    VolatileLongOrDoubleField
+    WaitOutsideOfWhileLoop
+
+    // rulesets/convention.xml
+    ConfusingTernary
+    CouldBeElvis
+    CouldBeSwitchStatement
+    FieldTypeRequired
+    HashtableIsObsolete
+    IfStatementCouldBeTernary
+    InvertedCondition
+    InvertedIfElse
+    LongLiteralWithLowerCaseL
+    MethodParameterTypeRequired
+    MethodReturnTypeRequired
+    NoDef
+    NoJavaUtilDate
+    NoTabCharacter
+    ParameterReassignment
+    PublicMethodsBeforeNonPublicMethods
+    StaticFieldsBeforeInstanceFields
+    StaticMethodsBeforeInstanceMethods
+    TernaryCouldBeElvis
+    TrailingComma
+    VariableTypeRequired
+    VectorIsObsolete
+
+    // rulesets/design.xml
+    AbstractClassWithPublicConstructor
+    AbstractClassWithoutAbstractMethod
+    AssignmentToStaticFieldFromInstanceMethod
+    BooleanMethodReturnsNull
+    BuilderMethodWithSideEffects
+    CloneableWithoutClone
+    CloseWithoutCloseable
+    CompareToWithoutComparable
+    ConstantsOnlyInterface
+    EmptyMethodInAbstractClass
+    FinalClassWithProtectedMember
+    ImplementationAsType
+    LocaleSetDefault
+    NestedForLoop
+    PrivateFieldCouldBeFinal
+    PublicInstanceField
+    ReturnsNullInsteadOfEmptyArray
+    ReturnsNullInsteadOfEmptyCollection
+    SimpleDateFormatMissingLocale
+    StatelessSingleton
+    ToStringReturnsNull
+
+    // rulesets/dry.xml
+    DuplicateListLiteral
+    DuplicateMapLiteral
+    DuplicateNumberLiteral
+    DuplicateStringLiteral
+
+    // rulesets/exceptions.xml
+    CatchArrayIndexOutOfBoundsException
+    CatchError
+    CatchException
+    CatchIllegalMonitorStateException
+    CatchIndexOutOfBoundsException
+    CatchNullPointerException
+    CatchRuntimeException
+    CatchThrowable
+    ConfusingClassNamedException
+    ExceptionExtendsError
+    ExceptionExtendsThrowable
+    ExceptionNotThrown
+    MissingNewInThrowStatement
+    ReturnNullFromCatchBlock
+    SwallowThreadDeath
+    ThrowError
+    ThrowException
+    ThrowNullPointerException
+    ThrowRuntimeException
+    ThrowThrowable
+
+    // rulesets/formatting.xml
+    BlankLineBeforePackage
+    BlockEndsWithBlankLine
+    BlockStartsWithBlankLine
+    BracesForClass
+    BracesForForLoop
+    BracesForIfElse
+    BracesForMethod
+    BracesForTryCatchFinally
+    ClassEndsWithBlankLine
+    ClassStartsWithBlankLine
+    ClosureStatementOnOpeningLineOfMultipleLineClosure
+    ConsecutiveBlankLines
+    FileEndsWithoutNewline
+    Indentation
+    LineLength
+    MissingBlankLineAfterImports
+    MissingBlankLineAfterPackage
+    SpaceAfterCatch
+    SpaceAfterClosingBrace
+    SpaceAfterComma
+    SpaceAfterFor
+    SpaceAfterIf
+    SpaceAfterOpeningBrace
+    SpaceAfterSemicolon
+    SpaceAfterSwitch
+    SpaceAfterWhile
+    SpaceAroundClosureArrow
+    SpaceAroundMapEntryColon
+    SpaceAroundOperator
+    SpaceBeforeClosingBrace
+    SpaceBeforeOpeningBrace
+    TrailingWhitespace
+
+    // rulesets/generic.xml
+    IllegalClassMember
+    IllegalClassReference
+    IllegalPackageReference
+    IllegalRegex
+    IllegalString
+    IllegalSubclass
+    RequiredRegex
+    RequiredString
+    StatelessClass
+
+    // rulesets/groovyism.xml
+    AssignCollectionSort
+    AssignCollectionUnique
+    ClosureAsLastMethodParameter
+    CollectAllIsDeprecated
+    ConfusingMultipleReturns
+    ExplicitArrayListInstantiation
+    ExplicitCallToAndMethod
+    ExplicitCallToCompareToMethod
+    ExplicitCallToDivMethod
+    ExplicitCallToEqualsMethod
+    ExplicitCallToGetAtMethod
+    ExplicitCallToLeftShiftMethod
+    ExplicitCallToMinusMethod
+    ExplicitCallToModMethod
+    ExplicitCallToMultiplyMethod
+    ExplicitCallToOrMethod
+    ExplicitCallToPlusMethod
+    ExplicitCallToPowerMethod
+    ExplicitCallToPutAtMethod
+    ExplicitCallToRightShiftMethod
+    ExplicitCallToXorMethod
+    ExplicitHashMapInstantiation
+    ExplicitHashSetInstantiation
+    ExplicitLinkedHashMapInstantiation
+    ExplicitLinkedListInstantiation
+    ExplicitStackInstantiation
+    ExplicitTreeSetInstantiation
+    GStringAsMapKey
+    GStringExpressionWithinString
+    GetterMethodCouldBeProperty
+    GroovyLangImmutable
+    UseCollectMany
+    UseCollectNested
+
+    // rulesets/imports.xml
+    DuplicateImport
+    ImportFromSamePackage
+    ImportFromSunPackages
+    NoWildcardImports
+    UnnecessaryGroovyImport
+    UnusedImport
+
+    // rulesets/logging.xml
+    LoggerForDifferentClass
+    LoggerWithWrongModifiers
+    LoggingSwallowsStacktrace
+    MultipleLoggers
+    PrintStackTrace
+
+    // rulesets/naming.xml
+    AbstractClassName
+    ClassName
+    ClassNameSameAsFilename
+    ClassNameSameAsSuperclass
+    FieldName
+    InterfaceName
+    InterfaceNameSameAsSuperInterface
+    MethodName
+    ObjectOverrideMisspelledMethodName
+    PackageName
+    PackageNameMatchesFilePath
+    ParameterName
+    VariableName
+
+    // rulesets/security.xml
+    FileCreateTempFile
+    InsecureRandom
+    JavaIoPackageAccess
+    NonFinalPublicField
+    NonFinalSubclassOfSensitiveInterface
+    ObjectFinalize
+    PublicFinalizeMethod
+    SystemExit
+    UnsafeArrayDeclaration
+
+    // rulesets/serialization.xml
+    EnumCustomSerializationIgnored
+    SerialPersistentFields
+    SerialVersionUID
+    SerializableClassMustDefineSerialVersionUID
+
+    // rulesets/size.xml
+    ClassSize
+    MethodCount
+    MethodSize
+    NestedBlockDepth
+    ParameterCount
+
+    // rulesets/unnecessary.xml
+    AddEmptyString
+    ConsecutiveLiteralAppends
+    ConsecutiveStringConcatenation
+    UnnecessaryBigDecimalInstantiation
+    UnnecessaryBigIntegerInstantiation
+    UnnecessaryBooleanExpression
+    UnnecessaryBooleanInstantiation
+    UnnecessaryCallForLastElement
+    UnnecessaryCallToSubstring
+    UnnecessaryCast
+    UnnecessaryCatchBlock
+    UnnecessaryCollectCall
+    UnnecessaryCollectionCall
+    UnnecessaryConstructor
+    UnnecessaryDefInFieldDeclaration
+    UnnecessaryDefInMethodDeclaration
+    UnnecessaryDefInVariableDeclaration
+    UnnecessaryDotClass
+    UnnecessaryDoubleInstantiation
+    UnnecessaryElseStatement
+    UnnecessaryFinalOnPrivateMethod
+    UnnecessaryFloatInstantiation
+    UnnecessaryGString
+    UnnecessaryGetter
+    UnnecessaryIfStatement
+    UnnecessaryInstanceOfCheck
+    UnnecessaryInstantiationToGetClass
+    UnnecessaryIntegerInstantiation
+    UnnecessaryLongInstantiation
+    UnnecessaryModOne
+    UnnecessaryNullCheck
+    UnnecessaryNullCheckBeforeInstanceOf
+    UnnecessaryObjectReferences
+    UnnecessaryOverridingMethod
+    UnnecessaryPackageReference
+    UnnecessaryParenthesesForMethodCallWithClosure
+    UnnecessaryPublicModifier
+    UnnecessaryReturnKeyword
+    UnnecessarySafeNavigationOperator
+    UnnecessarySelfAssignment
+    UnnecessarySemicolon
+    UnnecessarySetter
+    UnnecessaryStringInstantiation
+    UnnecessarySubstring
+    UnnecessaryTernaryExpression
+    UnnecessaryToString
+    UnnecessaryTransientModifier
+//
+    // rulesets/unused.xml
+    UnusedArray
+    UnusedMethodParameter
+    UnusedObject
+    UnusedPrivateField
+    UnusedPrivateMethod
+    UnusedPrivateMethodParameter
+    UnusedVariable
 }
