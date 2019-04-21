@@ -13,39 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.js.nodejs.internal
+package org.asciidoctor.gradle.kindlegen
 
 import groovy.transform.CompileStatic
+import org.gradle.api.Plugin
+import org.gradle.api.Project
 
-/** Describes a NPM package without a version
+/** Create the {@code kindlegen} extension.
  *
- * @author Schalkw W. Cronjé
- * @since 3.0.0
+ * @since 2.0.0
+ * @author Schalk W. Cronjé
  */
 @CompileStatic
-class PackageDescriptor {
-    final String name
-    final String scope
-
-    static PackageDescriptor of(final String name) {
-        of(null, name)
-    }
-
-    static PackageDescriptor of(final String scope, final String name) {
-        new PackageDescriptor(scope, name)
-    }
-
-    @Override
-    String toString() {
-        if (scope) {
-            "@${scope}/${name}"
-        } else {
-            name
-        }
-    }
-
-    private PackageDescriptor(final String scope, final String name) {
-        this.name = name
-        this.scope = scope
+class KindleGenBasePlugin implements Plugin<Project> {
+    void apply(Project project) {
+        project.extensions.create(KindleGenExtension.NAME, KindleGenExtension, project)
     }
 }
+

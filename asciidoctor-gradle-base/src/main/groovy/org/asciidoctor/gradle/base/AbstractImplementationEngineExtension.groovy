@@ -115,7 +115,6 @@ abstract class AbstractImplementationEngineExtension extends AbstractCombinedPro
         this.attributes.putAll(m)
     }
 
-
     /** Adds an additional attribute provider.
      *
      * @param provider
@@ -144,7 +143,11 @@ abstract class AbstractImplementationEngineExtension extends AbstractCombinedPro
         super(task, name)
     }
 
-    protected Map<String, Object> stringizeMapRecursive(Map<String, Object> map, boolean fromTaskOnly, Closure<Map<String, Object>> other) {
+    protected Map<String, Object> stringizeMapRecursive(
+        Map<String, Object> map,
+        boolean fromTaskOnly,
+        Closure<Map<String, Object>> other
+    ) {
         if (!task || fromTaskOnly) {
             stringizeScalarMapItems(map)
         } else if (map.isEmpty()) {
@@ -157,7 +160,11 @@ abstract class AbstractImplementationEngineExtension extends AbstractCombinedPro
         }
     }
 
-    protected Collection<String> stringizeList(Collection<Object> list, boolean fromTaskOnly, Closure<Collection<String>> other) {
+    protected Collection<String> stringizeList(
+        Collection<Object> list,
+        boolean fromTaskOnly,
+        Closure<Collection<String>> other
+    ) {
         if (!task || fromTaskOnly) {
             stringize(list)
         } else if (list.isEmpty()) {
@@ -205,7 +212,6 @@ abstract class AbstractImplementationEngineExtension extends AbstractCombinedPro
             }
         } as Map<String, Object>
     }
-
 
     private AbstractImplementationEngineExtension getExtFromProject() {
         task ? (AbstractImplementationEngineExtension) projectExtension : this

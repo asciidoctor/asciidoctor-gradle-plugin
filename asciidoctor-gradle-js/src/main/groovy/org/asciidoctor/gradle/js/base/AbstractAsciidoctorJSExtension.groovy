@@ -52,7 +52,8 @@ abstract class AbstractAsciidoctorJSExtension extends AbstractImplementationEngi
 
     /** Set a new version to use.
      *
-     * @param v New version to be used. Can be of anything that be resolved by {@link org.ysb33r.grolifant.api.StringUtils.stringize}.
+     * @param v New version to be used. Can be of anything that be resolved by
+     *    {@link org.ysb33r.grolifant.api.StringUtils.stringize}.
      */
     void setVersion(Object v) {
         this.version = v
@@ -83,7 +84,6 @@ abstract class AbstractAsciidoctorJSExtension extends AbstractImplementationEngi
     void modules(Action<AsciidoctorJSModules> cfg) {
         cfg.execute(this.modules)
     }
-
 
     /** A configuration of packages related to asciidoctor.js
      *
@@ -132,7 +132,4 @@ abstract class AbstractAsciidoctorJSExtension extends AbstractImplementationEngi
     private AbstractAsciidoctorJSExtension getExtFromProject() {
         task ? (AbstractAsciidoctorJSExtension) projectExtension : this
     }
-
-
-
 }

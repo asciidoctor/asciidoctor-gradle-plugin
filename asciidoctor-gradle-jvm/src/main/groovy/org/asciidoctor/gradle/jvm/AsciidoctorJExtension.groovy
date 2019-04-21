@@ -645,14 +645,4 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
             extFromProject.modules.diagram.version
         }
     }
-
-    @SuppressWarnings('LineLength')
-    private void warnVersionMethodDeprecated(final String oldMethod, final String newMethod) {
-        project.logger.warn("${NAME}.${oldMethod} is deprecated and will be removed in 3.0. Use ${NAME}.${newMethod} instead.")
-    }
-
-    @SuppressWarnings('LineLength')
-    private void warnExtensionsDeprecated(String oldMethod, String newMethod) {
-        project.logger.warn "${oldMethod} is deprecated and will be removed in 3.0 of this plugin suite. Use ${newMethod} instead"
-    }
 }

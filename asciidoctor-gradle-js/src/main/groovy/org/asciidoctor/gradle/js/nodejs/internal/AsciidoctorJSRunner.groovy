@@ -15,7 +15,6 @@
  */
 package org.asciidoctor.gradle.js.nodejs.internal
 
-
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.SafeMode
 import org.asciidoctor.gradle.base.Transform
@@ -36,6 +35,7 @@ class AsciidoctorJSRunner {
     private static final String BACKEND = '-b'
     private static final String SAFEMODE = '-S'
     private static final String BASEDIR = '-B'
+    private static final String DESTDIR = '-D'
 
     private final List<String> arguments
     private final Project project
@@ -77,7 +77,7 @@ class AsciidoctorJSRunner {
         }
 
         arguments.addAll(attributes.collectMany { String key, String value ->
-            !value ? [ATTR, key] : [ATTR, "${key}=${value}".toString()]
+            value ? [ATTR, "${key}=${value}".toString()] : [ATTR, key]
         })
 
         arguments.addAll(requires.collectMany {
@@ -95,7 +95,13 @@ class AsciidoctorJSRunner {
                 executable nodejs
                 args(asciidoctorjs.absolutePath)
                 args(arguments)
-                args('-D', (relativeOutputPath.empty ? destinationDir : new File(destinationDir, relativeOutputPath)).absolutePath)
+                args(
+                    DESTDIR,
+                    (relativeOutputPath.empty ?
+                        destinationDir :
+                        new File(destinationDir, relativeOutputPath)
+                    ).absolutePath
+                )
                 args('--')
                 args(Transform.toList(sources) {
                     it.absolutePath
@@ -105,11 +111,11 @@ class AsciidoctorJSRunner {
             }
         }
 
-        if(logDocuments) {
+        if (logDocuments) {
             project.logger.info("Converting ${sources*.name.join(', ')}")
         }
 
-        project.exec((Closure)configurator)
+        project.exec((Closure) configurator)
     }
 
     @SuppressWarnings('ClassName')
@@ -118,11 +124,13 @@ class AsciidoctorJSRunner {
         File workingDir
     }
 
-//    --embedded, -e          suppress enclosing document structure and output an embedded document [boolean] [default: false]
+//    --embedded, -e          suppress enclosing document structure and output an embedded document
+//                            [boolean] [default: false]
 //    --no-header-footer, -s  suppress enclosing document structure and output an embedded document
 //    Optional<String> sectionNumbers -n
 //    Optional<String> failureLevel --failure-level
-//        [choices: "info", "INFO", "warn", "WARN", "warning", "WARNING", "error", "ERROR", "fatal", "FATAL"] [default: "FATAL"]
+//        [choices: "info", "INFO", "warn", "WARN", "warning", "WARNING",
+//        "error", "ERROR", "fatal", "FATAL"] [default: "FATAL"]
 //    boolean verboseMode -v
 //   boolean traceMode --trace
 //    boolean withTimings -t

@@ -60,7 +60,12 @@ class FunctionalTestSetup {
         getGradleRunner(dsl, projectDir, null, taskNames)
     }
 
-    static GradleRunner getGradleRunner(DslType dsl, File projectDir, List<File> pluginClasspath, List<String> taskNames) {
+    static GradleRunner getGradleRunner(
+        DslType dsl,
+        File projectDir,
+        List<File> pluginClasspath,
+        List<String> taskNames
+    ) {
         List<String> eventualTaskNames = []
         eventualTaskNames.addAll(taskNames)
 

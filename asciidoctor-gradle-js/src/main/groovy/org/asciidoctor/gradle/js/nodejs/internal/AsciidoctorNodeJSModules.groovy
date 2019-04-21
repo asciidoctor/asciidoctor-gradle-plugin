@@ -61,7 +61,11 @@ class AsciidoctorNodeJSModules extends BaseAsciidoctorJSModules implements Ascii
             new Module(defaultVersion, packageIdentifier, setAction as Action<Object>)
         }
 
-        private Module(final Object defaultVersion, final PackageDescriptor packageIdentifier, Action<Object> setAction = null) {
+        private Module(
+            final Object defaultVersion,
+            final PackageDescriptor packageIdentifier,
+            Action<Object> setAction = null
+        ) {
             super(defaultVersion, setAction)
             this.packageIdentifier = packageIdentifier
         }
