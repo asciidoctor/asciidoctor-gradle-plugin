@@ -111,12 +111,12 @@ class AbstractAsciidoctorTask extends DefaultTask {
      * conversion in parallel.
      *
      * When running sequential, the worker classloader, Asciidoctor instances
-     * and Asciidoctor extensions will be shared across all of the conversions.
+     * and Asciidoctor docExtensions will be shared across all of the conversions.
      * When running parallel each conversion will be in a separate classloader,
      * with a new Asciidoctor instance being initialised for every conversion.
      *
      * Sequential work might execute slightly faster, but if you have backend-specific
-     * extensions you might want to consider parallel mode (or use another Asciidoctor
+     * docExtensions you might want to consider parallel mode (or use another Asciidoctor
      * task instance).
      *
      * Default is parallel.
@@ -448,7 +448,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
 
     /** Returns all of the specified configurations as a collections of files.
      *
-     * If any extensions are dependencies then they will be included here too.
+     * If any docExtensions are dependencies then they will be included here too.
      *
      * @return FileCollection
      */
@@ -721,7 +721,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      */
     @Internal
     protected List<Object> getAsciidoctorJExtensions() {
-        asciidoctorj.extensions
+        asciidoctorj.docExtensions
     }
 
     /** Obtains a source tree based on patterns.
@@ -948,7 +948,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
 
     @SuppressWarnings('Instanceof')
     private FileCollection findDependenciesInExtensions() {
-        List<Dependency> deps = asciidoctorj.extensions.findAll {
+        List<Dependency> deps = asciidoctorj.docExtensions.findAll {
             it instanceof Dependency
         } as List<Dependency>
 
@@ -957,7 +957,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
         }
 
         if (!closurePaths.empty) {
-            // Jumping through hoops to make extensions based upon closures to work.
+            // Jumping through hoops to make docExtensions based upon closures to work.
             closurePaths.add(getClassLocation(org.gradle.internal.scripts.ScriptOrigin))
             closurePaths.addAll(ifNoGroovyAddLocal(deps))
         }
@@ -1025,7 +1025,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
     }
 
     private List<Closure> findExtensionClosures() {
-        asciidoctorj.extensions.findAll {
+        asciidoctorj.docExtensions.findAll {
             it instanceof Closure
         } as List<Closure>
     }
