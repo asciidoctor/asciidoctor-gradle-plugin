@@ -32,12 +32,26 @@ import org.asciidoctor.log.LogHandler
 @CompileStatic
 class AsciidoctorJavaExec extends ExecutorBase {
 
+    static void main(String[] args) {
+        if (args.size() != 1) {
+            throw new AsciidoctorRemoteExecutionException('No serialised location specified')
+        }
+
+        ExecutorConfigurationContainer ecc
+        new File(args[0]).withInputStream { input ->
+            new ObjectInputStream(input).withCloseable { ois ->
+                ecc = (ExecutorConfigurationContainer) ois.readObject()
+            }
+        }
+
+        new AsciidoctorJavaExec(ecc).run()
+    }
+
     AsciidoctorJavaExec(ExecutorConfigurationContainer ecc) {
         super(ecc)
     }
 
     void run() {
-
         Thread.currentThread().contextClassLoader = this.class.classLoader
         Asciidoctor asciidoctor = asciidoctorInstance
         addRequires(asciidoctor)
@@ -49,7 +63,6 @@ class AsciidoctorJavaExec extends ExecutorBase {
         }
 
         runConfigurations.each { runConfiguration ->
-
             LogHandler lh = getLogHandler(runConfiguration.executorLogLevel)
             asciidoctor.registerLogHandler(lh)
             resetMessagePatternsTo(runConfiguration.fatalMessagePatterns)
@@ -68,8 +81,12 @@ class AsciidoctorJavaExec extends ExecutorBase {
                     println("Converting ${file}")
                 }
                 asciidoctor.convertFile(file, normalisedOptionsFor(file, runConfiguration))
-            } catch (Throwable t) {
-                throw new AsciidoctorRemoteExecutionException("Error running Asciidoctor whilst attempting to process ${file} using backend ${runConfiguration.backendName}", t)
+            } catch (Throwable exception) {
+                throw new AsciidoctorRemoteExecutionException(
+                    "Error running Asciidoctor whilst attempting to process ${file} " +
+                        "using backend ${runConfiguration.backendName}",
+                    exception
+                )
             }
         }
     }
@@ -104,7 +121,6 @@ class AsciidoctorJavaExec extends ExecutorBase {
 
     @CompileDynamic
     private void registerExtensions(Asciidoctor asciidoctor, List<Object> exts) {
-
         AsciidoctorExtensions extensionRegistry = new AsciidoctorExtensions()
 
         for (Object ext in rehydrateExtensions(extensionRegistry, exts)) {
@@ -112,20 +128,4 @@ class AsciidoctorJavaExec extends ExecutorBase {
         }
         extensionRegistry.registerExtensionsWith((Asciidoctor) asciidoctor)
     }
-
-    static void main(String[] args) {
-        if (args.size() != 1) {
-            throw new AsciidoctorRemoteExecutionException('No serialised location specified')
-        }
-
-        ExecutorConfigurationContainer ecc
-        new File(args[0]).withInputStream { input ->
-            new ObjectInputStream(input).withCloseable { ois ->
-                ecc = (ExecutorConfigurationContainer) ois.readObject()
-            }
-        }
-
-        new AsciidoctorJavaExec(ecc).run()
-    }
-
 }

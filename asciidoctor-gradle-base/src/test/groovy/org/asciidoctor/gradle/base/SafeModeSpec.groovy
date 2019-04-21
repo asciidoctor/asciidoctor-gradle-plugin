@@ -23,7 +23,6 @@ import static org.asciidoctor.gradle.base.SafeMode.SERVER
 import static org.asciidoctor.gradle.base.SafeMode.UNSAFE
 import static org.asciidoctor.gradle.base.SafeMode.safeMode
 
-@SuppressWarnings('MethodName')
 class SafeModeSpec extends Specification {
 
     void 'Integers map to correct safe modes'() {

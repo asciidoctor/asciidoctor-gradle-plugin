@@ -23,7 +23,6 @@ import spock.lang.Issue
 import spock.lang.PendingFeature
 import spock.lang.Unroll
 
-@SuppressWarnings(['DuplicateStringLiteral', 'MethodName', 'DuplicateListLiteral'])
 class AsciidoctorEpubTaskFunctionalSpec extends FunctionalSpecification {
 
     final static String JRUBY_TEST_VERSION = JRubyTestVersions.AJ16_SAFE_MAXIMUM
@@ -46,7 +45,7 @@ class AsciidoctorEpubTaskFunctionalSpec extends FunctionalSpecification {
         }
     }
 
-    @IgnoreIf({FunctionalSpecification.OS.windows})
+    @IgnoreIf({ FunctionalSpecification.OS.windows })
     void 'Non-Windows: Run a EPUB generator with format KF8 (only in JAVA_EXEC mode on)'() {
         given:
         getSingleFormatBuildFile('KF8')
@@ -62,7 +61,7 @@ class AsciidoctorEpubTaskFunctionalSpec extends FunctionalSpecification {
     }
 
     @Issue('https://github.com/asciidoctor/asciidoctorj/issues/659')
-    @IgnoreIf({!FunctionalSpecification.OS.windows})
+    @IgnoreIf({ !FunctionalSpecification.OS.windows })
     @PendingFeature
     void 'Windows: Run a EPUB generator with format KF8 (only in JAVA_EXEC mode on)'() {
         given:
@@ -87,15 +86,15 @@ class AsciidoctorEpubTaskFunctionalSpec extends FunctionalSpecification {
         asciidoctorEpub {
             sourceDir 'src/docs/asciidoc'
             ebookFormats ${formatOrder}
-            
+
             kindlegen {
                 agreeToTermsOfUse = true
             }
-            
+
             asciidoctorj {
                 jrubyVersion = '${JRUBY_TEST_VERSION}'
             }
-                
+
             sources {
                 include 'epub3.adoc'
             }
@@ -133,7 +132,6 @@ class AsciidoctorEpubTaskFunctionalSpec extends FunctionalSpecification {
 
         then:
         result.output.contains('No eBook format specified for task')
-
     }
 
     File getSingleFormatBuildFile(final String format) {
@@ -142,15 +140,15 @@ class AsciidoctorEpubTaskFunctionalSpec extends FunctionalSpecification {
         asciidoctorEpub {
             sourceDir 'src/docs/asciidoc'
             ebookFormats ${format}
-            
+
             kindlegen {
                 agreeToTermsOfUse = true
             }
-            
+
             asciidoctorj {
                 jrubyVersion = '${JRUBY_TEST_VERSION}'
             }
-                
+
             sources {
                 include 'epub3.adoc'
             }

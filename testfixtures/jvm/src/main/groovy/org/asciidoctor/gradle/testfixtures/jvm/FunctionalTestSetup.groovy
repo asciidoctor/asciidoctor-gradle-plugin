@@ -19,13 +19,18 @@ import groovy.transform.CompileStatic
 import org.gradle.testkit.runner.GradleRunner
 import org.ysb33r.grolifant.api.OperatingSystem
 
-
+/** Utility methods for setting up functional plugin tests.
+ *
+ * @author Schalk W. Cronjé
+ *
+ * @since 2.0
+ */
 @CompileStatic
 class FunctionalTestSetup {
 
     final static OperatingSystem OS = OperatingSystem.current()
 
-    /**
+    /** Provides a list of files that should be on the classpath for testing a plugin.
      *
      * @param projectSubdir Name of the project path on disk (not the project under test).
      *
@@ -35,19 +40,24 @@ class FunctionalTestSetup {
         URL pluginClasspathResource = testClass.classLoader.getResource('plugin-classpath.txt')
 
         if (pluginClasspathResource == null) {
-            return new File("./${projectSubdir}/build/createClasspathManifest/plugin-classpath.txt").readLines().collect {
+            return new File(
+                "./${projectSubdir}/build/createClasspathManifest/plugin-classpath.txt"
+            ).readLines().collect {
                 new File(it)
             }
         }
 
         if (pluginClasspathResource == null) {
-            throw new IllegalStateException('Did not find plugin classpath resource, run `intTestClasses` or `testClasses` build task.')
+            throw new IllegalStateException(
+                'Did not find plugin classpath resource, run `intTestClasses` or `testClasses` build task.'
+            )
         }
 
         pluginClasspathResource.readLines().collect { new File(it) }
     }
 
-    /**
+    /** Obtains an instance of {@code GradleRunner} with the appropriate default set for
+     * testing Asciidoctor plugins.
      *
      * @param projectDir Temporary project directory
      * @param testClass Test class
@@ -89,7 +99,9 @@ class FunctionalTestSetup {
     static String getOfflineRepositoriesGroovyDsl(File repoDir, final String fileName = 'repositories.gradle') {
         File repo = new File(repoDir, fileName)
         if (!repo.exists()) {
-            throw new FileNotFoundException("${repo} not found. Run ':testfixture-offline-repo:buildOfflineRepositories' build task")
+            throw new FileNotFoundException(
+                "${repo} not found. Run ':testfixture-offline-repo:buildOfflineRepositories' build task"
+            )
         }
 
         if (OS.windows) {
@@ -108,7 +120,9 @@ class FunctionalTestSetup {
     static String getOfflineRepositoriesKotlinDsl(File repoDir, final String fileName = 'repositories.gradle.kts') {
         File repo = new File(repoDir, fileName)
         if (!repo.exists()) {
-            throw new FileNotFoundException("${repo} not found. Run ':testfixture-offline-repo:buildOfflineRepositories' build task")
+            throw new FileNotFoundException(
+                "${repo} not found. Run ':testfixture-offline-repo:buildOfflineRepositories' build task"
+            )
         }
 
         if (OS.windows) {

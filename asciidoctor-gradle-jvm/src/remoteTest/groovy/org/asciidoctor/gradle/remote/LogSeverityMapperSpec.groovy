@@ -20,13 +20,11 @@ import org.asciidoctor.log.Severity
 import spock.lang.Specification
 import spock.lang.Unroll
 
-@SuppressWarnings('MethodName')
 class LogSeverityMapperSpec extends Specification {
 
     @Unroll
     @SuppressWarnings('UnnecessaryObjectReferences')
     void 'Map asciidoctor severity #sev to executor log level #ell'() {
-
         expect:
         ell == LogSeverityMapper.translateAsciidoctorLogLevel(sev)
 

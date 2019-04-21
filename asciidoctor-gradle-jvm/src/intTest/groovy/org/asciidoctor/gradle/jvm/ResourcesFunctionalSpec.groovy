@@ -21,7 +21,6 @@ import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Timeout
 import spock.lang.Unroll
 
-@SuppressWarnings(['MethodName', 'DuplicateStringLiteral'])
 class ResourcesFunctionalSpec extends FunctionalSpecification {
 
     static final List DEFAULT_ARGS = ['asciidoctor', '-s']
@@ -33,7 +32,8 @@ class ResourcesFunctionalSpec extends FunctionalSpecification {
 
     @Timeout(value = 90)
     @Unroll
-    void 'When resources are not specified, copy all images to destination (with intermediate workdir = #intermediate)'() {
+    @SuppressWarnings('LineLength')
+    void 'When resources are not specified, copy all images to destination with intermediate workdir=#intermediate)'() {
         given:
         getBuildFile("""
         if(${intermediate}) {
@@ -64,9 +64,9 @@ class ResourcesFunctionalSpec extends FunctionalSpecification {
         getBuildFile('''
         asciidoctor {
             resources {
-                from sourceDir, {                
+                from sourceDir, {
                     include 'images2/**'
-                }        
+                }
             }
         }
         ''')
@@ -96,7 +96,7 @@ class ResourcesFunctionalSpec extends FunctionalSpecification {
         getBuildFile('''
         asciidoctor {
             resources {
-                from sourceDir, {                
+                from sourceDir, {
                     include 'images/fake*2.txt'
                 }
             }
@@ -200,8 +200,7 @@ class ResourcesFunctionalSpec extends FunctionalSpecification {
     }
 
     File getBuildFile(final String extraContent) {
-
-        getJvmConvertGroovyBuildFile("""           
+        getJvmConvertGroovyBuildFile("""
             ${extraContent}
         """
         )

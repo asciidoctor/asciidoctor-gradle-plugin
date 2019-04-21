@@ -23,7 +23,6 @@ import org.gradle.api.provider.Provider
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
-@SuppressWarnings(['MethodName'])
 class RevealJSExtensionSpec extends Specification {
 
     Project project = ProjectBuilder.builder().build()
@@ -38,7 +37,6 @@ class RevealJSExtensionSpec extends Specification {
         ext.version == RevealJSExtension.DEFAULT_VERSION
     }
 
-    @SuppressWarnings('DuplicateStringLiteral')
     void 'Reveal.Js version can be set'() {
         when:
         ext.version = '1.2.3'
@@ -115,6 +113,7 @@ class RevealJSExtensionSpec extends Specification {
             }
 
             @Override
+            @SuppressWarnings('GetterMethodCouldBeProperty')
             File getOrNull() {
                 null
             }

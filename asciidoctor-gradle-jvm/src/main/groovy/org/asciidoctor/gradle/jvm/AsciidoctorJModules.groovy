@@ -15,7 +15,6 @@
  */
 package org.asciidoctor.gradle.jvm
 
-
 import org.asciidoctor.gradle.base.AsciidoctorModuleDefinition
 import org.gradle.api.Action
 import org.ysb33r.grolifant.api.StringUtils
@@ -76,7 +75,6 @@ class AsciidoctorJModules {
     }
 
     private static class Module implements AsciidoctorModuleDefinition {
-
         private Optional<Object> version = Optional.empty()
         private final Object defaultVersion
         private final Action<Object> setAction

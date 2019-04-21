@@ -19,7 +19,6 @@ import org.asciidoctor.gradle.jvm.slides.internal.FunctionalSpecification
 import org.asciidoctor.gradle.testfixtures.jvm.JRubyTestVersions
 import org.gradle.testkit.runner.BuildResult
 
-@SuppressWarnings(['DuplicateStringLiteral', 'DuplicateListLiteral'])
 class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
 
     final static String JRUBY_TEST_VERSION = JRubyTestVersions.AJ16_SAFE_MAXIMUM
@@ -48,7 +47,6 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
     }
 
     void 'Run a revealJS generator with a custom template'() {
-
         given:
         getBuildFile('''
         revealjs {
@@ -67,7 +65,8 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
         verifyAll {
             new File(testProjectDir.root, 'build/docs/asciidocRevealJs/revealjs.html').exists()
             new File(testProjectDir.root, 'build/github-cache/hakimel/reveal.js/3.6.0').exists()
-            new File(testProjectDir.root, "${DEFAULT_REVEALJS_PATH}/js/reveal.js").text.contains('var VERSION = \'3.6.0\';')
+            new File(testProjectDir.root, "${DEFAULT_REVEALJS_PATH}/js/reveal.js").
+                text.contains('var VERSION = \'3.6.0\';')
         }
     }
 
@@ -82,7 +81,7 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
                 branch = 'master'
             }
         }
-        
+
         asciidoctorRevealJs {
             plugins 'rajgoel/chart/Chart.js'
             pluginConfigurationFile 'src/docs/asciidoc/empty-plugin-configuration.js'
@@ -122,16 +121,16 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
         ${offlineRepositories}
 
         repositories {
-            maven { url 'http://rubygems-proxy.torquebox.org/releases' } 
+            maven { url 'http://rubygems-proxy.torquebox.org/releases' }
         }
 
         asciidoctorRevealJs {
             sourceDir 'src/docs/asciidoc'
-            
+
             asciidoctorj {
                 jrubyVersion = '${JRUBY_TEST_VERSION}'
             }
-                
+
             sources {
                 include 'revealjs.adoc'
             }
@@ -141,7 +140,5 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
 """
         buildFile
     }
-
 }
-
 

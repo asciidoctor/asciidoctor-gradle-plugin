@@ -42,14 +42,28 @@ import static org.asciidoctor.gradle.jvm.AsciidoctorJExtension.JRUBY_COMPLETE_DE
  */
 @Deprecated
 @CompileStatic
+@SuppressWarnings('LineLength')
 class AsciidoctorCompatibilityPlugin implements Plugin<Project> {
     static final String ASCIIDOCTOR = 'asciidoctor'
     static final String ASCIIDOCTORJ = 'asciidoctorj'
     static final String ASCIIDOCTORJ_CORE_DEPENDENCY = 'org.asciidoctor:asciidoctorj:'
     static final String ASCIIDOCTORJ_GROOVY_DSL_DEPENDENCY = 'org.asciidoctor:asciidoctorj-groovy-dsl:'
 
-    void apply(Project project) {
+    static String createMigrationOutputMessage(final Set<String> messages) {
+        StringWriter output = new StringWriter()
+        output.withCloseable {
+            output.println 'You are using one or more deprecated Asciidoctor task or plugins. These will be removed in a future release. To help you migrate we have compiled some tips for you based upon your current usage:'
+            output.println()
 
+            messages.each { String msg ->
+                output.println "  - ${msg}"
+            }
+            output.println()
+            output.toString()
+        }
+    }
+
+    void apply(Project project) {
         ['jvm.convert', 'js.base'].each { String s ->
             String pluginName = "org.asciidoctor.${s}"
             if (project.gradle.plugins.hasPlugin(pluginName)) {
@@ -102,6 +116,13 @@ class AsciidoctorCompatibilityPlugin implements Plugin<Project> {
     }
 
     @CompileDynamic
+    Closure excludeGroovy() {
+        return {
+            exclude module: 'groovy-all'
+        }
+    }
+
+    @CompileDynamic
     private void addDefaultRepositories(Project project) {
         project.afterEvaluate {
             if (!project.extensions.asciidoctorj.noDefaultRepositories) {
@@ -144,27 +165,6 @@ class AsciidoctorCompatibilityPlugin implements Plugin<Project> {
                     }
                 }
             }
-        }
-    }
-
-    static String createMigrationOutputMessage(final Set<String> messages) {
-        StringWriter output = new StringWriter()
-        output.withCloseable {
-            output.println 'You are using one or more deprecated Asciidoctor task or plugins. These will be removed in a future release. To help you migrate we have compiled some tips for you based upon your current usage:'
-            output.println()
-
-            messages.each { String msg ->
-                output.println "  - ${msg}"
-            }
-            output.println()
-            output.toString()
-        }
-    }
-
-    @CompileDynamic
-    Closure excludeGroovy() {
-        return {
-            exclude module: 'groovy-all'
         }
     }
 }

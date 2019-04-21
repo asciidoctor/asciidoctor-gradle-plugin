@@ -20,7 +20,6 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
-@SuppressWarnings(['MethodName'])
 class AsciidoctorExtensionSpec extends Specification {
 
     Project project = ProjectBuilder.builder().build()

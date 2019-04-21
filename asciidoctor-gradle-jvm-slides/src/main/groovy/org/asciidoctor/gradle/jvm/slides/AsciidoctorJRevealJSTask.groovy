@@ -49,11 +49,12 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
     private final Map<String, Boolean> builtinPlugins = [:]
     private final List<Object> requiredPlugins = []
 
-    /**
+    /** Injection constructor.
      *
      * @param we {@link WorkerExecutor}.
      */
     @Inject
+    @SuppressWarnings('ClosureAsLastMethodParameter')
     AsciidoctorJRevealJSTask(WorkerExecutor we) {
         super(we)
         this.revealjsOptions = new RevealJSOptions(project)
@@ -285,7 +286,6 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
      *
      */
     protected void processTemplateResources() {
-
         final File fromSource = templateSourceDir
         final File target = templateDir
         final Set<ResolvedRevealJSPlugin> fromPlugins = resolvedPlugins
@@ -330,9 +330,9 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
     private void generatePluginList(File targetFile, String relativePathForPlugins) {
         targetFile.parentFile.mkdirs()
 
-        String pluginList = Transform.toList(plugins, { String fullName ->
+        String pluginList = Transform.toList(plugins) { String fullName ->
             "{ src: '${relativePathForPlugins}/${fullName}' }"
-        }).join(',\n')
+        }.join(',\n')
 
         targetFile.withWriter { Writer w ->
             w.println pluginList
@@ -341,7 +341,8 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
 
     private void checkRevealJsVersion() {
         if (!pluginSupportAvailable) {
-            project.logger.warn("You are using Reveal.Js converter version ${revealjsExtension.version}, which does not support plugins. Any plugin settings will be ignored.")
+            project.logger.warn("You are using Reveal.Js converter version ${revealjsExtension.version}, " +
+                'which does not support plugins. Any plugin settings will be ignored.')
         }
     }
 

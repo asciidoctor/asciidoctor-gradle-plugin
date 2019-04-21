@@ -105,7 +105,5 @@ class RevealJSExtension {
             final String relativePath = archive.relativePath
             relativePath ? new File(root, relativePath) : root
         } as Provider<File>
-
     }
-
 }

@@ -24,16 +24,24 @@ import spock.lang.Specification
 /**
  * @uathor Schalk W.Cronjé
  */
-@SuppressWarnings(['MethodName', 'DuplicateStringLiteral', 'DuplicateMapLiteral'])
 class AsciidoctorPdfThemeExtensionSpec extends Specification {
 
-    final static File TEST_THEMES_DIR = new File( System.getProperty('TEST_THEMES_DIR') ?: 'asciidoctor-gradle-jvm/src/test/resources/themes' ).absoluteFile
+    final static File TEST_THEMES_DIR = new File(
+        System.getProperty(
+            'TEST_THEMES_DIR',
+            'asciidoctor-gradle-jvm/src/test/resources/themes'
+        )
+    ).absoluteFile
 
     Project project = ProjectBuilder.builder().build()
     AsciidoctorPdfThemesExtension pdfThemes
 
     void setup() {
-        pdfThemes = project.extensions.create(AsciidoctorPdfThemesExtension.NAME, AsciidoctorPdfThemesExtension, project)
+        pdfThemes = project.extensions.create(
+            AsciidoctorPdfThemesExtension.NAME,
+            AsciidoctorPdfThemesExtension,
+            project
+        )
     }
 
     void 'Unregistered theme throws exception'() {
@@ -46,7 +54,7 @@ class AsciidoctorPdfThemeExtensionSpec extends Specification {
 
     void 'Configure local theme'() {
         given:
-        pdfThemes.local 'basic',  {
+        pdfThemes.local 'basic', {
             styleDir = 'foo'
         }
 
@@ -60,43 +68,41 @@ class AsciidoctorPdfThemeExtensionSpec extends Specification {
 
     void 'Configure GitHub theme'() {
         given:
-        pdfThemes.github 'basic',  {
-            baseUri = new File(TEST_THEMES_DIR,'github').toURI()
+        pdfThemes.github 'basic', {
+            baseUri = new File(TEST_THEMES_DIR, 'github').toURI()
             organisation = 'foo'
             repository = 'bar'
             branch = 'master'
             relativePath = 'some/path'
         }
 
-
         when:
         AsciidoctorPdfThemesExtension.PdfThemeDescriptor theme = pdfThemes.getByName('basic')
 
         then:
         theme.styleName == 'basic'
-        theme.styleDir == new File(determineUnpackedDir('github-cache','master'),'bar-master/some/path')
+        theme.styleDir == new File(determineUnpackedDir('github-cache', 'master'), 'bar-master/some/path')
     }
 
     void 'Configure GitLab theme'() {
         given:
-        pdfThemes.gitlab 'basic',  {
-            baseUri = new File(TEST_THEMES_DIR,'gitlab').toURI()
+        pdfThemes.gitlab 'basic', {
+            baseUri = new File(TEST_THEMES_DIR, 'gitlab').toURI()
             organisation = 'foo'
             repository = 'bar'
             branch = 'master'
             relativePath = 'some/path'
         }
 
-
         when:
         AsciidoctorPdfThemesExtension.PdfThemeDescriptor theme = pdfThemes.getByName('basic')
 
         then:
         theme.styleName == 'basic'
-        theme.styleDir == new File(determineUnpackedDir('gitlab-cache','bar-master'),'bar-master/some/path')
+        theme.styleDir == new File(determineUnpackedDir('gitlab-cache', 'bar-master'), 'bar-master/some/path')
     }
 
-    File determineUnpackedDir(String cacheSubDir,String pattern) {
+    File determineUnpackedDir(String cacheSubDir, String pattern) {
         File baseDir = project.file("${project.buildDir}/${cacheSubDir}/foo/bar/${pattern}")
         FileUtils.listDirs(baseDir)[0]
     }

@@ -25,7 +25,6 @@ import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.D
 /**
  * @author Schalk W. Cronjé
  */
-@SuppressWarnings(['MethodName','DuplicateStringLiteral', 'DuplicateListLiteral'])
 class RequiresFunctionalSpec extends FunctionalSpecification {
 
     static final List DEFAULT_ARGS = ['asciidoctor', '-s']
@@ -37,7 +36,7 @@ class RequiresFunctionalSpec extends FunctionalSpecification {
     }
 
     @Timeout(value=360)
-    def 'Asciidoctorj-diagram is registered and re-used across across multiple builds'() {
+    void 'Asciidoctorj-diagram is registered and re-used across across multiple builds'() {
         given:
         final String imageFileExt = '.png'
         getBuildFile(DITAA, '')
@@ -64,7 +63,7 @@ class RequiresFunctionalSpec extends FunctionalSpecification {
     }
 
     @Timeout(value=360)
-    def 'Use asciidoctorj-diagram the old way way with `requires` still works'() {
+    void 'Use asciidoctorj-diagram the old way way with `requires` still works'() {
         given:
         final String imageFileExt = '.png'
         getJvmConvertGroovyBuildFile("""
@@ -75,19 +74,19 @@ class RequiresFunctionalSpec extends FunctionalSpecification {
         dependencies {
             diagram 'org.asciidoctor:asciidoctorj-diagram:${DIAGRAM_SERIES_16}'
         }
-        
+
         asciidoctor {
 
             asciidoctorj.requires 'asciidoctor-diagram'
-            
+
             configurations 'diagram'
 
             sourceDir = 'src/docs/asciidoc'
-    
+
             sources {
                 include 'ditaa.adoc'
             }
-        }    
+        }
         """)
 
         when:
@@ -117,21 +116,21 @@ class RequiresFunctionalSpec extends FunctionalSpecification {
                     diagram.version = '${DIAGRAM_SERIES_16}'
                 }
             }
-            
+
             asciidoctor {
                 ${defaultProcessModeForAppveyor}
-            
+
                 sourceDir = 'src/docs/asciidoc'
-                
+
                 sources {
                     include '${sourceName}'
                 }
-                
+
                 withIntermediateArtifacts {
                     include '**/d*.png'
                 }
             }
-            
+
             ${extraContent}
         """)
     }

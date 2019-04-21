@@ -15,38 +15,6 @@
  */
 
 ruleset {
-//    ruleset('rulesets/naming.xml') {
-//        ClassName {
-//            regex = '^[A-Z][a-zA-Z0-9]*$'
-//        }
-//        FieldName {
-//            finalRegex = '^_?[a-z][a-zA-Z0-9]*$'
-//            staticFinalRegex = '^[A-Z][A-Z_0-9]*$'
-//        }
-//        MethodName {
-//            regex = '^[a-z][a-zA-Z0-9_]*$'
-//            doNotApplyToFileNames = '*/test/*/*Spec.groovy,*/*Test/*/*Spec.groovy,*/test/*/*Specification.groovy,*/*Test/*/*Specification.groovy'
-//        }
-//        VariableName {
-//            finalRegex = '^_?[a-z][a-zA-Z0-9]*$'
-//        }
-//    }
-//    ruleset('rulesets/dry.xml') {
-//        DuplicateListLiteral {
-//            doNotApplyToFileNames = '*/test/*/*Spec.groovy,*/*Test/*/*Spec.groovy,*/test/*/*Specification.groovy,*/*Test/*/*Specification.groovy'
-//        }
-//        DuplicateMapLiteral {
-//            doNotApplyToFileNames = '*/test/*/*Spec.groovy,*/*Test/*/*Spec.groovy,*/test/*/*Specification.groovy,*/*Test/*/*Specification.groovy'
-//        }
-//        DuplicateNumberLiteral {
-//            doNotApplyToFileNames = '*/test/*/*Spec.groovy,*/*Test/*/*Spec.groovy,*/test/*/*Specification.groovy,*/*Test/*/*Specification.groovy'
-//        }
-//        DuplicateStringLiteral {
-//            doNotApplyToFileNames = '*/test/*/*Spec.groovy,*/*Test/*/*Spec.groovy,*/test/*/*Specification.groovy,*/*Test/*/*Specification.groovy'
-//        }
-//    }
-
-
     // rulesets/basic.xml
     AssertWithinFinallyBlock
     AssignmentInConditional
@@ -97,7 +65,9 @@ ruleset {
     WhileStatementBraces
 
     // rulesets/comments.xml
-    ClassJavadoc
+    ClassJavadoc {
+        doNotApplyToFileNames = '*Spec.groovy,*Specification.groovy'
+    }
     JavadocConsecutiveEmptyLines
     JavadocEmptyAuthorTag
     JavadocEmptyExceptionTag
@@ -150,16 +120,18 @@ ruleset {
     LongLiteralWithLowerCaseL
     MethodParameterTypeRequired
     MethodReturnTypeRequired
-    NoDef
     NoJavaUtilDate
     NoTabCharacter
     ParameterReassignment
     PublicMethodsBeforeNonPublicMethods
     StaticFieldsBeforeInstanceFields
-    StaticMethodsBeforeInstanceMethods
+    StaticMethodsBeforeInstanceMethods {
+        doNotApplyToFileNames = '*Spec.groovy,*Specification.groovy'
+    }
     TernaryCouldBeElvis
-    TrailingComma
-    VariableTypeRequired
+    VariableTypeRequired {
+        doNotApplyToFileNames = '*Spec.groovy,*Specification.groovy'
+    }
     VectorIsObsolete
 
     // rulesets/design.xml
@@ -186,10 +158,18 @@ ruleset {
     ToStringReturnsNull
 
     // rulesets/dry.xml
-    DuplicateListLiteral
-    DuplicateMapLiteral
-    DuplicateNumberLiteral
-    DuplicateStringLiteral
+    DuplicateListLiteral {
+        doNotApplyToFileNames = '*Spec.groovy,*Specification.groovy'
+    }
+    DuplicateMapLiteral {
+        doNotApplyToFileNames = '*Spec.groovy,*Specification.groovy'
+    }
+    DuplicateNumberLiteral {
+        doNotApplyToFileNames = '*Spec.groovy,*Specification.groovy'
+    }
+    DuplicateStringLiteral {
+        doNotApplyToFileNames = '*Spec.groovy,*Specification.groovy'
+    }
 
     // rulesets/exceptions.xml
     CatchArrayIndexOutOfBoundsException
@@ -222,12 +202,8 @@ ruleset {
     BracesForIfElse
     BracesForMethod
     BracesForTryCatchFinally
-    ClassEndsWithBlankLine
-    ClassStartsWithBlankLine
     ClosureStatementOnOpeningLineOfMultipleLineClosure
     ConsecutiveBlankLines
-    FileEndsWithoutNewline
-    Indentation
     LineLength
     MissingBlankLineAfterImports
     MissingBlankLineAfterPackage
@@ -241,7 +217,6 @@ ruleset {
     SpaceAfterSwitch
     SpaceAfterWhile
     SpaceAroundClosureArrow
-    SpaceAroundMapEntryColon
     SpaceAroundOperator
     SpaceBeforeClosingBrace
     SpaceBeforeOpeningBrace
@@ -287,7 +262,9 @@ ruleset {
     ExplicitStackInstantiation
     ExplicitTreeSetInstantiation
     GStringAsMapKey
-    GStringExpressionWithinString
+    GStringExpressionWithinString {
+        doNotApplyToFileNames = '*FunctionalSpec.groovy,*FunctionalSpecification.groovy'
+    }
     GetterMethodCouldBeProperty
     GroovyLangImmutable
     UseCollectMany
@@ -310,23 +287,37 @@ ruleset {
 
     // rulesets/naming.xml
     AbstractClassName
-    ClassName
+    ClassName {
+        regex = '^[A-Z][a-zA-Z0-9$]*$'
+        doNotApplyToFileNames = '*Spec.groovy,*Specification.groovy'
+    }
     ClassNameSameAsFilename
     ClassNameSameAsSuperclass
-    FieldName
+
+    FieldName {
+        finalRegex = '^_?[a-z][a-zA-Z0-9]*$'
+        staticFinalRegex = '^[A-Z][A-Z_0-9]*$'
+        doNotApplyToFileNames = '*Spec.groovy,*Specification.groovy'
+    }
+
     InterfaceName
     InterfaceNameSameAsSuperInterface
-    MethodName
+    MethodName {
+        regex = '^[a-z][a-zA-Z0-9_]*$'
+        doNotApplyToFileNames = '*Spec.groovy,*Specification.groovy'
+    }
     ObjectOverrideMisspelledMethodName
     PackageName
     PackageNameMatchesFilePath
     ParameterName
-    VariableName
+    VariableName {
+        finalRegex = '^_?[a-z][a-zA-Z0-9]*$'
+        doNotApplyToFileNames = '*Spec.groovy,*Specification.groovy'
+    }
 
     // rulesets/security.xml
     FileCreateTempFile
     InsecureRandom
-    JavaIoPackageAccess
     NonFinalPublicField
     NonFinalSubclassOfSensitiveInterface
     ObjectFinalize
@@ -338,7 +329,6 @@ ruleset {
     EnumCustomSerializationIgnored
     SerialPersistentFields
     SerialVersionUID
-    SerializableClassMustDefineSerialVersionUID
 
     // rulesets/size.xml
     ClassSize
