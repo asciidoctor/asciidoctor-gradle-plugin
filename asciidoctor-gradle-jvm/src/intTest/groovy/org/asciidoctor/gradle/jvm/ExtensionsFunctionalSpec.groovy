@@ -281,18 +281,18 @@ asciidoctor {
 
         getJvmConvertGroovyBuildFile("""
             ${configureGlobally ? versionConfig : ''}
-            
+
             asciidoctor {
                 inProcess ${processMode}
                 sourceDir 'src/docs/asciidoc'
                 sources {
                     include '${ASCIIDOC_INLINE_EXTENSIONS_FILE}'
                 }
-            
+
             ${configureGlobally ? '' : versionConfig}
-            
+
             }
-            
+
             ${extraContent}
         """
         )

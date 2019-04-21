@@ -136,7 +136,11 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
      * @return Suggested working directory.
      */
     File getToolingWorkDir() {
-        versionsDifferFromGlobal() ? new File(npm.homeDirectory.parentFile, "${project.name}-${task.name}") : npm.homeDirectory
+        if (versionsDifferFromGlobal()) {
+            new File(npm.homeDirectory.parentFile, "${project.name}-${task.name}")
+        } else {
+            npm.homeDirectory
+        }
     }
 
     /** Creates a new modules block.
@@ -198,7 +202,6 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
 
     @SuppressWarnings('FactoryMethodName')
     private SelfResolvingDependency createDependency(final String name, final String version, final String scope) {
-
         Map<String, Object> description = [
             name          : name,
             tag           : version,
@@ -214,7 +217,7 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
     }
 
     private PackageDescriptor packageDescriptorFor(final AsciidoctorModuleDefinition module) {
-        ((AsciidoctorNodeJSModules.Module)module).package
+        ((AsciidoctorNodeJSModules.Module) module).package
     }
 
     private AsciidoctorJSExtension getExtFromProject() {

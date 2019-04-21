@@ -476,7 +476,8 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      *
      * If the user specifies any of these attributes, then those attributes will not be utilised.
      *
-     * The default implementation will add {@code includedir}, {@code revnumber}, {@code gradle-project-group}, {@code gradle-project-name}
+     * The default implementation will add {@code includedir}, {@code revnumber}, {@code gradle-project-group},
+     *   {@code gradle-project-name}
      *
      * @param workingSourceDir Directory where source files are located.
      *
@@ -547,7 +548,9 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         CopySpec rcs = resourceCopySpec
         logger.info "Copy resources for '${backendName}' to ${outputDir}"
 
-        FileTree ps = this.intermediateArtifactPattern ? project.fileTree(sourceDir).matching(this.intermediateArtifactPattern) : null
+        FileTree ps = this.intermediateArtifactPattern ?
+            project.fileTree(sourceDir).matching(this.intermediateArtifactPattern) :
+            null
         project.copy(new Action<CopySpec>() {
             @Override
             void execute(CopySpec copySpec) {
@@ -595,7 +598,11 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         Path outputRoot = outputDir.toPath().root
 
         if (sourceRoot != baseRoot || outputRoot != baseRoot) {
-            throw new AsciidoctorExecutionException("sourceDir, outputDir and baseDir needs to have the same root filesystem for ${engineName} to function correctly. This is typically caused on Windows where everything is not on the same drive letter.")
+            throw new AsciidoctorExecutionException(
+                "sourceDir, outputDir and baseDir needs to have the same root filesystem for ${engineName} to " +
+                    'function correctly. ' +
+                    'This is typically caused on Windows where everything is not on the same drive letter.'
+            )
         }
     }
 

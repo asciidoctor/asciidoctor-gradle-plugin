@@ -36,13 +36,13 @@ class AsciidoctorjsVersionGenerator {
         String version
         String docbookVersion
 
+        static Versions of(final String v, final String d) {
+            new Versions(version: v, docbookVersion: d)
+        }
+
         @Override
         String toString() {
             "Asciidoctorjs: ${version}, docbook: ${docbookVersion}"
-        }
-
-        static Versions of(final String v, final String d) {
-            new Versions(version: v, docbookVersion: d)
         }
     }
 

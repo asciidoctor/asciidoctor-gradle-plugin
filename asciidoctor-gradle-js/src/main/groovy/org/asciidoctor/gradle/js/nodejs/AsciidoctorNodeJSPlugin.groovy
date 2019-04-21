@@ -42,7 +42,11 @@ class AsciidoctorNodeJSPlugin implements Plugin<Project> {
                 }
             }
 
-            TaskProvider.registerTask(project,'asciidoctor', AsciidoctorTask).configure((Action)asciidoctorDefaults)
+            TaskProvider.registerTask(
+                project,
+                'asciidoctor',
+                AsciidoctorTask
+            ).configure((Action) asciidoctorDefaults)
         }
     }
 }

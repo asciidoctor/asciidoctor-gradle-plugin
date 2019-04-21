@@ -19,6 +19,8 @@ import groovy.transform.CompileStatic
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.Sortable
 
+import static org.asciidoctor.gradle.testfixtures.AsciidoctorjTestVersions.SERIES_20
+
 /** A test fixture generator class for AsciidoctorJ version & process mode.
  *
  * @since 2.0
@@ -49,11 +51,11 @@ class AsciidoctorjVersionProcessModeGenerator {
 
     static List<VersionProcess> get() {
         if (System.getenv('APPVEYOR') || System.getenv('TRAVIS')) {
-            [AsciidoctorjTestVersions.SERIES_20].collect {
+            [SERIES_20].collect {
                 VersionProcess.of(it, JAVA_EXEC)
             }.toUnique()
         } else {
-            [AsciidoctorjTestVersions.SERIES_20].collectMany { it ->
+            [SERIES_20].collectMany { it ->
                 [
                     VersionProcess.of(it, JAVA_EXEC),
                     VersionProcess.of(it, IN_PROCESS),

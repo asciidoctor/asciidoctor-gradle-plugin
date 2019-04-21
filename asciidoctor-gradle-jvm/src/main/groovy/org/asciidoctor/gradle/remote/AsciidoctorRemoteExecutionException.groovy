@@ -13,39 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.js.nodejs.internal
+package org.asciidoctor.gradle.remote
 
 import groovy.transform.CompileStatic
 
-/** Describes a NPM package without a version
+/** Indicates that something has gone wrong runnign AsciidoctorJ
+ *  in a worker or external JVM.
  *
- * @author Schalkw W. Cronjé
- * @since 3.0.0
+ * @author Schalk W. Cronjé
+ *
+ * @since 2.0.0
  */
 @CompileStatic
-class PackageDescriptor {
-    final String name
-    final String scope
-
-    static PackageDescriptor of(final String name) {
-        of(null, name)
+class AsciidoctorRemoteExecutionException extends Exception {
+    AsciidoctorRemoteExecutionException(String var1, Throwable var2) {
+        super(var1, var2)
     }
 
-    static PackageDescriptor of(final String scope, final String name) {
-        new PackageDescriptor(scope, name)
-    }
-
-    @Override
-    String toString() {
-        if (scope) {
-            "@${scope}/${name}"
-        } else {
-            name
-        }
-    }
-
-    private PackageDescriptor(final String scope, final String name) {
-        this.name = name
-        this.scope = scope
+    AsciidoctorRemoteExecutionException(String var1) {
+        super(var1)
     }
 }

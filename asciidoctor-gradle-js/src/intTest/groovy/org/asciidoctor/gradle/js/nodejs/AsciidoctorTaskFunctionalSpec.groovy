@@ -48,6 +48,7 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
     }
 
     @Unroll
+    @SuppressWarnings('LineLength')
     void 'Built-in HTML backend + added DOCBOOK backend (asciidoctor.js=#versions.version, docbook=#versions.docbookVersion)'() {
         given:
         getBuildFile("""
@@ -86,7 +87,6 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
 
     File getBuildFile(String extraContent) {
         getJsConvertGroovyBuildFile("""
-
 
 ${extraContent}
 """)
