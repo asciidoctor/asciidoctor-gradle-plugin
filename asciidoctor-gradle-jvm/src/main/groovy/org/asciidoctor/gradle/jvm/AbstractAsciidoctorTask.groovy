@@ -19,7 +19,6 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AbstractAsciidoctorBaseTask
 import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
-import org.asciidoctor.gradle.base.AsciidoctorExecutionException
 import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.base.internal.Workspace
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
@@ -29,26 +28,21 @@ import org.asciidoctor.gradle.internal.JavaExecUtils
 import org.asciidoctor.gradle.remote.AsciidoctorJExecuter
 import org.asciidoctor.gradle.remote.AsciidoctorJavaExec
 import org.gradle.api.Action
-import org.gradle.api.GradleException
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.DependencyResolveDetails
-import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileCollection
-import org.gradle.api.file.FileTree
 import org.gradle.api.provider.Provider
-@java.lang.SuppressWarnings('NoWildcardImports')
-import org.gradle.api.tasks.*
-import org.gradle.api.tasks.util.PatternSet
+import org.gradle.api.tasks.Classpath
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.TaskAction
 import org.gradle.process.JavaExecSpec
 import org.gradle.process.JavaForkOptions
 import org.gradle.util.GradleVersion
 import org.gradle.workers.WorkerConfiguration
 import org.gradle.workers.WorkerExecutor
-import org.ysb33r.grolifant.api.FileUtils
 import org.ysb33r.grolifant.api.StringUtils
-
-import java.nio.file.Path
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClosure
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.getClassLocation
@@ -296,9 +290,9 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         this.worker = we
         this.asciidoctorj = extensions.create(AsciidoctorJExtension.NAME, AsciidoctorJExtension, this)
 
-        addInputProperty 'required-ruby-modules', { asciidoctorj.requires }
+        addInputProperty 'required-ruby-modules', { AsciidoctorJExtension aj -> aj.requires }.curry(this.asciidoctorj)
         addInputProperty 'gemPath', { asciidoctorj.asGemPath() }
-        addInputProperty 'trackBaseDir', { AbstractAsciidoctorTask t -> t.getBaseDir().absolutePath }.curry(this)
+        addInputProperty 'trackBaseDir', { AbstractAsciidoctorTask t -> t.baseDir.absolutePath }.curry(this)
 
         inputs.files { asciidoctorj.gemPaths }
         inputs.files { filesFromCopySpec(resourceCopySpec) }
@@ -325,18 +319,18 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
      * @param backendName Name of backend that will be run.
      * @param workingSourceDir Source directory that will used for work. This can be
      *   the original source directory or an intermediate.
-     * @param sourceFiles THe actual top-level source files that will be used as entry points
+     * @param sourceFiles The actual top-level source files that will be used as entry points
      *   for generating documentation.
      * @return Executor configuration
      */
-    @SuppressWarnings('Instanceof')
+    @SuppressWarnings('UnnecessaryGetter')
     protected ExecutorConfiguration getExecutorConfigurationFor(
         final String backendName,
         final File workingSourceDir,
         final Set<File> sourceFiles
     ) {
 
-        java.util.Optional<List<String>> copyResources = getCopyResourcesForBackends()
+        Optional<List<String>> copyResources = getCopyResourcesForBackends()
         new ExecutorConfiguration(
             sourceDir: workingSourceDir,
             sourceTree: sourceFiles,
@@ -496,10 +490,9 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
     }
 
     private void copyResourcesByBackend(Iterable<ExecutorConfiguration> executorConfigurations) {
-        CopySpec rcs = resourceCopySpec
         for (ExecutorConfiguration ec : executorConfigurations) {
             if (ec.copyResources) {
-                copyResourcesByBackend(ec.backendName,ec.sourceDir,ec.outputDir)
+                copyResourcesByBackend(ec.backendName, ec.sourceDir, ec.outputDir)
             }
         }
     }

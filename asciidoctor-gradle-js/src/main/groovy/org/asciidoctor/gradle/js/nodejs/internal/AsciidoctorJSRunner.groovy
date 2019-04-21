@@ -30,6 +30,22 @@ import org.ysb33r.gradle.nodejs.utils.NodeJSExecutor
 @CompileStatic
 class AsciidoctorJSRunner {
 
+    private static final String ATTR = '-a'
+    private static final String REQUIRE = '-r'
+    private static final String DOCTYPE = '-d'
+    private static final String BACKEND = '-b'
+    private static final String SAFEMODE = '-S'
+    private static final String BASEDIR = '-B'
+
+    private final List<String> arguments
+    private final Project project
+    private final File nodejs
+    private final File asciidoctorjs
+    private final File destinationDir
+    private final File nodeWorkingDir
+    private final boolean logDocuments
+
+    @SuppressWarnings('ParameterCount')
     AsciidoctorJSRunner(
         File nodejs,
         Project project,
@@ -51,21 +67,21 @@ class AsciidoctorJSRunner {
         this.nodeWorkingDir = asciidoctorjs.workingDir
 
         this.arguments = [
-            '-b', backend,
-            '-S', safeMode.toString().toLowerCase(Locale.US),
-            '-B', baseDir.absolutePath
+            BACKEND, backend,
+            SAFEMODE, safeMode.toString().toLowerCase(Locale.US),
+            BASEDIR, baseDir.absolutePath
         ]
 
         if (doctype.present) {
-            arguments.addAll(['-d', doctype.get()])
+            arguments.addAll([DOCTYPE, doctype.get()])
         }
 
         arguments.addAll(attributes.collectMany { String key, String value ->
-            !value ? ['-a', key] : ['-a', "${key}=${value}".toString()]
+            !value ? [ATTR, key] : [ATTR, "${key}=${value}".toString()]
         })
 
         arguments.addAll(requires.collectMany {
-            ['-r', it]
+            [REQUIRE, it]
         })
     }
 
@@ -84,7 +100,7 @@ class AsciidoctorJSRunner {
                 args(Transform.toList(sources) {
                     it.absolutePath
                 })
-                setEnvironment(NodeJSExecutor.defaultEnvironment)
+                environment = NodeJSExecutor.defaultEnvironment
                 workingDir = nodeWorkingDir
             }
         }
@@ -93,19 +109,10 @@ class AsciidoctorJSRunner {
             project.logger.info("Converting ${sources*.name.join(', ')}")
         }
 
-        project.exec(configurator)
+        project.exec((Closure)configurator)
     }
 
-    private final List<String> arguments
-    private final Project project
-    private final File nodejs
-    private final File asciidoctorjs
-    private final File destinationDir
-    private final File nodeWorkingDir
-    private final boolean logDocuments
-    private static final String QUOTE = "'"
-
-
+    @SuppressWarnings('ClassName')
     static class FileLocations {
         File executable
         File workingDir

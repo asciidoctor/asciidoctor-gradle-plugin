@@ -17,7 +17,6 @@ package org.asciidoctor.gradle.js.nodejs
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.OutputOptions
-import org.asciidoctor.gradle.js.nodejs.AbstractAsciidoctorNodeJSTask
 import org.gradle.api.Action
 import org.gradle.workers.WorkerExecutor
 import org.ysb33r.grolifant.api.FileUtils

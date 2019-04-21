@@ -17,10 +17,12 @@ package org.asciidoctor.gradle.js.base
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AbstractImplementationEngineExtension
+import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
 
+import static org.ysb33r.grolifant.api.ClosureUtils.configureItem
 import static org.ysb33r.grolifant.api.StringUtils.stringize
 
 /**
@@ -35,7 +37,7 @@ abstract class AbstractAsciidoctorJSExtension extends AbstractImplementationEngi
     public final static String DEFAULT_DOCBOOK_VERSION = '2.0.0'
 
     private Object version = DEFAULT_ASCIIDOCTORJS_VERSION
-    private Optional<Object> docbookVersion
+    private final AsciidoctorJSModules modules
 
     /** Version of AsciidoctorJS that should be used.
      *
@@ -56,38 +58,32 @@ abstract class AbstractAsciidoctorJSExtension extends AbstractImplementationEngi
         this.version = v
     }
 
-    /** Version of the Docbook converter that should be used.
+    /** Additional AsciidoctorJ modules to be configured.
      *
-     * @return Version of extension DSL or {@code null} if extensions will not be used.
+     * @return Module definition object.
      */
-    String getDocbookVersion() {
-        if (task) {
-            if (this.docbookVersion != null && this.docbookVersion.present) {
-                stringize(this.docbookVersion.get())
-            } else {
-                extFromProject.docbookVersion
-            }
-        } else {
-            this.docbookVersion?.present ? stringize(this.docbookVersion.get()) : null
-        }
+    AsciidoctorJSModules getModules() {
+        this.modules
     }
 
-    /** Set a new Docbook converter version to use.
+    /** Configure modules via a closure.
      *
-     * Implies {@link #useDocbook}, but sets a custom version rather than a default.
-     *
-     * @param v Groovy DSL version.
+     * @param cfg Configurating closure
      */
-    void setDocbookVersion(Object v) {
-        this.docbookVersion = Optional.of(v)
+    @SuppressWarnings('ConfusingMethodName')
+    void modules(@DelegatesTo(AsciidoctorJSModules) Closure cfg) {
+        configureItem(this.modules, cfg)
     }
 
-    /** Enables Docbook conversion with whichever docbook version is the default.
+    /** Configure modules via an {@code Action}.
      *
+     * @param cfg Configurating {@code Action}
      */
-    void useDocbook() {
-        setDocbookVersion(DEFAULT_DOCBOOK_VERSION)
+    @SuppressWarnings('ConfusingMethodName')
+    void modules(Action<AsciidoctorJSModules> cfg) {
+        cfg.execute(this.modules)
     }
+
 
     /** A configuration of packages related to asciidoctor.js
      *
@@ -101,6 +97,7 @@ abstract class AbstractAsciidoctorJSExtension extends AbstractImplementationEngi
      */
     protected AbstractAsciidoctorJSExtension(Project project) {
         super(project)
+        this.modules = createModulesConfiguration()
     }
 
     /** Attach extension to a task.
@@ -109,9 +106,33 @@ abstract class AbstractAsciidoctorJSExtension extends AbstractImplementationEngi
      */
     protected AbstractAsciidoctorJSExtension(Task task, final String name) {
         super(task, name)
+        this.modules = createModulesConfiguration()
     }
+
+    /** Get the Docbook version after resolving all of the relevant extensions.
+     *
+     * @return Docbook version to use. Can be {@code null} to indicate that Docbook
+     * is not required.
+     */
+    protected String getFinalDocbookVersion() {
+        if (task) {
+            this.modules.docbook.version ?: extFromProject.modules.docbook.version
+        } else {
+            extFromProject.modules.docbook.version
+        }
+    }
+
+    /** Creates a new modules block.
+     *
+     * @return Modules block that can be attached to this extension.
+     */
+    @SuppressWarnings('FactoryMethodName')
+    abstract protected AsciidoctorJSModules createModulesConfiguration()
 
     private AbstractAsciidoctorJSExtension getExtFromProject() {
         task ? (AbstractAsciidoctorJSExtension) projectExtension : this
     }
+
+
+
 }
