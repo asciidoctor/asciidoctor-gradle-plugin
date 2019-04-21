@@ -366,33 +366,6 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
         configuration
     }
 
-    /**
-     * @deprecated Use{@link #getDocExtensions}
-     */
-    @Deprecated
-    List<Object> getExtensions() {
-        warnExtensionsDeprecated('getExtensions', 'getDocExtensions')
-        docExtensions
-    }
-
-    /**
-     * @deprecated Use{@link #asciidoctorExtensions}
-     */
-    @Deprecated
-    void extensions(Object... exts) {
-        warnExtensionsDeprecated('extensions', 'docExtensions')
-        docExtensions(exts)
-    }
-
-    /**
-     * @deprecated Use{@link #setDocExtensions}
-     */
-    @Deprecated
-    void setExtensions(Iterable<Object> newExtensions) {
-        warnExtensionsDeprecated('setExtensions', 'setDocExtensions')
-        docExtensions = newExtensions
-    }
-
     /** Return extensions to be registered.
      *
      * These extensionRegistry are not registered at this call. That action is left

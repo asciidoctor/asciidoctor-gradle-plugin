@@ -43,8 +43,8 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         getGroovyGradleRunner(DEFAULT_ARGS).build()
 
         then:
-        new File(testProjectDir.root, "build/docs/asciidoc/sample.html").exists()
-        new File(testProjectDir.root, "build/docs/asciidoc/subdir/sample2.html").exists()
+        new File(testProjectDir.root, 'build/docs/asciidoc/sample.html').exists()
+        new File(testProjectDir.root, 'build/docs/asciidoc/subdir/sample2.html').exists()
     }
 
     @Unroll
