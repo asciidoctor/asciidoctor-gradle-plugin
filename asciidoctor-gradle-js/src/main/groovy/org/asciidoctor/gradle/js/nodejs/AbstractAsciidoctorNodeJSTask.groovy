@@ -21,6 +21,7 @@ import org.asciidoctor.gradle.js.base.AbstractAsciidoctorTask
 import org.asciidoctor.gradle.js.nodejs.internal.AsciidoctorJSRunner
 import org.gradle.api.file.CopySpec
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.gradle.workers.WorkerExecutor
@@ -41,6 +42,40 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
     private final AsciidoctorJSExtension asciidoctorjs
     private final NodeJSExtension nodejs
     private final NpmExtension npm
+
+    /** Returns all of the Asciidoctor options.
+     *
+     * This is equivalent of using {@code asciidoctorjs.getAttributes}
+     *
+     */
+    @Input
+    Map getAttributes() {
+        asciidoctorjs.attributes
+    }
+
+    /** Apply a new set of Asciidoctor attributes, clearing any attributes previously set.
+     *
+     * If set here all global Asciidoctor options are ignored within this task.
+     *
+     * This is equivalent of using {@code asciidoctorjs.setAttributes}.
+     *
+     * @param m Map with new options
+     */
+    void setAttributes(Map m) {
+        asciidoctorjs.attributes = m
+    }
+
+    /** Add additional asciidoctor attributes.
+     *
+     * If set here these options will be used in addition to any global Asciidoctor attributes.
+     *
+     * This is equivalent of using {@code asciidoctorjs.attributes}.
+     *
+     * @param m Map with new options
+     */
+    void attributes(Map m) {
+        asciidoctorjs.attributes(m)
+    }
 
     @TaskAction
     void processAsciidocSources() {
