@@ -9,12 +9,18 @@ import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileTree
-import org.gradle.api.tasks.*
+import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Nested
+import org.gradle.api.tasks.Console
+import org.gradle.api.tasks.OutputDirectories
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.util.PatternSet
 import org.ysb33r.grolifant.api.FileUtils
 
 import java.nio.file.Path
-import java.util.Optional
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.*
 import static org.gradle.api.tasks.PathSensitivity.RELATIVE
@@ -24,6 +30,7 @@ import static org.gradle.api.tasks.PathSensitivity.RELATIVE
  * @since 3.0
  */
 @CompileStatic
+@SuppressWarnings(['MethodCount'])
 abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
 
     private Object srcDir
@@ -398,7 +405,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      */
     @Internal
     protected Map<String, List<File>> getSourceFileGroupedByRelativePath() {
-        File root = getSourceDir()
+        File root = sourceDir
         sourceFileTree.files.groupBy { File f ->
             getRelativePath(f.parentFile, root)
         }
@@ -505,11 +512,11 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      */
     protected Workspace prepareWorkspace() {
         if (this.withIntermediateWorkDir) {
-            File tmpDir = getIntermediateWorkDir()
+            File tmpDir = intermediateWorkDir
             prepareTempWorkspace(tmpDir)
             Workspace.builder().workingSourceDir(tmpDir).sourceTree(getSourceFileTreeFrom(tmpDir)).build()
         } else {
-            Workspace.builder().workingSourceDir(getSourceDir()).sourceTree(getSourceFileTree()).build()
+            Workspace.builder().workingSourceDir(sourceDir).sourceTree(sourceFileTree).build()
         }
     }
 

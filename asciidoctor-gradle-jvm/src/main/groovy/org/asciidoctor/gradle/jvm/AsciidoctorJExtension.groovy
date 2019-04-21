@@ -35,7 +35,6 @@ import org.ysb33r.grolifant.api.OperatingSystem
 
 import java.util.regex.Pattern
 
-import static org.asciidoctor.gradle.base.internal.DeprecatedFeatures.addDeprecationMessage
 import static org.ysb33r.grolifant.api.ClosureUtils.configureItem
 import static org.ysb33r.grolifant.api.StringUtils.stringize
 
@@ -367,39 +366,6 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
         configuration
     }
 
-    /**
-
-     * @deprecated Use{@link #getDocExtensions}
-
-     */
-    @Deprecated
-    List<Object> getExtensions() {
-        warnExtensionsDeprecated('getExtensions', 'getDocExtensions')
-        docExtensions
-    }
-
-    /**
-
-     * @deprecated Use{@link #asciidoctorExtensions}
-
-     */
-    @Deprecated
-    void extensions(Object... exts) {
-        warnExtensionsDeprecated('extensions', 'docExtensions')
-        docExtensions(exts)
-    }
-
-    /**
-
-     * @deprecated Use{@link #setDocExtensions}
-
-     */
-    @Deprecated
-    void setExtensions(Iterable<Object> newExtensions) {
-        warnExtensionsDeprecated('setExtensions', 'setDocExtensions')
-        docExtensions = newExtensions
-    }
-
     /** Return extensions to be registered.
      *
      * These extensionRegistry are not registered at this call. That action is left
@@ -593,7 +559,7 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
         }
     }
 
-    /** Adds docExtensions to the existing container.
+    /** Adds extensions to the existing container.
      *
      * Also sets the Groovy DSL version if required.
      *
@@ -604,12 +570,12 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
         asciidoctorExtensions.addAll(dehydrateExtensions(newExtensions))
     }
 
-    /** Prepare docExtensions for serialisation.
+    /** Prepare extensions for serialisation.
      *
      * This takes care of dehydrating any closures.
      *
-     * @param exts List of docExtensions
-     * @return List of docExtensions suitable for serialization.
+     * @param exts List of extensions
+     * @return List of extensions suitable for serialization.
      *
      */
     private List<Object> dehydrateExtensions(final List<Object> exts) {
@@ -682,19 +648,11 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
 
     @SuppressWarnings('LineLength')
     private void warnVersionMethodDeprecated(final String oldMethod, final String newMethod) {
-        addDeprecationMessage(
-            project,
-            "Extension: ${NAME}",
-            "${NAME}.${oldMethod} is deprecated. Use ${NAME}.${newMethod} instead."
-        )
+        project.logger.warn("${NAME}.${oldMethod} is deprecated and will be removed in 3.0. Use ${NAME}.${newMethod} instead.")
     }
 
     @SuppressWarnings('LineLength')
     private void warnExtensionsDeprecated(String oldMethod, String newMethod) {
-        addDeprecationMessage(
-            project,
-            "Extension: ${NAME}",
-            "${oldMethod} is deprecated. Use ${newMethod} instead."
-        )
+        project.logger.warn "${oldMethod} is deprecated and will be removed in 3.0 of this plugin suite. Use ${newMethod} instead"
     }
 }
