@@ -15,8 +15,8 @@
  */
 package org.asciidoctor.gradle.js.nodejs
 
-import org.asciidoctor.gradle.js.nodejs.AsciidoctorTask
 import org.gradle.api.Project
+import org.gradle.api.file.FileCollection
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
@@ -27,19 +27,7 @@ import spock.lang.Specification
  */
 class AsciidoctorTaskSpec extends Specification {
     private static final String ASCIIDOCTOR = 'asciidoctor'
-//    private static final String ASCIIDOC_RESOURCES_DIR = 'asciidoctor-gradle-jvm/src/test/resources/src/asciidoc'
-//    private static final String ASCIIDOC_BUILD_DIR = 'build/asciidoc'
-//    private static final String ASCIIDOC_SAMPLE_FILE = 'sample.asciidoc'
-//    private static final String ASCIIDOC_SAMPLE2_FILE = 'subdir/sample2.ad'
-
     Project project = ProjectBuilder.builder().withName('test').build()
-
-//    File testRootDir
-//    File srcDir
-//    File outDir
-//    ByteArrayOutputStream systemOut
-//
-//    PrintStream originSystemOut
 
     def setup() {
 
@@ -47,17 +35,7 @@ class AsciidoctorTaskSpec extends Specification {
             apply plugin: 'org.asciidoctor.js.base'
         }
 
-//        testRootDir = new File(System.getProperty('ROOT_PROJECT_DIR') ?: '.')
-//        srcDir = new File(testRootDir, ASCIIDOC_RESOURCES_DIR).absoluteFile
-//        outDir = new File(project.projectDir, ASCIIDOC_BUILD_DIR)
-//        systemOut = new ByteArrayOutputStream()
-//        originSystemOut = System.out
-//        System.out = new PrintStream(systemOut)
     }
-
-//    void cleanup() {
-//        System.out = originSystemOut
-//    }
 
     void 'Can log documents when processed'() {
         when:
@@ -86,72 +64,43 @@ class AsciidoctorTaskSpec extends Specification {
             task.attributes['idseparator'] == '-'
         }
     }
-//
-//    void "Allow setting of attributes via assignment"() {
-//        when:
-//        AsciidoctorTask task = asciidoctorTask {
-//            attributes = ['source-highlighter': 'foo', idprefix: '$']
-//            attributes = ['source-highlighter': 'coderay', idseparator: '-']
-//        }
-//
-//        then:
-//        !systemOut.toString().contains('deprecated')
-//        task.attributes['source-highlighter'] == 'coderay'
-//        task.attributes['idseparator'] == '-'
-//        !task.attributes.containsKey('idprefix')
-//    }
 
-//    void "Allow setting of backends via method"() {
-//        given:
-//        Set<String> testBackends
-//
-//        when:
-//        asciidoctorTask {
-//            outputOptions {
-//                backends 'foo', 'bar'
-//                backends 'pdf'
-//            }
-//
-//            outputOptions {
-//                testBackends = backends
-//            }
-//        }
-//
-//        then:
-//        !systemOut.toString().contains('deprecated')
-//        verifyAll {
-//            testBackends.contains('pdf')
-//            testBackends.contains('foo')
-//            testBackends.contains('bar')
-//        }
-//    }
-//
-//    void "Allow setting of backends via assignment"() {
-//        given:
-//        Set<String> testBackends
-//
-//        when:
-//        asciidoctorTask {
-//            outputOptions {
-//                backends = ['pdf']
-//                backends = ['foo', 'bar']
-//            }
-//
-//            outputOptions {
-//                testBackends = backends
-//            }
-//        }
-//
-//        then:
-//        !systemOut.toString().contains('deprecated')
-//
-//        verifyAll {
-//            !testBackends.contains('pdf')
-//            testBackends.contains('foo')
-//            testBackends.contains('bar')
-//        }
-//    }
+    void "Allow setting of attributes via assignment"() {
+        when:
+        AsciidoctorTask task = asciidoctorTask {
+            attributes = ['source-highlighter': 'foo', idprefix: '$']
+            attributes = ['source-highlighter': 'coderay', idseparator: '-']
+        }
 
+        then:
+        task.attributes['source-highlighter'] == 'coderay'
+        task.attributes['idseparator'] == '-'
+        !task.attributes.containsKey('idprefix')
+    }
+
+    void "Allow setting of backends via method"() {
+        given:
+        Set<String> testBackends
+
+        when:
+        asciidoctorTask {
+            outputOptions {
+                backends 'foo', 'bar'
+                backends 'pdf'
+            }
+
+            outputOptions {
+                testBackends = backends
+            }
+        }
+
+        then:
+        verifyAll {
+            testBackends.contains('pdf')
+            testBackends.contains('foo')
+            testBackends.contains('bar')
+        }
+    }
 
     void "Allow setting of sourceDir via method"() {
         when:
@@ -160,8 +109,6 @@ class AsciidoctorTaskSpec extends Specification {
         }
 
         then:
-        !systemOut.toString().contains('deprecated')
-        task.sourceDir.absolutePath == project.projectDir.absolutePath
         task.sourceDir.absolutePath == project.projectDir.absolutePath
     }
 
@@ -174,7 +121,6 @@ class AsciidoctorTaskSpec extends Specification {
 
         then:
         task.sourceDir.absolutePath == project.projectDir.absolutePath
-        task.sourceDir.absolutePath == project.projectDir.absolutePath
 
     }
 
@@ -186,39 +132,43 @@ class AsciidoctorTaskSpec extends Specification {
 
         then:
         task.sourceDir.absolutePath == project.projectDir.absolutePath
-        task.sourceDir.absolutePath == project.projectDir.absolutePath
-        !systemOut.toString().contains('deprecated')
     }
 
-//    void 'Can configure secondary sources'() {
-//        final String secSrc = 'secondary.txt'
-//        when: 'Secondary sources are specified'
-//        AsciidoctorTask task = asciidoctorTask {
-//            sourceDir srcDir
-//            secondarySources {
-//                include secSrc
-//            }
-//        }
-//        FileCollection fileCollection = task.secondarySourceFileTree
-//
-//        then: 'Default patterns are ignored'
-//        fileCollection.contains(new File(srcDir, secSrc).canonicalFile)
-//    }
-//
-//
-//    void 'When attribute providers are registered on the task, then global ones will not be used.'() {
-//        when:
-//        AsciidoctorTask task = asciidoctorTask {
-//            asciidoctorj {
-//                attributeProvider {
-//                    [:]
-//                }
-//            }
-//        }
-//
-//        then:
-//        task.attributeProviders != project.extensions.getByType(AsciidoctorJExtension).attributeProviders
-//    }
+    void 'Can configure secondary sources'() {
+        given:
+        final File srcDir = project.file('src/docs/asciidoc')
+        final String secSrc = 'secondary.txt'
+
+        srcDir.mkdirs()
+        new File(srcDir,secSrc).text = 'foo'
+
+        when: 'Secondary sources are specified'
+        AsciidoctorTask task = asciidoctorTask {
+            sourceDir srcDir
+            secondarySources {
+                include secSrc
+            }
+        }
+        FileCollection fileCollection = task.secondarySourceFileTree
+
+        then: 'Default patterns are ignored'
+        fileCollection.contains(new File(srcDir, secSrc).canonicalFile)
+    }
+
+
+    void 'When attribute providers are registered on the task, then global ones will not be used.'() {
+        when:
+        AsciidoctorTask task = asciidoctorTask {
+            asciidoctorjs {
+                attributeProvider {
+                    [:]
+                }
+            }
+        }
+
+        then:
+        task.attributeProviders != project.extensions.getByType(AsciidoctorJSExtension).attributeProviders
+    }
 
     AsciidoctorTask asciidoctorTask(Closure cfg) {
         project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask).configure cfg

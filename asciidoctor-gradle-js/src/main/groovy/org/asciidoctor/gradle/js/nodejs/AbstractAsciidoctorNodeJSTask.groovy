@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle.js.nodejs
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
 import org.asciidoctor.gradle.base.internal.Workspace
 import org.asciidoctor.gradle.js.base.AbstractAsciidoctorTask
 import org.asciidoctor.gradle.js.nodejs.internal.AsciidoctorJSRunner
@@ -75,6 +76,16 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
      */
     void attributes(Map m) {
         asciidoctorjs.attributes(m)
+    }
+
+    /** Shortcut method to access additional providers of attributes.
+     *
+     * @return List of attribute providers.
+     */
+    @Override
+    @Internal
+    List<AsciidoctorAttributeProvider> getAttributeProviders() {
+        asciidoctorjs.attributeProviders
     }
 
     @TaskAction
