@@ -165,30 +165,6 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
         this.version = v
     }
 
-    /** Version of the Groovy Extension DSL that should be used.
-     *
-     * @return Version of extension DSL or {@code null} if extensions will not be used.
-     *
-     * @deprecated Use{@code getModules( ).getGroovyDsl( ).getVersion}.
-     */
-    @Deprecated
-    String getGroovyDslVersion() {
-        warnVersionMethodDeprecated('getGroovyDslVersion', 'getModules().getGroovyDsl().getVersion')
-        finalGroovyDslVersion
-    }
-
-    /** Set a new Groovy DSL version to use
-     *
-     * @param v Groovy DSL version.
-     *
-     * @deprecated Use{@code getModules( ).getGroovyDsl( ).setVersion}.
-     */
-    @Deprecated
-    void setGroovyDslVersion(Object v) {
-        warnVersionMethodDeprecated('setGroovyDslVersion', 'getModules().getGroovyDsl().setVersion')
-        modules.groovyDsl.version = v
-    }
-
     /** The version of JRuby to use.
      *
      * If no version of JRuby is specified the one that is linked to AsciidoctorJ
@@ -221,87 +197,6 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
      */
     void setJrubyVersion(Object v) {
         this.jrubyVersion = Optional.of(v)
-    }
-
-    /** Version of the {@code asciidoctorj-diagram} that should be used.
-     *
-     * @return Version of {@code asciidoctorj-diagram} or {@code null} if not used.
-     *
-     * @deprecated Use{@code getModules( ).getDiagram( ).getVersion}.
-     */
-    @Deprecated
-    String getDiagramVersion() {
-        warnVersionMethodDeprecated('getDiagramVersion', 'getModules().getDiagram().getVersion')
-        finalDiagramVersion
-    }
-
-    /** Set a new {@code asciidoctorj-diagram} version to use.
-     *
-     * Setting this will automatically add {@code} to list of {@code requires}.
-     * Implies {@link #useDiagram}, but sets a custom version.
-     *
-     * @param v {@code asciidoctorj-diagram} version.
-     * @deprecated Use{@code getModules( ).getDiagram( ).setVersion}.
-     */
-    @Deprecated
-    void setDiagramVersion(Object v) {
-        warnVersionMethodDeprecated('setDiagramVersion', 'getModules().getDiagram().setVersion')
-        modules.diagram.version = v
-    }
-
-    /** Enables use of {@code @asciidoctorj-diagram}. Using whatever the
-     * default version for this plugin is.
-     *
-     * @since 3.0
-     */
-    void useDiagram() {
-        setDiagramVersion(DEFAULT_DIAGRAM_VERSION)
-    }
-
-    /** Version of the Asciidoctor EPUB that should be used.
-     *
-     * @return Version of Asciidoctor EPUB or {@code null} if EPUB conversion is not used.
-     * @deprecated Use{@code getModules( ).getEpub( ).getVersion}.
-     */
-    @Deprecated
-    String getEpubVersion() {
-        warnVersionMethodDeprecated('getEpubVersion', 'getModules().getEpub().getVersion')
-        finalEpubVersion
-    }
-
-    /** Set a new asciidoctor EPUB version to use
-     *
-     * @param v Asciidoctor EPUB version.
-     * @deprecated Use{@code getModules( ).getEpub( ).setVersion}.
-     */
-    @Deprecated
-    void setEpubVersion(Object v) {
-        warnVersionMethodDeprecated('setEpubVersion', 'getModules().getEpub().setVersion')
-        modules.epub.version = v
-    }
-
-    /** Version of the Asciidoctor PDF that should be used.
-     *
-     * @return Version of Asciidoctor PDF or {@code null} if PDF conversion is not used.
-
-     * @deprecated Use{@code getModules( ).getPdf( ).getVersion}.
-     */
-    @Deprecated
-    String getPdfVersion() {
-        warnVersionMethodDeprecated('getPdfVersion', 'getModules().getPdf().getVersion')
-        finalPdfVersion
-    }
-
-    /** Set a new asciidoctor PDF version to use
-     *
-     * @param v Asciidoctor PDF version.
-     *
-     * @deprecated Use{@code getModules( ).getPdf( ).setVersion}.
-     */
-    @Deprecated
-    void setPdfVersion(Object v) {
-        warnVersionMethodDeprecated('setPdfVersion', 'getModules().getPdf().setVersion')
-        modules.pdf.version = v
     }
 
     /** Returns all of the Asciidoctor options.
