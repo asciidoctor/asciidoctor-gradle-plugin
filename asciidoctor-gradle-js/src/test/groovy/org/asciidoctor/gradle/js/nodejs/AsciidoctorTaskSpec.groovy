@@ -68,49 +68,24 @@ class AsciidoctorTaskSpec extends Specification {
         then:
         asciidoctor.logDocuments == true
     }
-//    void "Allow setting of options via method"() {
-//        when:
-//        AsciidoctorTask task = asciidoctorTask {
-//            options eruby: 'erb'
-//            options eruby: 'erubis'
-//            options doctype: 'book', toc: 'right'
-//        }
-//
-//        then:
-//        !systemOut.toString().contains('deprecated')
-//        task.options['eruby'] == 'erubis'
-//        task.options['doctype'] == 'book'
-//        task.options['toc'] == 'right'
-//    }
-//
-//    void "Allow setting of options via assignment"() {
-//        when:
-//        AsciidoctorTask task = asciidoctorTask {
-//            options = [eruby: 'erb', toc: 'right']
-//            options = [eruby: 'erubis', doctype: 'book']
-//        }
-//
-//        then:
-//        !systemOut.toString().contains('deprecated')
-//        task.options['eruby'] == 'erubis'
-//        task.options['doctype'] == 'book'
-//        !task.options.containsKey('toc')
-//    }
-//
-//    void "Allow setting of attributes via method (Map variant)"() {
-//        when:
-//        AsciidoctorTask task = asciidoctorTask {
-//            attributes 'source-highlighter': 'foo'
-//            attributes 'source-highlighter': 'coderay'
-//            attributes idprefix: '$', idseparator: '-'
-//        }
-//
-//        then:
-//        !systemOut.toString().contains('deprecated')
-//        task.attributes['source-highlighter'] == 'coderay'
-//        task.attributes['idprefix'] == '$'
-//        task.attributes['idseparator'] == '-'
-//    }
+
+    void "Allow setting of attributes via method (Map variant)"() {
+        when:
+        AsciidoctorTask task = asciidoctorTask {
+            asciidoctorjs {
+                attributes 'source-highlighter': 'foo'
+                attributes 'source-highlighter': 'coderay'
+                attributes idprefix: '$', idseparator: '-'
+            }
+        }
+
+        then:
+        verifyAll {
+            task.attributes['source-highlighter'] == 'coderay'
+            task.attributes['idprefix'] == '$'
+            task.attributes['idseparator'] == '-'
+        }
+    }
 //
 //    void "Allow setting of attributes via assignment"() {
 //        when:
