@@ -20,7 +20,6 @@ import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
-import static org.asciidoctor.gradle.jvm.AsciidoctorJExtension.DEFAULT_PDF_VERSION
 import static org.ysb33r.grolifant.api.TaskProvider.registerTask
 
 /** Provides additional conventions for building PDFs.
@@ -30,8 +29,9 @@ import static org.ysb33r.grolifant.api.TaskProvider.registerTask
  *   <li>Sets a default version for asciidoctor-pdf.
  * </ul>
  *
- * @since 2.0.0
- * @author Schalk W. Cronjé
+* @author Schalk W. Cronjé
+*
+* @since 2.0.0
  */
 @CompileStatic
 class AsciidoctorJPdfPlugin implements Plugin<Project> {
@@ -41,7 +41,7 @@ class AsciidoctorJPdfPlugin implements Plugin<Project> {
             apply plugin: 'org.asciidoctor.jvm.base'
 
             extensions.create(AsciidoctorPdfThemesExtension.NAME, AsciidoctorPdfThemesExtension, project)
-            extensions.getByType(AsciidoctorJExtension).pdfVersion = DEFAULT_PDF_VERSION
+            extensions.getByType(AsciidoctorJExtension).modules.pdf.use()
 
             Action pdfDefaults = new Action<AsciidoctorPdfTask>() {
                 @Override

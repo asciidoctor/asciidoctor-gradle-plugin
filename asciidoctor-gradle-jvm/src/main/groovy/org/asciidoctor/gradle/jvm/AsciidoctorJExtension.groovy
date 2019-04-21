@@ -37,14 +37,16 @@ import org.ysb33r.grolifant.api.OperatingSystem
 
 import java.util.regex.Pattern
 
+import static org.ysb33r.grolifant.api.ClosureUtils.configureItem
 import static org.ysb33r.grolifant.api.StringUtils.stringize
 
 /** Extension for configuring AsciidoctorJ.
  *
  * It can be used as both a project and a task extension.
  *
- * @since 2.0
  * @author Schalk W. Cronjé
+ *
+ * @since 2.0
  */
 @CompileStatic
 @SuppressWarnings('MethodCount')
@@ -80,10 +82,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     public static final boolean GUAVA_REQUIRED_FOR_EXTERNALS = GradleVersion.current() >= GradleVersion.version('4.8')
 
     private Object version
-    private Optional<Object> groovyDslVersion
-    private Optional<Object> pdfVersion
-    private Optional<Object> epubVersion
-    private Optional<Object> diagramVersion
     private Optional<Object> jrubyVersion
 
     private Boolean injectGuavaJar
@@ -96,6 +94,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     private final List<Action<ResolutionStrategy>> resolutionsStrategies = []
     private final List<Object> warningsAsErrors = []
     private final List<AsciidoctorAttributeProvider> attributeProviders = []
+    private final AsciidoctorJModules modules
 
     private boolean onlyTaskOptions = false
     private boolean onlyTaskAttributes = false
@@ -121,7 +120,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
 
         this.safeMode = SafeMode.SAFE
         this.version = DEFAULT_ASCIIDOCTORJ_VERSION
-        this.groovyDslVersion = Optional.empty()
+        this.modules = new AsciidoctorJModules(this)
     }
 
     /** Attach extension to a task.
@@ -130,6 +129,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      */
     AsciidoctorJExtension(Task task) {
         super(task, NAME)
+        this.modules = new AsciidoctorJModules(this)
     }
 
     /** Whether the Guava JAR that ships with the Gradle distribution should be injected into the
@@ -141,7 +141,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      * @return {@code true} if JAR should be injected.
      */
     boolean getInjectInternalGuavaJar() {
-        if(task) {
+        if (task) {
             this.injectGuavaJar == null ? extFromProject.injectInternalGuavaJar : this.injectGuavaJar
         } else {
             this.injectGuavaJar == null ? GUAVA_REQUIRED_FOR_EXTERNALS : this.injectGuavaJar
@@ -179,25 +179,25 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     /** Version of the Groovy Extension DSL that should be used.
      *
      * @return Version of extension DSL or {@code null} if extensions will not be used.
+     *
+     * @deprecated Use{@code getModules( ).getGroovyDsl( ).getVersion}.
      */
+    @Deprecated
     String getGroovyDslVersion() {
-        if (task) {
-            if (this.groovyDslVersion != null && this.groovyDslVersion.present) {
-                stringize(this.groovyDslVersion.get())
-            } else {
-                extFromProject.getGroovyDslVersion()
-            }
-        } else {
-            this.groovyDslVersion?.present ? stringize(this.groovyDslVersion.get()) : null
-        }
+        warnVersionMethodDeprecated('getGroovyDslVersion', 'getModules().getGroovyDsl().getVersion')
+        finalGroovyDslVersion
     }
 
     /** Set a new Groovy DSL version to use
      *
      * @param v Groovy DSL version.
+     *
+     * @deprecated Use{@code getModules( ).getGroovyDsl( ).setVersion}.
      */
+    @Deprecated
     void setGroovyDslVersion(Object v) {
-        this.groovyDslVersion = Optional.of(v)
+        warnVersionMethodDeprecated('setGroovyDslVersion', 'getModules().getGroovyDsl().setVersion')
+        modules.groovyDsl.version = v
     }
 
     /** The version of JRuby to use.
@@ -237,17 +237,13 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     /** Version of the {@code asciidoctorj-diagram} that should be used.
      *
      * @return Version of {@code asciidoctorj-diagram} or {@code null} if not used.
+     *
+     * @deprecated Use{@code getModules( ).getDiagram( ).getVersion}.
      */
+    @Deprecated
     String getDiagramVersion() {
-        if (task) {
-            if (this.diagramVersion != null && this.diagramVersion.present) {
-                stringize(this.diagramVersion.get())
-            } else {
-                extFromProject.getDiagramVersion()
-            }
-        } else {
-            this.diagramVersion?.present ? stringize(this.diagramVersion.get()) : null
-        }
+        warnVersionMethodDeprecated('getDiagramVersion', 'getModules().getDiagram().getVersion')
+        finalDiagramVersion
     }
 
     /** Set a new {@code asciidoctorj-diagram} version to use.
@@ -255,61 +251,58 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      * Setting this will automatically add {@code} to list of {@code requires}.
      *
      * @param v {@code asciidoctorj-diagram} version.
+     * @deprecated Use{@code getModules( ).getDiagram( ).setVersion}.
      */
+    @Deprecated
     void setDiagramVersion(Object v) {
-        this.diagramVersion = Optional.of(v)
-
-        if (v != null) {
-            requires 'asciidoctor-diagram'
-        }
+        warnVersionMethodDeprecated('setDiagramVersion', 'getModules().getDiagram().setVersion')
+        modules.diagram.version = v
     }
 
     /** Version of the Asciidoctor EPUB that should be used.
      *
      * @return Version of Asciidoctor EPUB or {@code null} if EPUB conversion is not used.
+     * @deprecated Use{@code getModules( ).getEpub( ).getVersion}.
      */
+    @Deprecated
     String getEpubVersion() {
-        if (task) {
-            if (this.epubVersion != null && this.epubVersion.present) {
-                stringize(this.epubVersion.get())
-            } else {
-                extFromProject.getEpubVersion()
-            }
-        } else {
-            this.epubVersion?.present ? stringize(this.epubVersion.get()) : null
-        }
+        warnVersionMethodDeprecated('getEpubVersion', 'getModules().getEpub().getVersion')
+        finalEpubVersion
     }
 
     /** Set a new asciidoctor EPUB version to use
      *
      * @param v Asciidoctor EPUB version.
+     * @deprecated Use{@code getModules( ).getEpub( ).setVersion}.
      */
+    @Deprecated
     void setEpubVersion(Object v) {
-        this.epubVersion = Optional.of(v)
+        warnVersionMethodDeprecated('setEpubVersion', 'getModules().getEpub().setVersion')
+        modules.epub.version = v
     }
 
     /** Version of the Asciidoctor PDF that should be used.
      *
      * @return Version of Asciidoctor PDF or {@code null} if PDF conversion is not used.
+
+     * @deprecated Use{@code getModules( ).getPdf( ).getVersion}.
      */
+    @Deprecated
     String getPdfVersion() {
-        if (task) {
-            if (this.pdfVersion != null && this.pdfVersion.present) {
-                stringize(this.pdfVersion.get())
-            } else {
-                extFromProject.getPdfVersion()
-            }
-        } else {
-            this.pdfVersion?.present ? stringize(this.pdfVersion.get()) : null
-        }
+        warnVersionMethodDeprecated('getPdfVersion', 'getModules().getPdf().getVersion')
+        finalPdfVersion
     }
 
     /** Set a new asciidoctor PDF version to use
      *
      * @param v Asciidoctor PDF version.
+     *
+     * @deprecated Use{@code getModules( ).getPdf( ).setVersion}.
      */
+    @Deprecated
     void setPdfVersion(Object v) {
-        this.pdfVersion = Optional.of(v)
+        warnVersionMethodDeprecated('setPdfVersion', 'getModules().getPdf().setVersion')
+        modules.pdf.version = v
     }
 
     /** Returns all of the Asciidoctor options.
@@ -395,7 +388,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      * @return List of providers. Can be empty. Never {@code null}.
      */
     List<AsciidoctorAttributeProvider> getAttributeProviders() {
-        if(task) {
+        if (task) {
             this.attributeProviders.empty ? extFromProject.attributeProviders : this.attributeProviders
         } else {
             this.attributeProviders
@@ -531,10 +524,10 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      */
     @SuppressWarnings('DuplicateStringLiteral')
     Configuration getConfiguration() {
-        final String gDslVer = getGroovyDslVersion()
-        final String pdfVer = getPdfVersion()
-        final String epubVer = getEpubVersion()
-        final String diagramVer = getDiagramVersion()
+        final String gDslVer = finalGroovyDslVersion
+        final String pdfVer = finalPdfVersion
+        final String epubVer = finalEpubVersion
+        final String diagramVer = finalDiagramVersion
         final String jrubyVer = getJrubyVersion() ?: minimumSafeJRubyVersion(getVersion())
         final String jrubyCompleteDep = "${JRUBY_COMPLETE_DEPENDENCY}:${jrubyVer}"
 
@@ -579,37 +572,70 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         configuration
     }
 
-    /** Return extensionRegistry.
+    /**
+     * @deprecated Use{@link #getDocExtensions}
+     */
+    @Deprecated
+    List<Object> getExtensions() {
+        warnExtensionsDeprecated('getExtensions', 'getDocExtensions')
+        docExtensions
+    }
+
+    /**
+     * @deprecated Use{@link #asciidoctorExtensions}
+     */
+    @Deprecated
+    void extensions(Object... exts) {
+        warnExtensionsDeprecated('extensions', 'docExtensions')
+        docExtensions(exts)
+    }
+
+    /**
+     * @deprecated Use{@link #setDocExtensions}
+     */
+    @Deprecated
+    void setExtensions(Iterable<Object> newExtensions) {
+        warnExtensionsDeprecated('setExtensions', 'setDocExtensions')
+        docExtensions = newExtensions
+    }
+
+    /** Return extensions to be registered.
      *
      * These extensionRegistry are not registered at this call. That action is left
      * to the specific task at its execution time.
      *
-     * @return
+     * @return All extensions that should be registered on a conversion.
+     *
+     * @since 2.2.0
      */
-    List<Object> getExtensions() {
+    List<Object> getDocExtensions() {
         if (!task || onlyTaskExtensions) {
             this.asciidoctorExtensions
         } else if (this.asciidoctorExtensions.empty) {
-            extFromProject.extensions
+            extFromProject.docExtensions
         } else {
-            extFromProject.extensions + this.asciidoctorExtensions
+            extFromProject.docExtensions + this.asciidoctorExtensions
         }
     }
 
-    /** Defines extensionRegistry. The given parameters should
+    /** Defines extensions to be registered. The given parameters should
      * either contain Asciidoctor Groovy DSL closures or files
      * with content conforming to the Asciidoctor Groovy DSL.
+     *
+     * @since 2.2.0
      */
-    void extensions(Object... exts) {
+    void docExtensions(Object... exts) {
         addExtensions(exts as List)
     }
 
-    /** Clears the existing extensionRegistry and replace with a new set.
+    /** Clears the existing list of extensions and replace with a new set.
      *
      * If this is declared on a task extension all extention from the global
      * project extension will be ignored.
+     *
+     * @since 2.2.0
      */
-    void setExtensions(Iterable<Object> newExtensions) {
+    void setDocExtensions(Iterable<Object> newExtensions) {
         asciidoctorExtensions.clear()
         addExtensions(newExtensions as List)
         onlyTaskExtensions = true
@@ -712,6 +738,38 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         this.warningsAsErrors.addAll(patterns)
     }
 
+    /** Additional AsciidoctorJ modules to be configured.
+     *
+     * @return Module definition object.
+     *
+     * @since 2.2.0
+     */
+    AsciidoctorJModules getModules() {
+        this.modules
+    }
+
+    /** Configure modules via a closure.
+     *
+     * @param cfg Configurating closure
+     *
+     * @since 2.2.0
+     */
+    @SuppressWarnings('ConfusingMethodName')
+    void modules(@DelegatesTo(AsciidoctorJModules) Closure cfg) {
+        configureItem(this.modules, cfg)
+    }
+
+    /** Configure modules via an {@code Action}.
+     *
+     * @param cfg Configurating {@code Action}
+     *
+     * @since 2.2.0
+     */
+    @SuppressWarnings('ConfusingMethodName')
+    void modules(Action<AsciidoctorJModules> cfg) {
+        cfg.execute(this.modules)
+    }
+
     @SuppressWarnings('FactoryMethodName')
     private Dependency createDependency(final String notation, final Closure configurator = null) {
         if (configurator) {
@@ -796,8 +854,8 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     }
 
     private void setDefaultGroovyDslVersionIfRequired() {
-        if (getGroovyDslVersion() == null) {
-            setGroovyDslVersion DEFAULT_GROOVYDSL_VERSION
+        if (modules.groovyDsl.version == null) {
+            modules.groovyDsl.use()
         }
     }
 
@@ -805,7 +863,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      *
      * Also sets the Groovy DSL version if required.
      *
-     * @param newExtensions List of new extensiosn to add
+     * @param newExtensions List of new extensions to add
      */
     private void addExtensions(List<Object> newExtensions) {
         setDefaultGroovyDslVersionIfRequired()
@@ -821,7 +879,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      *
      */
     private List<Object> dehydrateExtensions(final List<Object> exts) {
-        Transform.toList(exts){
+        Transform.toList(exts) {
             switch (it) {
                 case Closure:
                     ((Closure) it).dehydrate()
@@ -842,18 +900,57 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
 
     @SuppressWarnings('Instanceof')
     private List<Pattern> patternize(final List<Object> patterns) {
-        Transform.toList(patterns){
-            (Pattern)(it instanceof Pattern ? it : ~/${stringize(it)}/)
+        Transform.toList(patterns) {
+            (Pattern) (it instanceof Pattern ? it : ~/${stringize(it)}/)
         }
     }
 
     @CompileDynamic
     @SuppressWarnings('DuplicateStringLiteral')
-    Closure excludeTransitiveAsciidoctorJ() {
+    private Closure excludeTransitiveAsciidoctorJ() {
         return {
             exclude(group: ASCIIDOCTORJ_GROUP, module: 'asciidoctorj')
             exclude(group: ASCIIDOCTORJ_GROUP, module: 'asciidoctorj-api')
         }
+    }
 
+    private String getFinalGroovyDslVersion() {
+        if (task) {
+            this.modules.groovyDsl.version ?: extFromProject.modules.groovyDsl.version
+        } else {
+            extFromProject.modules.groovyDsl.version
+        }
+    }
+
+    private String getFinalPdfVersion() {
+        if (task) {
+            this.modules.pdf.version ?: extFromProject.modules.pdf.version
+        } else {
+            extFromProject.modules.pdf.version
+        }
+    }
+
+    private String getFinalEpubVersion() {
+        if (task) {
+            this.modules.epub.version ?: extFromProject.modules.epub.version
+        } else {
+            extFromProject.modules.epub.version
+        }
+    }
+
+    private String getFinalDiagramVersion() {
+        if (task) {
+            this.modules.diagram.version ?: extFromProject.modules.diagram.version
+        } else {
+            extFromProject.modules.diagram.version
+        }
+    }
+
+    private void warnVersionMethodDeprecated(final String oldMethod, final String newMethod) {
+        project.logger.warn("${NAME}.${oldMethod} is deprecated and will be removed in 3.0. Use ${NAME}.${newMethod} instead.")
+    }
+
+    private void warnExtensionsDeprecated(String oldMethod, String newMethod) {
+        project.logger.warn "${oldMethod} is deprecated and will be removed in 3.0 of this plugin suite. Use ${newMethod} instead"
     }
 }

@@ -18,11 +18,11 @@ package org.asciidoctor.gradle.compat
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.SafeMode
+import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
 import org.asciidoctor.gradle.internal.ExecutorLogLevel
 import org.asciidoctor.gradle.internal.JavaExecUtils
-import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.remote.AsciidoctorJavaExec
 import org.gradle.api.DefaultTask
 import org.gradle.api.InvalidUserDataException
@@ -31,8 +31,17 @@ import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.FileTree
 import org.gradle.api.internal.file.copy.CopySpecInternal
-@java.lang.SuppressWarnings('NoWildcardImports')
-import org.gradle.api.tasks.*
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.Console
+import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.OutputDirectories
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.SkipWhenEmpty
+import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.WorkResult
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.internal.FileUtils
 import org.gradle.process.JavaExecSpec
@@ -40,9 +49,11 @@ import org.ysb33r.grolifant.api.OperatingSystem
 
 import java.util.stream.Collectors
 
-import static org.asciidoctor.gradle.base.AsciidoctorUtils.*
-import static org.asciidoctor.gradle.jvm.AsciidoctorJExtension.GUAVA_REQUIRED_FOR_EXTERNALS
+import static org.asciidoctor.gradle.base.AsciidoctorUtils.UNDERSCORE_LED_FILES
+import static org.asciidoctor.gradle.base.AsciidoctorUtils.getClassLocation
+import static org.asciidoctor.gradle.base.AsciidoctorUtils.getSourceFileTree
 import static org.asciidoctor.gradle.internal.JavaExecUtils.getJavaExecClasspath
+import static org.asciidoctor.gradle.jvm.AsciidoctorJExtension.GUAVA_REQUIRED_FOR_EXTERNALS
 import static org.ysb33r.grolifant.api.StringUtils.stringize
 
 /** The core functionality of the Asciidoctor task type as it was in the 1.5.x series.
@@ -67,7 +78,7 @@ import static org.ysb33r.grolifant.api.StringUtils.stringize
 class AsciidoctorCompatibilityTask extends DefaultTask {
     private static final String PATH_SEPARATOR = OperatingSystem.current().pathSeparator
     private static
-    final String MIGRATE_GEMS_MSG = 'When upgrading GEMs, \'requires\' will need to be set via the asciidoctorj project and task extensions. Use  setGemPaths method in extension(s) to set GEM paths.'
+    final String MIGRATE_GEMS_MSG = 'When upgrading GEMs, \'requires\' will need to be set via the asciidoctorj project and task docExtensions. Use  setGemPaths method in extension(s) to set GEM paths.'
 
     private static final String DEFAULT_BACKEND = AsciidoctorBackend.HTML5.id
     private boolean baseDirSetToNull
@@ -253,8 +264,7 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
 
     /** Returns the current set of Asciidoctor backends that will be used for document generation
      *
-     * @since 0.7.1
-     * @deprecated
+     * @since 0.7.1* @deprecated
      */
     @Optional
     @Input
@@ -294,7 +304,7 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
      */
     @Deprecated
     void extensions(Object... exts) {
-        migrationMessage('extensions', 'Extensions will need to be set via the asciidoctorj project and task extensions')
+        migrationMessage('docExtensions', 'Extensions will need to be set via the asciidoctorj project and task docExtensions')
         if (!exts) return // null check
         asciidoctorExtensions.addAll(exts as List)
     }
@@ -307,7 +317,7 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
     @SuppressWarnings('ConfusingMethodName')
     @Deprecated
     void gemPath(Object... f) {
-        migrationMessage('gemPath', 'GEM paths will need to be set via the asciidoctorj project and task extensions using the gemPaths method')
+        migrationMessage('gemPath', 'GEM paths will need to be set via the asciidoctorj project and task docExtensions using the gemPaths method')
         if (!f) return // null check
         this.gemPaths.addAll(f as List)
     }
@@ -437,7 +447,7 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
 
     /** Returns a FileTree containing all of the source documents
      *
-     * @return If {@code sources} was never called then all asciidoc source files below {@code sourceDir} will
+     * @return If{@code sources} was never called then all asciidoc source files below {@code sourceDir} will
      * be included
      * @since 1.5.1
      */
@@ -497,7 +507,7 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
      *
      * By default anything below {@code $sourceDir/images} will be included.
      *
-     * @return A {@code CopySpec}, never null
+     * @return A{@code CopySpec}, never null
      * @since 1.5.1
      */
     @Internal
@@ -514,7 +524,7 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
      * If {@code resources} was never called, it will return a default CopySpec otherwise it will return the
      * one built up via successive calls to {@code resources}
      *
-     * @return A {@code CopySpec}, never null
+     * @return A{@code CopySpec}, never null
      * @since 1.5.1
      */
     @Internal
@@ -526,7 +536,7 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
      * If {@code resources} was never called, it will return the file collections as per default CopySpec otherwise it
      * will return the collections as built up via successive calls to {@code resources}
      *
-     * @return A {@code FileCollection}, never null
+     * @return A{@code FileCollection}, never null
      * @since 1.5.2
      */
     @InputFiles
@@ -542,20 +552,20 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
         File output = outputDir
 
         final Map finalAttributes = [
-            'gradle-project-group' : project.group,
+            'gradle-project-group': project.group,
             'gradle-project-name' : project.name,
-            'revnumber' : project.version
+            'revnumber'           : project.version
         ]
-        if(legacyAttributes) {
+        if (legacyAttributes) {
             finalAttributes.putAll([
-                'project-version' : project.version,
-                'project-group' : project.group,
-                'project-name' : project.name
+                'project-version': project.version,
+                'project-group'  : project.group,
+                'project-name'   : project.name
             ])
         }
         finalAttributes.putAll(attributes)
 
-        ExecutorConfigurationContainer ecc = new ExecutorConfigurationContainer(activeBackends().stream().map( { backend ->
+        ExecutorConfigurationContainer ecc = new ExecutorConfigurationContainer(activeBackends().stream().map({ backend ->
             new ExecutorConfiguration(
                 sourceDir: sourceDir,
                 outputDir: outputBackendDir(output, backend),
@@ -572,7 +582,7 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
                 requires: getRequires(),
                 options: options,
                 attributes: finalAttributes,
-                legacyAttributes : legacyAttributes,
+                legacyAttributes: legacyAttributes,
                 asciidoctorExtensions: dehydrateExtensions(getAsciidoctorExtensions()),
                 executorLogLevel: ExecutorLogLevel.WARN
             )
@@ -594,7 +604,7 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
             closurePaths
         )
 
-        if(legacyAttributes) {
+        if (legacyAttributes) {
             migrationMessage 'legacyAttributes=true', '''Switch documents to use the following attributes instead:
    - gradle-projectdir (old=projectdir)
    - gradle-rootdir (old=rootdir)
@@ -656,7 +666,7 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
     }
 
     private List<Object> dehydrateExtensions(final List<Object> exts) {
-        Transform.toList(exts){
+        Transform.toList(exts) {
             switch (it) {
                 case Closure:
                     ((Closure) it).dehydrate()
