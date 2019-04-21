@@ -366,39 +366,6 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
         configuration
     }
 
-    /**
-
-     * @deprecated Use {@link #getDocExtensions}
-
-     */
-    @Deprecated
-    List<Object> getExtensions() {
-        warnExtensionsDeprecated('getExtensions', 'getDocExtensions')
-        docExtensions
-    }
-
-    /**
-
-     * @deprecated Use {@link #asciidoctorExtensions}
-
-     */
-    @Deprecated
-    void extensions(Object... exts) {
-        warnExtensionsDeprecated('extensions', 'docExtensions')
-        docExtensions(exts)
-    }
-
-    /**
-
-     * @deprecated Use {@link #setDocExtensions}
-
-     */
-    @Deprecated
-    void setExtensions(Iterable<Object> newExtensions) {
-        warnExtensionsDeprecated('setExtensions', 'setDocExtensions')
-        docExtensions = newExtensions
-    }
-
     /** Return extensions to be registered.
      *
      * These extensionRegistry are not registered at this call. That action is left
@@ -592,7 +559,7 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
         }
     }
 
-    /** Adds docExtensions to the existing container.
+    /** Adds extensions to the existing container.
      *
      * Also sets the Groovy DSL version if required.
      *
@@ -603,12 +570,12 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
         asciidoctorExtensions.addAll(dehydrateExtensions(newExtensions))
     }
 
-    /** Prepare docExtensions for serialisation.
+    /** Prepare extensions for serialisation.
      *
      * This takes care of dehydrating any closures.
      *
-     * @param exts List of docExtensions
-     * @return List of docExtensions suitable for serialization.
+     * @param exts List of extensions
+     * @return List of extensions suitable for serialization.
      *
      */
     private List<Object> dehydrateExtensions(final List<Object> exts) {
