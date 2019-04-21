@@ -114,5 +114,14 @@ class AsciidoctorJModules {
         String getVersion() {
             this.version.present ? StringUtils.stringize(this.version.get()) : null
         }
+
+        /** Whether the component has been allocated a version.
+         *
+         * @return {@code true} if the component has been defined
+         */
+        @Override
+        boolean isDefined() {
+            version.present
+        }
     }
 }

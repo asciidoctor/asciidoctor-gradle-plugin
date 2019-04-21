@@ -16,7 +16,6 @@
 package org.asciidoctor.gradle.js.nodejs
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.js.nodejs.AsciidoctorJSNodeExtension
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.ysb33r.gradle.nodejs.NpmExtension
@@ -31,7 +30,7 @@ class AsciidoctorJSNpmExtension extends NpmExtension {
 
     AsciidoctorJSNpmExtension(Project project) {
         super(project)
-        homeDirectory = {new File(project.buildDir,"/tmp/npm/${project.name}")}
+        homeDirectory = { new File(project.buildDir, "/tmp/npm/${project.name}") }
     }
 
     AsciidoctorJSNpmExtension(Task task) {

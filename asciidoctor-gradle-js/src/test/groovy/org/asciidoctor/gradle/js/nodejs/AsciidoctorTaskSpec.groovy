@@ -25,6 +25,7 @@ import spock.lang.Specification
  *
  * @author Schalk W. Cronjé
  */
+@SuppressWarnings(['MethodName'])
 class AsciidoctorTaskSpec extends Specification {
     private static final String ASCIIDOCTOR = 'asciidoctor'
     Project project = ProjectBuilder.builder().withName('test').build()
