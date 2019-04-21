@@ -343,6 +343,15 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      */
     abstract void attributes(Map<String, Object> m)
 
+    /** Shortcut method to access additional providers of attributes.
+     *
+     * In most implementations this will just access the {@code getAttributeProviders} method
+     * on the appropriate task extension derived from {@link AbstractImplementationEngineExtension}
+     *
+     * @return List of attribute providers.
+     */
+    abstract List<AsciidoctorAttributeProvider> getAttributeProviders()
+
     /** Gets the CopySpec for additional resources
      * If {@code resources} was never called, it will return a default CopySpec otherwise it will return the
      * one built up via successive calls to {@code resources}

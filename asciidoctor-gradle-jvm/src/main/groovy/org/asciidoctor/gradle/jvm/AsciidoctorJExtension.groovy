@@ -18,7 +18,6 @@ package org.asciidoctor.gradle.jvm
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AbstractImplementationEngineExtension
-import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
 import org.asciidoctor.gradle.base.Transform
 import org.gradle.api.Action
 import org.gradle.api.GradleException
@@ -92,7 +91,6 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     private final List<Object> gemPaths = []
     private final List<Action<ResolutionStrategy>> resolutionsStrategies = []
     private final List<Object> warningsAsErrors = []
-    private final List<AsciidoctorAttributeProvider> attributeProviders = []
     private final AsciidoctorJModules modules
 
     private boolean onlyTaskOptions = false
