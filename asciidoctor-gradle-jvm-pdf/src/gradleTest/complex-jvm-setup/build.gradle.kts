@@ -1,9 +1,9 @@
-import org.asciidoctor.gradle.jvm.AsciidoctorTask
+import org.asciidoctor.gradle.jvm.pdf.AsciidoctorPdfTask
 import org.asciidoctor.gradle.jvm.ProcessMode
 
 // tag::using-two-plugins-three-backends[]
 plugins {
-    id("org.asciidoctor.jvm.convert")
+    id("org.asciidoctor.jvm.pdf")
 //    id("com.gradle.build-scan") version "1.16"
 }
 
@@ -16,22 +16,16 @@ asciidoctorj {
     logLevel = LogLevel.INFO
 }
 
-tasks.named<AsciidoctorTask>("asciidoctor") {
-    outputOptions {
-        backends("html5", "docbook")
-    }
+tasks.named<AsciidoctorPdfTask>("asciidoctorPdf") {
+    inProcess = ProcessMode.OUT_OF_PROCESS
+    logDocuments = true
+    setSourceDir("src/docs/asciidoc")
 
-    sources ("sample.asciidoc")
-    resources {
-        include("images/**")
-    }
-    copyResourcesOnlyIf("html5")
-    useIntermediateWorkDir()
+    sources ("subdir/sample2.ad")
 }
-
 // end::using-two-plugins-three-backends[]
 
 tasks.register<DefaultTask>("runGradleTest") {
     group = "Custom"
-    dependsOn("asciidoctor")
+    dependsOn("asciidoctorPdf")
 }

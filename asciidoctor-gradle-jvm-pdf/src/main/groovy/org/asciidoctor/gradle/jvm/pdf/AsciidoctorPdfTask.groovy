@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.jvm
+package org.asciidoctor.gradle.jvm.pdf
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask
+import org.asciidoctor.gradle.jvm.ProcessMode
 import org.gradle.api.Project
 import org.gradle.api.UnknownDomainObjectException
 @java.lang.SuppressWarnings('NoWildcardImports')
@@ -109,11 +111,11 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
     @Override
     protected ProcessMode getFinalProcessMode() {
         if (GradleVersion.current() <= LAST_GRADLE_WITH_CLASSPATH_LEAKAGE) {
-            if (inProcess != JAVA_EXEC) {
+            if (inProcess != AbstractAsciidoctorTask.JAVA_EXEC) {
                 logger.warn 'This version of Gradle leaks snakeyaml on to worker classpaths which breaks ' +
                     'PDF processing. Switching to JAVA_EXEC instead.'
             }
-            JAVA_EXEC
+            AbstractAsciidoctorTask.JAVA_EXEC
         } else {
             super.finalProcessMode
         }

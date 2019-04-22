@@ -68,11 +68,30 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
     @Internal
     protected final static GradleVersion LAST_GRADLE_WITH_CLASSPATH_LEAKAGE = GradleVersion.version(('5.99'))
 
+    private ProcessMode inProcess = JAVA_EXEC
     private final AsciidoctorJExtension asciidoctorj
     private final WorkerExecutor worker
     private final List<Object> asciidocConfigurations = []
     private
     final org.ysb33r.grolifant.api.JavaForkOptions javaForkOptions = new org.ysb33r.grolifant.api.JavaForkOptions()
+
+    /** Set how AsciidoctorJ should be run.
+     *
+     * @param mode {@link #IN_PROCESS}, {@link #OUT_OF_PROCESS} or {@link #JAVA_EXEC}.
+     */
+    void setInProcess(ProcessMode mode) {
+        this.inProcess = mode
+    }
+
+    /** Set how AsciidoctorJ should be run.
+     *
+     * @param mode Case-insensitive string from of {@link #IN_PROCESS}, {@link #OUT_OF_PROCESS} or {@link #JAVA_EXEC}.
+     *
+     * @since 3.0
+     */
+    void setInProcess(String mode) {
+        this.inProcess = ProcessMode.valueOf(mode.toUpperCase(Locale.US))
+    }
 
     /** Run Asciidoctor conversions in or out of process
      *
@@ -80,7 +99,9 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
      * The default mode is {@link #JAVA_EXEC}.
      */
     @Internal
-    ProcessMode inProcess = JAVA_EXEC
+    ProcessMode getInProcess() {
+        this.inProcess
+    }
 
     /** Set the mode for running conversions sequential or in parallel.
      * For instance a task that has multiple backends can have the

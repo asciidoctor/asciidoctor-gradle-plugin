@@ -32,7 +32,6 @@ dependencies {
     intTestOfflineRepo "org.codehaus.groovy:groovy-ant:${GroovySystem.version}"
     intTestOfflineRepo "org.codehaus.groovy:groovy-groovydoc:${GroovySystem.version}"
 
-    intTestOfflineRepo "org.asciidoctor:asciidoctorj-pdf:${downloadOnlyPdfVersion}"
     intTestOfflineRepo "org.asciidoctor:asciidoctorj-epub3:${downloadOnlyEpubVersion}"
 
     // This is here for extension testing on the compatibility plugin. It will be deleted
@@ -52,14 +51,8 @@ configurePlugin 'org.asciidoctor.jvm.convert',
     'Provides asciidoctor task and conventions',
     ['asciidoctorj', 'html5', 'docbook']
 
-configurePlugin 'org.asciidoctor.jvm.pdf',
-    'AsciidoctorJ PDF Conversion Plugin',
-    'Simplifies conversion of asciidoc documents to PDF',
-    ['asciidoctorj', 'pdf']
-
 test {
     systemProperties ROOT_PROJECT_DIR: rootProject.projectDir.absolutePath
-    systemProperties TEST_THEMES_DIR: file('src/test/resources/themes')
 }
 
 intTest {
