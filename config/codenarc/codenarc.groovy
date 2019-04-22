@@ -220,7 +220,9 @@ ruleset {
     SpaceAroundOperator
     SpaceBeforeClosingBrace
     SpaceBeforeOpeningBrace
-    TrailingWhitespace
+    TrailingWhitespace  {
+        doNotApplyToFileNames = '*FunctionalSpec.groovy,*FunctionalSpecification.groovy'
+    }
 
     // rulesets/generic.xml
     IllegalClassMember
