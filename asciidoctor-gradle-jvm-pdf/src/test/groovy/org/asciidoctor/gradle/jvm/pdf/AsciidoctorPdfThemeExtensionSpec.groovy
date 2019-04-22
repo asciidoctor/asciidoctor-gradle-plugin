@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.jvm
+package org.asciidoctor.gradle.jvm.pdf
 
 import org.gradle.api.Project
 import org.gradle.api.UnknownDomainObjectException

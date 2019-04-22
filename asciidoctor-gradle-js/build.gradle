@@ -29,8 +29,8 @@ dependencies {
 }
 
 configurePlugin 'org.asciidoctor.js.base',
-    'AsciidoctorJ Base Plugin',
-    'Base plugin for all Asciidoctor.js tasks & extensions. Provides the asciidoctorj project extension.',
+    'Asciidoctor.js Base Plugin',
+    'Base plugin for all Asciidoctor.js tasks & extensions. Provides the asciidoctorjs project extension.',
     ['asciidoctor','asciidoctor.js']
 
 configurePlugin 'org.asciidoctor.js.convert',
