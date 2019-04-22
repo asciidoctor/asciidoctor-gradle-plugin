@@ -1,21 +1,20 @@
-import org.asciidoctor.gradle.jvm.AsciidoctorPdfTask
-import org.asciidoctor.gradle.jvm.AsciidoctorTask
-import org.asciidoctor.gradle.jvm.OutputOptions
-import org.asciidoctor.gradle.jvm.ProcessMode
+// tag::using-multiple-backends-for-js[]
 
-// tag::using-two-plugins-three-backends[]
+import org.asciidoctor.gradle.js.nodejs.AsciidoctorTask
+
 plugins {
-    id("org.asciidoctor.jvm.convert")
-    id("org.asciidoctor.jvm.pdf")
+    id("org.asciidoctor.js.convert")
+// end::using-multiple-backends-for-js[]
 //    id("com.gradle.build-scan") version "1.16"
+// tag::using-multiple-backends-for-js[]
 }
 
 repositories {
     jcenter()
 }
 
-asciidoctorj {
-    modules.getDiagram().setVersion("1.5.16")
+asciidoctorjs {
+    modules.docbook.use()
 }
 
 tasks.named<AsciidoctorTask>("asciidoctor") {
@@ -30,17 +29,9 @@ tasks.named<AsciidoctorTask>("asciidoctor") {
     copyResourcesOnlyIf("html5")
     useIntermediateWorkDir()
 }
-
-tasks.named<AsciidoctorPdfTask>("asciidoctorPdf") {
-    inProcess = ProcessMode.OUT_OF_PROCESS
-    logDocuments = true
-    setSourceDir("src/docs/asciidoc")
-
-    sources ("subdir/sample2.ad")
-}
-// end::using-two-plugins-three-backends[]
+// end::using-multiple-backends-for-js[]
 
 tasks.register<DefaultTask>("runGradleTest") {
     group = "Custom"
-    dependsOn("asciidoctor", "asciidoctorPdf")
+    dependsOn("asciidoctor")
 }

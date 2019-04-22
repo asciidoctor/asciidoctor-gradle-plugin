@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.js.base.internal
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AsciidoctorModuleDefinition
+import org.asciidoctor.gradle.base.ModuleNotFoundException
 import org.asciidoctor.gradle.js.base.AsciidoctorJSModules
 
 import static org.ysb33r.grolifant.api.ClosureUtils.configureItem
@@ -32,6 +33,7 @@ import static org.ysb33r.grolifant.api.StringUtils.stringize
 @CompileStatic
 class BaseAsciidoctorJSModules implements AsciidoctorJSModules {
     private final AsciidoctorModuleDefinition docbook
+    private final Map<String, AsciidoctorModuleDefinition> index = new TreeMap<String, AsciidoctorModuleDefinition>()
 
     /** Creates a module definition that is attached to a specific asciidoctorjs
      * extension.
@@ -42,6 +44,7 @@ class BaseAsciidoctorJSModules implements AsciidoctorJSModules {
         AsciidoctorModuleDefinition docbook
     ) {
         this.docbook = docbook
+        index.put(docbook.name, docbook)
     }
 
     /** Configure docbook via closure.
@@ -70,6 +73,21 @@ class BaseAsciidoctorJSModules implements AsciidoctorJSModules {
     @Override
     boolean isSetVersionsDifferentTo(AsciidoctorJSModules other) {
         different(docbook, other.docbook)
+    }
+
+    /** Returns a module by name
+     *
+     * @param name Name of module
+     * @throws {@link org.asciidoctor.gradle.base.ModuleNotFoundException} when the module is not registered.
+     * @return Module
+     */
+    @Override
+    AsciidoctorModuleDefinition getByName(String name) {
+        if (index.containsKey(name)) {
+            index[name]
+        } else {
+            throw new ModuleNotFoundException("${name} is not a valid module")
+        }
     }
 
     private boolean different(AsciidoctorModuleDefinition lhs, AsciidoctorModuleDefinition rhs) {

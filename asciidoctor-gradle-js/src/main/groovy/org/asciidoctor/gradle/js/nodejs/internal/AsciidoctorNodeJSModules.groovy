@@ -23,7 +23,6 @@ import org.asciidoctor.gradle.js.nodejs.AsciidoctorJSExtension
 import org.gradle.api.Action
 
 import static org.asciidoctor.gradle.js.base.AbstractAsciidoctorJSExtension.DEFAULT_DOCBOOK_VERSION
-import static org.asciidoctor.gradle.js.nodejs.AsciidoctorJSExtension.PACKAGE_DOCBOOK
 
 /** Define versions for standard AsciidoctorJS modules.
  *
@@ -35,6 +34,8 @@ import static org.asciidoctor.gradle.js.nodejs.AsciidoctorJSExtension.PACKAGE_DO
 @CompileStatic
 class AsciidoctorNodeJSModules extends BaseAsciidoctorJSModules implements AsciidoctorJSModules {
 
+    public final static String SCOPE_ASCIIDOCTOR = 'asciidoctor'
+
     /** Creates a module definition that is attached to a specific asciidoctorjs
      * extension.
      *
@@ -42,7 +43,11 @@ class AsciidoctorNodeJSModules extends BaseAsciidoctorJSModules implements Ascii
      */
     AsciidoctorNodeJSModules(AsciidoctorJSExtension asciidoctorjs) {
         super(
-            Module.of(DEFAULT_DOCBOOK_VERSION, PACKAGE_DOCBOOK)
+            Module.of(
+                'docbook',
+                DEFAULT_DOCBOOK_VERSION,
+                PackageDescriptor.of(SCOPE_ASCIIDOCTOR, 'docbook-converter')
+            )
         )
     }
 
@@ -53,20 +58,26 @@ class AsciidoctorNodeJSModules extends BaseAsciidoctorJSModules implements Ascii
 
         private final PackageDescriptor packageIdentifier
 
-        static Module of(final Object defaultVersion, final PackageDescriptor packageIdentifier) {
-            new Module(defaultVersion, packageIdentifier)
+        static Module of(final String name, final Object defaultVersion, final PackageDescriptor packageIdentifier) {
+            new Module(name, defaultVersion, packageIdentifier)
         }
 
-        static Module of(final Object defaultVersion, final PackageDescriptor packageIdentifier, Closure setAction) {
-            new Module(defaultVersion, packageIdentifier, setAction as Action<Object>)
+        static Module of(
+            final String name,
+            final Object defaultVersion,
+            final PackageDescriptor packageIdentifier,
+            Closure setAction
+        ) {
+            new Module(name, defaultVersion, packageIdentifier, setAction as Action<Object>)
         }
 
         private Module(
+            final String name,
             final Object defaultVersion,
             final PackageDescriptor packageIdentifier,
             Action<Object> setAction = null
         ) {
-            super(defaultVersion, setAction)
+            super(name, defaultVersion, setAction)
             this.packageIdentifier = packageIdentifier
         }
 
@@ -78,5 +89,4 @@ class AsciidoctorNodeJSModules extends BaseAsciidoctorJSModules implements Ascii
             this.packageIdentifier
         }
     }
-
 }

@@ -88,21 +88,21 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         versions << AsciidoctorjsVersionGenerator.random
     }
 
-    void 'Use default DOCBOOK version backend (asciidoctor.js=#version)'() {
+    void 'Use default DOCBOOK version backend and global extension (asciidoctor.js=#version)'() {
         given:
         getBuildFile("""
+            asciidoctorjs {
+                version = '${version}'
+
+                modules {
+                    docbook.use()
+                }
+            }
+
             asciidoctor {
 
                 outputOptions {
                     backends 'docbook'
-                }
-
-                asciidoctorjs {
-                    version = '${version}'
-
-                    modules {
-                        docbook.use()
-                    }
                 }
 
                 logDocuments = true

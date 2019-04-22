@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.js.base
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AbstractImplementationEngineExtension
+import org.asciidoctor.gradle.base.AsciidoctorModuleDefinition
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -53,7 +54,7 @@ abstract class AbstractAsciidoctorJSExtension extends AbstractImplementationEngi
     /** Set a new version to use.
      *
      * @param v New version to be used. Can be of anything that be resolved by
-     *    {@link org.ysb33r.grolifant.api.StringUtils.stringize}.
+     * {@link org.ysb33r.grolifant.api.StringUtils.stringize}.
      */
     void setVersion(Object v) {
         this.version = v
@@ -109,16 +110,25 @@ abstract class AbstractAsciidoctorJSExtension extends AbstractImplementationEngi
         this.modules = createModulesConfiguration()
     }
 
-    /** Get the Docbook version after resolving all of the relevant extensions.
+    /** Obtains the correct module version.
      *
-     * @return Docbook version to use. Can be {@code null} to indicate that Docbook
-     * is not required.
+     * If this extension is attached to a task, then check whether the local
+     * module is defined first, otherwise defer to the global project extension.
+     *
+     * @param mod Module to interrogate
+     *
+     * @return Module version or {@code null} if the componenet is not required.
      */
-    protected String getFinalDocbookVersion() {
+    protected String moduleVersion(final AsciidoctorModuleDefinition mod) {
         if (task) {
-            this.modules.docbook.version ?: extFromProject.modules.docbook.version
+            AsciidoctorModuleDefinition local = this.modules.getByName(mod.name)
+            if (local.defined) {
+                local.version
+            } else {
+                extFromProject.modules.getByName(mod.name).version
+            }
         } else {
-            extFromProject.modules.docbook.version
+            extFromProject.modules.getByName(mod.name).version
         }
     }
 
@@ -132,4 +142,5 @@ abstract class AbstractAsciidoctorJSExtension extends AbstractImplementationEngi
     private AbstractAsciidoctorJSExtension getExtFromProject() {
         task ? (AbstractAsciidoctorJSExtension) projectExtension : this
     }
+
 }

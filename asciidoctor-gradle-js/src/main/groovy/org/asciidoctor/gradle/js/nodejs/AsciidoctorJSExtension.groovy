@@ -40,22 +40,22 @@ import org.ysb33r.gradle.nodejs.dependencies.npm.NpmSelfResolvingDependency
 @CompileStatic
 class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
     public final static String NAME = 'asciidoctorjs'
-    public final static PackageDescriptor PACKAGE_ASCIIDOCTOR = PackageDescriptor.of(SCOPE_ASCIIDOCTOR)
-    public final static PackageDescriptor PACKAGE_DOCBOOK = PackageDescriptor.of(SCOPE_ASCIIDOCTOR, 'docbook-converter')
-
-    private final static String SCOPE_ASCIIDOCTOR = 'asciidoctor'
+    public final static PackageDescriptor PACKAGE_ASCIIDOCTOR = PackageDescriptor.of('asciidoctor')
 
     private final List<NpmDependency> additionalRequires = []
-
     private boolean onlyTaskRequires = false
 
+    /** Attach extension to project.
+     *
+     * @param project Project to attach to.
+     */
     AsciidoctorJSExtension(Project project) {
         super(project)
     }
 
     /** Attach extension to a task.
      *
-     * @param task
+     * @param task Task to attach to
      */
     AsciidoctorJSExtension(Task task) {
         super(task, NAME)
@@ -98,9 +98,9 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
     Set<String> getRequires() {
         Set<String> reqs = [].toSet()
 
-        final String docbook = finalDocbookVersion
+        final String docbook = moduleVersion(modules.docbook)
         if (docbook) {
-            reqs.add(PACKAGE_DOCBOOK.toString())
+            reqs.add(packageDescriptorFor(modules.docbook).toString())
         }
 
         reqs
@@ -114,10 +114,10 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
      */
     @SuppressWarnings('UnnecessaryGetter')
     Configuration getConfiguration() {
-        final String docbook = finalDocbookVersion
+        final String docbook =  moduleVersion(modules.docbook)
         final List<SelfResolvingDependency> deps = [createDependency(PACKAGE_ASCIIDOCTOR, getVersion())]
 
-        if (modules.docbook.defined) {
+        if (docbook) {
             deps.add(createDependency(packageDescriptorFor(modules.docbook), docbook))
         }
 

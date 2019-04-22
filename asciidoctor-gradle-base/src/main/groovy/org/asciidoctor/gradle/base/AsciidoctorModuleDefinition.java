@@ -15,11 +15,13 @@
  */
 package org.asciidoctor.gradle.base;
 
+import org.gradle.api.Named;
+
 /** Describes a converter.
  *
  * @since 2.2.0
  */
-public interface AsciidoctorModuleDefinition {
+public interface AsciidoctorModuleDefinition extends Named {
     /** Use the default version of this component
      *
      */
