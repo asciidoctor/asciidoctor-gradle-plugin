@@ -143,6 +143,10 @@ asciidoctor {
 """)
         GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
 
+        if(model.processMode != 'JAVA_EXEC') {
+            runner.withDebug(false)
+        }
+
         when:
         runner.build()
         File resultFile = new File(testProjectDir.root, "build/docs/asciidoc/${ASCIIDOC_INLINE_EXTENSIONS_FILE.replaceFirst('asciidoc', 'html')}")
