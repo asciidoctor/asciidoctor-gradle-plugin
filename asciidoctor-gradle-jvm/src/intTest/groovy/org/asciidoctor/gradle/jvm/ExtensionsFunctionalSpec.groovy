@@ -143,7 +143,7 @@ asciidoctor {
 """)
         GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
 
-        if(model.processMode != 'JAVA_EXEC') {
+        if (model.processMode != 'JAVA_EXEC') {
             runner.withDebug(false)
         }
 
