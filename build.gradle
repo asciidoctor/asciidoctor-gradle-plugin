@@ -72,7 +72,7 @@ allprojects {
         ]
 
         withoutCodeCoverage = [
-            'asciidoctorj-gradle-base'
+           // 'asciidoctorj-gradle-base'
         ]
     }
 }

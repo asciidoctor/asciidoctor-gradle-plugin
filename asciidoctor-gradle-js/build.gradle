@@ -40,70 +40,8 @@ configurePlugin 'org.asciidoctor.js.convert',
 
 test {
     systemProperties ROOT_PROJECT_DIR: rootProject.projectDir.absolutePath
-//    systemProperties TEST_THEMES_DIR: file('src/test/resources/themes')
 }
 
 intTest {
     systemProperties TEST_PROJECTS_DIR: file('src/intTest/projects')
 }
-
-//gradleTest {
-//
-//    gradleArguments '-i', '-s'
-//}
-
-// Adding a third test set so that remote execution can be tested using a separate classpath
-// and conditions
-//sourceSets {
-//    remoteTest {
-//        compileClasspath = sourceSets.main.output +  configurations.remoteTestCompile
-//        runtimeClasspath = output + compileClasspath + configurations.remoteTestRuntime
-//    }
-//}
-
-//dependencies {
-//    remoteTestCompile "org.asciidoctor:asciidoctorj:${compileOnlyAsciidoctorJVersion}"
-//    remoteTestCompile project(':testfixtures-jvm')
-//    remoteTestRuntime "org.asciidoctor:asciidoctorj-groovy-dsl:${compileOnlyGroovyDslVersion}", {
-//        exclude module: 'groovy-all'
-//    }
-//}
-
-//task remoteTest(type: Test) {
-//    description = "Run tests for the remote-execution code"
-//    group = "verification"
-//
-//    mustRunAfter "test"
-//    inputs.files sourceSets.main.output.classesDirs
-//    inputs.files sourceSets.main.output.resourcesDir
-//
-//    testClassesDirs = sourceSets.remoteTest.output.classesDirs
-//    classpath = sourceSets.remoteTest.runtimeClasspath
-//
-//    dependsOn ':testfixtures-offline-repo:buildOfflineRepositories'
-//    systemProperties OFFLINE_REPO: offlineRepoRoot.absolutePath
-//}
-//
-//check {
-//    dependsOn remoteTest
-//}
-//
-//pluginManager.withPlugin('jacoco') {
-//    jacocoTestReport {
-//        executionData remoteTest
-//        mustRunAfter remoteTest
-//    }
-//}
-//
-//// This makes it easier to edit the projects in IntelliJ
-//sourceSets {
-//    gradleTestProjectExtension {
-//        groovy {
-//            srcDirs = ['src/gradleTest/extension-in-subproject/extension/src/main/groovy']
-//        }
-//    }
-//}
-//
-//configurations {
-//    gradleTestProjectExtensionCompileOnly.extendsFrom compileOnly
-//}
