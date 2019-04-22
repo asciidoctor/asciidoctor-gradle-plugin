@@ -521,13 +521,13 @@ By convention it sets the
 
 == The AsciidoctorPdf Plugin
 
-When applying `org.asciidoctor.jvm.pdf` it creates a single task of type `org.asciidoctor.gradle.jvm.AsciidoctorPdfTask` an extension called `pdfThemes`
+When applying `org.asciidoctor.jvm.pdf` it creates a single task of type `org.asciidoctor.gradle.jvm.pdf.AsciidoctorPdfTask` an extension called `pdfThemes`
 
 The default task is named `asciidoctorPdf` and is configured to:
 
 * Output source to "${buildDir}/docs/asciidocPdf"
 * Not to copy any resources to the output directory
-* It will set also a default version for `asciidoctorj-pdf` artifact. To override set `asciidoctorj.pdfVersion` or `asciidoctorPdf.asciidoctorj.pdfVersion`.
+* It will set also a default version for `asciidoctorj-pdf` artifact. To override set `asciidoctorj.modules.pdf.version` or `asciidoctorPdf.asciidoctorj.modules.pdf.version`.
 
 The `AsciidoctorPdfTask` task type has the following additional methods:
 
@@ -586,7 +586,7 @@ When applying `org.asciidoctor.jvm.epub` it creates a single task of type `org.a
 
 * Output source to "${buildDir}/docs/asciidocEpub"
 * Not to copy any resources to the output directory
-* It will set also a default version for `asciidoctorj-epub` artifact. To override set `asciidoctorj.epubVersion` or `asciidoctorPdf.asciidoctorj.epubVersion`.
+* It will set also a default version for `asciidoctorj-epub` artifact. To override set `asciidoctorj.modules.epub.version` or `asciidoctorPdf.asciidoctorj.modules.epub.version`.
 
 The `AsciidoctorEpubTask` task type has the following additional methods:
 

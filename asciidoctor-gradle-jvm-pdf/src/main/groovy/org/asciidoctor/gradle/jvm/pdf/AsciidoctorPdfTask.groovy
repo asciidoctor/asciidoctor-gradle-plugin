@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.jvm
+package org.asciidoctor.gradle.jvm.pdf
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.base.internal.DeprecatedFeatures
+import org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask
+import org.asciidoctor.gradle.jvm.ProcessMode
 import org.gradle.api.Project
 import org.gradle.api.UnknownDomainObjectException
 @java.lang.SuppressWarnings('NoWildcardImports')
@@ -32,7 +33,6 @@ import javax.inject.Inject
  * @since 2.0.0
  * @author Schalk W. Cronjé
  */
-@CacheableTask
 @CompileStatic
 class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
 
@@ -86,39 +86,19 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
     @PathSensitive(PathSensitivity.RELATIVE)
     @Optional
     @SuppressWarnings('LineLength')
-    File getThemesDir() {
-        this.theme != null ? project.extensions.getByType(AsciidoctorPdfThemesExtension).getByName(this.theme).styleDir : null
-    }
-
-    @Internal
-    @Deprecated
     File getStylesDir() {
-        DeprecatedFeatures.addDeprecationMessage(
-            project,
-            "Task: ${name}",
-            'getStylesDir() is deprecated. Use getThemesDir() instead.'
-        )
-        themesDir
+        this.theme != null ? project.extensions.getByType(AsciidoctorPdfThemesExtension).getByName(this.theme).styleDir : null
     }
 
     /** The theme to use.
      *
      * @return Theme name or {@code null} if no theme was set.
      */
+    @Input
+    @Optional
     @SuppressWarnings('LineLength')
-    String getThemeName() {
-        this.theme != null ? project.extensions.getByType(AsciidoctorPdfThemesExtension).getByName(this.theme).styleName : null
-    }
-
-    @Internal
-    @Deprecated
     String getStyleName() {
-        DeprecatedFeatures.addDeprecationMessage(
-            project,
-            "Task: ${name}",
-            'getStyleName() is deprecated. Use getThemesName() instead.'
-        )
-        themeName
+        this.theme != null ? project.extensions.getByType(AsciidoctorPdfThemesExtension).getByName(this.theme).styleName : null
     }
 
     /** Selects a final process mode of PDF processing.
@@ -131,11 +111,11 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
     @Override
     protected ProcessMode getFinalProcessMode() {
         if (GradleVersion.current() <= LAST_GRADLE_WITH_CLASSPATH_LEAKAGE) {
-            if (inProcess != JAVA_EXEC) {
+            if (inProcess != AbstractAsciidoctorTask.JAVA_EXEC) {
                 logger.warn 'This version of Gradle leaks snakeyaml on to worker classpaths which breaks ' +
                     'PDF processing. Switching to JAVA_EXEC instead.'
             }
-            JAVA_EXEC
+            AbstractAsciidoctorTask.JAVA_EXEC
         } else {
             super.finalProcessMode
         }
@@ -164,7 +144,6 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
      */
     @Override
     protected Map<String, Object> getTaskSpecificDefaultAttributes(File workingSourceDir) {
-        boolean useOldAttributes = extensions.getByType(AsciidoctorJExtension).pdfVersion.startsWith('1.5.0-alpha')
         Map<String, Object> attrs = super.getTaskSpecificDefaultAttributes(workingSourceDir)
 
         File fonts = getFontsDir()
@@ -172,14 +151,14 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
             attrs['pdf-fontsdir'] = fonts.absolutePath
         }
 
-        File styles = themesDir
+        File styles = stylesDir
         if (styles != null) {
-            attrs[useOldAttributes ? 'pdf-stylesdir' : 'pdf-themesdir'] = styles.absolutePath
+            attrs['pdf-stylesdir'] = styles.absolutePath
         }
 
-        String selectedTheme = themeName
+        String selectedTheme = styleName
         if (selectedTheme != null) {
-            attrs[useOldAttributes ? 'pdf-style' : 'pdf-theme'] = selectedTheme
+            attrs['pdf-style'] = selectedTheme
         }
 
         attrs

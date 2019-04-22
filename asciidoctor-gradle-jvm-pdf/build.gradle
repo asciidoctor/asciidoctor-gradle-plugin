@@ -1,0 +1,20 @@
+dependencies {
+    compile project(':asciidoctor-gradle-jvm')
+
+    intTestOfflineRepo "org.asciidoctor:asciidoctorj:${compileOnlyAsciidoctorJVersion}"
+    intTestOfflineRepo "org.asciidoctor:asciidoctorj-pdf:${downloadOnlyPdfVersion}"
+}
+
+test {
+    systemProperties TEST_THEMES_DIR: file('src/test/resources/themes')
+}
+
+intTest {
+    systemProperties TEST_PROJECTS_DIR: file('src/intTest/projects')
+}
+
+configurePlugin 'org.asciidoctor.jvm.pdf',
+    'AsciidoctorJ PDF Conversion Plugin',
+    'Simplifies conversion of asciidoc documents to PDF',
+    ['asciidoctorj', 'pdf']
+

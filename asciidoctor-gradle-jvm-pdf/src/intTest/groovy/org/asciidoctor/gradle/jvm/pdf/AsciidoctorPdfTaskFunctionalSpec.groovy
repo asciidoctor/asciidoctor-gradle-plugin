@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.jvm
+package org.asciidoctor.gradle.jvm.pdf
 
-import org.asciidoctor.gradle.internal.FunctionalSpecification
+import org.asciidoctor.gradle.jvm.pdf.internal.FunctionalSpecification
 import org.asciidoctor.gradle.testfixtures.generators.PdfBackendJRubyAsciidoctorJCombinationGenerator
 import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Unroll
