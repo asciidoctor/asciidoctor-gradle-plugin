@@ -13,29 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.jvm
+package org.asciidoctor.gradle.base
 
 import groovy.transform.CompileStatic
+import groovy.transform.InheritConstructors
 
-/** Ways of execuring Asciidoctor processes.
+/** Exception when an Asciidoctor module is not found.
  *
- * @since 2.0.0
  * @author Schalk W. Cronjé
+ *
+ * @since 3.0.0
  */
 @CompileStatic
-enum ProcessMode {
-    /** Use Gradle worker in-process.
-     *
-     */
-    IN_PROCESS,
-
-    /** Use out-of-process Gradle worker.
-     *
-     */
-    OUT_OF_PROCESS,
-
-    /** Use a classic out-of-process Java execution.
-     *
-     */
-    JAVA_EXEC
+@InheritConstructors
+class ModuleNotFoundException extends Exception {
 }

@@ -19,6 +19,10 @@ import org.asciidoctor.gradle.base.AsciidoctorModuleDefinition
 import org.gradle.api.Action
 import org.ysb33r.grolifant.api.StringUtils
 
+import static org.asciidoctor.gradle.jvm.AsciidoctorJExtension.DEFAULT_DIAGRAM_VERSION
+import static org.asciidoctor.gradle.jvm.AsciidoctorJExtension.DEFAULT_EPUB_VERSION
+import static org.asciidoctor.gradle.jvm.AsciidoctorJExtension.DEFAULT_GROOVYDSL_VERSION
+import static org.asciidoctor.gradle.jvm.AsciidoctorJExtension.DEFAULT_PDF_VERSION
 import static org.ysb33r.grolifant.api.ClosureUtils.configureItem
 
 /** Define versions for standard AsciidoctorJ modules.
@@ -26,20 +30,27 @@ import static org.ysb33r.grolifant.api.ClosureUtils.configureItem
  * @since 2.2.0
  */
 class AsciidoctorJModules {
+
+    private final Map<String, AsciidoctorModuleDefinition> index = new TreeMap<String, AsciidoctorModuleDefinition>()
+
     private final AsciidoctorModuleDefinition pdf
     private final AsciidoctorModuleDefinition epub
     private final AsciidoctorModuleDefinition diagram
     private final AsciidoctorModuleDefinition groovyDsl
 
     AsciidoctorJModules(AsciidoctorJExtension asciidoctorjs) {
-        this.pdf = Module.of(AsciidoctorJExtension.DEFAULT_PDF_VERSION)
-        this.epub = Module.of(AsciidoctorJExtension.DEFAULT_EPUB_VERSION)
-        this.diagram = Module.of(AsciidoctorJExtension.DEFAULT_DIAGRAM_VERSION) { value ->
+        this.pdf = Module.of('pdf', DEFAULT_PDF_VERSION)
+        this.epub = Module.of('epub', DEFAULT_EPUB_VERSION)
+        this.diagram = Module.of('diagram', DEFAULT_DIAGRAM_VERSION) { value ->
             if (value != null) {
                 asciidoctorjs.requires('asciidoctor-diagram')
             }
         }
-        this.groovyDsl = Module.of(AsciidoctorJExtension.DEFAULT_GROOVYDSL_VERSION)
+        this.groovyDsl = Module.of('groovyDsl', DEFAULT_GROOVYDSL_VERSION)
+
+        [pdf, epub, diagram, groovyDsl].each {
+            index[it.name] = it
+        }
     }
 
     void pdf(@DelegatesTo(AsciidoctorModuleDefinition) Closure cfg) {
@@ -75,19 +86,22 @@ class AsciidoctorJModules {
     }
 
     private static class Module implements AsciidoctorModuleDefinition {
+
+        final String name
         private Optional<Object> version = Optional.empty()
         private final Object defaultVersion
         private final Action<Object> setAction
 
-        static Module of(final Object defaultVersion) {
-            new Module(defaultVersion)
+        static Module of(final String name, final Object defaultVersion) {
+            new Module(name, defaultVersion)
         }
 
-        static Module of(final Object defaultVersion, Closure setAction) {
-            new Module(defaultVersion, setAction as Action<Object>)
+        static Module of(final String name, final Object defaultVersion, Closure setAction) {
+            new Module(name, defaultVersion, setAction as Action<Object>)
         }
 
-        private Module(final Object defaultVersion, Action<Object> setAction = null) {
+        private Module(final String name, final Object defaultVersion, Action<Object> setAction = null) {
+            this.name = name
             this.defaultVersion = defaultVersion
             this.setAction = setAction
         }
