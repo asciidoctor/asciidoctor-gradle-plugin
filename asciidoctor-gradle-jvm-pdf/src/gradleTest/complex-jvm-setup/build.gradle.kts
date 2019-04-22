@@ -17,7 +17,7 @@ asciidoctorj {
 }
 
 tasks.named<AsciidoctorPdfTask>("asciidoctorPdf") {
-    inProcess = "OUT_OF_PROCESS"
+    inProcess = ProcessMode.OUT_OF_PROCESS
     logDocuments = true
     setSourceDir("src/docs/asciidoc")
 
