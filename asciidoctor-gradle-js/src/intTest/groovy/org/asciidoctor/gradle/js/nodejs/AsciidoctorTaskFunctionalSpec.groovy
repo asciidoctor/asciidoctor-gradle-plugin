@@ -60,7 +60,10 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
 
                 asciidoctorjs {
                     version = '${versions.version}'
-                    docbookVersion = '${versions.docbookVersion}'
+
+                    modules {
+                        docbook.version = '${versions.docbookVersion}'
+                    }
                 }
 
                 logDocuments = true
