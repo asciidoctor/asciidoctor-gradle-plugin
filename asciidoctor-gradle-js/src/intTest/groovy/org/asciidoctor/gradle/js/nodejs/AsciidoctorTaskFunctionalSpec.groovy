@@ -74,7 +74,7 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         when:
         getGroovyGradleRunner(DEFAULT_ARGS).build()
 
-        then: 'u content is generated as HTML and XML'
+        then: 'content is generated as HTML and XML'
         verifyAll {
             new File(testProjectDir.root, 'build/docs/asciidoc/html5/sample.html').exists()
             new File(testProjectDir.root, 'build/docs/asciidoc/html5/subdir/sample2.html').exists()
@@ -86,6 +86,40 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
 
         where:
         versions << AsciidoctorjsVersionGenerator.random
+    }
+
+    void 'Use default DOCBOOK version backend (asciidoctor.js=#version)'() {
+        given:
+        getBuildFile("""
+            asciidoctor {
+
+                outputOptions {
+                    backends 'docbook'
+                }
+
+                asciidoctorjs {
+                    version = '${version}'
+
+                    modules {
+                        docbook.use()
+                    }
+                }
+
+                logDocuments = true
+                sourceDir 'src/docs/asciidoc'
+            }
+        """)
+
+        when:
+        getGroovyGradleRunner(DEFAULT_ARGS).build()
+
+        then: 'content is generated as XML'
+        verifyAll {
+            new File(testProjectDir.root, 'build/docs/asciidoc/sample.xml').exists()
+        }
+
+        where:
+        version = AsciidoctorjsVersionGenerator.random.first().version
     }
 
     File getBuildFile(String extraContent) {
