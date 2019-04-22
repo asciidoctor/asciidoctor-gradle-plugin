@@ -15,11 +15,13 @@
  */
 package org.asciidoctor.gradle.base;
 
+import org.gradle.api.Named;
+
 /** Describes a converter.
  *
  * @since 2.2.0
  */
-public interface AsciidoctorModuleDefinition {
+public interface AsciidoctorModuleDefinition extends Named {
     /** Use the default version of this component
      *
      */
@@ -45,4 +47,10 @@ public interface AsciidoctorModuleDefinition {
      *   The latter usually implies that the specific component is not needed.
      */
     String getVersion();
+
+    /** Whether the component has been allocated a version.
+     *
+     * @return {@code true} if the component has been defined
+     */
+    boolean isDefined();
 }

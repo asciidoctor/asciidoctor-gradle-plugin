@@ -1,6 +1,6 @@
 ext {
     asciidoctorjExtFileContent = file("${project(':asciidoctor-gradle-jvm').projectDir}/src/main/groovy/org/asciidoctor/gradle/jvm/AsciidoctorJExtension.groovy").readLines()
-    jrubyFixtureFileContent = file("${project(':testfixtures-jvm').projectDir}/src/main/groovy/org/asciidoctor/gradle/testfixtures/jvm/JRubyTestVersions.groovy").readLines()
+    jrubyFixtureFileContent = file("${project(':testfixtures-jvm').projectDir}/src/main/groovy/org/asciidoctor/gradle/testfixtures/JRubyTestVersions.groovy").readLines()
 
     readJRubyVersion = { itemName ->
         (jrubyFixtureFileContent.grep {

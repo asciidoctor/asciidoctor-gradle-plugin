@@ -119,14 +119,14 @@ pluginManager.withPlugin('jacoco') {
 }
 
 // This makes it easier to edit the projects in IntelliJ
-sourceSets {
-    gradleTestProjectExtension {
-        groovy {
-            srcDirs = ['src/gradleTest/extension-in-subproject/extension/src/main/groovy']
-        }
-    }
-}
-
-configurations {
-    gradleTestProjectExtensionCompileOnly.extendsFrom compileOnly
-}
+//sourceSets {
+//    gradleTestProjectExtension {
+//        groovy {
+//            srcDirs = ['src/gradleTest/extension-in-subproject/extension/src/main/groovy']
+//        }
+//    }
+//}
+//
+//configurations {
+//    gradleTestProjectExtensionCompileOnly.extendsFrom compileOnly
+//}

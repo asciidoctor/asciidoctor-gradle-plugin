@@ -24,7 +24,6 @@ import groovy.transform.CompileStatic
  */
 @CompileStatic
 enum ProcessMode {
-
     /** Use Gradle worker in-process.
      *
      */

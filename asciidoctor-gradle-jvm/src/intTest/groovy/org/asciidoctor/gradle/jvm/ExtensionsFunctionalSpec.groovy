@@ -16,7 +16,7 @@
 package org.asciidoctor.gradle.jvm
 
 import org.asciidoctor.gradle.internal.FunctionalSpecification
-import org.asciidoctor.gradle.testfixtures.jvm.generators.AsciidoctorjVersionProcessModeGenerator
+import org.asciidoctor.gradle.testfixtures.generators.AsciidoctorjVersionProcessModeGenerator
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
@@ -25,7 +25,7 @@ import spock.lang.Timeout
 import spock.lang.Unroll
 
 @java.lang.SuppressWarnings('NoWildcardImports')
-import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.*
+import static org.asciidoctor.gradle.testfixtures.AsciidoctorjTestVersions.*
 
 @SuppressWarnings(['LineLength'])
 class ExtensionsFunctionalSpec extends FunctionalSpecification {
@@ -115,6 +115,9 @@ block('small') {
 }
 """)
         GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
+        if (model.processMode != 'JAVA_EXEC') {
+            runner.withDebug(false)
+        }
 
         when:
         runner.build()
@@ -142,6 +145,10 @@ asciidoctor {
 }
 """)
         GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
+
+        if (model.processMode != 'JAVA_EXEC') {
+            runner.withDebug(false)
+        }
 
         when:
         runner.build()
@@ -232,7 +239,7 @@ asciidoctor {
     @Unroll
     void 'Asciidoctor extension is defined in #extScope, version config is on #verScope'() {
         given:
-        String extDSL = '''asciidoctorj.extensions file('src/docs/asciidoc/blockMacro.groovy')'''
+        String extDSL = '''asciidoctorj.docExtensions file('src/docs/asciidoc/blockMacro.groovy')'''
         getBuildFile(
             processMode, version, """
                 ${extScope == GLOBAL ? extDSL : ''}
@@ -281,18 +288,18 @@ asciidoctor {
 
         getJvmConvertGroovyBuildFile("""
             ${configureGlobally ? versionConfig : ''}
-            
+
             asciidoctor {
                 inProcess ${processMode}
                 sourceDir 'src/docs/asciidoc'
                 sources {
                     include '${ASCIIDOC_INLINE_EXTENSIONS_FILE}'
                 }
-            
+
             ${configureGlobally ? '' : versionConfig}
-            
+
             }
-            
+
             ${extraContent}
         """
         )

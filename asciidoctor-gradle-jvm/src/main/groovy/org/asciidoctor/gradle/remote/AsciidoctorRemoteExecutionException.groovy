@@ -17,9 +17,12 @@ package org.asciidoctor.gradle.remote
 
 import groovy.transform.CompileStatic
 
-/**
- * @since 2.0.0
+/** Indicates that something has gone wrong runnign AsciidoctorJ
+ *  in a worker or external JVM.
+ *
  * @author Schalk W. Cronjé
+ *
+ * @since 2.0.0
  */
 @CompileStatic
 class AsciidoctorRemoteExecutionException extends Exception {

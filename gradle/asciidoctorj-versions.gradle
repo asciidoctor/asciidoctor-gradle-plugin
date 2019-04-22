@@ -1,6 +1,6 @@
 ext {
     extensionFileContent = file("${project(':asciidoctor-gradle-jvm').projectDir}/src/main/groovy/org/asciidoctor/gradle/jvm/AsciidoctorJExtension.groovy").readLines()
-    asciidoctorjFixtureFileContent = file("${project(':testfixtures-jvm').projectDir}/src/main/groovy/org/asciidoctor/gradle/testfixtures/jvm/AsciidoctorjTestVersions.groovy").readLines()
+    asciidoctorjFixtureFileContent = file("${project(':testfixtures-jvm').projectDir}/src/main/groovy/org/asciidoctor/gradle/testfixtures/AsciidoctorjTestVersions.groovy").readLines()
 
     readAsciidoctorjVersionsFromContent = { itemName, content ->
         (content.grep {

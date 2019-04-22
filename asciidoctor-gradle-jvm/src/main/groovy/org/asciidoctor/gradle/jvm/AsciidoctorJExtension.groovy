@@ -17,8 +17,7 @@ package org.asciidoctor.gradle.jvm
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
-import org.asciidoctor.gradle.base.SafeMode
+import org.asciidoctor.gradle.base.AbstractImplementationEngineExtension
 import org.asciidoctor.gradle.base.Transform
 import org.gradle.api.Action
 import org.gradle.api.GradleException
@@ -32,7 +31,6 @@ import org.gradle.api.artifacts.ResolutionStrategy
 import org.gradle.api.file.FileCollection
 import org.gradle.api.logging.LogLevel
 import org.gradle.util.GradleVersion
-import org.ysb33r.grolifant.api.AbstractCombinedProjectTaskExtension
 import org.ysb33r.grolifant.api.OperatingSystem
 
 import java.util.regex.Pattern
@@ -51,7 +49,7 @@ import static org.ysb33r.grolifant.api.StringUtils.stringize
 @CompileStatic
 @SuppressWarnings('MethodCount')
 @NonExtensible
-class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
+class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
 
     // ------------------------------------------------------------------------gw --s
     // Be careful about modifying the keyword ordering in these six lines.
@@ -59,7 +57,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     // It is also a good idea that DEFAULT_ASCIIDOCTORJ_VERSION  matches one of
     // the values in testfixtures-jvm.
     // ------------------------------------------------------------------------
-    final static String DEFAULT_ASCIIDOCTORJ_VERSION = '2.0.0-RC.2'
+    final static String DEFAULT_ASCIIDOCTORJ_VERSION = '2.0.0-RC.3'
     final static String DEFAULT_GROOVYDSL_VERSION = '1.6.0'
     final static String DEFAULT_PDF_VERSION = '1.5.0-alpha.16'
     final static String DEFAULT_EPUB_VERSION = '1.5.0-alpha.9'
@@ -87,25 +85,20 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     private Boolean injectGuavaJar
 
     private final Map<String, Object> options = [:]
-    private final Map<String, Object> attributes = [:]
     private final List<Object> jrubyRequires = []
     private final List<Object> asciidoctorExtensions = []
     private final List<Object> gemPaths = []
     private final List<Action<ResolutionStrategy>> resolutionsStrategies = []
     private final List<Object> warningsAsErrors = []
-    private final List<AsciidoctorAttributeProvider> attributeProviders = []
     private final AsciidoctorJModules modules
 
     private boolean onlyTaskOptions = false
-    private boolean onlyTaskAttributes = false
     private boolean onlyTaskRequires = false
     private boolean onlyTaskExtensions = false
     private boolean onlyTaskGems = false
     private boolean onlyTaskWarnings = false
 
     private LogLevel logLevel
-
-    private SafeMode safeMode
 
     /** Attach extension to a project.
      *
@@ -114,12 +107,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     @SuppressWarnings('ThisReferenceEscapesConstructor')
     AsciidoctorJExtension(Project project) {
         super(project)
-
-        this.attributes['gradle-project-name'] = project.name
-        this.attributes['gradle-project-group'] = { project.group ?: '' }
-        this.attributes['gradle-project-version'] = { project.version ?: '' }
-
-        this.safeMode = SafeMode.SAFE
         this.version = DEFAULT_ASCIIDOCTORJ_VERSION
         this.modules = new AsciidoctorJModules(this)
     }
@@ -178,30 +165,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         this.version = v
     }
 
-    /** Version of the Groovy Extension DSL that should be used.
-     *
-     * @return Version of extension DSL or {@code null} if extensions will not be used.
-     *
-     * @deprecated Use{@code getModules( ).getGroovyDsl( ).getVersion}.
-     */
-    @Deprecated
-    String getGroovyDslVersion() {
-        warnVersionMethodDeprecated('getGroovyDslVersion', 'getModules().getGroovyDsl().getVersion')
-        finalGroovyDslVersion
-    }
-
-    /** Set a new Groovy DSL version to use
-     *
-     * @param v Groovy DSL version.
-     *
-     * @deprecated Use{@code getModules( ).getGroovyDsl( ).setVersion}.
-     */
-    @Deprecated
-    void setGroovyDslVersion(Object v) {
-        warnVersionMethodDeprecated('setGroovyDslVersion', 'getModules().getGroovyDsl().setVersion')
-        modules.groovyDsl.version = v
-    }
-
     /** The version of JRuby to use.
      *
      * If no version of JRuby is specified the one that is linked to AsciidoctorJ
@@ -234,77 +197,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
      */
     void setJrubyVersion(Object v) {
         this.jrubyVersion = Optional.of(v)
-    }
-
-    /** Version of the {@code asciidoctorj-diagram} that should be used.
-     *
-     * @return Version of {@code asciidoctorj-diagram} or {@code null} if not used.
-     *
-     * @deprecated Use{@code getModules( ).getDiagram( ).getVersion}.
-     */
-    @Deprecated
-    String getDiagramVersion() {
-        warnVersionMethodDeprecated('getDiagramVersion', 'getModules().getDiagram().getVersion')
-        finalDiagramVersion
-    }
-
-    /** Set a new {@code asciidoctorj-diagram} version to use.
-     *
-     * Setting this will automatically add {@code} to list of {@code requires}.
-     *
-     * @param v {@code asciidoctorj-diagram} version.
-     * @deprecated Use{@code getModules( ).getDiagram( ).setVersion}.
-     */
-    @Deprecated
-    void setDiagramVersion(Object v) {
-        warnVersionMethodDeprecated('setDiagramVersion', 'getModules().getDiagram().setVersion')
-        modules.diagram.version = v
-    }
-
-    /** Version of the Asciidoctor EPUB that should be used.
-     *
-     * @return Version of Asciidoctor EPUB or {@code null} if EPUB conversion is not used.
-     * @deprecated Use{@code getModules( ).getEpub( ).getVersion}.
-     */
-    @Deprecated
-    String getEpubVersion() {
-        warnVersionMethodDeprecated('getEpubVersion', 'getModules().getEpub().getVersion')
-        finalEpubVersion
-    }
-
-    /** Set a new asciidoctor EPUB version to use
-     *
-     * @param v Asciidoctor EPUB version.
-     * @deprecated Use{@code getModules( ).getEpub( ).setVersion}.
-     */
-    @Deprecated
-    void setEpubVersion(Object v) {
-        warnVersionMethodDeprecated('setEpubVersion', 'getModules().getEpub().setVersion')
-        modules.epub.version = v
-    }
-
-    /** Version of the Asciidoctor PDF that should be used.
-     *
-     * @return Version of Asciidoctor PDF or {@code null} if PDF conversion is not used.
-
-     * @deprecated Use{@code getModules( ).getPdf( ).getVersion}.
-     */
-    @Deprecated
-    String getPdfVersion() {
-        warnVersionMethodDeprecated('getPdfVersion', 'getModules().getPdf().getVersion')
-        finalPdfVersion
-    }
-
-    /** Set a new asciidoctor PDF version to use
-     *
-     * @param v Asciidoctor PDF version.
-     *
-     * @deprecated Use{@code getModules( ).getPdf( ).setVersion}.
-     */
-    @Deprecated
-    void setPdfVersion(Object v) {
-        warnVersionMethodDeprecated('setPdfVersion', 'getModules().getPdf().setVersion')
-        modules.pdf.version = v
     }
 
     /** Returns all of the Asciidoctor options.
@@ -345,70 +237,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     void options(Map m) {
         checkForAttributesInOptions(m)
         this.options.putAll(m)
-    }
-
-    /** Returns all of the Asciidoctor options.
-     *
-     */
-    Map<String, Object> getAttributes() {
-        stringizeMapRecursive(this.attributes, onlyTaskOptions) { AsciidoctorJExtension it ->
-            it.attributes
-        }
-    }
-
-    /** Apply a new set of Asciidoctor attributes, clearing any attributes previously set.
-     *
-     * This can be set globally for all Asciidoctor tasks in a project. If this is set in a task
-     * it will override the global attributes.
-     *
-     * @param m Map with new options
-     */
-    void setAttributes(Map m) {
-        this.attributes.clear()
-        this.attributes.putAll(m)
-
-        if (task) {
-            onlyTaskAttributes = true
-        }
-    }
-
-    /** Add additional Asciidoctor attributes.
-     *
-     * This can be set globally for all Asciidoctor tasks in a project. If this is set in a task
-     * it will use this attributes in the task in addition to any global attributes.
-     *
-     * @param m Map with new options
-     */
-    void attributes(Map m) {
-        this.attributes.putAll(m)
-    }
-
-    /** Returns a list of additional attribute providers.
-     *
-     * @return List of providers. Can be empty. Never {@code null}.
-     */
-    List<AsciidoctorAttributeProvider> getAttributeProviders() {
-        if (task) {
-            this.attributeProviders.empty ? extFromProject.attributeProviders : this.attributeProviders
-        } else {
-            this.attributeProviders
-        }
-    }
-
-    /** Adds an additional attribute provider.
-     *
-     * @param provider
-     */
-    void attributeProvider(AsciidoctorAttributeProvider provider) {
-        this.attributeProviders.add(provider)
-    }
-
-    /** Adds a closure as an additional attribute provider.
-     *
-     * @param provider A closure must return a Map<String,Object>
-     */
-    void attributeProvider(Closure provider) {
-        attributeProvider(provider as AsciidoctorAttributeProvider)
     }
 
     /** Returns the set of Ruby modules to be included.
@@ -485,38 +313,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         getGemPaths().files*.toString().join(OS.pathSeparator)
     }
 
-    /** Returns the ASciidoctor SafeMode under which a conversion will be run.
-     *
-     * @return Asciidoctor Safe Mode
-     */
-    SafeMode getSafeMode() {
-        (task && this.safeMode || !task) ? this.safeMode : extFromProject.safeMode
-    }
-
-    /** Set Asciidoctor safe mode.
-     *
-     * @param mode An instance of Asciidoctor SafeMode.
-     */
-    void setSafeMode(SafeMode mode) {
-        this.safeMode = mode
-    }
-
-    /** Set Asciidoctor safe mode.
-     *
-     * @param mode A valid integer representing a Safe Mode
-     */
-    void setSafeMode(int mode) {
-        this.safeMode = SafeMode.safeMode(mode)
-    }
-
-    /** Set Asciidoctor safe mode.
-     *
-     * @param mode A valid string representing a Safe Mode
-     */
-    void setSafeMode(String mode) {
-        this.safeMode = SafeMode.valueOf(mode.toUpperCase())
-    }
-
     /** Returns a runConfiguration of the configured AsciidoctorJ dependencies.
      *
      * @return A non-attached runConfiguration.
@@ -568,33 +364,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         }
 
         configuration
-    }
-
-    /**
-     * @deprecated Use{@link #getDocExtensions}
-     */
-    @Deprecated
-    List<Object> getExtensions() {
-        warnExtensionsDeprecated('getExtensions', 'getDocExtensions')
-        docExtensions
-    }
-
-    /**
-     * @deprecated Use{@link #asciidoctorExtensions}
-     */
-    @Deprecated
-    void extensions(Object... exts) {
-        warnExtensionsDeprecated('extensions', 'docExtensions')
-        docExtensions(exts)
-    }
-
-    /**
-     * @deprecated Use{@link #setDocExtensions}
-     */
-    @Deprecated
-    void setExtensions(Iterable<Object> newExtensions) {
-        warnExtensionsDeprecated('setExtensions', 'setDocExtensions')
-        docExtensions = newExtensions
     }
 
     /** Return extensions to be registered.
@@ -774,76 +543,6 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         }
     }
 
-    private Collection<String> stringizeList(
-        Collection<Object> list,
-        boolean fromTaskOnly,
-        Closure<Collection<String>> other
-    ) {
-        if (!task || fromTaskOnly) {
-            stringize(list)
-        } else if (list.isEmpty()) {
-            other.call(extFromProject)
-        } else {
-            List<Object> newOptions = []
-            newOptions.addAll(other.call(extFromProject))
-            newOptions.addAll(list)
-            stringize(newOptions)
-        }
-    }
-
-    private Map<String, Object> stringizeMapRecursive(
-        Map<String, Object> map,
-        boolean fromTaskOnly,
-        Closure<Map<String, Object>> other
-    ) {
-        if (!task || fromTaskOnly) {
-            stringizeScalarMapItems(map)
-        } else if (map.isEmpty()) {
-            other.call(extFromProject)
-        } else {
-            Map<String, Object> newOptions = [:]
-            newOptions.putAll(other.call(extFromProject))
-            newOptions.putAll(map)
-            stringizeScalarMapItems(newOptions)
-        }
-    }
-
-    private List<Object> stringizeScalarListItems(List<Object> list) {
-        Transform.toList(list) { item ->
-            switch (item) {
-                case List:
-                    return stringizeScalarListItems((List) item)
-                case Map:
-                    return stringizeScalarMapItems((Map) item)
-                case boolean:
-                case Boolean:
-                    return (Boolean) item
-                case File:
-                    return ((File) item).absolutePath
-                default:
-                    return stringize(item)
-            }
-        }
-    }
-
-    private Map<String, Object> stringizeScalarMapItems(Map<String, Object> map) {
-        map.collectEntries { String key, Object item ->
-            switch (item) {
-                case List:
-                    return [key, stringizeScalarListItems((List) item)]
-                case Map:
-                    return [key, stringizeScalarMapItems((Map) item)]
-                case boolean:
-                case Boolean:
-                    return [key, ((Boolean) item)]
-                case File:
-                    return [key, ((File) item).absolutePath]
-                default:
-                    return [key, stringize(item)]
-            }
-        } as Map<String, Object>
-    }
-
     private AsciidoctorJExtension getExtFromProject() {
         task ? (AsciidoctorJExtension) projectExtension : this
     }
@@ -945,15 +644,5 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         } else {
             extFromProject.modules.diagram.version
         }
-    }
-
-    @SuppressWarnings('LineLength')
-    private void warnVersionMethodDeprecated(final String oldMethod, final String newMethod) {
-        project.logger.warn("${NAME}.${oldMethod} is deprecated and will be removed in 3.0. Use ${NAME}.${newMethod} instead.")
-    }
-
-    @SuppressWarnings('LineLength')
-    private void warnExtensionsDeprecated(String oldMethod, String newMethod) {
-        project.logger.warn "${oldMethod} is deprecated and will be removed in 3.0 of this plugin suite. Use ${newMethod} instead"
     }
 }

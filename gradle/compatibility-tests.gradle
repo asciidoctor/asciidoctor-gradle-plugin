@@ -42,7 +42,6 @@ gradleTest {
     systemProperties OFFLINE_REPO: offlineRepoRoot.absolutePath
 }
 
-
 licenseGradleTest.enabled = false
 
 pluginManager.withPlugin('jacoco') {
