@@ -11,7 +11,6 @@ asciidoctorjs {
     modules {
         docbook.use()
     }
-    logLevel 'INFO'
 }
 
 asciidoctor {
