@@ -1,6 +1,5 @@
 import org.asciidoctor.gradle.jvm.AsciidoctorPdfTask
 import org.asciidoctor.gradle.jvm.AsciidoctorTask
-import org.asciidoctor.gradle.jvm.OutputOptions
 import org.asciidoctor.gradle.jvm.ProcessMode
 
 // tag::using-two-plugins-three-backends[]

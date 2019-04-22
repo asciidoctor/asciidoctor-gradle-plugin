@@ -49,4 +49,11 @@ interface AsciidoctorJSModules {
      */
     boolean isSetVersionsDifferentTo(AsciidoctorJSModules other)
 
+    /** Returns a module by name
+     *
+     * @param name Name of module
+     * @return Module* @throws {@link org.asciidoctor.gradle.base.ModuleNotFoundException} when the module
+     *   is not registered.
+     */
+    AsciidoctorModuleDefinition getByName(final String name)
 }

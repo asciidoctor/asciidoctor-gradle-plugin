@@ -27,19 +27,22 @@ import static org.ysb33r.grolifant.api.StringUtils.stringize
  */
 class AsciidoctorJSModule implements AsciidoctorModuleDefinition {
 
+    final String name
+
     private Optional<Object> version = Optional.empty()
     private final Object defaultVersion
     private final Action<Object> setAction
 
-    static AsciidoctorJSModule of(final Object defaultVersion) {
-        new AsciidoctorJSModule(defaultVersion)
+    static AsciidoctorJSModule of(final String name, final Object defaultVersion) {
+        new AsciidoctorJSModule(name, defaultVersion)
     }
 
-    static AsciidoctorJSModule of(final Object defaultVersion, Closure setAction) {
-        new AsciidoctorJSModule(defaultVersion, setAction as Action<Object>)
+    static AsciidoctorJSModule of(final String name, final Object defaultVersion, Closure setAction) {
+        new AsciidoctorJSModule(name, defaultVersion, setAction as Action<Object>)
     }
 
-    AsciidoctorJSModule(final Object defaultVersion, Action<Object> setAction = null) {
+    AsciidoctorJSModule(final String name, final Object defaultVersion, Action<Object> setAction = null) {
+        this.name = name
         this.defaultVersion = defaultVersion
         this.setAction = setAction
     }
