@@ -8,7 +8,7 @@ stages:
 cache:
   key: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME-$CI_JOB_STAGE-$CI_JOB_NAME"
   paths:
-  - $HOME/.gradle
+    - $HOME/.gradle
 
 testrepo:
   stage: repo
@@ -16,13 +16,13 @@ testrepo:
   script: ./gradlew -i --console=plain --no-build-cache :testfixtures-offline-repo:buildOfflineRepositories
   artifacts:
     paths:
-    - testfixtures/offline-repo/build/repo/
+      - testfixtures/offline-repo/build/repo/
     expire_in: 90min
     when: always
   except:
-  - pages
-  - gh-pages
-  - tags
+    - pages
+    - gh-pages
+    - tags
   cache:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME-$CI_JOB_STAGE-$CI_JOB_NAME"
     paths:
@@ -35,14 +35,14 @@ jdk8:
   script: ./gradlew -i -S --console=plain --no-build-cache assemble codenarcAll license
   artifacts:
     paths:
-    - .gradle/
-    - '*/build/'
+      - .gradle/
+      - '*/build/'
     expire_in: 60min
     when: always
   except:
-  - pages
-  - gh-pages
-  - tags
+    - pages
+    - gh-pages
+    - tags
 
 jdk11:
   stage: build
@@ -50,30 +50,45 @@ jdk11:
   script: ./gradlew -i -S --console=plain --no-build-cache assemble
   artifacts:
     paths:
-    - .gradle/
-    - '*/build/'
+      - .gradle/
+      - '*/build/'
     expire_in: 60min
     when: always
   except:
-  - pages
-  - gh-pages
-  - tags
+    - pages
+    - gh-pages
+    - tags
+
+jdk12:
+  stage: build
+  image: openjdk:12
+  script: ./gradlew -i -S --console=plain --no-build-cache assemble
+  artifacts:
+    paths:
+      - .gradle/
+      - '*/build/'
+    expire_in: 60min
+    when: always
+  except:
+    - pages
+    - gh-pages
+    - tags
 
 test:integration:
   stage: test
   image: openjdk:8
   except:
-  - pages
-  - gh-pages
-  - tags
+    - pages
+    - gh-pages
+    - tags
   dependencies:
-  - testrepo
-  - jdk8
+    - testrepo
+    - jdk8
   script: ./gradlew -i -s --console=plain --no-build-cache test intTest remoteTest
   artifacts:
     paths:
-    - '*/build/reports'
-    - '*/build/jacoco'
+      - '*/build/reports'
+      - '*/build/jacoco'
     expire_in: 10 days
     when: on_failure
 
@@ -81,17 +96,17 @@ test:gradle_4.0.2,4.1,4.2.1:
   stage: test
   image: openjdk:8
   except:
-  - pages
-  - gh-pages
-  - tags
+    - pages
+    - gh-pages
+    - tags
   dependencies:
-  - testrepo
-  - jdk8
+    - testrepo
+    - jdk8
   script: ./run-compatibility-test-on-ci.sh
   artifacts:
     paths:
-    - '*/build/reports'
-    - '*/build/jacoco'
+      - '*/build/reports'
+      - '*/build/jacoco'
     expire_in: 10 days
     when: on_failure
 
@@ -99,12 +114,12 @@ test:gradle_4.3.1,4.4.1,4.5.1:
   stage: test
   image: openjdk:8
   except:
-  - pages
-  - gh-pages
-  - tags
+    - pages
+    - gh-pages
+    - tags
   dependencies:
-  - testrepo
-  - jdk8
+    - testrepo
+    - jdk8
   script: ./run-compatibility-test-on-ci.sh
   artifacts:
     paths:
@@ -117,12 +132,12 @@ test:gradle_4.6,4.7,4.8.1:
   stage: test
   image: openjdk:8
   except:
-  - pages
-  - gh-pages
-  - tags
+    - pages
+    - gh-pages
+    - tags
   dependencies:
-  - testrepo
-  - jdk8
+    - testrepo
+    - jdk8
   script: ./run-compatibility-test-on-ci.sh
   artifacts:
     paths:
@@ -135,12 +150,12 @@ test:gradle_4.9,4.10.2:
   stage: test
   image: openjdk:11
   except:
-  - pages
-  - gh-pages
-  - tags
+    - pages
+    - gh-pages
+    - tags
   dependencies:
-  - testrepo
-  - jdk11
+    - testrepo
+    - jdk11
   script: ./run-compatibility-test-on-ci.sh
   artifacts:
     paths:
@@ -149,16 +164,16 @@ test:gradle_4.9,4.10.2:
     expire_in: 10 days
     when: on_failure
 
-test:gradle_5.0,5.1.1:
+test:gradle_5.0,5.1.1,5.3.1:
   stage: test
   image: openjdk:11
   except:
-  - pages
-  - gh-pages
-  - tags
+    - pages
+    - gh-pages
+    - tags
   dependencies:
-  - testrepo
-  - jdk11
+    - testrepo
+    - jdk11
   script: ./run-compatibility-test-on-ci.sh
   artifacts:
     paths:
@@ -167,16 +182,16 @@ test:gradle_5.0,5.1.1:
     expire_in: 10 days
     when: on_failure
 
-test:gradle_5.3:
+test:gradle_5.4:
   stage: test
-  image: openjdk:11
+  image: openjdk:12
   except:
-  - pages
-  - gh-pages
-  - tags
+    - pages
+    - gh-pages
+    - tags
   dependencies:
-  - testrepo
-  - jdk11
+    - testrepo
+    - jdk11
   script: ./run-compatibility-test-on-ci.sh
   artifacts:
     paths:
