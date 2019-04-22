@@ -232,7 +232,7 @@ asciidoctor {
     @Unroll
     void 'Asciidoctor extension is defined in #extScope, version config is on #verScope'() {
         given:
-        String extDSL = '''asciidoctorj.extensions file('src/docs/asciidoc/blockMacro.groovy')'''
+        String extDSL = '''asciidoctorj.docExtensions file('src/docs/asciidoc/blockMacro.groovy')'''
         getBuildFile(
             processMode, version, """
                 ${extScope == GLOBAL ? extDSL : ''}
