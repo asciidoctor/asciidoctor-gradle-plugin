@@ -3,7 +3,7 @@
 == The AsciidoctorPdf Plugin
 
 
-When applying `org.asciidoctor.jvm.pdf` it creates a single task of type `org.asciidoctor.gradle.jvm.AsciidoctorPdfTask` an extension called `pdfThemes`
+When applying `org.asciidoctor.jvm.pdf` it creates a single task of type `org.asciidoctor.gradle.jvm.pdf.AsciidoctorPdfTask` an extension called `pdfThemes`
 
 The default task is named `asciidoctorPdf` and is configured to:
 

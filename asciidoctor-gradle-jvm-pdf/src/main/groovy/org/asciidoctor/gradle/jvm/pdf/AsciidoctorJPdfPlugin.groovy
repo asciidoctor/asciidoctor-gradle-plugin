@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.jvm
+package org.asciidoctor.gradle.jvm.pdf
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.jvm.AsciidoctorJBasePlugin
+import org.asciidoctor.gradle.jvm.AsciidoctorJExtension
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
