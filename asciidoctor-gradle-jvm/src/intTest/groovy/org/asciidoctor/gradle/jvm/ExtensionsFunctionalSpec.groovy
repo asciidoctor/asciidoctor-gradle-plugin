@@ -115,6 +115,9 @@ block('small') {
 }
 """)
         GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
+        if (model.processMode != 'JAVA_EXEC') {
+            runner.withDebug(false)
+        }
 
         when:
         runner.build()
