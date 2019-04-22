@@ -25,7 +25,7 @@ import groovy.transform.CompileStatic
 class AsciidoctorjTestVersions {
 
     // These lines are read by the build script.
-    public final static String SERIES_20 = '2.0.0-RC.2'
+    public final static String SERIES_20 = '2.0.0-RC.3'
     public final static String GROOVYDSL_SERIES_20 = '1.6.0'
     public final static String DIAGRAM_SERIES_20 = '1.5.16'
 }

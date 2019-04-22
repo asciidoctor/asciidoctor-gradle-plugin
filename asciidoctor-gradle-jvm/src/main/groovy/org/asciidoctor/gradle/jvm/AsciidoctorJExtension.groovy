@@ -57,7 +57,7 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     // It is also a good idea that DEFAULT_ASCIIDOCTORJ_VERSION  matches one of
     // the values in testfixtures-jvm.
     // ------------------------------------------------------------------------
-    final static String DEFAULT_ASCIIDOCTORJ_VERSION = '2.0.0-RC.2'
+    final static String DEFAULT_ASCIIDOCTORJ_VERSION = '2.0.0-RC.3'
     final static String DEFAULT_GROOVYDSL_VERSION = '1.6.0'
     final static String DEFAULT_PDF_VERSION = '1.5.0-alpha.16'
     final static String DEFAULT_EPUB_VERSION = '1.5.0-alpha.9'
