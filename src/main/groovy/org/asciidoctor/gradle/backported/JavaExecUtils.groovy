@@ -39,7 +39,6 @@ class JavaExecUtils {
      */
     static FileCollection getJavaExecClasspath(final Project project, final FileCollection asciidoctorClasspath) {
         File entryPoint = getClassLocation(AsciidoctorJavaExec)
-        File groovyJar = getClassLocation(GroovyObject)
         project.files(entryPoint, asciidoctorClasspath, org.asciidoctor.gradle.AsciidoctorUtils.contextClasspath)
     }
 

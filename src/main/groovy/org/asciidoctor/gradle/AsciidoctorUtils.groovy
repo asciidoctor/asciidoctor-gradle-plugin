@@ -82,4 +82,15 @@ class AsciidoctorUtils {
     static File getClassLocation(Class aClass) {
         FileUtils.resolveClassLocation(aClass).file
     }
+
+    /** Returns the location of the local Groovy Jar that is used by Gradle.
+     *
+     * @return Location on filesysetm where the Groovy Jar is located.
+     *
+     * @since 1.5.12 (backported form 2.1.0)
+     */
+    static File getLocalGroovy() {
+        getClassLocation(GroovyObject)
+    }
+
 }
