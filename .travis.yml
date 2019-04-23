@@ -15,8 +15,7 @@ script:
 
 jdk:
     - oraclejdk8
-    - openjdk9
-    - openjdk10
+    - openjdk11
 
 after_success:
     - ./gradlew coveralls
