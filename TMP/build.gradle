@@ -1,0 +1,15 @@
+plugins {
+   id 'org.asciidoctor.convert' version '1.5.11'
+}
+
+repositories {
+    jcenter()
+}
+
+asciidoctor {
+    extensions {
+    }
+
+    sourceDir 'docs'
+}
+

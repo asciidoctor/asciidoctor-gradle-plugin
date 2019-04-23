@@ -25,6 +25,7 @@ import org.asciidoctor.gradle.backported.SafeMode
 import org.gradle.api.DefaultTask
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.Dependency
 import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.FileTree
@@ -578,6 +579,7 @@ class AsciidoctorTask extends DefaultTask {
 
     @TaskAction
     @CompileStatic
+    @SuppressWarnings('AbcMetric')
     void processAsciidocSources() {
         if (sourceFileTree.files.size() == 0) {
             logger.lifecycle 'Asciidoc source file tree is empty. Nothing will be processed.'
@@ -628,14 +630,16 @@ class AsciidoctorTask extends DefaultTask {
             getClassLocation(it.class)
         }.toSet()
 
-        if (GRADLE_4_OR_BETTER) {
+        Configuration deps = classpath ?: project.configurations.getByName(AsciidoctorPlugin.ASCIIDOCTOR)
+        if (GRADLE_4_OR_BETTER && !closurePaths.empty) {
             closurePaths.add(getClassLocation(org.gradle.internal.scripts.ScriptOrigin))
+            closurePaths.addAll(ifNoGroovyAddLocal(deps.dependencies.toList()))
         }
 
         FileCollection javaExecClasspath = project.files(
             getJavaExecClasspath(
                 project,
-                classpath ?: project.configurations.getByName(AsciidoctorPlugin.ASCIIDOCTOR)
+                deps
             ),
             closurePaths
         )
@@ -649,6 +653,16 @@ class AsciidoctorTask extends DefaultTask {
         }
 
         runJavaExec(execConfigurationData, javaExecClasspath)
+    }
+
+    private List<File> ifNoGroovyAddLocal(final List<Dependency> deps) {
+        if (deps.find {
+            it.name == 'groovy-all' || it.name == 'groovy'
+        }) {
+            []
+        } else {
+            [AsciidoctorUtils.localGroovy]
+        }
     }
 
     @CompileDynamic
@@ -771,7 +785,9 @@ class AsciidoctorTask extends DefaultTask {
             logger.warn 'It seems that you may be using one or more implicit attributes: `projectdir`, `rootdir`, `project-version`, `project-group`, `project.name` in your documents. These are deprecated and will no longer be set in 2.0. Please migrate your documents to use `gradle-projectdir`, `gradle-rootdir`, ``revnumber`, `gradle-project-version`, `gradle-project-name` respectively.'
 
             if(dumpLegacyFileList) {
-                File base = sourceDir
+                @SuppressWarnings('UnnecessaryGetter')
+                File base = getSourceDir()
+
                 String finalList = hits.collect { File f ->
                     getRelativePath(f,base)
                 }.join(', ')
