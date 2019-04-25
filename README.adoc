@@ -969,6 +969,19 @@ block(name: "BIG", contexts: [":paragraph"]) {
 [appendix]
 == Tips & Tricks
 
+=== Issues with plugins that modify project.version
+
+Plugins such as https://github.com/nebula-plugins/nebula-release-plugin[Nebula Release] and https://github.com/ajoberstar/reckon[Reckon] modify `project.version` with a non-serialisable object. This breaks the build. 
+
+The safest workaround is to set the `revnumber` attribute to a delayed evaluation of `project.version` in your build:
+
+[source,groovy]
+----
+asciidoctorj {
+    attributes revnumber : { project.version.toString() }
+}    
+----
+
 === Pre-process and post-process
 
 To make your own custom actions before or after asciidoctor processing, use `doFirst` and `doLast`. Check out chapters https://docs.gradle.org/current/userguide/tutorial_using_tasks.html[14] and https://docs.gradle.org/current/userguide/more_about_tasks.html[17] in the Gradle docs to learn about the various actions you can perform.
