@@ -827,15 +827,15 @@ is just like any other Java/Groovy project. You simply define a dependency using
 .build.gradle
 ----
 configurations {
-    asciidoctor
+    asciidoctorExt
 }
 
 dependencies {
-    asciidoctor 'com.acme:asciidoctor-extensions:x.y.z'
+    asciidoctorExt 'com.acme:asciidoctor-extensions:x.y.z'
 }
 
 asciidoctor {
-    configurations 'asciidoctor'
+    configurations 'asciidoctorExt'
 }
 ----
 
