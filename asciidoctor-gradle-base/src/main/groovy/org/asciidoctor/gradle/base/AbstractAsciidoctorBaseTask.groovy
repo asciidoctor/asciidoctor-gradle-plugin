@@ -36,6 +36,7 @@ import org.gradle.api.tasks.util.PatternSet
 import org.ysb33r.grolifant.api.FileUtils
 
 import java.nio.file.Path
+import java.util.concurrent.Callable
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.UNDERSCORE_LED_FILES
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClosure
@@ -52,7 +53,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
 
     private Object srcDir
     private Object outDir
-    private Object baseDir
+    private BaseDirStrategy baseDir
 
     private PatternSet sourceDocumentPattern
     private PatternSet secondarySourceDocumentPattern
@@ -110,7 +111,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
     // simply the value change - we achieve that via a normal property.
     @Internal
     File getBaseDir() {
-        this.baseDir != null ? project.file(this.baseDir) : project.projectDir
+        this.baseDir.baseDir
     }
 
     /** Sets the base directory for a conversion.
@@ -123,7 +124,50 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * @param f Base directory
      */
     void setBaseDir(Object f) {
-        this.baseDir = f
+        switch (f) {
+            case BaseDirStrategy:
+                this.baseDir = (BaseDirStrategy) f
+                break
+            default:
+                this.baseDir = new BaseDirIsFixedPath(project.providers.provider({
+                    project.file(f)
+                } as Callable<File>))
+        }
+    }
+
+    /** Sets the basedir to be the same directory as the root project directory.
+     *
+     * @return A strategy that allows the basedir to be locked to the root project.
+     *
+     * @since 2.2.0
+     */
+    BaseDirStrategy baseDirIsRootProjectDir() {
+        new BaseDirFollowsRootProject(project)
+    }
+
+    /** Sets the basedir to be the same directory as the current project directory.
+     *
+     * @return A strategy that allows the basedir to be locked to the current project.
+     *
+     * @since 2.2.0
+     */
+    BaseDirStrategy baseDirIsProjectDir() {
+        new BaseDirFollowsProject(project)
+    }
+
+    /** The base dir will be the same as the source directory.
+     *
+     * If an intermediate working directory is sued, the the base dir will be where the
+     * source directory is located within the temporary working directory.
+     *
+     * @return A strategy that allows the basedir to be locked to the current project.
+     *
+     * @since 2.2.0
+     */
+    BaseDirStrategy baseDirFollowsSourceDir() {
+        new BaseDirIsFixedPath(project.providers.provider({ AbstractAsciidoctorBaseTask task ->
+            task.withIntermediateWorkDir ? task.intermediateWorkDir : task.sourceDir
+        }.curry(this) as Callable<File>))
     }
 
     /** Configures sources.
