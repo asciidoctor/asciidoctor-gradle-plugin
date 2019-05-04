@@ -324,6 +324,9 @@ All Asciidoctor tasks will have the following methods and properties:
 asciidoctorj:: a task extension which allows a task to extend of override global configuration for Asciidoctor tasks.
   This allow extensive flexibility. Any thing that can be configured in the global `asciidoctorj` extension can also be configured here.
 attributes:: A shortcut for `asciidoctorj.attributes`.
+baseDir:: Base directory for asciidoctor jail.
+  The base directory will be the project directory, but default, but can be set to any other directory. It can also be
+  set to follow any of the following strategies: `baseDirIsRootProjectDir()`, `baseDirIsProjectDir()`, `baseDirFollowsSourceDir()`
 configurations:: Specify additional configurations
   These configurations will be added to the classpath when the task is executed.
 copyAllResources:: Copy all resources to the output directory
