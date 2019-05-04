@@ -133,7 +133,7 @@ abstract class AbstractImplementationEngineExtension extends AbstractCombinedPro
 
     protected AbstractImplementationEngineExtension(Project project) {
         super(project)
-        this.safeMode = SafeMode.SAFE
+        this.safeMode = SafeMode.UNSAFE
         this.attributes['gradle-project-name'] = project.name
         this.attributes['gradle-project-group'] = { project.group ?: '' }
         this.attributes['gradle-project-version'] = { project.version ?: '' }
