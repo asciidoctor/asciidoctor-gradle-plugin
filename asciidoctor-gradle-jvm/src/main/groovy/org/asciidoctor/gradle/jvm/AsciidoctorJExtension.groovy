@@ -119,7 +119,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         this.attributes['gradle-project-group'] = { project.group ?: '' }
         this.attributes['gradle-project-version'] = { project.version ?: '' }
 
-        this.safeMode = SafeMode.SAFE
+        this.safeMode = SafeMode.UNSAFE
         this.version = DEFAULT_ASCIIDOCTORJ_VERSION
         this.modules = new AsciidoctorJModules(this)
     }

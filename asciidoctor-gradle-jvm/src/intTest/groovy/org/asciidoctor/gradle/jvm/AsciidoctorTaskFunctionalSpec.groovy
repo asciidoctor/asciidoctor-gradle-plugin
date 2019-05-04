@@ -197,6 +197,24 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         !result.contains('ArrayIndexOutOfBoundsException')
     }
 
+    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/368')
+    void 'Docinfo files are processed'() {
+        given:
+        getBuildFile( '''
+        asciidoctor {
+            attributes docinfo: 'shared'
+            baseDir 'src/docs/asciidoc'
+        }
+        ''')
+
+        when:
+        getGradleRunner(DEFAULT_ARGS).withDebug(true).build()
+
+        then:
+        new File(testProjectDir.root, 'build/docs/asciidoc/sample.html').text
+                .contains('<meta name="asciidoctor-docinfo-test"/>')
+    }
+
     File getBuildFile(String extraContent) {
         getJvmConvertGroovyBuildFile("""
 asciidoctorj {
