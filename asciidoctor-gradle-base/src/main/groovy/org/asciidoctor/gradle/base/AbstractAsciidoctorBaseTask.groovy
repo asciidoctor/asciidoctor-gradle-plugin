@@ -17,6 +17,9 @@ package org.asciidoctor.gradle.base
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.base.basedir.BaseDirFollowsProject
+import org.asciidoctor.gradle.base.basedir.BaseDirFollowsRootProject
+import org.asciidoctor.gradle.base.basedir.BaseDirIsFixedPath
 import org.asciidoctor.gradle.base.internal.Workspace
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
@@ -24,10 +27,10 @@ import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileTree
+import org.gradle.api.tasks.Console
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
-import org.gradle.api.tasks.Console
 import org.gradle.api.tasks.OutputDirectories
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
@@ -111,7 +114,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
     // simply the value change - we achieve that via a normal property.
     @Internal
     File getBaseDir() {
-        this.baseDir.baseDir
+        this.baseDir ? this.baseDir.baseDir : project.projectDir
     }
 
     /** Sets the base directory for a conversion.
@@ -141,8 +144,8 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      *
      * @since 2.2.0
      */
-    BaseDirStrategy baseDirIsRootProjectDir() {
-        new BaseDirFollowsRootProject(project)
+    void baseDirIsRootProjectDir() {
+        this.baseDir = new BaseDirFollowsRootProject(project)
     }
 
     /** Sets the basedir to be the same directory as the current project directory.
@@ -151,8 +154,8 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      *
      * @since 2.2.0
      */
-    BaseDirStrategy baseDirIsProjectDir() {
-        new BaseDirFollowsProject(project)
+    void baseDirIsProjectDir() {
+        this.baseDir = new BaseDirFollowsProject(project)
     }
 
     /** The base dir will be the same as the source directory.
@@ -164,8 +167,8 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      *
      * @since 2.2.0
      */
-    BaseDirStrategy baseDirFollowsSourceDir() {
-        new BaseDirIsFixedPath(project.providers.provider({ AbstractAsciidoctorBaseTask task ->
+    void baseDirFollowsSourceDir() {
+        this.baseDir =  new BaseDirIsFixedPath(project.providers.provider({ AbstractAsciidoctorBaseTask task ->
             task.withIntermediateWorkDir ? task.intermediateWorkDir : task.sourceDir
         }.curry(this) as Callable<File>))
     }
@@ -373,6 +376,17 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         cfg.execute(this.intermediateArtifactPattern)
     }
 
+    /** The directory that will be the intermediate directory should one be required.
+     *
+     * @return Intermediate working directory
+     *
+     * @since 2.2.0
+     */
+    @Internal
+    File getIntermediateWorkDir() {
+        project.file("${project.buildDir}/tmp/${FileUtils.toSafeFileName(this.name)}.intermediate")
+    }
+
     /** Returns a list of all output directories by backend
      *
      * @since 1.5.1
@@ -488,7 +502,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      */
     protected FileTree getSecondarySourceFileTreeFrom(File dir) {
         project.fileTree(dir).
-            matching(this.secondarySourceDocumentPattern ?: defaultSecondarySourceDocumentPattern)
+                matching(this.secondarySourceDocumentPattern ?: defaultSecondarySourceDocumentPattern)
     }
 
     /** The default PatternSet that will be used if {@code sources} was never called
@@ -521,7 +535,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * If the user specifies any of these attributes, then those attributes will not be utilised.
      *
      * The default implementation will add {@code includedir}, {@code revnumber}, {@code gradle-project-group},
-     *   {@code gradle-project-name}
+     * {@code gradle-project-name}
      *
      * @param workingSourceDir Directory where source files are located.
      *
@@ -529,8 +543,8 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      */
     protected Map<String, Object> getTaskSpecificDefaultAttributes(File workingSourceDir) {
         Map<String, Object> attrs = [
-            includedir           : (Object) workingSourceDir.absolutePath,
-            'gradle-project-name': (Object) project.name
+                includedir           : (Object) workingSourceDir.absolutePath,
+                'gradle-project-name': (Object) project.name
         ]
 
         if (project.version != null) {
@@ -593,8 +607,8 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         logger.info "Copy resources for '${backendName}' to ${outputDir}"
 
         FileTree ps = this.intermediateArtifactPattern ?
-            project.fileTree(sourceDir).matching(this.intermediateArtifactPattern) :
-            null
+                project.fileTree(sourceDir).matching(this.intermediateArtifactPattern) :
+                null
         project.copy(new Action<CopySpec>() {
             @Override
             void execute(CopySpec copySpec) {
@@ -610,11 +624,13 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         })
     }
 
-    /** Name of the implementation engine.
+    /** Checks whether an explicit strategy has been set for base directory.
      *
-     * @return
+     * @return {@code true} if a strategy has been configured.
      */
-    abstract protected String getEngineName()
+    protected boolean isBaseDirConfigured() {
+        this.baseDir != null
+    }
 
     /** Validates all preconditions prior to starting to run the conversion process.
      *
@@ -623,6 +639,12 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         checkForInvalidSourceDocuments()
         checkForIncompatiblePathRoots()
     }
+
+    /** Name of the implementation engine.
+     *
+     * @return
+     */
+    abstract protected String getEngineName()
 
     private void checkForInvalidSourceDocuments() {
         if (!sourceFileTree.filter { File f ->
@@ -643,9 +665,9 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
 
         if (sourceRoot != baseRoot || outputRoot != baseRoot) {
             throw new AsciidoctorExecutionException(
-                "sourceDir, outputDir and baseDir needs to have the same root filesystem for ${engineName} to " +
-                    'function correctly. ' +
-                    'This is typically caused on Windows where everything is not on the same drive letter.'
+                    "sourceDir, outputDir and baseDir needs to have the same root filesystem for ${engineName} to " +
+                            'function correctly. ' +
+                            'This is typically caused on Windows where everything is not on the same drive letter.'
             )
         }
     }
@@ -661,9 +683,5 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
             from sourceFileTree
             with resourceCopySpec
         }
-    }
-
-    private File getIntermediateWorkDir() {
-        project.file("${project.buildDir}/tmp/${FileUtils.toSafeFileName(this.name)}.intermediate")
     }
 }

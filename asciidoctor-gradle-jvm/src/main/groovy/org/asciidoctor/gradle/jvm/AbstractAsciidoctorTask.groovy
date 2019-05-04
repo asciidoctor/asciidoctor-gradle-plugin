@@ -19,12 +19,6 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AbstractAsciidoctorBaseTask
 import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
-import org.asciidoctor.gradle.base.BaseDirStrategy
-import org.asciidoctor.gradle.base.Transform
-import org.asciidoctor.gradle.base.basedir.BaseDirFollowsProject
-import org.asciidoctor.gradle.base.basedir.BaseDirFollowsRootProject
-import org.asciidoctor.gradle.base.basedir.BaseDirIsFixedPath
-import org.asciidoctor.gradle.base.AsciidoctorExecutionException
 import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.base.internal.Workspace
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
@@ -48,10 +42,7 @@ import org.gradle.process.JavaForkOptions
 import org.gradle.util.GradleVersion
 import org.gradle.workers.WorkerConfiguration
 import org.gradle.workers.WorkerExecutor
-import org.ysb33r.grolifant.api.FileUtils
 import org.ysb33r.grolifant.api.StringUtils
-
-import java.util.concurrent.Callable
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClosure
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.getClassLocation
@@ -317,7 +308,6 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
 
         addInputProperty 'required-ruby-modules', { AsciidoctorJExtension aj -> aj.requires }.curry(this.asciidoctorj)
         addInputProperty 'gemPath', { asciidoctorj.asGemPath() }
-        addInputProperty 'trackBaseDir', { AbstractAsciidoctorTask t -> t.baseDir.absolutePath }.curry(this)
 
         inputs.files { asciidoctorj.gemPaths }
         inputs.files { filesFromCopySpec(resourceCopySpec) }
@@ -328,13 +318,13 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
      * @return Executor configurations
      */
     protected Map<String, ExecutorConfiguration> getExecutorConfigurations(
-        final File workingSourceDir,
-        final Set<File> sourceFiles
+            final File workingSourceDir,
+            final Set<File> sourceFiles
     ) {
         configuredOutputOptions.backends.collectEntries { String activeBackend ->
             [
-                "backend=${activeBackend}".toString(),
-                getExecutorConfigurationFor(activeBackend, workingSourceDir, sourceFiles)
+                    "backend=${activeBackend}".toString(),
+                    getExecutorConfigurationFor(activeBackend, workingSourceDir, sourceFiles)
             ]
         }
     }
@@ -350,30 +340,31 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
      */
     @SuppressWarnings('UnnecessaryGetter')
     protected ExecutorConfiguration getExecutorConfigurationFor(
-        final String backendName,
-        final File workingSourceDir,
-        final Set<File> sourceFiles
+            final String backendName,
+            final File workingSourceDir,
+            final Set<File> sourceFiles
     ) {
 
         Optional<List<String>> copyResources = getCopyResourcesForBackends()
         new ExecutorConfiguration(
-            sourceDir: workingSourceDir,
-            sourceTree: sourceFiles,
-            outputDir: getOutputDirFor(backendName),
-            baseDir: getBaseDir(),
-            projectDir: project.projectDir,
-            rootDir: project.rootProject.projectDir,
-            options: evaluateProviders(options),
-            attributes: preparePreserialisedAttributes(workingSourceDir),
-            backendName: backendName,
-            logDocuments: logDocuments,
-            gemPath: gemPath,
-            fatalMessagePatterns: asciidoctorj.fatalWarnings,
-            asciidoctorExtensions: (asciidoctorJExtensions.findAll { !(it instanceof Dependency) }),
-            requires: requires,
-            copyResources: copyResources.present && (copyResources.get().empty || backendName in copyResources.get()),
-            executorLogLevel: ExecutorUtils.getExecutorLogLevel(asciidoctorj.logLevel),
-            safeModeLevel: asciidoctorj.safeMode.level
+                sourceDir: workingSourceDir,
+                sourceTree: sourceFiles,
+                outputDir: getOutputDirFor(backendName),
+                baseDir: getBaseDir(),
+                projectDir: project.projectDir,
+                rootDir: project.rootProject.projectDir,
+                options: evaluateProviders(options),
+                attributes: preparePreserialisedAttributes(workingSourceDir),
+                backendName: backendName,
+                logDocuments: logDocuments,
+                gemPath: gemPath,
+                fatalMessagePatterns: asciidoctorj.fatalWarnings,
+                asciidoctorExtensions: (asciidoctorJExtensions.findAll { !(it instanceof Dependency) }),
+                requires: requires,
+                copyResources: copyResources.present &&
+                        (copyResources.get().empty || backendName in copyResources.get()),
+                executorLogLevel: ExecutorUtils.getExecutorLogLevel(asciidoctorj.logLevel),
+                safeModeLevel: asciidoctorj.safeMode.level
         )
     }
 
@@ -423,7 +414,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
     protected ProcessMode getFinalProcessMode() {
         if (inProcess != JAVA_EXEC && GradleVersion.current() < GradleVersion.version(('4.3'))) {
             logger.warn('Gradle API classpath leakage will cause issues with Gradle < 4.3. ' +
-                'Switching to JAVA_EXEC instead.')
+                    'Switching to JAVA_EXEC instead.')
             JAVA_EXEC
         } else {
             this.inProcess
@@ -435,33 +426,33 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
     }
 
     private Map<String, ExecutorConfiguration> runWithWorkers(
-        final File workingSourceDir, final Set<File> sourceFiles) {
+            final File workingSourceDir, final Set<File> sourceFiles) {
         FileCollection asciidoctorClasspath = configurations
         logger.info "Running AsciidoctorJ with workers. Classpath = ${asciidoctorClasspath.files}"
 
         Map<String, ExecutorConfiguration> executorConfigurations = getExecutorConfigurations(
-            workingSourceDir,
-            sourceFiles
+                workingSourceDir,
+                sourceFiles
         )
 
         if (parallelMode) {
             executorConfigurations.each { String configName, ExecutorConfiguration executorConfiguration ->
                 worker.submit(AsciidoctorJExecuter) { WorkerConfiguration config ->
                     configureWorker(
-                        "Asciidoctor (task=${name}) conversion for ${configName}",
-                        config,
-                        asciidoctorClasspath,
-                        new ExecutorConfigurationContainer(executorConfiguration)
+                            "Asciidoctor (task=${name}) conversion for ${configName}",
+                            config,
+                            asciidoctorClasspath,
+                            new ExecutorConfigurationContainer(executorConfiguration)
                     )
                 }
             }
         } else {
             worker.submit(AsciidoctorJExecuter) { WorkerConfiguration config ->
                 configureWorker(
-                    "Asciidoctor (task=${name}) conversions for ${executorConfigurations.keySet().join(', ')}",
-                    config,
-                    asciidoctorClasspath,
-                    new ExecutorConfigurationContainer(executorConfigurations.values())
+                        "Asciidoctor (task=${name}) conversions for ${executorConfigurations.keySet().join(', ')}",
+                        config,
+                        asciidoctorClasspath,
+                        new ExecutorConfigurationContainer(executorConfigurations.values())
                 )
             }
         }
@@ -469,32 +460,32 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
     }
 
     private void configureWorker(
-        final String displayName,
-        final WorkerConfiguration config,
-        final FileCollection asciidoctorClasspath,
-        final ExecutorConfigurationContainer ecContainer
+            final String displayName,
+            final WorkerConfiguration config,
+            final FileCollection asciidoctorClasspath,
+            final ExecutorConfigurationContainer ecContainer
     ) {
         config.isolationMode = inProcess == IN_PROCESS ? CLASSLOADER : PROCESS
         config.classpath = asciidoctorClasspath
         config.displayName = displayName
         config.params(
-            ecContainer
+                ecContainer
         )
         configureForkOptions(config.forkOptions)
     }
 
     private Map<String, ExecutorConfiguration> runWithJavaExec(
-        final File workingSourceDir,
-        final Set<File> sourceFiles
+            final File workingSourceDir,
+            final Set<File> sourceFiles
     ) {
         FileCollection javaExecClasspath = JavaExecUtils.getJavaExecClasspath(
-            project,
-            configurations,
-            asciidoctorj.injectInternalGuavaJar
+                project,
+                configurations,
+                asciidoctorj.injectInternalGuavaJar
         )
         Map<String, ExecutorConfiguration> executorConfigurations = getExecutorConfigurations(
-            workingSourceDir,
-            sourceFiles
+                workingSourceDir,
+                sourceFiles
         )
         File execConfigurationData = JavaExecUtils.writeExecConfigurationData(this, executorConfigurations.values())
 
