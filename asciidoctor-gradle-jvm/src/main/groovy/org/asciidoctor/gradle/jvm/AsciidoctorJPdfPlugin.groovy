@@ -50,6 +50,7 @@ class AsciidoctorJPdfPlugin implements Plugin<Project> {
                         group = AsciidoctorJBasePlugin.TASK_GROUP
                         description = 'Convert AsciiDoc files to PDF format'
                         outputDir = { "${project.buildDir}/docs/asciidocPdf" }
+                        sourceDir = 'src/docs/asciidoc'
                     }
                 }
             }

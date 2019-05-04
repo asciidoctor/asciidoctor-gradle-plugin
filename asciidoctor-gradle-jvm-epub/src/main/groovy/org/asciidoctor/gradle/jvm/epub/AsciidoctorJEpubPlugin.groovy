@@ -50,6 +50,7 @@ class AsciidoctorJEpubPlugin implements Plugin<Project> {
                     task.group = AsciidoctorJBasePlugin.TASK_GROUP
                     task.description = 'Convert AsciiDoc files to EPUB3/KF8 formats'
                     task.outputDir = { "${task.project.buildDir}/docs/asciidocEpub" }
+                    task.sourceDir = 'src/docs/asciidoc'
                 }
             }
 
