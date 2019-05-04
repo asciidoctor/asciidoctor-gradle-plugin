@@ -429,6 +429,15 @@ class AsciidoctorTaskSpec extends Specification {
         task.attributeProviders != project.extensions.getByType(AsciidoctorJExtension).attributeProviders
     }
 
+
+    void 'Asciidoctor task with non-default name has different source directory'() {
+        when:
+        AsciidoctorTask task = project.tasks.create(name: 'kilowatt', type: AsciidoctorTask)
+
+        then:
+        task.sourceDir == project.file('src/docs/asciidocKiloWatt')
+    }
+
     AsciidoctorTask asciidoctorTask(Closure cfg) {
         project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask).configure cfg
     }
