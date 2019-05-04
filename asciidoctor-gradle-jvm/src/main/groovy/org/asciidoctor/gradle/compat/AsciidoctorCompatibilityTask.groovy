@@ -290,8 +290,7 @@ Please use one of the following instead instead as current behaviour will no lon
 
     /** Returns the current set of Asciidoctor backends that will be used for document generation
      *
-     * @since 0.7.1
-     * @deprecated
+     * @since 0.7.1* @deprecated
      */
     @Optional
     @Input
@@ -544,7 +543,7 @@ Please use one of the following instead instead as current behaviour will no lon
      *
      * By default anything below {@code $sourceDir/images} will be included.
      *
-     * @return A {@code CopySpec}, never null
+     * @return A{@code CopySpec}, never null
      * @since 1.5.1
      */
     @Internal
@@ -561,7 +560,7 @@ Please use one of the following instead instead as current behaviour will no lon
      * If {@code resources} was never called, it will return a default CopySpec otherwise it will return the
      * one built up via successive calls to {@code resources}
      *
-     * @return A {@code CopySpec}, never null
+     * @return A{@code CopySpec}, never null
      * @since 1.5.1
      */
     @Internal
@@ -573,7 +572,7 @@ Please use one of the following instead instead as current behaviour will no lon
      * If {@code resources} was never called, it will return the file collections as per default CopySpec otherwise it
      * will return the collections as built up via successive calls to {@code resources}
      *
-     * @return A {@code FileCollection}, never null
+     * @return A{@code FileCollection}, never null
      * @since 1.5.2
      */
     @InputFiles

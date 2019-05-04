@@ -571,7 +571,9 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     }
 
     /**
+
      * @deprecated Use {@link #getDocExtensions}
+
      */
     @Deprecated
     List<Object> getExtensions() {
@@ -580,7 +582,9 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     }
 
     /**
+
      * @deprecated Use {@link #asciidoctorExtensions}
+
      */
     @Deprecated
     void extensions(Object... exts) {
@@ -589,7 +593,9 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     }
 
     /**
+
      * @deprecated Use {@link #setDocExtensions}
+
      */
     @Deprecated
     void setExtensions(Iterable<Object> newExtensions) {
