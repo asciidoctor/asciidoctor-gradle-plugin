@@ -203,7 +203,7 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         getBuildFile( '''
         asciidoctor {
             attributes docinfo: 'shared'
-            baseDir 'src/docs/asciidoc'
+            baseDirFollowsSourceDir()
         }
         ''')
 
