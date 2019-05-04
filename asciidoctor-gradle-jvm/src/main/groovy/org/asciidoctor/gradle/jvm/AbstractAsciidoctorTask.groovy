@@ -51,6 +51,8 @@ import org.gradle.workers.WorkerExecutor
 import org.ysb33r.grolifant.api.FileUtils
 import org.ysb33r.grolifant.api.StringUtils
 
+import java.util.concurrent.Callable
+
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClosure
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.getClassLocation
 import static org.gradle.workers.IsolationMode.CLASSLOADER
