@@ -298,7 +298,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
     // simply the value change - we achieve that via a normal property.
     @Internal
     File getBaseDir() {
-        this.baseDir.baseDir
+        this.baseDir ? this.baseDir.baseDir : project.projectDir
     }
 
     /** Sets the base directory for a conversion.
@@ -324,22 +324,18 @@ class AbstractAsciidoctorTask extends DefaultTask {
 
     /** Sets the basedir to be the same directory as the root project directory.
      *
-     * @return A strategy that allows the basedir to be locked to the root project.
-     *
      * @since 2.2.0
      */
-    BaseDirStrategy baseDirIsRootProjectDir() {
-        new BaseDirFollowsRootProject(project)
+    void baseDirIsRootProjectDir() {
+        this.baseDir = new BaseDirFollowsRootProject(project)
     }
 
     /** Sets the basedir to be the same directory as the current project directory.
      *
-     * @return A strategy that allows the basedir to be locked to the current project.
-     *
      * @since 2.2.0
      */
-    BaseDirStrategy baseDirIsProjectDir() {
-        new BaseDirFollowsProject(project)
+    void baseDirIsProjectDir() {
+        this.baseDir = new BaseDirFollowsProject(project)
     }
 
     /** The base dir will be the same as the source directory.
@@ -347,12 +343,10 @@ class AbstractAsciidoctorTask extends DefaultTask {
      * If an intermediate working directory is sued, the the base dir will be where the
      * source directory is located within the temporary working directory.
      *
-     * @return A strategy that allows the basedir to be locked to the current project.
-     *
      * @since 2.2.0
      */
-    BaseDirStrategy baseDirFollowsSourceDir() {
-        new BaseDirIsFixedPath(project.providers.provider({ AbstractAsciidoctorTask task ->
+    void baseDirFollowsSourceDir() {
+        this.baseDir = new BaseDirIsFixedPath(project.providers.provider({ AbstractAsciidoctorTask task ->
             task.withIntermediateWorkDir ? task.intermediateWorkDir : task.sourceDir
         }.curry(this) as Callable<File>))
     }
@@ -635,7 +629,6 @@ class AbstractAsciidoctorTask extends DefaultTask {
     protected AbstractAsciidoctorTask(WorkerExecutor we) {
         this.worker = we
         this.asciidoctorj = extensions.create(AsciidoctorJExtension.NAME, AsciidoctorJExtension, this)
-        this.baseDir = baseDirIsProjectDir()
 
         addInputProperty 'required-ruby-modules', { asciidoctorj.requires }
         addInputProperty 'gemPath', { asciidoctorj.asGemPath() }
@@ -874,6 +867,14 @@ class AbstractAsciidoctorTask extends DefaultTask {
         } else {
             this.inProcess
         }
+    }
+
+    /** To indicate whether a base directory strategy has already been configured.
+     *
+     * @return {@code true} is a strategy has been configured
+     */
+    protected boolean isBaseDirConfigured() {
+        this.baseDir != null
     }
 
     private void checkForInvalidSourceDocuments() {

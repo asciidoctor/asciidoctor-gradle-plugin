@@ -71,7 +71,7 @@ class AsciidoctorTaskSpec extends Specification {
     void 'Base directory can be root project directory'() {
         when:
         AsciidoctorTask task = asciidoctorTask {
-            baseDir baseDirIsRootProjectDir()
+            baseDirIsRootProjectDir()
         }
 
         then:
@@ -81,8 +81,8 @@ class AsciidoctorTaskSpec extends Specification {
     void 'Base directory can be project directory'() {
         when:
         AsciidoctorTask task = asciidoctorTask {
-            baseDir baseDirIsRootProjectDir()
-            baseDir baseDirIsProjectDir()
+            baseDirIsRootProjectDir()
+            baseDirIsProjectDir()
         }
 
         then:
@@ -102,7 +102,7 @@ class AsciidoctorTaskSpec extends Specification {
     void 'Base directory can be source directory'() {
         when:
         AsciidoctorTask task = asciidoctorTask {
-            baseDir baseDirFollowsSourceDir()
+            baseDirFollowsSourceDir()
         }
 
         then:
@@ -112,7 +112,7 @@ class AsciidoctorTaskSpec extends Specification {
     void 'Base directory can be source directory within a temporary working directory'() {
         when:
         AsciidoctorTask task = asciidoctorTask {
-            baseDir baseDirFollowsSourceDir()
+            baseDirFollowsSourceDir()
             useIntermediateWorkDir()
         }
 
