@@ -489,9 +489,27 @@ All tasks can control how Asciidoctor conversions are being run via the `inProce
 
 NOTE: In certain cases the plugin will overrule your choice as it has some built-in rules for special cases. In such cases it will log a warning that it has done that.
 
-=== Include directives
+=== Include directives and base directory
 
 These plugins do not change the way link:https://asciidoctor.org/docs/user-manual/#include-resolution[include::] directive works, but it is important to note how setting `baseDir` will affect top level includes. It is recommended that you always use `{includedir}` as a prefix for the file path. This attribute is always set to the correct top-level folder where the sources will be located.
+
+However it is not practical for everyone to use `{includedir}` and as from 2.2.0 it is possible to add a strategy for controlling the base directory:
+
+[source,groovy]
+----
+asciidctor {
+    baseDirIsRootProjectDir() // <1>
+    baseDirIsProjectDir() // <2>
+    baseDirFollowsSourceDir() // <3>
+}
+----
+<1> The base directory is the root project directory.
+<2> The base directory is the current subproject directory.
+<3> The base directory will always the the same as the source directory. If an intermediate working directory is being used, the base directory will automatically point to that.
+
+=== Docinfo processing
+
+When using the `docinfo` attribute with `html` and `docbook` backends, it is recommended that `baseDirFollowsSourceDir()` is always set. This will ensure that the docinfo files are picked up correctly form the same directory that is the source directory.
 
 == The New AsciidoctorJ Plugin
 
