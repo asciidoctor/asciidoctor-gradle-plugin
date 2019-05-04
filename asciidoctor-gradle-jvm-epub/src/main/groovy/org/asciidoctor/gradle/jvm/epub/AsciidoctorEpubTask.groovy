@@ -58,7 +58,6 @@ class AsciidoctorEpubTask extends AbstractAsciidoctorTask {
         copyNoResources()
         inProcess = JAVA_EXEC
         kindleGenExtension = project.extensions.getByType(KindleGenExtension)
-        sourceDir = 'src/docs/asciidocEpub'
     }
 
     /** The eBook formats that needs to be generated.
@@ -92,7 +91,6 @@ class AsciidoctorEpubTask extends AbstractAsciidoctorTask {
      * @param formats List of formats. The plugin does not verify whether the eBook format
      *  is valid.
      */
-    @SuppressWarnings('ConfusingMethodName')
     void ebookFormats(String... formats) {
         this.ebookFormats.addAll(formats*.toLowerCase() as List)
     }
@@ -140,11 +138,17 @@ echo %1 %2 %3 %4 55 %6 %7 %8 %9 > ${tmpKindleGenLogFileForWindows}
      * @return Executor configurations
      */
     @Override
-    protected Map<String, ExecutorConfiguration> getExecutorConfigurations(File workingSourceDir, Set<File> sourceFiles) {
-        Map<String, ExecutorConfiguration> executorConfigurations = super.getExecutorConfigurations(workingSourceDir, sourceFiles)
+    protected Map<String, ExecutorConfiguration> getExecutorConfigurations(
+        File workingSourceDir,
+        Set<File> sourceFiles
+    ) {
+        Map<String, ExecutorConfiguration> executorConfigurations = super.getExecutorConfigurations(
+            workingSourceDir,
+            sourceFiles
+        )
 
         final Closure backendName = { String fmt ->
-            fmt != this.EPUB3 ? "epub3/${fmt}".toString() : this.BACKEND
+            fmt == this.EPUB3 ? this.BACKEND : "epub3/${fmt}".toString()
         }
 
         final String ebookAttr = EBOOK_FORMAT_ATTR
@@ -184,7 +188,8 @@ echo %1 %2 %3 %4 55 %6 %7 %8 %9 > ${tmpKindleGenLogFileForWindows}
     protected ProcessMode getFinalProcessMode() {
         if (GradleVersion.current() <= LAST_GRADLE_WITH_CLASSPATH_LEAKAGE) {
             if (inProcess != JAVA_EXEC) {
-                logger.warn 'EPUB processing on this version of Gradle will fail due to classpath issues. Switching to JAVA_EXEC instead.'
+                logger.warn 'EPUB processing on this version of Gradle will fail due to classpath issues. ' +
+                    'Switching to JAVA_EXEC instead.'
             }
             JAVA_EXEC
         } else {
@@ -192,10 +197,12 @@ echo %1 %2 %3 %4 55 %6 %7 %8 %9 > ${tmpKindleGenLogFileForWindows}
         }
     }
 
+    @SuppressWarnings('LineLength')
     private File getTmpKindleGenLogFileForWindows() {
         project.file("${project.buildFile}/tmp/${FileUtils.toSafeFileName(name)}/${FileUtils.toSafeFileName(name)}-fake-kindlegen.log")
     }
 
+    @SuppressWarnings('LineLength')
     private File getTmpKindleGenBatchFileForWindows() {
         project.file("${project.buildFile}/tmp/${FileUtils.toSafeFileName(name)}/${FileUtils.toSafeFileName(name)}-fake-kindlegen.bat")
     }

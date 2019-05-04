@@ -31,17 +31,17 @@ class AsciidoctorRevealJSPlugin implements Plugin<Project> {
     final static String REVEALJS_TASK = 'asciidoctorRevealJs'
 
     @Override
+    @SuppressWarnings('LineLength')
     void apply(Project project) {
         project.apply plugin: 'org.asciidoctor.jvm.revealjs.base'
 
-        AsciidoctorGemPrepare gemPrepare = (AsciidoctorGemPrepare) (project.tasks.getByName(AsciidoctorGemSupportPlugin.GEMPREP_TASK))
+        AsciidoctorGemPrepare gemPrepare = (AsciidoctorGemPrepare)(project.tasks.getByName(AsciidoctorGemSupportPlugin.GEMPREP_TASK))
         AsciidoctorJRevealJSTask revealTask = project.tasks.create(REVEALJS_TASK, AsciidoctorJRevealJSTask)
 
         revealTask.with {
             dependsOn gemPrepare
             outputDir = { "${project.buildDir}/docs/asciidocRevealJs" }
-
+            sourceDir = 'src/docs/asciidoc'
         }
-
     }
 }

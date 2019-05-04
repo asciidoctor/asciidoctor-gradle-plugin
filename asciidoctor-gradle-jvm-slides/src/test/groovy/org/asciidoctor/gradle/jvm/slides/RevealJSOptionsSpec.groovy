@@ -21,7 +21,6 @@ import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 import spock.lang.Unroll
 
-@SuppressWarnings(['MethodName', 'DuplicateStringLiteral'])
 class RevealJSOptionsSpec extends Specification {
 
     Project project = ProjectBuilder.builder().build()
@@ -33,7 +32,6 @@ class RevealJSOptionsSpec extends Specification {
 
     @Unroll
     void 'Set #method (as boolean)'() {
-
         when:
         final String setter = "set${method.capitalize()}"
 
@@ -70,12 +68,10 @@ class RevealJSOptionsSpec extends Specification {
         'mouseWheel'             | 'mouseWheel'
         'HideAddressBarOnMobile' | 'hideAddressBar'
         'previewLinks'           | 'previewLinks'
-
     }
 
     @Unroll
     void 'Set #method (as integer)'() {
-
         when:
         final String setter = "set${method.capitalize()}"
         final int safeValue = 3
@@ -104,7 +100,6 @@ class RevealJSOptionsSpec extends Specification {
 
     @Unroll
     void 'Set transition to #transition'() {
-
         when:
         String attribute = 'transition'
 
@@ -135,7 +130,6 @@ class RevealJSOptionsSpec extends Specification {
 
     @Unroll
     void 'Set background transition to #transition'() {
-
         when:
         String attribute = 'backgroundTransition'
 
@@ -166,7 +160,6 @@ class RevealJSOptionsSpec extends Specification {
 
     @Unroll
     void 'Set transition speed to #transition'() {
-
         when:
         String attribute = 'transitionSpeed'
 
@@ -195,7 +188,6 @@ class RevealJSOptionsSpec extends Specification {
         transition << RevealJSOptions.TransitionSpeed.values()
     }
 
-    @SuppressWarnings('DuplicateStringLiteral')
     void 'Set Parallax background size'() {
         when:
         String attribute = 'parallaxBackgroundSize'
@@ -244,10 +236,8 @@ class RevealJSOptionsSpec extends Specification {
         'highlightJsTheme'        | 'css'
     }
 
-    @SuppressWarnings('DuplicateStringLiteral')
     @Unroll
     void 'Set #description (file or URI)'() {
-
         when:
         final String relPath = 'xyz/rst'
         final String setLocation = "set${base}Location"
@@ -298,7 +288,6 @@ class RevealJSOptionsSpec extends Specification {
         'ParallaxBackgroundImage' | 'revealjs_parallaxBackgroundImage' | 'Parallax background image location'
         'CustomTheme'             | 'revealjs_customtheme'             | 'Custom theme location'
         'HighlightJsTheme'        | 'highlightjs-theme'                | 'Highlight.js theme location'
-
     }
 
     Boolean getBoolFlag(final String flagName) {

@@ -13,21 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.base
+package org.asciidoctor.gradle.base.basedir
 
 import groovy.transform.CompileStatic
-import org.gradle.api.Plugin
+import org.asciidoctor.gradle.base.BaseDirStrategy
 import org.gradle.api.Project
 
-/** Base plugin for all Asciidoctor plugins (J & JS).
+/** Strategy where the root project is always the base directory
+ * for asciidoctor conversions
  *
- * @since 2.0.0
  * @author Schalk W. Cronjé
+ *
+ * @since 2.2.0
  */
 @CompileStatic
-class AsciidoctorBasePlugin implements Plugin<Project> {
+class BaseDirFollowsRootProject implements BaseDirStrategy {
 
-    void apply(Project project) {
-        project.apply plugin: 'base'
+    private final Project project
+
+    BaseDirFollowsRootProject(Project project) {
+        this.project = project
+    }
+
+    /** Base directory location.
+     *
+     * @return Base directory
+     */
+    @Override
+    File getBaseDir() {
+        project.rootDir
     }
 }

@@ -19,6 +19,8 @@ import org.asciidoctor.gradle.internal.FunctionalSpecification
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
 
+import java.util.regex.Pattern
+
 /**
  * This was first functional specification. It is now the functional sepcification to ensure that
  * the compatibility plugin and task in 2.x still functions correctly.
@@ -26,14 +28,13 @@ import org.gradle.testkit.runner.TaskOutcome
  * @author Peter Ledbrook
  * @author Schalk W. Cronjé
  */
-@SuppressWarnings(['DuplicateStringLiteral', 'MethodName'])
 class AsciidoctorFunctionalSpec extends FunctionalSpecification {
 
     static final String ASCIIDOCTOR_TASK = 'asciidoctor'
     static final String ASCIIDOCTOR_PATH = ':asciidoctor'
     static final String ASCIIDOC_SAMPLE_FILE = 'sample.asciidoc'
     static final String ASCIIDOC_INVALID_FILE = 'subdir/_include.adoc'
-    static final DOCINFO_FILE_PATTERN = ~/^(.+\-)?docinfo(-footer)?\.[^.]+$/
+    static final Pattern DOCINFO_FILE_PATTERN = ~/^(.+\-)?docinfo(-footer)?\.[^.]+$/
 
     File buildDir
 
@@ -92,7 +93,6 @@ class AsciidoctorFunctionalSpec extends FunctionalSpecification {
         }
         ''')
 
-
         when:
         runGradle()
         BuildResult result = getGradleRunner([ASCIIDOCTOR_TASK, '-PmodifyClasspath']).build()
@@ -140,13 +140,12 @@ class AsciidoctorFunctionalSpec extends FunctionalSpecification {
         !new File(buildDir, 'asciidoc/html5/subdir/sample2.html').exists()
     }
 
-
     void 'Docinfo files are not copied to target directory'() {
         given:
         getBuildFile('')
 
         when:
-        runGradle(['asciidoctor','-i'])
+        runGradle(['asciidoctor', '-i'])
 
         then:
         !new File(buildDir, 'asciidoctor/html5').listFiles({
@@ -160,7 +159,7 @@ class AsciidoctorFunctionalSpec extends FunctionalSpecification {
         asciidoctor {
             sources {
                 include '${ASCIIDOC_SAMPLE_FILE}'
-            }            
+            }
         }
         """)
 
@@ -183,7 +182,7 @@ class AsciidoctorFunctionalSpec extends FunctionalSpecification {
                 from sourceDir, {
                     include 'images/fake2.txt'
                 }
-            }           
+            }
         }
         """)
 
@@ -204,7 +203,7 @@ class AsciidoctorFunctionalSpec extends FunctionalSpecification {
         asciidoctor {
             sources {
                 include '${ASCIIDOC_INVALID_FILE}'
-            }            
+            }
         }
         """)
 

@@ -38,13 +38,13 @@ class AsciidoctorjVersionProcessModeGenerator {
         String version
         String processMode
 
+        static VersionProcess of(final String v, final String p) {
+            new VersionProcess(version: v, processMode: p)
+        }
+
         @Override
         String toString() {
             "Asciidoctorj: ${version}, mode: ${processMode}"
-        }
-
-        static VersionProcess of(final String v, final String p) {
-            new VersionProcess(version: v, processMode: p)
         }
     }
 
@@ -54,13 +54,13 @@ class AsciidoctorjVersionProcessModeGenerator {
                 VersionProcess.of(it, JAVA_EXEC)
             }.toUnique()
         } else {
-            [AsciidoctorjTestVersions.SERIES_20, AsciidoctorjTestVersions.SERIES_16].collect { it ->
+            [AsciidoctorjTestVersions.SERIES_20, AsciidoctorjTestVersions.SERIES_16].collectMany { it ->
                 [
                     VersionProcess.of(it, JAVA_EXEC),
                     VersionProcess.of(it, IN_PROCESS),
                     VersionProcess.of(it, OUT_OF_PROCESS)
                 ]
-            }.flatten().toUnique() as List<VersionProcess>
+            }.toUnique() as List<VersionProcess>
         }
     }
 

@@ -26,7 +26,6 @@ import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.S
 @java.lang.SuppressWarnings('NoWildcardImports')
 import static org.asciidoctor.gradle.testfixtures.jvm.JRubyTestVersions.*
 
-@SuppressWarnings('MethodName')
 class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
 
     static final List<String> DEFAULT_ARGS = ['asciidoctor', '-s', '-i']
@@ -38,6 +37,7 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
     @Issue('https://github.com/gradle/gradle/issues/3698')
     @Unroll
     @Timeout(value = 90)
+    @SuppressWarnings('LineLength')
     void 'Built-in backends (parallelMode=#parallelMode, asciidoctorj=#asciidoctorjVer, min jRuby=#jrubyVer, compatible=#compatible)'() {
         given:
         getBuildFile("""
@@ -48,17 +48,19 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
                 outputOptions {
                     backends 'html5', 'docbook'
                 }
-            
+
                 asciidoctorj {
-                    version = '${asciidoctorjVer}' 
+                    version = '${asciidoctorjVer}'
                     jrubyVersion = '${jrubyVer}'
                 }
                 logDocuments = true
                 sourceDir 'src/docs/asciidoc'
                 parallelMode ${parallelMode}
-            
+
                 doFirst {
-                    logger.lifecycle 'Requested: asciidoctorj=${asciidoctorjVer}, jrubyVer=${jrubyVer}. Got configuration: ' + asciidoctorj.configuration.files*.name.join(' ')
+                    logger.lifecycle 'Requested: asciidoctorj=${asciidoctorjVer}, ' +
+                          'jrubyVer=${jrubyVer}. Got configuration: ' +
+                          asciidoctorj.configuration.files*.name.join(' ')
                 }
             }
         """)
@@ -107,21 +109,21 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
                     [ attr50 : 'value' ]
                 }
             }
-                    
+
             asciidoctor {
                 ${defaultProcessModeForAppveyor}
-            
+
                 outputOptions {
                     backends 'html5'
                 }
                 logDocuments = true
                 sourceDir 'src/docs/asciidoc'
-                
+
                 asciidoctorj {
                     attributes attr3 : new File('abc'),
                         attr4 : { 'a closure' },
                         attr20 : [ a : 1 ],
-                        attrProvider : providers.provider( { 'a string provider' } )            
+                        attrProvider : providers.provider( { 'a string provider' } )
                 }
             }
         """)
@@ -138,10 +140,10 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
             asciidoctorj {
                 logLevel = 'INFO'
             }
-                    
+
             asciidoctor {
                 inProcess = JAVA_EXEC
-                
+
                 outputOptions {
                     backends 'html5'
                 }
@@ -171,7 +173,6 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
 
         then:
         sample2.contains('gradle-relative-srcdir = [..]')
-
     }
 
     @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/234')
@@ -194,6 +195,24 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         result.contains("missing converter for backend 'abc'. Processing aborted")
         result.contains('org.asciidoctor.internal.AsciidoctorCoreException: org.jruby.exceptions.NotImplementedError')
         !result.contains('ArrayIndexOutOfBoundsException')
+    }
+
+    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/368')
+    void 'Docinfo files are processed'() {
+        given:
+        getBuildFile( '''
+        asciidoctor {
+            attributes docinfo: 'shared'
+            baseDirFollowsSourceDir()
+        }
+        ''')
+
+        when:
+        getGradleRunner(DEFAULT_ARGS).withDebug(true).build()
+
+        then:
+        new File(testProjectDir.root, 'build/docs/asciidoc/sample.html').text
+                .contains('<meta name="asciidoctor-docinfo-test"/>')
     }
 
     File getBuildFile(String extraContent) {

@@ -23,10 +23,12 @@ import org.ysb33r.grolifant.api.OperatingSystem
 import spock.lang.Specification
 
 class FunctionalSpecification extends Specification {
+
+    @SuppressWarnings('LineLength')
     static
-    final String TEST_PROJECTS_DIR = System.getProperty('TEST_PROJECTS_DIR') ?: './asciidoctor-gradle-jvm-epub/src/intTest/projects'
+    final String TEST_PROJECTS_DIR = System.getProperty('TEST_PROJECTS_DIR', './asciidoctor-gradle-jvm-epub/src/intTest/projects')
     static
-    final String TEST_REPO_DIR = System.getProperty('OFFLINE_REPO') ?: './testfixtures/offline-repo/build/repo'
+    final String TEST_REPO_DIR = System.getProperty('OFFLINE_REPO', './testfixtures/offline-repo/build/repo')
     static
     final OperatingSystem OS = OperatingSystem.current()
 
@@ -42,11 +44,12 @@ class FunctionalSpecification extends Specification {
             .withDebug(true)
     }
 
-    @SuppressWarnings(['FactoryMethodName', 'BuilderMethodWithSideEffects'])
+    @SuppressWarnings(['BuilderMethodWithSideEffects'])
     void createTestProject(String docGroup = 'epub3') {
         FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, docGroup), testProjectDir.root)
     }
 
+    @SuppressWarnings('LineLength')
     String getOfflineRepositories() {
         File repo = new File(TEST_REPO_DIR, 'repositories.gradle')
         if (!repo.exists()) {

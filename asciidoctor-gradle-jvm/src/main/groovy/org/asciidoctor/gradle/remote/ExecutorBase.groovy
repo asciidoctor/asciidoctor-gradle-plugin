@@ -28,11 +28,13 @@ import java.util.regex.Pattern
 
 /** Base class for building claspath-isolated executors for Asciidoctor.
  *
- * @since 2.0.0
- * @author Schalk W. Cronjé
+ * @since 2.0.0* @author Schalk W. Cronjé
  */
 @CompileStatic
 abstract class ExecutorBase {
+    private final static String ATTR_PROJECT_DIR = 'gradle-projectdir'
+    private final static String ATTR_ROOT_DIR = 'gradle-rootdir'
+    private final static String ATTR_REL_SRC_DIR = 'gradle-relative-srcdir'
 
     private final List<String> warningMessages = []
     private final List<Pattern> messagePatterns = []
@@ -59,7 +61,7 @@ abstract class ExecutorBase {
      * @param runConfiguration The current executor configuration
      * @return Asciidoctor options
      */
-    @SuppressWarnings(['Instanceof','DuplicateStringLiteral'])
+    @SuppressWarnings('DuplicateStringLiteral ')
     protected
     Map<String, Object> normalisedOptionsFor(final File file, ExecutorConfiguration runConfiguration) {
 
@@ -73,7 +75,7 @@ abstract class ExecutorBase {
                 (Options.BACKEND) : backendName,
                 (Options.IN_PLACE): false,
                 (Options.SAFE)    : safeModeLevel,
-                (Options.TO_DIR)  : (srcRelative.empty ? outputDir : new File(outputDir,srcRelative)).absolutePath,
+                (Options.TO_DIR)  : (srcRelative.empty ? outputDir : new File(outputDir, srcRelative)).absolutePath,
                 (Options.MKDIRS)  : true
             ])
 
@@ -89,13 +91,13 @@ abstract class ExecutorBase {
 
             Map<String, Object> newAttrs = [:]
             newAttrs.putAll(attributes)
-            newAttrs['gradle-projectdir'] = projectDir.absolutePath
-            newAttrs['gradle-rootdir'] = rootDir.absolutePath
-            newAttrs['gradle-relative-srcdir'] = getRelativePath(sourceDir,file.parentFile) ?: '.'
+            newAttrs[ATTR_PROJECT_DIR] = projectDir.absolutePath
+            newAttrs[ATTR_ROOT_DIR] = rootDir.absolutePath
+            newAttrs[ATTR_REL_SRC_DIR] = getRelativePath(sourceDir, file.parentFile) ?: '.'
 
-            if(legacyAttributes) {
-                newAttrs['projectdir'] = newAttrs['gradle-projectdir']
-                newAttrs['rootdir'] = newAttrs['gradle-rootdir']
+            if (legacyAttributes) {
+                newAttrs['projectdir'] = newAttrs[ATTR_PROJECT_DIR]
+                newAttrs['rootdir'] = newAttrs[ATTR_ROOT_DIR]
             }
 
             mergedOptions[Options.ATTRIBUTES] = newAttrs
@@ -116,15 +118,15 @@ abstract class ExecutorBase {
         base.toPath().relativize(target.toPath()).toFile().toString()
     }
 
-    /** Rehydrates extensions that were serialised.
+    /** Rehydrates docExtensions that were serialised.
      *
      * @param registry Asciidoctor GroovyDSL registry instance.
-     * @param exts List of extensions to rehydrate.
+     * @param exts List of docExtensions to rehydrate.
      * @return
      */
     protected List<Object> rehydrateExtensions(final Object registry, final List<Object> exts) {
         final List<Object> availableExtensions = []
-        for( Object ext in exts)  {
+        for (Object ext in exts) {
             switch (ext) {
                 case Closure:
                     Closure rehydrated = ((Closure) ext).rehydrate(registry, null, null)
@@ -151,16 +153,19 @@ abstract class ExecutorBase {
                 ExecutorLogLevel logLevel = LogSeverityMapper.translateAsciidoctorLogLevel(logRecord.severity)
 
                 if (logLevel.level >= requiredLevel) {
-
                     String msg = logRecord.message
                     Cursor cursor = logRecord.cursor
                     if (cursor) {
-                        msg = "${msg} :: ${cursor.path ?: ''} :: ${cursor.dir ?: ''}/${cursor.file ?: ''}:${cursor.lineNumber >= 0 ? cursor.lineNumber.toString() : ''}"
+                        final String cPath = cursor.path ?: ''
+                        final String cDir = cursor.dir ?: ''
+                        final String cFile = cursor.file ?: ''
+                        final String cLine = cursor.lineNumber >= 0 ? cursor.lineNumber.toString() : ''
+                        msg = "${msg} :: ${cPath} :: ${cDir}/${cFile}:${cLine}"
                     }
                     if (logRecord.sourceFileName) {
-                        msg = "${msg} (${logRecord.sourceFileName}${logRecord.sourceMethodName ? (':' + logRecord.sourceMethodName) : ''})"
+                        final String subMsg = logRecord.sourceMethodName ? (':' + logRecord.sourceMethodName) : ''
+                        msg = "${msg} (${logRecord.sourceFileName}${subMsg})"
                     }
-
                     logMessage(logLevel, msg)
                 }
 
@@ -213,10 +218,9 @@ abstract class ExecutorBase {
     @SuppressWarnings('UnnecessaryGString')
     protected void failOnWarnings() {
         if (!warningMessages.empty) {
-            final String msg = "ERROR: The following messages from AsciidoctorJ are treated as errors:\n" + warningMessages.join("\n- ")
+            final String msg = "ERROR: The following messages from AsciidoctorJ are treated as errors:\n" +
+                warningMessages.join("\n- ")
             throw new AsciidoctorRemoteExecutionException(msg)
         }
     }
-
-
 }

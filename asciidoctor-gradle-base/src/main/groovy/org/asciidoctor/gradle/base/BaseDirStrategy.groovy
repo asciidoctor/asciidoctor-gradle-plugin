@@ -15,24 +15,21 @@
  */
 package org.asciidoctor.gradle.base
 
-import spock.lang.Specification
+import groovy.transform.CompileStatic
 
-import static org.asciidoctor.gradle.base.SafeMode.SAFE
-import static org.asciidoctor.gradle.base.SafeMode.SECURE
-import static org.asciidoctor.gradle.base.SafeMode.SERVER
-import static org.asciidoctor.gradle.base.SafeMode.UNSAFE
-import static org.asciidoctor.gradle.base.SafeMode.safeMode
+/** Strategy to set where the base directory should be relative to
+ * a project.
+ *
+ * @author Schalk W. Cronjé
+ *
+ * @since 2.2.0
+ */
+@CompileStatic
+interface BaseDirStrategy {
 
-class SafeModeSpec extends Specification {
-
-    void 'Integers map to correct safe modes'() {
-        expect:
-        safeMode(0) == UNSAFE
-        safeMode(1) == SAFE
-        safeMode(10) == SERVER
-        safeMode(20) == SECURE
-        safeMode(35) == SECURE
-
-        SAFE.level == 1
-    }
+    /** Base directory location.
+     *
+     * @return Base directory
+     */
+    File getBaseDir()
 }

@@ -35,8 +35,14 @@ import static org.asciidoctor.gradle.compat.AsciidoctorCompatibilityTask.resolve
  * @author Marcus Fihlon
  * @author Schalk W. Cronjé
  */
-// We suppress a lot of warnings as this test will be removed at some stage.
-@SuppressWarnings(['DuplicateStringLiteral', 'MethodName', 'MethodCount', 'DuplicateNumberLiteral', 'DuplicateMapLiteral', 'UnusedPrivateField'])
+// We suppress a lot of warnings as this test will be removed in 3.0.
+@SuppressWarnings([
+    'MethodCount',
+    'UnusedPrivateField',
+    'LineLength',
+    'MethodReturnTypeRequired',
+    'StaticFieldsBeforeInstanceFields'
+])
 class AsciidoctorTaskSpec extends Specification {
     private static final String ASCIIDOCTOR = 'asciidoctor'
     private static final String ASCIIDOC_RESOURCES_DIR = 'build/resources/test/src/asciidoc'
@@ -78,7 +84,7 @@ class AsciidoctorTaskSpec extends Specification {
         Set<File> files = task.sourceFileTree.files
 
         then:
-        files.find { it.name == '_include.adoc'} == null
+        files.find { it.name == '_include.adoc' } == null
     }
 
     def "Allow setting of options via method"() {
@@ -96,7 +102,6 @@ class AsciidoctorTaskSpec extends Specification {
         task.options['toc'] == 'right'
     }
 
-    @SuppressWarnings('MethodName')
     def "Allow setting of options via assignment"() {
         when:
         Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
@@ -111,7 +116,6 @@ class AsciidoctorTaskSpec extends Specification {
         !task.options.containsKey('toc')
     }
 
-    @SuppressWarnings('MethodName')
     def "Allow setting of attributes via method (Map variant)"() {
         when:
         Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
@@ -127,7 +131,6 @@ class AsciidoctorTaskSpec extends Specification {
         task.attributes['idseparator'] == '-'
     }
 
-    @SuppressWarnings('MethodName')
     def "Allow setting of attributes via method (List variant)"() {
         when:
         Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
@@ -141,7 +144,6 @@ class AsciidoctorTaskSpec extends Specification {
         task.attributes['idseparator'] == '-'
     }
 
-    @SuppressWarnings('MethodName')
     def "Allow setting of attributes via method (String variant)"() {
         when:
         Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
@@ -155,7 +157,6 @@ class AsciidoctorTaskSpec extends Specification {
         task.attributes['idseparator'] == '-'
     }
 
-    @SuppressWarnings('MethodName')
     def "Allow setting of attributes via assignment"() {
         when:
         Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
@@ -170,7 +171,6 @@ class AsciidoctorTaskSpec extends Specification {
         !task.attributes.containsKey('idprefix')
     }
 
-    @SuppressWarnings('MethodName')
     def "Mixing attributes with options, should produce a warning, but updates should be appended"() {
         when:
         Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
@@ -187,7 +187,6 @@ class AsciidoctorTaskSpec extends Specification {
         task.options['doctype'] == 'book'
     }
 
-    @SuppressWarnings('MethodName')
     def "Mixing attributes with options with assignment, should produce a warning, and attributes will be replaced"() {
         when:
         Map tmpStore = [eruby: 'erubis', attributes: ['source-highlighter': 'foo', idprefix: '$']]
@@ -207,7 +206,6 @@ class AsciidoctorTaskSpec extends Specification {
         // systemOut.toString().contains('Attributes found in options.')
     }
 
-    @SuppressWarnings('MethodName')
     def "Mixing string legacy form of attributes with options with assignment, should produce a warning, and attributes will be replaced"() {
         when:
         Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
@@ -222,7 +220,6 @@ class AsciidoctorTaskSpec extends Specification {
         task.attributes['toc-title'] == 'Table of Contents'
     }
 
-    @SuppressWarnings('MethodName')
     def "Mixing list legacy form of attributes with options with assignment, should produce a warning, and attributes will be replaced"() {
         when:
         Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
@@ -243,7 +240,6 @@ class AsciidoctorTaskSpec extends Specification {
         // systemOut.toString().contains('Attributes found in options.')
     }
 
-    @SuppressWarnings('MethodName')
     def "Allow setting of backends via method"() {
         when:
         Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
@@ -258,7 +254,6 @@ class AsciidoctorTaskSpec extends Specification {
         task.backends.contains('bar')
     }
 
-    @SuppressWarnings('MethodName')
     def "Allow setting of backends via assignment"() {
         when:
         Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
@@ -273,7 +268,6 @@ class AsciidoctorTaskSpec extends Specification {
         task.backends.contains('bar')
     }
 
-    @SuppressWarnings('MethodName')
     def "Allow setting of requires via method"() {
         when:
         Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
@@ -288,7 +282,6 @@ class AsciidoctorTaskSpec extends Specification {
         task.requires.contains('slim')
     }
 
-    @SuppressWarnings('MethodName')
     def "Allow setting of requires via assignment"() {
         when:
         Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
@@ -303,7 +296,6 @@ class AsciidoctorTaskSpec extends Specification {
         task.requires.contains('slim')
     }
 
-    @SuppressWarnings('MethodName')
     def "Allow setting of sourceDir via method"() {
         when:
         Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
@@ -316,8 +308,6 @@ class AsciidoctorTaskSpec extends Specification {
         task.sourceDir.absolutePath == project.projectDir.absolutePath
     }
 
-
-    @SuppressWarnings('MethodName')
     def "When setting sourceDir via assignment"() {
         when:
         Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
@@ -327,10 +317,8 @@ class AsciidoctorTaskSpec extends Specification {
         then:
         task.sourceDir.absolutePath == project.projectDir.absolutePath
         task.sourceDir.absolutePath == project.projectDir.absolutePath
-
     }
 
-    @SuppressWarnings('MethodName')
     def "When setting sourceDir via setSourceDir"() {
         when:
         Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
@@ -343,7 +331,6 @@ class AsciidoctorTaskSpec extends Specification {
         !systemOut.toString().contains('deprecated')
     }
 
-    @SuppressWarnings('MethodName')
     def "Allow setting of gemPath via method"() {
         when:
         Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
@@ -355,7 +342,6 @@ class AsciidoctorTaskSpec extends Specification {
         task.gemPath.files[0].absolutePath == project.projectDir.absolutePath
     }
 
-    @SuppressWarnings('MethodName')
     def "When setting gemPath via assignment"() {
         when:
         Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
@@ -367,7 +353,6 @@ class AsciidoctorTaskSpec extends Specification {
         !systemOut.toString().contains('deprecated')
     }
 
-    @SuppressWarnings('MethodName')
     def "When setting gemPath via setGemPath"() {
         when:
         Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
@@ -414,7 +399,6 @@ class AsciidoctorTaskSpec extends Specification {
         imageFile.text = 'foo'
 
         Task task = project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask) {
-
             sourceDir srcDir
             outputDir "${outDir}/foo"
             backends AsciidoctorBackend.HTML5.id

@@ -27,7 +27,7 @@ import spock.lang.Unroll
 @java.lang.SuppressWarnings('NoWildcardImports')
 import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.*
 
-@SuppressWarnings(['MethodName', 'DuplicateStringLiteral'])
+@SuppressWarnings(['LineLength'])
 class ExtensionsFunctionalSpec extends FunctionalSpecification {
 
     static final List DEFAULT_ARGS = ['asciidoctor', '-s', '-i']
@@ -42,13 +42,14 @@ class ExtensionsFunctionalSpec extends FunctionalSpecification {
 
     @Timeout(value = 90)
     @Unroll
+    @SuppressWarnings('GStringExpressionWithinString')
     void 'Extension can be applied via closure (#model)'() {
         given:
         getBuildFile(
             model.processMode, model.version, """
 asciidoctor {
     asciidoctorj {
-         extensions {
+         docExtensions {
             block(name: "BIG", contexts: [":paragraph"]) {
                 parent, reader, attributes ->
                 def upperLines = reader.readLines()*.toUpperCase()
@@ -63,7 +64,7 @@ asciidoctor {
 
                 createBlock(parent, "paragraph", [lowerLines], attributes, [:])
             }
-         }                    
+         }
     }
 }
 """)
@@ -92,7 +93,7 @@ asciidoctor {
 asciidoctor {
 
     asciidoctorj {
-        extensions '''
+        docExtensions '''
 block(name: 'BIG', contexts: [':paragraph']) {
         parent, reader, attributes ->
         def upperLines = reader.readLines()
@@ -109,7 +110,7 @@ block('small') {
 
         createBlock(parent, 'paragraph', [lowerLines], attributes, [:])
 }
-'''    
+'''
     }
 }
 """)
@@ -136,7 +137,7 @@ block('small') {
             model.processMode, model.version, """
 asciidoctor {
     asciidoctorj {
-        extensions file('src/docs/asciidoc/blockMacro.groovy')
+        docExtensions file('src/docs/asciidoc/blockMacro.groovy')
     }
 }
 """)
@@ -158,15 +159,15 @@ asciidoctor {
     @Timeout(value = 90)
     @Unroll
     @Issue('This test was forward-ported from https://github.com/asciidoctor/asciidoctor-gradle-plugin/pull/238 - a PR by Rene Groeschke')
-    def "Extensions are preserved across multiple builds (#model)"() {
+    void "Extensions are preserved across multiple builds (#model)"() {
         given: 'A build file that declares extensions'
 
         getBuildFile(
             model.processMode, model.version, '''
         asciidoctorj {
-            extensions {
+            docExtensions {
                 postprocessor { document, output ->
-                    return "Hi, Mom" + output 
+                    return "Hi, Mom" + output
                 }
             }
         }
@@ -203,15 +204,15 @@ asciidoctor {
             model.processMode, model.version, """
 asciidoctor {
     asciidoctorj {
-        extensions '''
+        docExtensions '''
             postprocessor {
                 document, output ->
                     if (output.contains("blacklisted")) {
                         throw new IllegalArgumentException("Document contains a blacklisted word")
                     }
-                }    
+                }
             }
-'''    
+'''
     }
 }
 """)
@@ -235,7 +236,7 @@ asciidoctor {
         getBuildFile(
             processMode, version, """
                 ${extScope == GLOBAL ? extDSL : ''}
-                
+
                 asciidoctor {
                     ${extScope == LOCAL ? extDSL : ''}
                 }
@@ -246,7 +247,10 @@ asciidoctor {
 
         when:
         runner.build()
-        File resultFile = new File(testProjectDir.root, "build/docs/asciidoc/${ASCIIDOC_INLINE_EXTENSIONS_FILE.replaceFirst('asciidoc', 'html')}")
+        File resultFile = new File(
+            testProjectDir.root,
+            'build/docs/asciidoc/' + ASCIIDOC_INLINE_EXTENSIONS_FILE.replaceFirst('asciidoc', 'html')
+        )
 
         then: 'content is generated as HTML and XML'
         resultFile.exists()
@@ -265,31 +269,30 @@ asciidoctor {
         GLOBAL   | GLOBAL
     }
 
-
     File getBuildFile(
         final String processMode, final String version, final String extraContent, boolean configureGlobally = false) {
 
         String versionConfig = """
             asciidoctorj {
                 version = '${version}'
-                groovyDslVersion = '${version == SERIES_20 ? GROOVYDSL_SERIES_20 : GROOVYDSL_SERIES_16}'
+                modules.groovyDsl.version = '${version == SERIES_20 ? GROOVYDSL_SERIES_20 : GROOVYDSL_SERIES_16}'
             }
         """
 
         getJvmConvertGroovyBuildFile("""
             ${configureGlobally ? versionConfig : ''}
-            
+
             asciidoctor {
                 inProcess ${processMode}
                 sourceDir 'src/docs/asciidoc'
                 sources {
                     include '${ASCIIDOC_INLINE_EXTENSIONS_FILE}'
                 }
-            
+
             ${configureGlobally ? '' : versionConfig}
-            
+
             }
-            
+
             ${extraContent}
         """
         )

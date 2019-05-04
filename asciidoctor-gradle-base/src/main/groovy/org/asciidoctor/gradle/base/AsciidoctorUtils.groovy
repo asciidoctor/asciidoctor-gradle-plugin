@@ -26,11 +26,17 @@ import org.ysb33r.grolifant.api.OperatingSystem
 
 import static groovy.lang.Closure.DELEGATE_FIRST
 
+/** Utility methods used internally by Asciidoctor plugins.
+ *
+ * @author Schalk W. Cronjé
+ *
+ * @since 2.0.0
+ */
 @CompileStatic
 class AsciidoctorUtils {
 
-    static final OperatingSystem OS = OperatingSystem.current()
-    static final String UNDERSCORE_LED_FILES = '**/_*'
+    public static final OperatingSystem OS = OperatingSystem.current()
+    public static final String UNDERSCORE_LED_FILES = '**/_*'
 
     static final Spec<? super File> ACCEPT_ONLY_FILES = new Spec<File>() {
         @Override
@@ -56,7 +62,8 @@ class AsciidoctorUtils {
 
         ft.visit { FileVisitDetails it ->
             if (it.name.startsWith('_')) {
-                throw new GradleException("Sources starting with '_' found. This is not allowed. Current sources are: ${ft.files}")
+                throw new GradleException("Sources starting with '_' found. This is not allowed. " +
+                    "Current sources are: ${ft.files}")
             }
         }
 
@@ -71,10 +78,10 @@ class AsciidoctorUtils {
      */
     static String normalizePath(String path) {
         if (OS.windows) {
-            path = path.replace(DOUBLE_BACKLASH, BACKLASH)
-            path = path.replace(BACKLASH, DOUBLE_BACKLASH)
+            path.replace(DOUBLE_BACKLASH, BACKLASH).replace(BACKLASH, DOUBLE_BACKLASH)
+        } else {
+            path
         }
-        path
     }
 
     /**

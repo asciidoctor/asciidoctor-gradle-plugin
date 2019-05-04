@@ -31,10 +31,15 @@ import static org.asciidoctor.gradle.testfixtures.jvm.FunctionalTestSetup.getOff
 
 class FunctionalSpecification extends Specification {
 
-    static
-    final String TEST_PROJECTS_DIR = System.getProperty('TEST_PROJECTS_DIR') ?: './asciidoctor-gradle-base/src/intTest/projects'
-    static
-    final String TEST_REPO_DIR = System.getProperty('OFFLINE_REPO') ?: './testfixtures/offline-repo/build/repo'
+    public static final String TEST_PROJECTS_DIR = System.getProperty(
+        'TEST_PROJECTS_DIR',
+        './asciidoctor-gradle-base/src/intTest/projects'
+    )
+
+    public static final String TEST_REPO_DIR = System.getProperty(
+        'OFFLINE_REPO',
+        './testfixtures/offline-repo/build/repo'
+    )
 
     @Rule
     TemporaryFolder testProjectDir
@@ -49,7 +54,7 @@ class FunctionalSpecification extends Specification {
         getGradleRunner(taskNames).withDebug(false)
     }
 
-    @SuppressWarnings(['FactoryMethodName', 'BuilderMethodWithSideEffects'])
+    @SuppressWarnings(['BuilderMethodWithSideEffects'])
     void createTestProject(String docGroup = 'normal') {
         FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, docGroup), testProjectDir.root)
     }
@@ -66,9 +71,9 @@ class FunctionalSpecification extends Specification {
             plugins {
                 id '${plugin}'
             }
-            
+
             ${offlineRepositories}
-            
+
             ${extraContent}
         """
         buildFile
@@ -80,7 +85,7 @@ class FunctionalSpecification extends Specification {
             plugins {
                 id("${plugin}")
             }
-            
+
             ${getOfflineRepositories(KOTLIN_DSL)}
 
             ${extraContent}

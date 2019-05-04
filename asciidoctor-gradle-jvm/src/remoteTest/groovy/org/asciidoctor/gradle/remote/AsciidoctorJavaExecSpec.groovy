@@ -18,7 +18,6 @@ package org.asciidoctor.gradle.remote
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
 import org.asciidoctor.gradle.remote.internal.RemoteSpecification
 
-@SuppressWarnings('MethodName')
 class AsciidoctorJavaExecSpec extends RemoteSpecification {
 
     void 'Can execute a conversion from execution specification'() {
@@ -38,7 +37,11 @@ class AsciidoctorJavaExecSpec extends RemoteSpecification {
         given:
         File executionData = new File(testProjectDir.root, 'execdata')
         Map asciidoc = getProject(testProjectDir.root)
-        ExecutorConfigurationContainer ecc = getContainerMultipleEntries(asciidoc.src, asciidoc.outputDir, asciidoc.gemPath)
+        ExecutorConfigurationContainer ecc = getContainerMultipleEntries(
+            asciidoc.src,
+            asciidoc.outputDir,
+            asciidoc.gemPath
+        )
         ecc.toFile(executionData, ecc.configurations)
 
         when:

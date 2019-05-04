@@ -39,19 +39,19 @@ enum AsciidoctorBackend {
     private final static Map<String, AsciidoctorBackend> ALL_BACKENDS
     private final String id
 
-    static {
-        ALL_BACKENDS = (values().collectEntries { [it.id, it] }.asImmutable()) as Map<String, AsciidoctorBackend>
-    }
-
-    private AsciidoctorBackend(String id) {
-        this.id = id
+    static boolean isBuiltIn(String name) {
+        ALL_BACKENDS.containsKey(name)
     }
 
     String getId() {
         id
     }
 
-    static boolean isBuiltIn(String name) {
-        ALL_BACKENDS.containsKey(name)
+    static {
+        ALL_BACKENDS = (values().collectEntries { [it.id, it] }.asImmutable()) as Map<String, AsciidoctorBackend>
+    }
+
+    private AsciidoctorBackend(String id) {
+        this.id = id
     }
 }

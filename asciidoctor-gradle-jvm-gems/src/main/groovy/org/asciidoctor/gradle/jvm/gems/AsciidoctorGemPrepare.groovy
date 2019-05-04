@@ -33,7 +33,13 @@ class AsciidoctorGemPrepare extends JRubyPrepare {
     @SuppressWarnings('Instanceof')
     void copy() {
         File jruby = JRubyExecUtils.jrubyJar(project.extensions.getByType(AsciidoctorJExtension).configuration)
-        GemUtils.extractGems(project, jruby, GemUtils.getGems(project.files(dependencies)), outputDir, GemUtils.OverwriteAction.SKIP)
+        GemUtils.extractGems(
+            project,
+            jruby,
+            GemUtils.getGems(project.files(dependencies)),
+            outputDir,
+            GemUtils.OverwriteAction.SKIP
+        )
 
         if (!dependencies.isEmpty()) {
             dependencies.each {
@@ -42,6 +48,5 @@ class AsciidoctorGemPrepare extends JRubyPrepare {
                 }
             }
         }
-
     }
 }

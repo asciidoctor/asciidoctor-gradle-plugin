@@ -86,6 +86,17 @@ class AsciidoctorTask extends AbstractAsciidoctorTask {
         outputDir = { project.file("${project.buildDir}/docs/${safeFolderName}") }
     }
 
+    @Override
+    void processAsciidocSources() {
+        if (!baseDirConfigured) {
+            if (attributes.keySet() in ['docinfo', 'docinfo1', 'docinfo2']) {
+                logger.warn('You are using docinfo attributes,but a base directory strategy has not been configured.' +
+                        'It is recommended that you set baseDirFollowsSourceDir() in your task.')
+            }
+        }
+        super.processAsciidocSources()
+    }
+
     /** The default pattern set for secondary sources baced upon the configured backends.
      *
      * If the backends contain {@code docbook} then {@code *docbook*.xml} is added.
@@ -99,10 +110,10 @@ class AsciidoctorTask extends AbstractAsciidoctorTask {
 
         Set<String> backends = this.configuredOutputOptions.backends
 
-        if(backends.find { it.startsWith('html') }) {
+        if (backends.find { it.startsWith('html') }) {
             ps.include '*docinfo*.html'
         }
-        if(backends.find { it.startsWith('docbook') }) {
+        if (backends.find { it.startsWith('docbook') }) {
             ps.include '*docinfo*.xml'
         }
 

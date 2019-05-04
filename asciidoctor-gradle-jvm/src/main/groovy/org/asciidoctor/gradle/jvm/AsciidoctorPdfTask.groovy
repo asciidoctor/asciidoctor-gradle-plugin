@@ -83,6 +83,7 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
     @InputDirectory
     @PathSensitive(PathSensitivity.RELATIVE)
     @Optional
+    @SuppressWarnings('LineLength')
     File getStylesDir() {
         this.theme != null ? project.extensions.getByType(AsciidoctorPdfThemesExtension).getByName(this.theme).styleDir : null
     }
@@ -93,6 +94,7 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
      */
     @Input
     @Optional
+    @SuppressWarnings('LineLength')
     String getStyleName() {
         this.theme != null ? project.extensions.getByType(AsciidoctorPdfThemesExtension).getByName(this.theme).styleName : null
     }
@@ -108,7 +110,8 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
     protected ProcessMode getFinalProcessMode() {
         if (GradleVersion.current() <= LAST_GRADLE_WITH_CLASSPATH_LEAKAGE) {
             if (inProcess != JAVA_EXEC) {
-                logger.warn 'This version of Gradle leaks snakeyaml onto worker classpaths which breaks PDF processing. Switching to JAVA_EXEC instead.'
+                logger.warn 'This version of Gradle leaks snakeyaml on to worker classpaths which breaks ' +
+                    'PDF processing. Switching to JAVA_EXEC instead.'
             }
             JAVA_EXEC
         } else {

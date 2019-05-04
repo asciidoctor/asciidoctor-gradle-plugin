@@ -15,7 +15,7 @@ repositories {
 }
 
 asciidoctorj {
-    setDiagramVersion("1.5.4.1")
+    modules.getDiagram().setVersion("1.5.4.1")
     logLevel = LogLevel.INFO
 }
 
@@ -38,11 +38,6 @@ tasks.named<AsciidoctorPdfTask>("asciidoctorPdf") {
     setSourceDir("src/docs/asciidoc")
 
     sources ("subdir/sample2.ad")
-
-
-//    if (findProperty("CALLING_GRADLETEST_USES_GROOVY_VERSION") == "GroovySystem.version") {
-//        inProcess = ProcessMode.JAVA_EXEC
-//    }
 }
 // end::using-two-plugins-three-backends[]
 

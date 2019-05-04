@@ -13,21 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.base
+package org.asciidoctor.gradle.base.basedir
 
 import groovy.transform.CompileStatic
-import org.gradle.api.Plugin
-import org.gradle.api.Project
+import org.asciidoctor.gradle.base.BaseDirStrategy
+import org.gradle.api.provider.Provider
 
-/** Base plugin for all Asciidoctor plugins (J & JS).
+/** Strategy where a lazy-evaluated fixed path is used as the base
+ * directory for asciidoctor conversions.
  *
- * @since 2.0.0
  * @author Schalk W. Cronjé
+ *
+ * @since 2.2.0
  */
 @CompileStatic
-class AsciidoctorBasePlugin implements Plugin<Project> {
+class BaseDirIsFixedPath implements BaseDirStrategy {
 
-    void apply(Project project) {
-        project.apply plugin: 'base'
+    private final Provider<File> location
+
+    BaseDirIsFixedPath(Provider<File> lazyResolvedLocation) {
+        this.location = lazyResolvedLocation
+    }
+
+    /** Base directory location.
+     *
+     * @return Base directory
+     */
+    @Override
+    File getBaseDir() {
+        location.get()
     }
 }

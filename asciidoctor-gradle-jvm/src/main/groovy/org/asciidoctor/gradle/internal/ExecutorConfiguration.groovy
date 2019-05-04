@@ -22,11 +22,10 @@ import java.util.regex.Pattern
 
 /** Configuration for running Asciidoctor
  *
- * @since 2.0.0
- * @author Schalk W. Cronjé
+ * @since 2.0.0* @author Schalk W. Cronjé
  */
 @CompileStatic
-@SuppressWarnings(['ClassName','CloneableWithoutClone'])
+@SuppressWarnings(['CloneableWithoutClone'])
 @TupleConstructor
 class ExecutorConfiguration implements Serializable, Cloneable {
     File sourceDir
@@ -71,7 +70,7 @@ JRuby:
 Asciidoctor:
   ${options.size()} options
   ${attributes.size()} attributes
-  ${asciidoctorExtensions?.size() ?: 0} extensions
+  ${asciidoctorExtensions?.size() ?: 0} docExtensions
   logDocuments = ${logDocuments}, copyResources = ${copyResources}, safeMode = ${safeModeLevel}
 """
     }
