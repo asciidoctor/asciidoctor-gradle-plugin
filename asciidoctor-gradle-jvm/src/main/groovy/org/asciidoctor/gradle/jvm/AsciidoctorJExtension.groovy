@@ -119,7 +119,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         this.attributes['gradle-project-group'] = { project.group ?: '' }
         this.attributes['gradle-project-version'] = { project.version ?: '' }
 
-        this.safeMode = SafeMode.SAFE
+        this.safeMode = SafeMode.UNSAFE
         this.version = DEFAULT_ASCIIDOCTORJ_VERSION
         this.modules = new AsciidoctorJModules(this)
     }
@@ -571,7 +571,9 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     }
 
     /**
-     * @deprecated Use{@link #getDocExtensions}
+
+     * @deprecated Use {@link #getDocExtensions}
+
      */
     @Deprecated
     List<Object> getExtensions() {
@@ -580,7 +582,9 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     }
 
     /**
-     * @deprecated Use{@link #asciidoctorExtensions}
+
+     * @deprecated Use {@link #asciidoctorExtensions}
+
      */
     @Deprecated
     void extensions(Object... exts) {
@@ -589,7 +593,9 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
     }
 
     /**
-     * @deprecated Use{@link #setDocExtensions}
+
+     * @deprecated Use {@link #setDocExtensions}
+
      */
     @Deprecated
     void setExtensions(Iterable<Object> newExtensions) {
@@ -860,7 +866,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         }
     }
 
-    /** Adds extensions to the existing container.
+    /** Adds docExtensions to the existing container.
      *
      * Also sets the Groovy DSL version if required.
      *
@@ -871,12 +877,12 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
         asciidoctorExtensions.addAll(dehydrateExtensions(newExtensions))
     }
 
-    /** Prepare extensions for serialisation.
+    /** Prepare docExtensions for serialisation.
      *
      * This takes care of dehydrating any closures.
      *
-     * @param exts List of extensions
-     * @return List of extensions suitable for serialization.
+     * @param exts List of docExtensions
+     * @return List of docExtensions suitable for serialization.
      *
      */
     private List<Object> dehydrateExtensions(final List<Object> exts) {

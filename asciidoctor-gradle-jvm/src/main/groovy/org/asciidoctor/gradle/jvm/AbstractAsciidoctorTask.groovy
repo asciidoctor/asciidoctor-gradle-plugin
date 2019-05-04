@@ -18,7 +18,11 @@ package org.asciidoctor.gradle.jvm
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
+import org.asciidoctor.gradle.base.BaseDirStrategy
 import org.asciidoctor.gradle.base.Transform
+import org.asciidoctor.gradle.base.basedir.BaseDirFollowsProject
+import org.asciidoctor.gradle.base.basedir.BaseDirFollowsRootProject
+import org.asciidoctor.gradle.base.basedir.BaseDirIsFixedPath
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
 import org.asciidoctor.gradle.internal.ExecutorUtils
@@ -48,6 +52,7 @@ import org.ysb33r.grolifant.api.FileUtils
 import org.ysb33r.grolifant.api.StringUtils
 
 import java.nio.file.Path
+import java.util.concurrent.Callable
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.UNDERSCORE_LED_FILES
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClosure
@@ -63,7 +68,7 @@ import static org.ysb33r.grolifant.api.FileUtils.filesFromCopySpec
  * @since 2.0.0* @author Schalk W. Cronjé
  * @author Manuel Prinz
  */
-@SuppressWarnings('MethodCount')
+@SuppressWarnings(['MethodCount', 'ClassSize'])
 @CompileStatic
 class AbstractAsciidoctorTask extends DefaultTask {
 
@@ -83,7 +88,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
     private
     final org.ysb33r.grolifant.api.JavaForkOptions javaForkOptions = new org.ysb33r.grolifant.api.JavaForkOptions()
 
-    private Object baseDir
+    private BaseDirStrategy baseDir
     private Object srcDir
     private Object outDir
     private PatternSet sourceDocumentPattern
@@ -293,7 +298,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
     // simply the value change - we achieve that via a normal property.
     @Internal
     File getBaseDir() {
-        this.baseDir != null ? project.file(this.baseDir) : project.projectDir
+        this.baseDir ? this.baseDir.baseDir : project.projectDir
     }
 
     /** Sets the base directory for a conversion.
@@ -306,7 +311,44 @@ class AbstractAsciidoctorTask extends DefaultTask {
      * @param f Base directory
      */
     void setBaseDir(Object f) {
-        this.baseDir = f
+        switch (f) {
+            case BaseDirStrategy:
+                this.baseDir = (BaseDirStrategy) f
+                break
+            default:
+                this.baseDir = new BaseDirIsFixedPath(project.providers.provider({
+                    project.file(f)
+                } as Callable<File>))
+        }
+    }
+
+    /** Sets the basedir to be the same directory as the root project directory.
+     *
+     * @since 2.2.0
+     */
+    void baseDirIsRootProjectDir() {
+        this.baseDir = new BaseDirFollowsRootProject(project)
+    }
+
+    /** Sets the basedir to be the same directory as the current project directory.
+     *
+     * @since 2.2.0
+     */
+    void baseDirIsProjectDir() {
+        this.baseDir = new BaseDirFollowsProject(project)
+    }
+
+    /** The base dir will be the same as the source directory.
+     *
+     * If an intermediate working directory is sued, the the base dir will be where the
+     * source directory is located within the temporary working directory.
+     *
+     * @since 2.2.0
+     */
+    void baseDirFollowsSourceDir() {
+        this.baseDir = new BaseDirIsFixedPath(project.providers.provider({ AbstractAsciidoctorTask task ->
+            task.withIntermediateWorkDir ? task.intermediateWorkDir : task.sourceDir
+        }.curry(this) as Callable<File>))
     }
 
     /** Returns all of the Asciidoctor options.
@@ -537,6 +579,15 @@ class AbstractAsciidoctorTask extends DefaultTask {
         cfg.execute(this.intermediateArtifactPattern)
     }
 
+    /** If an intermediate working directory will be used, this will be its location.
+     *
+     * @return Location of intermediate working directory for this task
+     */
+    @Internal
+    File getIntermediateWorkDir() {
+        project.file("${project.buildDir}/tmp/${FileUtils.toSafeFileName(this.name)}.intermediate")
+    }
+
     @SuppressWarnings('UnnecessaryGetter')
     @TaskAction
     void processAsciidocSources() {
@@ -592,13 +643,13 @@ class AbstractAsciidoctorTask extends DefaultTask {
      * @return Executor configurations
      */
     protected Map<String, ExecutorConfiguration> getExecutorConfigurations(
-        final File workingSourceDir,
-        final Set<File> sourceFiles
+            final File workingSourceDir,
+            final Set<File> sourceFiles
     ) {
         configuredOutputOptions.backends.collectEntries { String activeBackend ->
             [
-                "backend=${activeBackend}".toString(),
-                getExecutorConfigurationFor(activeBackend, workingSourceDir, sourceFiles)
+                    "backend=${activeBackend}".toString(),
+                    getExecutorConfigurationFor(activeBackend, workingSourceDir, sourceFiles)
             ]
         }
     }
@@ -614,30 +665,30 @@ class AbstractAsciidoctorTask extends DefaultTask {
      */
     @SuppressWarnings('Instanceof')
     protected ExecutorConfiguration getExecutorConfigurationFor(
-        final String backendName,
-        final File workingSourceDir,
-        final Set<File> sourceFiles
+            final String backendName,
+            final File workingSourceDir,
+            final Set<File> sourceFiles
     ) {
         final List<String> crfb = this.copyResourcesForBackends
-        boolean copyResources =  crfb != null && (crfb.empty || backendName in crfb)
+        boolean copyResources = crfb != null && (crfb.empty || backendName in crfb)
         new ExecutorConfiguration(
-            sourceDir: workingSourceDir,
-            sourceTree: sourceFiles,
-            outputDir: getOutputDirFor(backendName),
-            baseDir: getBaseDir(),
-            projectDir: project.projectDir,
-            rootDir: project.rootProject.projectDir,
-            options: evaluateProviders(options),
-            attributes: preparePreserialisedAttributes(workingSourceDir),
-            backendName: backendName,
-            logDocuments: logDocuments,
-            gemPath: gemPath,
-            fatalMessagePatterns: asciidoctorj.fatalWarnings,
-            asciidoctorExtensions: (asciidoctorJExtensions.findAll { !(it instanceof Dependency) }),
-            requires: requires,
-            copyResources: copyResources,
-            executorLogLevel: ExecutorUtils.getExecutorLogLevel(asciidoctorj.logLevel),
-            safeModeLevel: asciidoctorj.safeMode.level
+                sourceDir: workingSourceDir,
+                sourceTree: sourceFiles,
+                outputDir: getOutputDirFor(backendName),
+                baseDir: getBaseDir(),
+                projectDir: project.projectDir,
+                rootDir: project.rootProject.projectDir,
+                options: evaluateProviders(options),
+                attributes: preparePreserialisedAttributes(workingSourceDir),
+                backendName: backendName,
+                logDocuments: logDocuments,
+                gemPath: gemPath,
+                fatalMessagePatterns: asciidoctorj.fatalWarnings,
+                asciidoctorExtensions: (asciidoctorJExtensions.findAll { !(it instanceof Dependency) }),
+                requires: requires,
+                copyResources: copyResources,
+                executorLogLevel: ExecutorUtils.getExecutorLogLevel(asciidoctorj.logLevel),
+                safeModeLevel: asciidoctorj.safeMode.level
         )
     }
 
@@ -654,8 +705,8 @@ class AbstractAsciidoctorTask extends DefaultTask {
      */
     protected Map<String, Object> getTaskSpecificDefaultAttributes(File workingSourceDir) {
         Map<String, Object> attrs = [
-            includedir           : (Object) workingSourceDir.absolutePath,
-            'gradle-project-name': (Object) project.name
+                includedir           : (Object) workingSourceDir.absolutePath,
+                'gradle-project-name': (Object) project.name
         ]
 
         if (project.version != null) {
@@ -747,7 +798,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      */
     protected FileTree getSecondarySourceFileTreeFrom(File dir) {
         project.fileTree(dir).
-            matching(this.secondarySourceDocumentPattern ?: defaultSecondarySourceDocumentPattern)
+                matching(this.secondarySourceDocumentPattern ?: defaultSecondarySourceDocumentPattern)
     }
 
     /** Get the output directory for a specific backend.
@@ -811,11 +862,19 @@ class AbstractAsciidoctorTask extends DefaultTask {
     protected ProcessMode getFinalProcessMode() {
         if (inProcess != JAVA_EXEC && GradleVersion.current() < GradleVersion.version(('4.3'))) {
             logger.warn('Gradle API classpath leakage will cause issues with Gradle < 4.3. ' +
-                'Switching to JAVA_EXEC instead.')
+                    'Switching to JAVA_EXEC instead.')
             JAVA_EXEC
         } else {
             this.inProcess
         }
+    }
+
+    /** To indicate whether a base directory strategy has already been configured.
+     *
+     * @return {@code true} is a strategy has been configured
+     */
+    protected boolean isBaseDirConfigured() {
+        this.baseDir != null
     }
 
     private void checkForInvalidSourceDocuments() {
@@ -839,10 +898,6 @@ class AbstractAsciidoctorTask extends DefaultTask {
         }
     }
 
-    private File getIntermediateWorkDir() {
-        project.file("${project.buildDir}/tmp/${FileUtils.toSafeFileName(this.name)}.intermediate")
-    }
-
     private void checkForIncompatiblePathRoots() {
         if (outputDir == null) {
             throw new GradleException("outputDir has not been defined for task '${name}'")
@@ -854,8 +909,8 @@ class AbstractAsciidoctorTask extends DefaultTask {
 
         if (sourceRoot != baseRoot || outputRoot != baseRoot) {
             throw new AsciidoctorExecutionException('sourceDir, outputDir and baseDir needs to have the same root ' +
-                'filesystem for AsciidoctorJ to function correctly. ' + '' +
-                'This is typically caused on Winwdows where everything is not on the same drive letter.')
+                    'filesystem for AsciidoctorJ to function correctly. ' + '' +
+                    'This is typically caused on Winwdows where everything is not on the same drive letter.')
         }
     }
 
@@ -864,33 +919,33 @@ class AbstractAsciidoctorTask extends DefaultTask {
     }
 
     private Map<String, ExecutorConfiguration> runWithWorkers(
-        final File workingSourceDir, final Set<File> sourceFiles) {
+            final File workingSourceDir, final Set<File> sourceFiles) {
         FileCollection asciidoctorClasspath = configurations
         logger.info "Running AsciidoctorJ with workers. Classpath = ${asciidoctorClasspath.files}"
 
         Map<String, ExecutorConfiguration> executorConfigurations = getExecutorConfigurations(
-            workingSourceDir,
-            sourceFiles
+                workingSourceDir,
+                sourceFiles
         )
 
         if (parallelMode) {
             executorConfigurations.each { String configName, ExecutorConfiguration executorConfiguration ->
                 worker.submit(AsciidoctorJExecuter) { WorkerConfiguration config ->
                     configureWorker(
-                        "Asciidoctor (task=${name}) conversion for ${configName}",
-                        config,
-                        asciidoctorClasspath,
-                        new ExecutorConfigurationContainer(executorConfiguration)
+                            "Asciidoctor (task=${name}) conversion for ${configName}",
+                            config,
+                            asciidoctorClasspath,
+                            new ExecutorConfigurationContainer(executorConfiguration)
                     )
                 }
             }
         } else {
             worker.submit(AsciidoctorJExecuter) { WorkerConfiguration config ->
                 configureWorker(
-                    "Asciidoctor (task=${name}) conversions for ${executorConfigurations.keySet().join(', ')}",
-                    config,
-                    asciidoctorClasspath,
-                    new ExecutorConfigurationContainer(executorConfigurations.values())
+                        "Asciidoctor (task=${name}) conversions for ${executorConfigurations.keySet().join(', ')}",
+                        config,
+                        asciidoctorClasspath,
+                        new ExecutorConfigurationContainer(executorConfigurations.values())
                 )
             }
         }
@@ -898,32 +953,32 @@ class AbstractAsciidoctorTask extends DefaultTask {
     }
 
     private void configureWorker(
-        final String displayName,
-        final WorkerConfiguration config,
-        final FileCollection asciidoctorClasspath,
-        final ExecutorConfigurationContainer ecContainer
+            final String displayName,
+            final WorkerConfiguration config,
+            final FileCollection asciidoctorClasspath,
+            final ExecutorConfigurationContainer ecContainer
     ) {
         config.isolationMode = inProcess == IN_PROCESS ? CLASSLOADER : PROCESS
         config.classpath = asciidoctorClasspath
         config.displayName = displayName
         config.params(
-            ecContainer
+                ecContainer
         )
         configureForkOptions(config.forkOptions)
     }
 
     private Map<String, ExecutorConfiguration> runWithJavaExec(
-        final File workingSourceDir,
-        final Set<File> sourceFiles
+            final File workingSourceDir,
+            final Set<File> sourceFiles
     ) {
         FileCollection javaExecClasspath = JavaExecUtils.getJavaExecClasspath(
-            project,
-            configurations,
-            asciidoctorj.injectInternalGuavaJar
+                project,
+                configurations,
+                asciidoctorj.injectInternalGuavaJar
         )
         Map<String, ExecutorConfiguration> executorConfigurations = getExecutorConfigurations(
-            workingSourceDir,
-            sourceFiles
+                workingSourceDir,
+                sourceFiles
         )
         File execConfigurationData = JavaExecUtils.writeExecConfigurationData(this, executorConfigurations.values())
 

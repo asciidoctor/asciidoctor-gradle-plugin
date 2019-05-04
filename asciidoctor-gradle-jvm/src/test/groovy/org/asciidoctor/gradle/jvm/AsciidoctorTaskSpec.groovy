@@ -17,7 +17,6 @@ package org.asciidoctor.gradle.jvm
 
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.gradle.api.file.FileCollection
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
@@ -33,8 +32,6 @@ class AsciidoctorTaskSpec extends Specification {
     private static final String ASCIIDOCTOR = 'asciidoctor'
     private static final String ASCIIDOC_RESOURCES_DIR = 'asciidoctor-gradle-jvm/src/test/resources/src/asciidoc'
     private static final String ASCIIDOC_BUILD_DIR = 'build/asciidoc'
-    private static final String ASCIIDOC_SAMPLE_FILE = 'sample.asciidoc'
-    private static final String ASCIIDOC_SAMPLE2_FILE = 'subdir/sample2.ad'
 
     Project project = ProjectBuilder.builder().withName('test').build()
 
@@ -60,6 +57,67 @@ class AsciidoctorTaskSpec extends Specification {
 
     void cleanup() {
         System.out = originSystemOut
+    }
+
+    void 'Base directory is project directory by default'() {
+        when:
+        AsciidoctorTask task = asciidoctorTask {
+        }
+
+        then:
+        task.baseDir == project.projectDir
+    }
+
+    void 'Base directory can be root project directory'() {
+        when:
+        AsciidoctorTask task = asciidoctorTask {
+            baseDirIsRootProjectDir()
+        }
+
+        then:
+        task.baseDir == project.rootProject.projectDir
+    }
+
+    void 'Base directory can be project directory'() {
+        when:
+        AsciidoctorTask task = asciidoctorTask {
+            baseDirIsRootProjectDir()
+            baseDirIsProjectDir()
+        }
+
+        then:
+        task.baseDir == project.rootProject.projectDir
+    }
+
+    void 'Base directory can be a fixed directory'() {
+        when:
+        AsciidoctorTask task = asciidoctorTask {
+            baseDir 'foo'
+        }
+
+        then:
+        task.baseDir == project.file('foo')
+    }
+
+    void 'Base directory can be source directory'() {
+        when:
+        AsciidoctorTask task = asciidoctorTask {
+            baseDirFollowsSourceDir()
+        }
+
+        then:
+        task.baseDir == task.sourceDir
+    }
+
+    void 'Base directory can be source directory within a temporary working directory'() {
+        when:
+        AsciidoctorTask task = asciidoctorTask {
+            baseDirFollowsSourceDir()
+            useIntermediateWorkDir()
+        }
+
+        then:
+        task.baseDir == project.file("${project.buildDir}/tmp/${task.name}.intermediate")
     }
 
     void "Allow setting of options via method"() {
@@ -167,8 +225,8 @@ class AsciidoctorTaskSpec extends Specification {
         when:
         asciidoctorTask {
             options = [
-                doctype: 'book',
-                attributes: 'toc=right source-highlighter=coderay toc-title=Table\\ of\\ Contents'
+                    doctype   : 'book',
+                    attributes: 'toc=right source-highlighter=coderay toc-title=Table\\ of\\ Contents'
             ]
         }
 
@@ -180,9 +238,9 @@ class AsciidoctorTaskSpec extends Specification {
         when:
         asciidoctorTask {
             options = [doctype: 'book', attributes: [
-                'toc=right',
-                'source-highlighter=coderay',
-                'toc-title=Table of Contents'
+                    'toc=right',
+                    'source-highlighter=coderay',
+                    'toc-title=Table of Contents'
             ]]
         }
 
@@ -355,39 +413,6 @@ class AsciidoctorTaskSpec extends Specification {
         then:
         task.asciidoctorj.asGemPath() == project.projectDir.absolutePath
         !systemOut.toString().contains('deprecated')
-    }
-
-    void "Method `sourceDocumentNames` should resolve descendant files of `sourceDir` if supplied as relatives"() {
-        when: 'I specify two files relative to sourceDir,including one in a subfolder'
-        AsciidoctorTask task = asciidoctorTask {
-            sourceDir srcDir
-            sources {
-                include ASCIIDOC_SAMPLE_FILE
-                include ASCIIDOC_SAMPLE2_FILE
-            }
-        }
-        def fileCollection = task.sourceFileTree
-
-        then: 'both files should be in collection, but any other files found in folder should be excluded'
-        fileCollection.contains(new File(srcDir, ASCIIDOC_SAMPLE_FILE).canonicalFile)
-        fileCollection.contains(new File(srcDir, ASCIIDOC_SAMPLE2_FILE).canonicalFile)
-        !fileCollection.contains(new File(srcDir, 'sample-docinfo.xml').canonicalFile)
-        fileCollection.files.size() == 2
-    }
-
-    void 'Can configure secondary sources'() {
-        final String secSrc = 'secondary.txt'
-        when: 'Secondary sources are specified'
-        AsciidoctorTask task = asciidoctorTask {
-            sourceDir srcDir
-            secondarySources {
-                include secSrc
-            }
-        }
-        FileCollection fileCollection = task.secondarySourceFileTree
-
-        then: 'Default patterns are ignored'
-        fileCollection.contains(new File(srcDir, secSrc).canonicalFile)
     }
 
     void 'When attribute providers are registered on the task, then global ones will not be used.'() {

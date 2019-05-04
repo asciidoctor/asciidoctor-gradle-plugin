@@ -41,6 +41,7 @@ class AsciidoctorRevealJSPlugin implements Plugin<Project> {
         revealTask.with {
             dependsOn gemPrepare
             outputDir = { "${project.buildDir}/docs/asciidocRevealJs" }
+            sourceDir = 'src/docs/asciidoc'
         }
     }
 }
