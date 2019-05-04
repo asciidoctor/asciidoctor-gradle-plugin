@@ -509,7 +509,7 @@ asciidctor {
 
 === Docinfo processing
 
-When using the `docinfo` attribute with `html` and `docbook` backends, it is recommended that `baseDirFollowsSourceDir()` is always set. This will ensure that the docinfo files are picked up correctly form the same directory that is the source directory.
+When using the `docinfo` attribute with `html` and `docbook` backends, it is recommended that `baseDirFollowsSourceDir()` is always set. This will ensure that the docinfo files are picked up correctly from the same directory that is the source directory.
 
 == The New AsciidoctorJ Plugin
 

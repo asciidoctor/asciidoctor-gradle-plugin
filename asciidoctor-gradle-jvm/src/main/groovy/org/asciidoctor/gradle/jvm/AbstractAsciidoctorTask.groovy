@@ -869,6 +869,14 @@ class AbstractAsciidoctorTask extends DefaultTask {
         }
     }
 
+    /** To indicate whether a base directory strategy has already been configured.
+     *
+     * @return {@code true} is a strategy has been configured
+     */
+    protected boolean isBaseDirConfigured() {
+        this.baseDir != null
+    }
+
     private void checkForInvalidSourceDocuments() {
         if (!sourceFileTree.filter { File f ->
             f.name.startsWith('_')
