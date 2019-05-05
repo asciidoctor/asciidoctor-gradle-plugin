@@ -325,7 +325,7 @@ asciidoctorj:: a task extension which allows a task to extend of override global
   This allow extensive flexibility. Any thing that can be configured in the global `asciidoctorj` extension can also be configured here.
 attributes:: A shortcut for `asciidoctorj.attributes`.
 baseDir:: Base directory for asciidoctor document conversion and root document inclusion.
-  The base directory will be the project directory, but default, but can be set to any other directory.
+  The base directory will be the project directory by default, but can be set to any other directory.
 baseDirFollowsSourceDir:: The base directory should be the same as the source directory even if the source directory is located within an intermediate working directory.
 baseDirIsProjectDir:: The base directory is always the current project directory.
 baseDirIsRootProjectDir:: The base directory is always the root project directory.
