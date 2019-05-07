@@ -497,7 +497,7 @@ However it is not practical for everyone to use `{includedir}` and as from 2.2.0
 
 [source,groovy]
 ----
-asciidctor {
+asciidoctor {
     baseDirIsRootProjectDir() // <1>
     baseDirIsProjectDir() // <2>
     baseDirFollowsSourceDir() // <3>
