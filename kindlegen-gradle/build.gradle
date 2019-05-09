@@ -14,7 +14,7 @@ dependencies {
 }
 
 test {
-    systemProperties 'org.asciidoctor.gradle.kindlegen.uri' : file(kindleGenCacheDir).toURI()
+    systemProperties 'org.asciidoctor.gradle.kindlegen.uri' : file(kindleGenCacheDir).absoluteFile.toURI()
 
     dependsOn createClasspathManifest
     dependsOn ':testfixtures-offline-repo:buildOfflineRepositories'

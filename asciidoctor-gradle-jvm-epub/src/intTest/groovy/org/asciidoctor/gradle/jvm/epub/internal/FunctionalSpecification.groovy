@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle.jvm.epub.internal
 
 import org.apache.commons.io.FileUtils
+import org.asciidoctor.gradle.testfixtures.FunctionalTestSetup
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.util.VersionNumber
 import org.junit.Rule
@@ -27,9 +28,9 @@ class FunctionalSpecification extends Specification {
 
     @SuppressWarnings('LineLength')
     static
-    final String TEST_PROJECTS_DIR = System.getProperty('TEST_PROJECTS_DIR', './asciidoctor-gradle-jvm-epub/src/intTest/projects')
+    final String TEST_PROJECTS_DIR = System.getProperty('TEST_PROJECTS_DIR', './src/intTest/projects')
     static
-    final String TEST_REPO_DIR = System.getProperty('OFFLINE_REPO', './testfixtures/offline-repo/build/repo')
+    final String TEST_REPO_DIR = FunctionalTestSetup.offlineRepo.absolutePath
     static
     final OperatingSystem OS = OperatingSystem.current()
 
