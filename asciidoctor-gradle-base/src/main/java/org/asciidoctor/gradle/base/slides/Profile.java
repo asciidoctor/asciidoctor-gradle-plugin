@@ -15,37 +15,46 @@
  */
 package org.asciidoctor.gradle.base.slides;
 
-import java.util.Collections;
-import java.util.Locale;
-
-/** Profile names for various slide deck frameworks.
+/**
+ * Profile names for various slide deck frameworks.
  *
- * @since 2.2.0
  * @author Schalk W. Cronjé
+ * @since 2.2.0
  */
 public enum Profile {
-    DECK_JS("deckjs", "Deck.js"),
-    IMPRESS_JS("impressjs", "Impress.js"),
-    DZ("dzslides","DZslides"),
-    FLOWTIME_JS("flowtimejs","Flowtime.js"),
-    GOOGLE_HTML5("googlehtml5","Goole HTML5 slides"),
-    SPF("spf","Slide Presentation Framework"),
-    REMARK_JS("remarkjs","Remark.js"),
-    REVEAL_JS("revealjs", "reveal.js"),
-    RUBAN("ruban","Ruban");
+    BESPOKE("bespokejs","bespoke", "Bespoke.js"),
+    DECK_JS("deckjs", "deck", "Deck.js"),
+    DZ("dzslides", "dzslides", "DZslides"),
+    FLOWTIME_JS("flowtimejs", "flowtime", "Flowtime.js"),
+    GENERIC( "generic", "generic","Generic slides framework"),
+    GOOGLE_HTML5("googlehtml5", null, "Google HTML5 slides"),
+    IMPRESS_JS("impressjs", "impress", "Impress.js"),
+    REMARK_JS("remarkjs", "remark", "Remark.js"),
+    REVEAL_JS("revealjs", "reveal", "reveal.js"),
+    RUBAN("ruban", null,"Ruban"),
+    SPF("spf", null,"Slide Presentation Framework");
 
-    private Profile(final String p, final String n) {
+    // csss, slidy, shower, webslides
+
+    private final String profile;
+    private final String decktapeProfile;
+    private final String name;
+
+    private Profile(final String p, final String altProfile, final String n) {
         this.name = n;
         this.profile = p;
+        this.decktapeProfile = altProfile;
     }
 
     public String getProfileShortName() {
         return profile;
     }
+
+    public String getDeckTapeShortName() {
+        return decktapeProfile;
+    }
+
     public String getName() {
         return name;
     }
-
-    private final String profile;
-    private final String name;
 }

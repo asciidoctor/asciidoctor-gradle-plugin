@@ -24,6 +24,8 @@ import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.util.PatternSet
 import org.ysb33r.grolifant.api.OperatingSystem
 
+import java.nio.file.Path
+
 import static groovy.lang.Closure.DELEGATE_FIRST
 
 /** Utility methods used internally by Asciidoctor plugins.
@@ -94,6 +96,18 @@ class AsciidoctorUtils {
      */
     static String getRelativePath(File target, File base) throws IOException {
         base.toPath().relativize(target.toPath()).toFile().toString()
+    }
+
+    /** Get relative path to the current filesystem root
+     *
+     * @param target The target directory
+     * @return taget's pat relative to the filesystem root
+     *
+     * @since 3.0
+     */
+    static String getRelativePathToFsRoot(File target) {
+        Path path = target.toPath()
+        path.relativize(path.root).toString()
     }
 
     /** Executes a configuration closure.

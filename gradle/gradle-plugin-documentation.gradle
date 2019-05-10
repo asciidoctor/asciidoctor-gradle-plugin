@@ -20,14 +20,14 @@ javadoc {
 task sourcesJar(type: Jar) {
     group 'Build'
     description 'An archive of the source code'
-    classifier 'sources'
+    archiveClassifier.set('sources')
     from sourceSets.main.allSource
 }
 
 task javadocJar(type: Jar, dependsOn: groovydoc) {
     group 'Build'
     description 'An archive of the javadoc'
-    classifier 'javadoc'
+    archiveClassifier.set('javadoc')
     from groovydoc.destinationDir
 }
 

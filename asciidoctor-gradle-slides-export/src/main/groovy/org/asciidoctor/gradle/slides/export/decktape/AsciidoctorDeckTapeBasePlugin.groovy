@@ -13,22 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.js.nodejs
+package org.asciidoctor.gradle.slides.export.decktape
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.js.nodejs.core.NodeJSBasePlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
-/** Base plugin for AsciidoctorJS implementations.
+/** Plugin that will create an extension for configuring decktape
+ * globally.
  *
+ * @author Schalk W. Cronjé
  * @since 3.0
  */
 @CompileStatic
-class AsciidoctorNodeJSBasePlugin implements Plugin<Project> {
+class AsciidoctorDeckTapeBasePlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
-        project.apply plugin: NodeJSBasePlugin
-        project.extensions.create( AsciidoctorJSExtension.NAME, AsciidoctorJSExtension, project )
+        project.apply plugin: 'org.asciidoctor.base'
+        project.apply plugin: 'org.asciidoctor.js.nodejs-base'
+        project.extensions.create(DeckTapeExtension.NAME, DeckTapeExtension, project)
     }
 }
