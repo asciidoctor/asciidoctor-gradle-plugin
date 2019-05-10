@@ -18,8 +18,9 @@ package org.asciidoctor.gradle.testfixtures
 import groovy.transform.CompileStatic
 
 /**
+ * @author Schalk W. Cronjé
+ *
  * @since 2.0.0
-* @author Schalk W. Cronjé
 */
 @CompileStatic
 class JRubyTestVersions {
@@ -36,5 +37,4 @@ class JRubyTestVersions {
     public final static String AJ20_SAFE_MAXIMUM = '9.2.7.0'
     public final static String AJ20_ABSOLUTE_MAXIMUM = '9.2.7.0'
     // ----------------------------------------------------------
-
 }

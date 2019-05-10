@@ -24,9 +24,6 @@ import org.gradle.api.Project
  */
 @CompileStatic
 class AsciidoctorNodeJSBasePlugin implements Plugin<Project> {
-
-    public static final String TASK_GROUP = 'Documentation'
-
     @Override
     void apply(Project project) {
         project.extensions.create( AsciidoctorJSExtension.NAME, AsciidoctorJSExtension, project )

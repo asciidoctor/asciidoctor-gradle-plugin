@@ -15,12 +15,17 @@
  */
 package org.asciidoctor.gradle.js.nodejs
 
+import org.asciidoctor.gradle.base.ModuleVersionLoader
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import spock.lang.Shared
 import spock.lang.Specification
 
 @SuppressWarnings(['MethodName'])
 class AsciidoctorJSExtensionSpec extends Specification {
+    @Shared
+    Map<String,String> versionMap = ModuleVersionLoader.load('asciidoctorjs-extension')
+
     Project project = ProjectBuilder.builder().build()
     AsciidoctorJSExtension asciidoctorjs
 
@@ -29,12 +34,12 @@ class AsciidoctorJSExtensionSpec extends Specification {
         asciidoctorjs = project.extensions.getByType(AsciidoctorJSExtension)
     }
 
-    void 'Can set a default diagram version'() {
+    void 'Can set a default docbook version'() {
         when:
         asciidoctorjs.modules.docbook.use()
 
         then:
-        asciidoctorjs.modules.docbook.version == AsciidoctorJSExtension.DEFAULT_DOCBOOK_VERSION
+        asciidoctorjs.modules.docbook.version == versionMap['asciidoctorjs.docbook']
         asciidoctorjs.requires.find { it.contains('docbook-converter') }
     }
 }

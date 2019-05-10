@@ -13,29 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.jvm
+package org.asciidoctor.gradle.base.slides;
 
-import groovy.transform.CompileStatic
+import org.gradle.api.Task;
 
-/** Ways of execuring Asciidoctor processes.
+/** For tasks types that creates slides and can be auto-recognised
+ * for specific slide-to-pdf converters when such plugins are applied.
  *
- * @since 2.0.0
- * @author Schalk W. Cronjé
+ * @since 2.2.0
  */
-@CompileStatic
-enum ProcessMode {
-    /** Use Gradle worker in-process.
-     *
-     */
-    IN_PROCESS,
-
-    /** Use out-of-process Gradle worker.
-     *
-     */
-    OUT_OF_PROCESS,
-
-    /** Use a classic out-of-process Java execution.
-     *
-     */
-    JAVA_EXEC
+public interface SlidesToExportAware extends Task {
+    Profile getProfile();
 }

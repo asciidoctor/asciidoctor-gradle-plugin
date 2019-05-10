@@ -19,6 +19,7 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AbstractAsciidoctorBaseTask
 import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
+import org.asciidoctor.gradle.base.process.ProcessMode
 import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.base.internal.Workspace
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
@@ -380,11 +381,10 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
     /** Configure Java fork options prior to execution
      *
      * The default method will copy anything configured via {@link #forkOptions(Closure c)} or
-     * {@link #forkOptions(Action c)} to the rpovided {@link JavaForkOptions}.
+     * {@link #forkOptions(Action c)} to the provided {@link JavaForkOptions}.
      *
      * @param pfo Fork options to be configured.
      */
-    @SuppressWarnings('UnusedMethodParameter')
     protected void configureForkOptions(JavaForkOptions pfo) {
         this.javaForkOptions.copyTo(pfo)
     }

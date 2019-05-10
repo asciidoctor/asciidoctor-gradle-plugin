@@ -1,16 +1,20 @@
-apply from : "${rootProject.projectDir}/gradle/kindlegen-versions.gradle"
 apply from: "${rootProject.projectDir}/gradle/classpath-manifest.gradle"
 
 ext {
-    kindleGenCacheDir = offlineRepoBinariesRoot
+    kindleGenCacheDir = "${offlineRepoBinariesRoot}/kindlegen"
 }
 
 dependencies {
     testRuntimeClasspath files(createClasspathManifest)
+
+    cachedBinaries.add "kindlegen:${OS.macOsX ? 'KindleGen' : 'kindlegen'}" +
+            ":${moduleVersions.kindlegen}" +
+            ":${OS.linux ? 'linux_2.6_i386' : (OS.windows ? 'win32' : 'Mac_i386')}" +
+            "@${OS.linux ? 'tar.gz' : 'zip'}"
 }
 
 test {
-    systemProperties 'org.asciidoctor.gradle.kindlegen.uri' : kindleGenCacheDir.toURI()
+    systemProperties 'org.asciidoctor.gradle.kindlegen.uri' : file(kindleGenCacheDir).absoluteFile.toURI()
 
     dependsOn createClasspathManifest
     dependsOn ':testfixtures-offline-repo:buildOfflineRepositories'

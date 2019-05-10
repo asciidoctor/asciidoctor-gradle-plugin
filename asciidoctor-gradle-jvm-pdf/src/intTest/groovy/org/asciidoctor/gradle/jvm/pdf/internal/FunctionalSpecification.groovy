@@ -33,9 +33,9 @@ class FunctionalSpecification extends Specification {
 
     @SuppressWarnings('LineLength')
     static
-    final String TEST_PROJECTS_DIR = System.getProperty('TEST_PROJECTS_DIR', './asciidoctor-gradle-jvm-pdf/src/intTest/projects')
+    final String TEST_PROJECTS_DIR = System.getProperty('TEST_PROJECTS_DIR', './src/intTest/projects')
     static
-    final String TEST_REPO_DIR = System.getProperty('OFFLINE_REPO', './testfixtures/offline-repo/build/repo')
+    final String TEST_REPO_DIR = FunctionalTestSetup.offlineRepo.absolutePath
 
     @Rule
     TemporaryFolder testProjectDir

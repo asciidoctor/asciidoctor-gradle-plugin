@@ -18,6 +18,8 @@ package org.asciidoctor.gradle.jvm.slides
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AsciidoctorUtils
 import org.asciidoctor.gradle.base.Transform
+import org.asciidoctor.gradle.base.slides.Profile
+import org.asciidoctor.gradle.base.slides.SlidesToExportAware
 import org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask
 import org.gradle.api.Action
 import org.gradle.api.file.CopySpec
@@ -36,10 +38,10 @@ import static org.asciidoctor.gradle.jvm.slides.RevealJSExtension.FIRST_VERSION_
  * @since 2.0
  */
 @CompileStatic
-class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
+class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements SlidesToExportAware {
 
-    static final String PLUGIN_CONFIGURATION_FILENAME = 'revealjs-plugin-configuration.js'
-    static final String PLUGIN_LIST_FILENAME = 'revealjs-plugins.js'
+    public static final String PLUGIN_CONFIGURATION_FILENAME = 'revealjs-plugin-configuration.js'
+    public static final String PLUGIN_LIST_FILENAME = 'revealjs-plugins.js'
 
     private static final String BACKEND_NAME = 'revealjs'
 
@@ -61,8 +63,9 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
         configuredOutputOptions.backends = [BACKEND_NAME]
         copyAllResources()
 
-        inputs.file({ revealjsOptions.highlightJsThemeIfFile }).optional()
-        inputs.file({ revealjsOptions.parallaxBackgroundImageIfFile }).optional()
+        inputs.file( { RevealJSOptions opt -> opt.highlightJsThemeIfFile }.curry(this.revealjsOptions) ).optional()
+        inputs.file( { RevealJSOptions opt -> opt.parallaxBackgroundImageIfFile }.
+                curry(this.revealjsOptions) ).optional()
     }
 
     /** Options for Reveal.JS slides.
@@ -217,6 +220,12 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
      */
     void setPluginConfigurationFile(Object f) {
         this.pluginConfigurationFile = f
+    }
+
+    @Internal
+    @Override
+    Profile getProfile() {
+        Profile.REVEAL_JS
     }
 
     @Override

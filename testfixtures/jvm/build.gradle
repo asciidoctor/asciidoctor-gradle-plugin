@@ -1,3 +1,15 @@
+apply plugin: AsciidoctorGradleGroovyProject
+
+generateModuleVersions {
+    basename = 'testfixtures-core'
+    propertyNames ~/.+/
+
+    additionalProperties 'offline-repo-location' : new File(
+            project(':testfixtures-offline-repo').buildDir,
+            'repo'
+    ).absolutePath
+}
+
 dependencies {
     compile localGroovy()
     compile gradleApi()
