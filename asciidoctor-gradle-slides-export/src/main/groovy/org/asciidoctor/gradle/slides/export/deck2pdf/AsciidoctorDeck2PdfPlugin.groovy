@@ -20,6 +20,7 @@ import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AbstractAsciidoctorBaseTask
 import org.asciidoctor.gradle.base.slides.SlidesToExportAware
 import org.gradle.api.Action
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -40,7 +41,12 @@ class AsciidoctorDeck2PdfPlugin implements Plugin<Project> {
     private static final Pattern NAME_MATCHER = ~/(.+)To(Pdf|Png|Jpg)$/
 
     @Override
+    @SuppressWarnings('DeadCode')
     void apply(Project project) {
+        throw new GradleException(
+                'Deck2Pdf not currently supported due to JavaFX issues. See ' +
+                        'https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/374'
+        )
         project.apply plugin: AsciidoctorDeck2PdfBasePlugin
         addDeck2PdfTaskRule(project)
     }

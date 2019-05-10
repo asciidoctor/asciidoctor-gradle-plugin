@@ -19,6 +19,8 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.testfixtures.ProjectBuilder
 import org.ysb33r.grolifant.api.TaskProvider
+import spock.lang.Issue
+import spock.lang.PendingFeature
 import spock.lang.Specification
 
 import static org.asciidoctor.gradle.slides.export.deck2pdf.fixtures.TaskTypes.TASK_TYPES
@@ -28,6 +30,8 @@ class AsciidoctorDeck2PdfPluginSpec extends Specification {
 
     Project project = ProjectBuilder.builder().build()
 
+    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/374')
+    @PendingFeature
     void 'Can apply plugin: org.asciidoctor.deck2pdf'() {
         when:
         project.allprojects {
@@ -38,6 +42,8 @@ class AsciidoctorDeck2PdfPluginSpec extends Specification {
         project.extensions.getByName(Deck2PdfExtension.EXTENSION_NAME)
     }
 
+    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/374')
+    @PendingFeature
     void 'Tasks are selectively decorated when `org.asciidoctor.deck2pdf` is applied'() {
         given: 'Three Slide2ExportAware tasks'
         final Map<String, TaskProvider> sourceTasks = registerSourceTasks(project)

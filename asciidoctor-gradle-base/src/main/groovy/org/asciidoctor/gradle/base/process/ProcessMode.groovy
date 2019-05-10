@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.jvm
+package org.asciidoctor.gradle.base.process
 
 import groovy.transform.CompileStatic
 
-/** Ways of execuring Asciidoctor processes.
+/** Ways of executing Java processes.
  *
- * @since 2.0.0
+ * @since 3.0 (Relocated from {@code org.asciidoctor.gradle.jvm.ProcessMode} which existed since 2.0.0)
  * @author Schalk W. Cronjé
  */
 @CompileStatic
