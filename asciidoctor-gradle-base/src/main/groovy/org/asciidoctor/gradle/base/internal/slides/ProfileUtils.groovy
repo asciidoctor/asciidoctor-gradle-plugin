@@ -30,6 +30,7 @@ class ProfileUtils {
      * It will perform a case-insensitive search in the following order:
      * <ol>
      *   <li>Profile short name</li>
+     *   <li>Profile alternative name (decktape)<li>
      *   <li>Profile name/li>
      *   <li>Profile instance</li>
      * </ol>
@@ -41,7 +42,8 @@ class ProfileUtils {
     static Profile findMatch(final String search) {
         String lc = search.toLowerCase(Locale.US)
         Profile profile = Profile.values().find {
-            it.profileShortName.toLowerCase(Locale.US) == lc || it.name.toLowerCase(Locale.US) == lc
+            it.profileShortName.toLowerCase(Locale.US) == lc || it.name.toLowerCase(Locale.US) == lc ||
+                    it.deckTapeShortName?.toLowerCase(Locale.US) == lc
         }
 
         profile ?: Profile.valueOf(search.toUpperCase(Locale.US))

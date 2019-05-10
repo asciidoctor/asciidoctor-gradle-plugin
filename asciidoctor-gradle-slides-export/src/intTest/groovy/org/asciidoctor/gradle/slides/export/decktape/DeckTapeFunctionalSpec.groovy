@@ -1,0 +1,159 @@
+/*
+ * Copyright 2013-2019 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.asciidoctor.gradle.slides.export.decktape
+
+import org.asciidoctor.gradle.slides.export.internal.FunctionalSpecification
+import org.gradle.testkit.runner.BuildResult
+import spock.lang.Timeout
+import spock.lang.Unroll
+
+class DeckTapeFunctionalSpec extends FunctionalSpecification {
+
+    private static final boolean BASE_ONLY = true
+
+    @Unroll
+    @Timeout(120)
+    void 'Standalone asciidoctor slide task can be exported with #profile profile'() {
+        setup:
+        createTestProject('generic')
+        getBuildFile("""
+        import org.asciidoctor.gradle.slides.export.decktape.DeckTapeTask
+        
+        asciidoctorRevealJs {
+            sourceDir 'src/docs/asciidoc'
+            sources {
+                include 'index.adoc'
+            }
+        }
+
+        task standalonePdfConverter(type: DeckTapeTask) {
+            outputDir "\${buildDir}/generic"
+            slides asciidoctorRevealJs
+            ${profileDSL}    
+        }
+        """, BASE_ONLY)
+
+        when:
+        getGradleRunner(['standalonePdfConverter', '-i']).build()
+
+        then:
+        new File(testProjectDir.root, 'build/generic/index.pdf').exists()
+
+        where:
+        profile     | profileDSL
+        'reveal.js' | "profile 'reveal_js'"
+        'generic'   | 'useGenericProfile()'
+    }
+
+    @Timeout(120)
+    @Unroll
+    void 'Standalone task can also export to #format in addition to PDF'() {
+        setup:
+        createTestProject('generic')
+        getBuildFile("""
+        import org.asciidoctor.gradle.slides.export.decktape.DeckTapeTask
+        
+        asciidoctorRevealJs {
+            sourceDir 'src/docs/asciidoc'
+            sources {
+                include 'index.adoc'
+            }
+            theme 'beige'
+        }
+
+        task standalonePdfConverter(type: DeckTapeTask) {
+            outputDir "\${buildDir}/generic"
+            slides asciidoctorRevealJs
+            profile 'reveal_js'
+            screenshots {
+                format = '${format}'
+                width = 1024
+                height = 768
+            }    
+        }
+        """, BASE_ONLY)
+
+        when:
+        getGradleRunner(['standalonePdfConverter', '-i']).build()
+
+        then:
+        new File(testProjectDir.root, "build/generic/index_1_1024x768.${format}").exists()
+
+        where:
+        format << ['jpg', 'png']
+    }
+
+    void 'Run task with parameters set from command-line'() {
+        setup:
+        createTestProject('generic')
+        getBuildFile("""
+        import org.asciidoctor.gradle.slides.export.decktape.DeckTapeTask
+        
+        asciidoctorRevealJs {
+            sourceDir 'src/docs/asciidoc'
+            sources {
+                include 'index.adoc'
+            }
+            theme 'beige'
+        }
+
+        task standalonePdfConverter(type: DeckTapeTask) {
+            outputDir "\${buildDir}/generic"
+            slides asciidoctorRevealJs
+            profile 'reveal_js' 
+
+            doLast {
+                println "*** Height=\${height} Width=\${width} Range=\${range}" + 
+                    " LoadPause=\${loadPause} Pause=\${interSlidePause}"
+            }
+        }
+        """, BASE_ONLY)
+
+        when:
+        BuildResult result = getGradleRunner([
+                                    '-i',
+                                    'standalonePdfConverter',
+                                    '--width=1024',
+                                    '--height=768',
+                                    '--range=2-3',
+                                    '--pause=1000',
+                                    '--load-pause=500'
+        ]).build()
+
+        then:
+        result.output.contains('*** Height=768 Width=1024 Range=2-3 LoadPause=500 Pause=1000')
+    }
+
+    private File getBuildFile(String extraContent, boolean baseOnly = false) {
+        File buildFile = testProjectDir.newFile('build.gradle')
+        buildFile << """
+            plugins {
+                id 'org.asciidoctor.jvm.revealjs'
+                id 'org.asciidoctor.decktape${baseOnly ? '.base' : ''}'
+            }
+            
+            ${offlineRepositories}
+            
+            ${extraContent}
+            
+            repositories {
+                maven {url 'http://rubygems-proxy.torquebox.org/releases'}
+            }
+        """
+        buildFile
+    }
+
+}

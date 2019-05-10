@@ -13,22 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.js.nodejs
+package org.asciidoctor.gradle.slides.export.base
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.js.nodejs.core.NodeJSBasePlugin
-import org.gradle.api.Plugin
-import org.gradle.api.Project
+import groovy.transform.InheritConstructors
 
-/** Base plugin for AsciidoctorJS implementations.
+/** Thrown when a profile is not supported by a slide conversion task.
  *
- * @since 3.0
  */
 @CompileStatic
-class AsciidoctorNodeJSBasePlugin implements Plugin<Project> {
-    @Override
-    void apply(Project project) {
-        project.apply plugin: NodeJSBasePlugin
-        project.extensions.create( AsciidoctorJSExtension.NAME, AsciidoctorJSExtension, project )
-    }
+@InheritConstructors
+class ProfileNotSupportedException extends Exception {
 }

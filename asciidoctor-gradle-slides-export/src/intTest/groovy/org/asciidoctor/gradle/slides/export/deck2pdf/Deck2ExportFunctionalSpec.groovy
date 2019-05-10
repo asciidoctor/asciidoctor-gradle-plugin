@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.slides.export
+package org.asciidoctor.gradle.slides.export.deck2pdf
 
 import org.asciidoctor.gradle.slides.export.internal.FunctionalSpecification
 import org.gradle.testkit.runner.BuildResult
