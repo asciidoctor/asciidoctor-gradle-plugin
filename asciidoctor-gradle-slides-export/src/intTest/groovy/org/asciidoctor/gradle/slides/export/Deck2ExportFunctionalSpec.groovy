@@ -17,10 +17,14 @@ package org.asciidoctor.gradle.slides.export
 
 import org.asciidoctor.gradle.slides.export.internal.FunctionalSpecification
 import org.gradle.testkit.runner.BuildResult
+import spock.lang.Issue
+import spock.lang.PendingFeature
 import spock.lang.Unroll
 
 class Deck2ExportFunctionalSpec extends FunctionalSpecification {
 
+    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/374')
+    @PendingFeature
     void 'Standalone asciidoctor slide task can be exported'() {
         setup:
         createTestProject('generic')
@@ -35,13 +39,15 @@ class Deck2ExportFunctionalSpec extends FunctionalSpecification {
         ''')
 
         when:
-        getGradleRunner(['standalonePdfConverter', '-i']).build()
+        getGradleRunner(['standalonePdfConverter', '-i', '-s']).build()
 
         then:
         new File(testProjectDir.root, 'build/generic/index.pdf').exists()
     }
 
     @Unroll
+    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/374')
+    @PendingFeature
     void 'Reveal.js task can be exported to #format'() {
         setup:
         createTestProject('revealjs')
@@ -56,6 +62,8 @@ class Deck2ExportFunctionalSpec extends FunctionalSpecification {
         format << ['pdf', 'jpg', 'png']
     }
 
+    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/374')
+    @PendingFeature
     void 'Run task with parameters set from command-line'() {
         setup:
         createTestProject('generic')
@@ -82,6 +90,8 @@ class Deck2ExportFunctionalSpec extends FunctionalSpecification {
         result.output.contains('*** Height=768 Width=1024')
     }
 
+    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/374')
+    @PendingFeature
     void 'Run jpg converter task with parameters set from command-line'() {
         setup:
         createTestProject('generic')

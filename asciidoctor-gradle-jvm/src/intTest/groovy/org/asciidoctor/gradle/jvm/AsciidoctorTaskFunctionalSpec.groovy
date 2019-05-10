@@ -175,6 +175,7 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
     }
 
     @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/2324')
+    @SuppressWarnings('LineLength')
     void 'Run conversion with an unknown backend'() {
         given:
         getBuildFile('''

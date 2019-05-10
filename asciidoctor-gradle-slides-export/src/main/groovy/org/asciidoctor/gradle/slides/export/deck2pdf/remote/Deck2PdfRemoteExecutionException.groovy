@@ -13,31 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.slides.export.deck2pdf.internal
+package org.asciidoctor.gradle.slides.export.deck2pdf.remote
 
 import groovy.transform.CompileStatic
+import groovy.transform.InheritConstructors
 
-import javax.inject.Inject
-
-/**
+/** Indicates that something has gone wrong running Deck2Pdf
+ *  in a worker or external JVM.
+ *
  * @author Schalk W. Cronjé
- * @since 3.0
+ *
+ * @since 3.0.0
  */
 @CompileStatic
-class ExecuteDeck2PdfInWorker implements Runnable {
-
-    private final DeckWorkerConfiguration configuration
-
-    @Inject
-    ExecuteDeck2PdfInWorker(final DeckWorkerConfiguration config) {
-        this.configuration = config
-    }
-
-    @Override
-    void run() {
-        configuration.outputDir.mkdirs()
-        configuration.arguments.each { String[] convertArgs ->
-            me.champeau.deck2pdf.Main.main(convertArgs)
-        }
-    }
+@InheritConstructors
+class Deck2PdfRemoteExecutionException extends Exception {
 }

@@ -1,5 +1,5 @@
 import org.asciidoctor.gradle.jvm.AsciidoctorTask
-import org.asciidoctor.gradle.jvm.ProcessMode
+import org.asciidoctor.gradle.base.process.ProcessMode
 
 // tag::using-two-plugins-three-backends[]
 plugins {

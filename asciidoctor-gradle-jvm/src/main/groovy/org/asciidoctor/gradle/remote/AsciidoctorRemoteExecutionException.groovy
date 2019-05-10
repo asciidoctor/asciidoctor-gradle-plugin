@@ -16,8 +16,9 @@
 package org.asciidoctor.gradle.remote
 
 import groovy.transform.CompileStatic
+import groovy.transform.InheritConstructors
 
-/** Indicates that something has gone wrong runnign AsciidoctorJ
+/** Indicates that something has gone wrong running AsciidoctorJ
  *  in a worker or external JVM.
  *
  * @author Schalk W. Cronjé
@@ -25,12 +26,6 @@ import groovy.transform.CompileStatic
  * @since 2.0.0
  */
 @CompileStatic
+@InheritConstructors
 class AsciidoctorRemoteExecutionException extends Exception {
-    AsciidoctorRemoteExecutionException(String var1, Throwable var2) {
-        super(var1, var2)
-    }
-
-    AsciidoctorRemoteExecutionException(String var1) {
-        super(var1)
-    }
 }

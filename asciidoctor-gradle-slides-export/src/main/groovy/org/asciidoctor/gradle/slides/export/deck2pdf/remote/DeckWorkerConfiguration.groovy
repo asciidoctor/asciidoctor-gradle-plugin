@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.slides.export.deck2pdf.internal
+package org.asciidoctor.gradle.slides.export.deck2pdf.remote
 
 import groovy.transform.CompileStatic
 import groovy.transform.TupleConstructor
@@ -30,9 +30,9 @@ class DeckWorkerConfiguration implements Serializable {
     final File outputDir
 
     DeckWorkerConfiguration(
-        List<String> args,
-        File outputDir,
-        final Map<String, File> outputInputMatch
+            List<String> args,
+            File outputDir,
+            final Map<String, File> outputInputMatch
     ) {
         this.outputDir = outputDir
         outputInputMatch.each { String outputFilenamePattern, File inputFile ->
@@ -41,6 +41,15 @@ class DeckWorkerConfiguration implements Serializable {
             newArgs.add(inputFile.canonicalPath)
             newArgs.add(new File(outputDir.canonicalFile, outputFilenamePattern).path)
             arguments.add(newArgs.toArray() as String[])
+        }
+    }
+
+    static void toFile(final File destinationFile, DeckWorkerConfiguration config) {
+        destinationFile.parentFile.mkdirs()
+        destinationFile.withOutputStream { fout ->
+            new ObjectOutputStream(fout).withCloseable { oos ->
+                oos.writeObject(config)
+            }
         }
     }
 }

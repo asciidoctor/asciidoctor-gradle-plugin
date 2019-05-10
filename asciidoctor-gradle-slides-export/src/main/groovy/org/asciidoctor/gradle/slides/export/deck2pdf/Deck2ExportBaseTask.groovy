@@ -18,9 +18,10 @@ package org.asciidoctor.gradle.slides.export.deck2pdf
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.internal.slides.ProfileUtils
+import org.asciidoctor.gradle.base.process.ProcessMode
 import org.asciidoctor.gradle.base.slides.Profile
-import org.asciidoctor.gradle.slides.export.deck2pdf.internal.DeckWorkerConfiguration
-import org.asciidoctor.gradle.slides.export.deck2pdf.internal.ExecuteDeck2PdfInWorker
+import org.asciidoctor.gradle.slides.export.deck2pdf.remote.DeckWorkerConfiguration
+import org.asciidoctor.gradle.slides.export.deck2pdf.remote.ExecuteDeck2Pdf
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
@@ -31,11 +32,14 @@ import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
+import org.gradle.process.JavaExecSpec
 import org.gradle.workers.WorkerConfiguration
 import org.gradle.workers.WorkerExecutor
+import org.ysb33r.grolifant.api.FileUtils
 
 import java.util.concurrent.Callable
 
+import static org.asciidoctor.gradle.base.process.ProcessMode.JAVA_EXEC
 import static org.gradle.workers.IsolationMode.CLASSLOADER
 import static org.ysb33r.grolifant.api.MapUtils.stringizeValues
 
@@ -48,6 +52,7 @@ import static org.ysb33r.grolifant.api.MapUtils.stringizeValues
 @CompileStatic
 class Deck2ExportBaseTask extends DefaultTask {
 
+    private final ProcessMode processMode = JAVA_EXEC
     private final WorkerExecutor worker
     private final String format
     private final List<Object> slideInputFiles = []
@@ -171,32 +176,51 @@ class Deck2ExportBaseTask extends DefaultTask {
         if (profilePrepRequired) {
             prepareProfile()
         }
-        List<String> args = buildArguments()
+        List<String> deck2PdfArgs = buildArguments()
         File outdir = getOutputDir()
         Set<File> deck2PdfClasspath = project.extensions.getByType(Deck2PdfExtension).configuration.files
+        String workerDisplayName = "Asciidoctor slides conversion using deck2pdf (task=${name})"
 
-        if (parallelMode) {
-            slides.get().each { File input ->
-                String output = formatOutputFilename(input.name.replaceFirst(~/\.html$/, '') + ".${format}")
-                worker.submit(ExecuteDeck2PdfInWorker) { WorkerConfiguration config ->
-                    config.displayName = "Asciidoctor (task=${name}) conversion using deck2pdf"
-                    config.classpath = deck2PdfClasspath
-                    config.params(new DeckWorkerConfiguration(args, outdir, [(output): input]))
-                    config.isolationMode = CLASSLOADER
-//            configureForkOptions(config.forkOptions)
+        if (processMode == JAVA_EXEC) {
+            Map<String, File> conversionMap = slides.get().collectEntries { File input ->
+                final String output = outputFileNameFromInput(input)
+                [output, input]
+            }
+            DeckWorkerConfiguration config = new DeckWorkerConfiguration(deck2PdfArgs, outdir, conversionMap)
+            File configData = project.file("${project.buildDir}/tmp/${FileUtils.toSafeFileName(name)}.deck2pdf-data")
+            DeckWorkerConfiguration.toFile(configData, config)
+            project.javaexec { JavaExecSpec jes ->
+                jes.with {
+                    main = ExecuteDeck2Pdf.canonicalName
+                    args configData.absolutePath
+                    classpath(deck2PdfClasspath + FileUtils.resolveClassLocation(ExecuteDeck2Pdf).file)
+//                    configureForkOptions(config.forkOptions)
                 }
             }
         } else {
-            Map<String, File> conversionMap = slides.get().collectEntries { File input ->
-                final String output = formatOutputFilename(input.name.replaceFirst(~/\.html$/, '') + ".${format}")
-                [output, input]
-            }
-            worker.submit(ExecuteDeck2PdfInWorker) { WorkerConfiguration config ->
-                config.displayName = "Asciidoctor (task=${name}) conversion using deck2pdf"
-                config.classpath = deck2PdfClasspath
-                config.params(new DeckWorkerConfiguration(args, outdir, conversionMap))
-                config.isolationMode = CLASSLOADER
+            if (parallelMode) {
+                slides.get().each { File input ->
+                    String output = outputFileNameFromInput(input)
+                    worker.submit(ExecuteDeck2Pdf) { WorkerConfiguration config ->
+                        config.displayName = workerDisplayName
+                        config.classpath(deck2PdfClasspath)
+                        config.params(new DeckWorkerConfiguration(deck2PdfArgs, outdir, [(output): input]))
+                        config.isolationMode = CLASSLOADER
 //            configureForkOptions(config.forkOptions)
+                    }
+                }
+            } else {
+                Map<String, File> conversionMap = slides.get().collectEntries { File input ->
+                    final String output = outputFileNameFromInput(input)
+                    [output, input]
+                }
+                worker.submit(ExecuteDeck2Pdf) { WorkerConfiguration config ->
+                    config.displayName = workerDisplayName
+                    config.classpath(deck2PdfClasspath)
+                    config.params(new DeckWorkerConfiguration(deck2PdfArgs, outdir, conversionMap))
+                    config.isolationMode = CLASSLOADER
+//            configureForkOptions(config.forkOptions)
+                }
             }
         }
     }
@@ -335,6 +359,15 @@ class Deck2ExportBaseTask extends DefaultTask {
 //    private void configureForkOptions(JavaForkOptions pfo) {
 //        this.javaForkOptions.copyTo(pfo)
 //    }
+
+    /** Provides the outputfile name
+     *
+     * @param input Input file
+     * @return Formatted output file name
+     */
+    private String outputFileNameFromInput(File input) {
+        formatOutputFilename(input.name.replaceFirst(~/\.html$/, '') + ".${format}")
+    }
 
     private void prepareProfile() {
     }

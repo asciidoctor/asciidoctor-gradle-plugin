@@ -8,7 +8,7 @@ configurations {
 }
 
 dependencies {
-    compileOnly "me.champeau.deck2pdf:deck2pdf:${moduleVersions.deck2pdf}"
+    //compileOnly "me.champeau.deck2pdf:deck2pdf:${moduleVersions.deck2pdf}"
     compile project(':asciidoctor-gradle-base')
     additionalPluginClasspath project(':asciidoctor-gradle-jvm-slides')
     intTestOfflineRepo "me.champeau.deck2pdf:deck2pdf:${moduleVersions.deck2pdf}"
