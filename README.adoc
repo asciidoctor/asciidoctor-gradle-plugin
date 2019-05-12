@@ -1,7 +1,7 @@
 = Asciidoctor Gradle Plugin
 Andres Almiray <https://github.com/aalmiray[@aalmiray]>
-:version: 2.1.0
-:version-published: 2.0.0
+:version: 3.0.0-alpha.1
+:version-published: 3.0.0-alpha.1
 :asciidoc-url: http://asciidoc.org
 :asciidoctor-url: http://asciidoctor.org
 :issues: https://github.com/asciidoctor/asciidoctor-maven-plugin/issues
@@ -11,6 +11,7 @@ Andres Almiray <https://github.com/aalmiray[@aalmiray]>
 :lightguard: https://github.com/LightGuard
 :asciidoctorj: https://github.com/asciidoctor/asciidoctorj
 :asciidoctorj-name: AsciidoctorJ
+:asciidoctorjs-name: Asciidoctor.js
 :asciidoctorj-epub-name: Asciidoctorj-EPUB
 :asciidoctorj-pdf-name: Asciidoctorj-PDF
 :lordofthejars: https://github.com/lordofthejars
@@ -97,16 +98,24 @@ plugins {
     id 'org.asciidoctor.jvm.convert' version '{version-published}' // <2>
     id 'org.asciidoctor.jvm.pdf' version '{version-published}' // <3>
     id 'org.asciidoctor.jvm.epub' version '{version-published}' // <4>
-    id 'org.asciidoctor.convert' version '{version-published}' // <5>
+    id 'org.asciidoctor.jvm.gems' version '{version-published}' // <5>
+    id 'org.asciidoctor.jvm.revealjs' version '{version-published}' // <6>
+    id 'org.asciidoctor.decktape.base' version '{version-published}' // <7>
+    id 'org.asciidoctor.decktape.base' version '{version-published}' // <8>
+    id 'org.asciidoctor.js.base' version '{version-published}' // <9>
+    id 'org.asciidoctor.js' version '{version-published}' // <10>
 }
 ----
 <1> Use {asciidoctorj-name} but without any predefined tasks.
 <2> A generic `asciidoctor` task which can be configured for multiple backends. (use this if you are  HTML and Docbook conversions).
 <3> Adds a convention task `asciidoctorPdf` - implies `org.asciidoctor.jvm.base`
 <4> Adds a convention task `asciidoctorEpub` - implies `org.asciidoctor.jvm.base`
-<5> If you upgraded from a 1.5.x version of the plugin you might want to use this first. It is a compatibility plugin with the older versions.
-// <2> Use AsciidoctorJS instead of AsciidoctorJ with predefined tasks and conventions.
-// <3> Use AsciidoctorJS without any predefined tasks.
+<5> If you need to use <<rubygems,additional GEMs>> with {asciidoctorj-name}, you need this plugin.
+<6> Adds a convention task `asciidoctorRevealJS` to simplify creations of Reveal.JS slide decks.
+<7> Export any HTML slide deck to PDF/PNG/JPG using https://github.com/astefanutti/decktape[DeckTape].
+<8> Provide <<decktape,convenience rules>> to export any slides created by a specific slideaware Asciidoctor Task. Currently only Reveal.JS is supported.
+<9> Use {asciidoctorjs-name} without any predefined tasks.
+<10> Use {asciidoctorjs-name} instead of {asciidoctorj-name} with <<asciidoctorjs,predefined tasks and conventions>>.
 
 If you use {kotlindsl} just change the above format slightly as shown earlier.
 
@@ -324,9 +333,9 @@ All Asciidoctor tasks will have the following methods and properties:
 asciidoctorj:: a task extension which allows a task to extend of override global configuration for Asciidoctor tasks.
   This allow extensive flexibility. Any thing that can be configured in the global `asciidoctorj` extension can also be configured here.
 attributes:: A shortcut for `asciidoctorj.attributes`.
-baseDir:: Base directory for asciidoctor jail.
+baseDir:: Base directory for asciidoctor document conversion and root document inclusion.
   The base directory will be the project directory, but default, but can be set to any other directory.
-baseDirFollowsSourceDir:: The base directory should be the same as the source directory even if the source diretory is located within an intermediate working directory.
+baseDirFollowsSourceDir:: The base directory should be the same as the source directory even if the source directory is located within an intermediate working directory.
 baseDirIsProjectDir:: The base directory is always the current project directory.
 baseDirIsRootProjectDir:: The base directory is always the root project directory.
 configurations:: Specify additional configurations
@@ -634,8 +643,7 @@ $ sudo ln -s /opt/local/lib /Users/jenkins/workspace/openjdk10_build_x86-64_maco
 <1> `opt/local/lib` is the location for MacPorts. Change it accordingly for HomeBrew.
 
 == Ruby GEM support
-
-GEM support is simplified via the `org.asciidoctor.jvm.gems` plugin.
+[[rubygems]] GEM support is simplified via the `org.asciidoctor.jvm.gems` plugin.
 
 [source,groovy]
 ----
@@ -763,21 +771,23 @@ verticalCenter:: Vertical centering of slides.
 viewDistance:: Number of slides away from the current that are visible.
   Type is integer.
 
+== Exporting Slides
+[[decktape]]
+If you have created HTML slides via an Asciidoctor task you can export them to PDF/PNG/JPG.
+
+*TBC*
+
 == Upgrading From Older Versions of Asciidoctor
 
-NOTE: To help with migration the old plugin will print a number of messages to help with a conversion. The amount of text is controlled via `--warnings-mode` in Gradle 4.5+. For Gradle 4.0-4.4 use `--info` to get the full list of recommendations. Use of `--warnings-mode=none`  (Gradle 4.5+) or `--quiet` (Gradle 4.0-4.4) will produce migration information.
+NOTE: If you are still on a 1.5/1.6 version of the plugin, upgrade to the latest 2.x version first.
 
-Firstly replace plugin `org.asciidoctor.convert` with `org.asciidoctor.jvm.convert`.
+If you are on 2.x, upgradle to the latest 2.x first and ensure that you have corrected all of the deprecation warnings.
 
-If you used `separateOutputDirs`, yout need to change that to `outputOptions.separateOutputDirs`. If you only use one backend in the task you can delete this and it will default to `false` for single backends and `true` for multiple backends.
-
-The base directory is now set to the directory of the root project. This may influence how your includes are processed. Either set `baseDir` to specific directory or or use the `includedir` which is automatically calculates to be the correct source directory.
-
-Gradle injected a number of attributes into the build. Some of these names have been changed from 1.5/1.6. to indicate that they are injected:
+If you have {asciidoctorj-name} binary extensions you'll need to recompile them against {asciidoctorj-name} v2.0+ in order to use them with the v.3x verson of the plugins.
 
 [cols="4*"]
 |===
-| *Old name* | *New name* | Substituable | *Usage*
+| *Old name* | *New name* | *Substitutable* | *Usage*
 | `projectdir` | `gradle-projectdir` | No | The Gradle project directory which is running the Asciidoctor task.
 | `rootdir` | `gradle-rootdir` | No | The rootproject directory in a multi-project build.
 | `project-name` | `gradle-project-name` | Yes | The name of the current Gradle subproject. (Or the root project in case of a single project).
@@ -786,7 +796,7 @@ Gradle injected a number of attributes into the build. Some of these names have 
 | - | `gradle-relative-srcdir` | No | The relative path from the parent of the current document that is being processed to the source document root. It is calcluated as moving from the current document towards the root. For instance `src/docs/asciidoc/subdir/sample.adoc` will set this attribute to `..` if `sourceDir` == `src/docs/asciidoc`.
 |===
 
-Substituable attributes means that the build script author can change those attributes by setting them explicitly.
+Substitutable attributes means that the build script author can change those attributes by setting them explicitly.
 
 If you used external GEMs via the http://jruby-gradle.github.io/[JRuby Gradle plugin], you should switch over to using `org.asciidoctor.jvm.gems` instead. You should also use the `asciidoctorGems` configuration rather than the `gems` configuration. Tasks should not depend on `JRubyPrepare`, but on `AsciidoctorGemsPrepare` instead.
 
@@ -807,57 +817,6 @@ Extensions on the Gradle classpath are no longer detected. You need to declare t
 
 Extensions for older version of AsciidoctorJ needs to be recompiled and registered via placement in `META-INF/services/org.asciidoctor.jruby.extension.spi.ExtensionRegistry` to be recognised.
 
-== Asciidoctor Compatibility Plugin
-
-In order to help people upgrade a compatiblity plugin has been kept which mostly behaves in the same way as the AsciidoctorJ plugins in the 1.5.x series of releases.
-
-The plugin adds a new task named *asciidoctor*.
-You can configure this task using the following configuration properties and methods.
-
-.Properties
-[horizontal]
-logDocuments:: a boolean specifying if documents being processed should be logged on console. Type: boolean. Default: `false`.
-separateOutputDirs:: specifies whether each backend should use a separate subfolder under `outputDir`.
-  Default: `true`
-
-.Methods
-[horizontal]
-attributes:: a Map specifying various document attributes that can be sent to Asciidoctor
-  Use `attributes` to append, Use `setAttributes` or `attributes=` to overwrite.
-backends:: the backends to use.
-  Use `backends` to append. Use `setBackends` or `backends=[]` to overwrite
-  Type: Set<String>, but any type can be converted to String can be used.
-  Default: [`html5`].
-gemPath:: one or more gem installation directories (separated by the system path separator).
-  Use `gemPath` to append. Use `setGemPath` or `gemPath='path` to overwrite.
-  Use `asGemPath` to obtain a path string, separated by platform-specific separator.
-  For backwards-compatibility, `setGemPath` and `gePath='string'` will accept a path string containing the
-  platform-specific separator.
-  Type: FileCollection, but any collection of objects convertible with `project.files` can be passed
-  Default: empty
-legacyAttributes:: Insert legacy `projectdir` and `rootdir` attributes.
-  This is a stop-gap and document authors should use `gradle-rootdir` gradle-projectdir` instead.
-options:: a Map specifying different options that can be sent to Asciidoctor.
-  Use `options` to append, Use `setOptions` or `options=` to overwrite.
-outputDir:: where generated docs go.
-  Use either `outputDir path`, `setOutputDir path` or `outputDir=path`
-  Type: File, but any object convertible with `project.file` can be passed.
-  Default: `$buildDir/asciidoc`.
-resources:: specify which additional files (image etc.) must be copied to output directory using a
-  http://www.gradle.org/docs/current/javadoc/org/gradle/api/file/CopySpec.html[CopySpec].
-requires:: a set of Ruby modules to be included.
-  Use `requires` to append. Use `setRequires` or `requires='name'` to overwrite.
-  Type: Set<String>.
-  Default: empty.
-sourceDir:: where the asciidoc sources are.
-  Use either `sourceDir path`, `setSourceDir path` or `sourceDir=path`
-  Type: File, but any object convertible with `project.file` can be passed.
-  Default: `src/docs/asciidoc`.
-sources:: specify which Asciidoctor source files to include by using an
-  http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.html[Ant-style PatternSet].
-
-NOTE: Even though the DSL remains the same with this task, the internals have been changed to use the same `JAVA_EXEC` mechanism of the `org.asciidoctor.jvm.convert` plugins. The problems which the 1.5.x series suffered with classpaths anions disappearing should now be a thing of the past.
-
 == Kindlegen plugin
 
 Producing KF* formats via the EPUB extension requires `kindlegen` to be installed. This plugin provides the capability of bootstrapping `kindlegen` on Windows, Mac & Linux without the user having to do anything.
@@ -875,6 +834,11 @@ kindlegen {
 If you do not, then the plugin will refuse to bootstrap `kindlegen`.
 
 NOTE: The base plugin is automatically applied by the EPUB plugin. If you only produce EPUB3 formats with the EPUB plugin you do not have to agree to the usage of `kindlegen`.
+
+== Working with Asciidoctor.js instead
+[[asciidoctorjs]
+
+*TBC*
 
 ifndef::env-site[]
 == Development
