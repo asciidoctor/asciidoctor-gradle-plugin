@@ -33,8 +33,8 @@ import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClos
 @CompileStatic
 class RevealJSExtension {
 
-    final static String NAME = 'revealjs'
-    final static Version FIRST_VERSION_WITH_PLUGIN_SUPPORT = Version.of('2.0.0')
+    public final static String NAME = 'revealjs'
+    public final static Version FIRST_VERSION_WITH_PLUGIN_SUPPORT = Version.of('2.0.0')
 
     private String version
     private Provider<File> resolveRevealJs
