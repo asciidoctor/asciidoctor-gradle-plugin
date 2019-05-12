@@ -28,9 +28,9 @@ import static org.asciidoctor.gradle.testfixtures.AsciidoctorjTestVersions.SERIE
 @CompileStatic
 class AsciidoctorjVersionProcessModeGenerator {
 
-    static final String JAVA_EXEC = 'JAVA_EXEC'
-    static final String IN_PROCESS = 'IN_PROCESS'
-    static final String OUT_OF_PROCESS = 'OUT_OF_PROCESS'
+    public static final String JAVA_EXEC = 'JAVA_EXEC'
+    public static final String IN_PROCESS = 'IN_PROCESS'
+    public static final String OUT_OF_PROCESS = 'OUT_OF_PROCESS'
 
     @SuppressWarnings('ClassName')
     @EqualsAndHashCode

@@ -37,8 +37,8 @@ import static org.asciidoctor.gradle.kindlegen.KindleGenDownloader.KINDLEGEN_BAS
 @CompileStatic
 class KindleGenExtension extends AbstractToolExtension {
 
-    final static String NAME = 'kindlegen'
-    final static String DEFAULT_KINDLEGEN_VERSION = '2_9'
+    public final static String NAME = 'kindlegen'
+    public final static String DEFAULT_KINDLEGEN_VERSION = '2_9'
 
     KindleGenExtension(Project project) {
         super(project)

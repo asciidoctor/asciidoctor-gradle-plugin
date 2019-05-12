@@ -68,7 +68,7 @@ enum SafeMode {
         this.level
     }
 
-    static final SafeMode safeMode(int level) {
+    static SafeMode safeMode(int level) {
         switch (level) {
             case 0: return UNSAFE
             case 1: return SAFE

@@ -62,9 +62,9 @@ import static org.ysb33r.grolifant.api.FileUtils.filesFromCopySpec
 @CompileStatic
 class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
 
-    final static ProcessMode IN_PROCESS = ProcessMode.IN_PROCESS
-    final static ProcessMode OUT_OF_PROCESS = ProcessMode.OUT_OF_PROCESS
-    final static ProcessMode JAVA_EXEC = ProcessMode.JAVA_EXEC
+    public final static ProcessMode IN_PROCESS = ProcessMode.IN_PROCESS
+    public final static ProcessMode OUT_OF_PROCESS = ProcessMode.OUT_OF_PROCESS
+    public final static ProcessMode JAVA_EXEC = ProcessMode.JAVA_EXEC
 
     @Internal
     protected final static GradleVersion LAST_GRADLE_WITH_CLASSPATH_LEAKAGE = GradleVersion.version(('5.99'))

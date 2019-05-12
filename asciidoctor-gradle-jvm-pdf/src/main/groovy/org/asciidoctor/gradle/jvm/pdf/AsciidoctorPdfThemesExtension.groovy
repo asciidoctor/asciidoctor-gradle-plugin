@@ -31,7 +31,7 @@ import static org.asciidoctor.gradle.base.internal.DeprecatedFeatures.addDepreca
 @CompileStatic
 class AsciidoctorPdfThemesExtension extends AbstractDownloadableComponent<PdfLocalTheme, PdfThemeDescriptor> {
 
-    final static String NAME = 'pdfThemes'
+    public final static String NAME = 'pdfThemes'
 
     /** Describes tha name and location of a PDF theme.
      *

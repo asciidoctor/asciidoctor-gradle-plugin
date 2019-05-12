@@ -35,7 +35,7 @@ import static org.asciidoctor.gradle.jvm.gems.AsciidoctorGemSupportPlugin.GEM_CO
 @CompileStatic
 class AsciidoctorRevealJSBasePlugin implements Plugin<Project> {
 
-    final static String REVEALJS_GEM = 'asciidoctor-revealjs'
+    public final static String REVEALJS_GEM = 'asciidoctor-revealjs'
 
     @Override
     void apply(Project project) {

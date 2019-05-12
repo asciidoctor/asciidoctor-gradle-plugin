@@ -33,12 +33,12 @@ import org.ysb33r.grolifant.api.os.Windows
 @CompileStatic
 class KindleGenDownloader extends AbstractDistributionInstaller {
 
-    static final OperatingSystem OS = OperatingSystem.current()
-    static final String BASE_URI = System.getProperty(
+    public static final OperatingSystem OS = OperatingSystem.current()
+    public static final String BASE_URI = System.getProperty(
         'org.asciidoctor.gradle.kindlegen.uri',
         'http://kindlegen.s3.amazonaws.com'
     )
-    static final String KINDLEGEN_BASE = 'kindlegen'
+    public static final String KINDLEGEN_BASE = 'kindlegen'
 
     KindleGenDownloader(String distributionVersion, Project project) {
         super(KINDLEGEN_BASE, distributionVersion, 'native-binaries', project)
