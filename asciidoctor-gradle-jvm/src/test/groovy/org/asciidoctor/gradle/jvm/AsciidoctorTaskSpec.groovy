@@ -429,6 +429,16 @@ class AsciidoctorTaskSpec extends Specification {
         task.attributeProviders != project.extensions.getByType(AsciidoctorJExtension).attributeProviders
     }
 
+    void 'Set processMode via string'() {
+        when:
+        AsciidoctorTask task = asciidoctorTask {
+            inProcess 'out_of_process'
+        }
+
+        then:
+        task.inProcess == task.OUT_OF_PROCESS
+    }
+
     void 'Asciidoctor task with non-default name has different source directory'() {
         when:
         AsciidoctorTask task = project.tasks.create(name: 'kilowatt', type: AsciidoctorTask)
