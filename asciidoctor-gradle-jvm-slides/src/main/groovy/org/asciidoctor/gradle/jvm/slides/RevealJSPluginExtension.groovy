@@ -27,7 +27,7 @@ import org.ysb33r.grolifant.api.StringUtils
 @CompileStatic
 class RevealJSPluginExtension extends AbstractDownloadableComponent<LocalRevealJSPlugin, ResolvedRevealJSPlugin> {
 
-    final static String NAME = 'revealjsPlugins'
+    public final static String NAME = 'revealjsPlugins'
 
     RevealJSPluginExtension(Project project) {
         super(project)

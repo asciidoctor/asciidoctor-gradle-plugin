@@ -39,8 +39,8 @@ import javax.inject.Inject
 @CompileStatic
 class AsciidoctorEpubTask extends AbstractAsciidoctorTask {
 
-    static final String KF8 = 'kf8'
-    static final String EPUB3 = 'epub3'
+    public static final String KF8 = 'kf8'
+    public static final String EPUB3 = 'epub3'
 
     private static final String BACKEND = 'epub3'
     private static final String EBOOK_FORMAT_ATTR = 'ebook-format'

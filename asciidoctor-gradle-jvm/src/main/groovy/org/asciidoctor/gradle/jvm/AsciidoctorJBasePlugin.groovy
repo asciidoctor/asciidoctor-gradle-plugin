@@ -32,8 +32,8 @@ import static org.ysb33r.grolifant.api.TaskProvider.registerTask
 @CompileStatic
 class AsciidoctorJBasePlugin implements Plugin<Project> {
 
-    static final String TASK_GROUP = 'Documentation'
-    static final String DEPS_REPORT = 'asciidoctorjDependencies'
+    public static final String TASK_GROUP = 'Documentation'
+    public static final String DEPS_REPORT = 'asciidoctorjDependencies'
 
     void apply(Project project) {
         project.with {

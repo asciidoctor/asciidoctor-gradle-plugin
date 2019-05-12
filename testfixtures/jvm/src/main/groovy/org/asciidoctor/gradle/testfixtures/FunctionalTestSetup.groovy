@@ -29,7 +29,7 @@ import org.ysb33r.grolifant.api.OperatingSystem
 @CompileStatic
 class FunctionalTestSetup {
 
-    final static OperatingSystem OS = OperatingSystem.current()
+    public final static OperatingSystem OS = OperatingSystem.current()
 
     /** Provides a list of files that should be on the classpath for testing a plugin.
      *
