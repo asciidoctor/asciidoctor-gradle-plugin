@@ -71,11 +71,9 @@ allprojects {
 
         withoutCompatibilityTests = [
             'kindlegen-gradle',
-            'asciidoctor-gradle-slides-export'
         ]
 
         withoutCodeCoverage = [
-            'asciidoctor-gradle-slides-export'
         ]
     }
 }

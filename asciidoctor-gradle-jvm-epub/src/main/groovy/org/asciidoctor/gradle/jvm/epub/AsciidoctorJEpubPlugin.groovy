@@ -43,7 +43,7 @@ class AsciidoctorJEpubPlugin implements Plugin<Project> {
         project.with {
             apply plugin: 'org.asciidoctor.jvm.base'
             apply plugin: 'org.asciidoctor.kindlegen.base'
-            def modules = ModuleVersionLoader.load('asciidoctorj-epub')
+            Map modules = ModuleVersionLoader.load('asciidoctorj-epub')
             extensions.getByType(KindleGenExtension).executable(version: modules['kindlegen'] )
             extensions.getByType(AsciidoctorJExtension).modules.epub.use()
 
