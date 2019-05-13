@@ -55,7 +55,7 @@ class AsciidoctorUtils {
      * @param project Project to associate the file collection tp.
      * @param sourceDir Base directory for the sourcs.
      * @param filePatterns Patterns to use to identify suitable sources.
-     * @return A colelction of suitable files.
+     * @return A collection of suitable files.
      * @throw {@link GradleException} is files starting with undersocres are detected.
      */
     static FileTree getSourceFileTree(final Project project, final File sourceDir, final PatternSet filePatterns) {
@@ -65,7 +65,7 @@ class AsciidoctorUtils {
         ft.visit { FileVisitDetails it ->
             if (it.name.startsWith('_')) {
                 throw new GradleException("Sources starting with '_' found. This is not allowed. " +
-                    "Current sources are: ${ft.files}")
+                        "Current sources are: ${ft.files}")
             }
         }
 
