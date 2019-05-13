@@ -1,3 +1,8 @@
+generateModuleVersions {
+    basename = 'asciidoctorj-epub'
+    propertyNames ~/^kindlegen$/
+}
+
 dependencies {
     compile project(':asciidoctor-gradle-jvm')
     compile project(':kindlegen-gradle')
