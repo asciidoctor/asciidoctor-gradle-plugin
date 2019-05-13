@@ -25,11 +25,11 @@ import spock.lang.Specification
 class FunctionalSpecification extends Specification {
     public static final String TEST_PROJECTS_DIR = System.getProperty(
         'TEST_PROJECTS_DIR',
-        './asciidoctor-gradle-jvm-slides/src/intTest/projects'
+        './src/intTest/projects'
     )
     public static final String TEST_REPO_DIR = System.getProperty(
         'OFFLINE_REPO',
-        './testfixtures/offline-repo/build/repo'
+        '../testfixtures/offline-repo/build/repo'
     )
     public static final OperatingSystem OS = OperatingSystem.current()
 

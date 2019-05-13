@@ -137,6 +137,23 @@ class DeckTapeFunctionalSpec extends FunctionalSpecification {
         result.output.contains('*** Height=768 Width=1024 Range=2-3 LoadPause=500 Pause=1000')
     }
 
+    void 'Export tasks can be auto-created to compliment Reveal.JS tasks'() {
+        setup:
+        createTestProject('revealjs')
+        getBuildFile("""
+        asciidoctorRevealJs {
+            sourceDir 'src/docs/asciidoc'
+        }
+        """)
+
+        when:
+        getGradleRunner(['-i', 'asciidoctorRevealJsExport']).build()
+
+        then:
+        new File(testProjectDir.root, 'build/docs/asciidocRevealJs/index.html').exists()
+        new File(testProjectDir.root, 'build/docs/asciidocRevealJsExport/index.pdf').exists()
+    }
+
     private File getBuildFile(String extraContent, boolean baseOnly = false) {
         File buildFile = testProjectDir.newFile('build.gradle')
         buildFile << """
