@@ -16,8 +16,10 @@
 package org.asciidoctor.gradle.jvm.epub
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.base.ModuleVersionLoader
 import org.asciidoctor.gradle.jvm.AsciidoctorJBasePlugin
 import org.asciidoctor.gradle.jvm.AsciidoctorJExtension
+import org.asciidoctor.gradle.kindlegen.KindleGenExtension
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -41,7 +43,8 @@ class AsciidoctorJEpubPlugin implements Plugin<Project> {
         project.with {
             apply plugin: 'org.asciidoctor.jvm.base'
             apply plugin: 'org.asciidoctor.kindlegen.base'
-
+            def modules = ModuleVersionLoader.load('asciidoctorj-epub')
+            extensions.getByType(KindleGenExtension).executable(version: modules['kindlegen'] )
             extensions.getByType(AsciidoctorJExtension).modules.epub.use()
 
             Action epubDefaults = new Action<AsciidoctorEpubTask>() {
