@@ -52,20 +52,18 @@ import static org.ysb33r.grolifant.api.StringUtils.stringize
 @NonExtensible
 class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
 
+    public final static String NAME = 'asciidoctorj'
+
     private static final String ASCIIDOCTORJ_GROUP = 'org.asciidoctor'
     private static final String ASCIIDOCTORJ_CORE_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj"
     private static final String ASCIIDOCTORJ_GROOVY_DSL_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-groovy-dsl"
     private static final String ASCIIDOCTORJ_PDF_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-pdf"
     private static final String ASCIIDOCTORJ_EPUB_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-epub3"
     private static final String ASCIIDOCTORJ_DIAGRAM_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-diagram"
-
     private static final String JRUBY_COMPLETE_DEPENDENCY = 'org.jruby:jruby-complete'
-
-    public final static String NAME = 'asciidoctorj'
-    private final static String ASCIIDOCTOR_DEPENDENCY_PROPERTY_NAME = 'asciidoctorj'
-
+    private static final String ASCIIDOCTOR_DEPENDENCY_PROPERTY_NAME = 'asciidoctorj'
     private static final OperatingSystem OS = OperatingSystem.current()
-    public static final boolean GUAVA_REQUIRED_FOR_EXTERNALS = GradleVersion.current() >= GradleVersion.version('4.8')
+    private static final boolean GUAVA_REQUIRED_FOR_EXTERNALS = GradleVersion.current() >= GradleVersion.version('4.8')
 
     private Object version
     private Optional<Object> jrubyVersion
