@@ -1,5 +1,5 @@
 stages:
-  - repo
+  - infrastructure
   - build
   - test
   - docs
@@ -11,8 +11,29 @@ cache:
   paths:
     - $HOME/.gradle
 
+#variables:
+#  DOCKER_ORGANISATION: asciidoctor
+#  DOCKER_PROJECT: docker-libxss-gcc-openjdk
+#  DOCKER_IMAGE: libxss-openjdk-8
+#
+#docker:
+#  stage: infrastructure
+#  image: docker:latest
+#  services:
+#    - docker:dind
+#  variables:
+#    CONTAINER_TEST_IMAGE: $CI_REGISTRY/$DOCKER_ORGANISATION/$DOCKER_PROJECT/$DOCKER_IMAGE:$CI_COMMIT_REF_NAME
+#    CONTAINER_RELEASE_IMAGE: $CI_REGISTRY/$DOCKER_ORGANISATION/$DOCKER_PROJECT/$DOCKER_IMAGE:latest
+#  before_script:
+#    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+#  script:
+#    - docker build --pull -t $CONTAINER_TEST_IMAGE .
+#    - docker push $CONTAINER_TEST_IMAGE
+#    - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_RELEASE_IMAGE
+#    - docker push $CONTAINER_RELEASE_IMAGE
+
 testrepo:
-  stage: repo
+  stage: infrastructure
   image: openjdk:8
   script: ./gradlew -i --console=plain --no-build-cache :testfixtures-offline-repo:buildOfflineRepositories
   artifacts:
@@ -75,6 +96,7 @@ jdk12:
     - gh-pages
     - tags
 
+# $CI_REGISTRY/ysb33rorg/docker-gcc-openjdk/gcc-openjdk-8:latest
 test:integration:
   stage: test
   image: openjdk:8
@@ -85,7 +107,7 @@ test:integration:
   dependencies:
     - testrepo
     - jdk8
-  script: ./gradlew -i -s --console=plain --no-build-cache test intTest remoteTest
+  script: ./gradlew -i -s --console=plain --no-build-cache test intTest remoteTest -x :asciidoctor-gradle-slides-export:intTest
   artifacts:
     paths:
       - '*/build/reports'
