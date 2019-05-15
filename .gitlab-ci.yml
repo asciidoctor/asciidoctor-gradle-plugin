@@ -11,26 +11,8 @@ cache:
   paths:
     - $HOME/.gradle
 
-#variables:
-#  DOCKER_ORGANISATION: asciidoctor
-#  DOCKER_PROJECT: docker-libxss-gcc-openjdk
-#  DOCKER_IMAGE: libxss-openjdk-8
-#
-#docker:
-#  stage: infrastructure
-#  image: docker:latest
-#  services:
-#    - docker:dind
-#  variables:
-#    CONTAINER_TEST_IMAGE: $CI_REGISTRY/$DOCKER_ORGANISATION/$DOCKER_PROJECT/$DOCKER_IMAGE:$CI_COMMIT_REF_NAME
-#    CONTAINER_RELEASE_IMAGE: $CI_REGISTRY/$DOCKER_ORGANISATION/$DOCKER_PROJECT/$DOCKER_IMAGE:latest
-#  before_script:
-#    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-#  script:
-#    - docker build --pull -t $CONTAINER_TEST_IMAGE .
-#    - docker push $CONTAINER_TEST_IMAGE
-#    - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_RELEASE_IMAGE
-#    - docker push $CONTAINER_RELEASE_IMAGE
+variables:
+    JDK8_TEST_IMAGE: $CI_REGISTRY/asciidoctor/testing-lab/openjdk8-with-libxss:latest
 
 testrepo:
   stage: infrastructure
@@ -99,7 +81,8 @@ jdk12:
 # $CI_REGISTRY/ysb33rorg/docker-gcc-openjdk/gcc-openjdk-8:latest
 test:integration:
   stage: test
-  image: openjdk:8
+  image: $JDK8_TEST_IMAGE
+#  image: openjdk:8
   except:
     - pages
     - gh-pages
@@ -114,6 +97,7 @@ test:integration:
       - '*/build/jacoco'
     expire_in: 10 days
     when: on_failure
+
 
 test:gradle_4.0.2,4.1,4.2.1:
   stage: test
