@@ -16,7 +16,7 @@ install:
 build_script:
   - gradlew.bat --console=plain --warning-mode=all -s clean assemble
 test_script:
-  - gradlew.bat --console=plain --warning-mode=all -s check --no-parallel -Djava.net.preferIPv4Stack=true -x gradleTest
+  - gradlew.bat --console=plain --warning-mode=all -s check --no-parallel -Djava.net.preferIPv4Stack=true -x gradleTest --scan
 after_test:
   - gradlew.bat --stop
 cache:
