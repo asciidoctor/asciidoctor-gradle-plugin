@@ -996,8 +996,11 @@ class AbstractAsciidoctorTask extends DefaultTask {
                     args execConfigurationData.absolutePath
                 }
             }
-        } catch (Exception e) {
-            throw new AsciidoctorRemoteExecutionException("Remote Asciidoctor process failed to complete successfully", e)
+        } catch (GradleException e) {
+            throw new AsciidoctorRemoteExecutionException(
+                    'Remote Asciidoctor process failed to complete successfully',
+                    e
+            )
         }
 
         executorConfigurations
