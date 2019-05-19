@@ -20,9 +20,9 @@ import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import org.asciidoctor.gradle.base.AbstractAsciidoctorBaseTask
 import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
-import org.asciidoctor.gradle.base.process.ProcessMode
 import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.base.internal.Workspace
+import org.asciidoctor.gradle.base.process.ProcessMode
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
 import org.asciidoctor.gradle.internal.ExecutorUtils
@@ -31,6 +31,7 @@ import org.asciidoctor.gradle.remote.AsciidoctorJExecuter
 import org.asciidoctor.gradle.remote.AsciidoctorJavaExec
 import org.asciidoctor.gradle.remote.AsciidoctorRemoteExecutionException
 import org.gradle.api.Action
+import org.gradle.api.GradleException
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.DependencyResolveDetails
@@ -505,8 +506,11 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
                     args execConfigurationData.absolutePath
                 }
             }
-        } catch (Exception e) {
-            throw new AsciidoctorRemoteExecutionException("Remote Asciidoctor process failed to complete successfully", e)
+        } catch (GradleException e) {
+            throw new AsciidoctorRemoteExecutionException(
+                    'Remote Asciidoctor process failed to complete successfully',
+                    e
+            )
         }
 
         executorConfigurations
