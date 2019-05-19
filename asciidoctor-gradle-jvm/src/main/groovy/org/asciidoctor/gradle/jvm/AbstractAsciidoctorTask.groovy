@@ -29,6 +29,7 @@ import org.asciidoctor.gradle.internal.ExecutorUtils
 import org.asciidoctor.gradle.internal.JavaExecUtils
 import org.asciidoctor.gradle.remote.AsciidoctorJExecuter
 import org.asciidoctor.gradle.remote.AsciidoctorJavaExec
+import org.asciidoctor.gradle.remote.AsciidoctorRemoteExecutionException
 import org.gradle.api.Action
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
@@ -494,14 +495,18 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         logger.debug("Serialised AsciidoctorJ configuration to ${execConfigurationData}")
         logger.info "Running AsciidoctorJ instance with classpath ${javaExecClasspath.files}"
 
-        project.javaexec { JavaExecSpec jes ->
-            configureForkOptions(jes)
-            logger.debug "Running AsciidoctorJ instance with environment: ${jes.environment}"
-            jes.with {
-                main = AsciidoctorJavaExec.canonicalName
-                classpath = javaExecClasspath
-                args execConfigurationData.absolutePath
+        try {
+            project.javaexec { JavaExecSpec jes ->
+                configureForkOptions(jes)
+                logger.debug "Running AsciidoctorJ instance with environment: ${jes.environment}"
+                jes.with {
+                    main = AsciidoctorJavaExec.canonicalName
+                    classpath = javaExecClasspath
+                    args execConfigurationData.absolutePath
+                }
             }
+        } catch (Exception e) {
+            throw new AsciidoctorRemoteExecutionException("Remote Asciidoctor process failed to complete successfully", e)
         }
 
         executorConfigurations
