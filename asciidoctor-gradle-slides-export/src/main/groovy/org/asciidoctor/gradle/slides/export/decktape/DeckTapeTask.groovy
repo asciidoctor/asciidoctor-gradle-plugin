@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.slides.export.decktape
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AsciidoctorUtils
+import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.base.slides.Profile
 import org.asciidoctor.gradle.js.nodejs.AsciidoctorJSNodeExtension
 import org.asciidoctor.gradle.js.nodejs.AsciidoctorJSNpmExtension
@@ -353,7 +354,7 @@ class DeckTapeTask extends AbstractExportBaseTask {
         }
 
         if (this.chromeArgs) {
-            args.addAll(this.chromeArgs.collectMany { ['--chrome-arg', it] })
+            args.addAll(Transform.toList(this.chromeArgs) { "--chrome-arg=${it}".toString() })
         }
 
         args
