@@ -6,13 +6,11 @@ cache:
         - $HOME/.gradle
         - .gradle/
         - testfixtures/offline-repo/build/root
-os:
-  - linux
-  - osx
 
 matrix:
     include:
         - jdk: openjdk11
+        - os: osx
 
 stages:
     - quality
