@@ -90,7 +90,7 @@ test:integration:
   dependencies:
     - testrepo
     - jdk8
-  script: ./gradlew -i -s --console=plain --no-build-cache test intTest remoteTest -x :asciidoctor-gradle-slides-export:intTest
+  script: ./gradlew -i -s --console=plain --no-build-cache test intTest remoteTest
   artifacts:
     paths:
       - '*/build/reports'

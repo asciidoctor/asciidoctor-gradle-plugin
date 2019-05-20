@@ -17,6 +17,9 @@ package org.asciidoctor.gradle.slides.export.decktape
 
 import org.asciidoctor.gradle.slides.export.internal.FunctionalSpecification
 import org.gradle.testkit.runner.BuildResult
+import org.ysb33r.grolifant.api.OperatingSystem
+import spock.lang.IgnoreIf
+import spock.lang.Issue
 import spock.lang.Timeout
 import spock.lang.Unroll
 
@@ -59,6 +62,8 @@ class DeckTapeFunctionalSpec extends FunctionalSpecification {
     }
 
     @Timeout(120)
+    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/381')
+    @IgnoreIf({ OperatingSystem.current().isWindows() })
     @Unroll
     void 'Standalone task can also export to #format in addition to PDF'() {
         setup:

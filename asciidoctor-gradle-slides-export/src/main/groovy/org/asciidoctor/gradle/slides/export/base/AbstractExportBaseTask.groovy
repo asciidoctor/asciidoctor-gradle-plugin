@@ -187,7 +187,6 @@ abstract class AbstractExportBaseTask extends DefaultTask {
                         new File(taskOutputDir, outputPath)
                     }
                 }
-
                 FileCollection otherFc = project.files(resolvedInputs - asciidoctorTasks).filter { File target ->
                     target.name.toLowerCase(Locale.US).endsWith(HTML_EXT)
                 }
