@@ -9,6 +9,7 @@ generateModuleVersions {
 
 configurations {
     additionalPluginClasspath
+    gradleTest.extendsFrom additionalPluginClasspath
 }
 
 dependencies {
@@ -48,6 +49,5 @@ configurePlugin 'org.asciidoctor.decktape',
 ci {
     gitlabci {
         gradleTest.enabled = false
-        intTest.enabled = false
     }
 }
