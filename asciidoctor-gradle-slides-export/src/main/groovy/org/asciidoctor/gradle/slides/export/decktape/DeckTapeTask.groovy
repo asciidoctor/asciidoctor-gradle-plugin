@@ -230,6 +230,8 @@ class DeckTapeTask extends AbstractExportBaseTask {
     /** Add additional arguments to pass to Chrome/Chromium instance.
      *
      * @param args Chrome/Chromium arguments
+     *
+     * @see https://peter.sh/experiments/chromium-command-line-switches
      */
     void chromeArgs(String... args) {
         this.chromeArgs.addAll(args as List)
@@ -238,6 +240,8 @@ class DeckTapeTask extends AbstractExportBaseTask {
     /** Replace existing Chrome/Chromium arguments with a new set.
      *
      * @param args Chrome/Chromium arguments
+     *
+     * @see https://peter.sh/experiments/chromium-command-line-switches
      */
     void setChromeArgs(List<String> args) {
         this.chromeArgs.clear()
