@@ -39,4 +39,3 @@ class Deck2ImagesTask extends Deck2ExportBaseTask {
         "${filename}-${fileNumberFormat}"
     }
 }
-

@@ -45,7 +45,8 @@ class DeckTapeFunctionalSpec extends FunctionalSpecification {
         task standalonePdfConverter(type: DeckTapeTask) {
             outputDir "\${buildDir}/generic"
             slides asciidoctorRevealJs
-            ${profileDSL}    
+            ${profileDSL}  
+            ${chromeSandbox}  
         }
         """, BASE_ONLY)
 
@@ -88,6 +89,7 @@ class DeckTapeFunctionalSpec extends FunctionalSpecification {
                 width = 1024
                 height = 768
             }    
+            ${chromeSandbox}  
         }
         """, BASE_ONLY)
 
@@ -119,6 +121,7 @@ class DeckTapeFunctionalSpec extends FunctionalSpecification {
             outputDir "\${buildDir}/generic"
             slides asciidoctorRevealJs
             profile 'reveal_js' 
+            ${chromeSandbox}  
 
             doLast {
                 println "*** Height=\${height} Width=\${width} Range=\${range}" + 
@@ -129,13 +132,13 @@ class DeckTapeFunctionalSpec extends FunctionalSpecification {
 
         when:
         BuildResult result = getGradleRunner([
-                                    '-i',
-                                    'standalonePdfConverter',
-                                    '--width=1024',
-                                    '--height=768',
-                                    '--range=2-3',
-                                    '--pause=1000',
-                                    '--load-pause=500'
+                '-i',
+                'standalonePdfConverter',
+                '--width=1024',
+                '--height=768',
+                '--range=2-3',
+                '--pause=1000',
+                '--load-pause=500'
         ]).build()
 
         then:
@@ -149,6 +152,8 @@ class DeckTapeFunctionalSpec extends FunctionalSpecification {
         asciidoctorRevealJs {
             sourceDir 'src/docs/asciidoc'
         }
+        
+        asciidoctorRevealJsExport.${chromeSandbox}  
         """)
 
         when:
@@ -178,4 +183,11 @@ class DeckTapeFunctionalSpec extends FunctionalSpecification {
         buildFile
     }
 
+    private String getChromeSandbox() {
+        if (System.getProperty('NO_CHROME_SANDBOX')) {
+            "chromeArgs '--no-sandbox'"
+        } else {
+            ''
+        }
+    }
 }

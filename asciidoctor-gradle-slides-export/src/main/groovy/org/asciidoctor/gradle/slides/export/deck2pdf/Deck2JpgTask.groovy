@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle.slides.export.deck2pdf
 
 import groovy.transform.CompileStatic
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.options.Option
@@ -36,6 +37,7 @@ class Deck2JpgTask extends Deck2ImagesTask {
     private Integer cmdlineQuality
 
     @Optional
+    @Input
     Integer getQuality() {
         this.cmdlineQuality ?: this.quality
     }
