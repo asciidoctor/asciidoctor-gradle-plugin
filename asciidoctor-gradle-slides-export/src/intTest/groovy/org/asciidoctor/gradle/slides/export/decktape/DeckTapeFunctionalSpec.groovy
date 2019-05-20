@@ -20,9 +20,13 @@ import org.gradle.testkit.runner.BuildResult
 import org.ysb33r.grolifant.api.OperatingSystem
 import spock.lang.IgnoreIf
 import spock.lang.Issue
+import spock.lang.Stepwise
 import spock.lang.Timeout
 import spock.lang.Unroll
 
+// Only using Stepwise as an interim measure
+// See https://discuss.gradle.org/t/component-metadata-supplier-rule-executor-seems-to-be-causing-issues/31844
+@Stepwise
 class DeckTapeFunctionalSpec extends FunctionalSpecification {
 
     private static final boolean BASE_ONLY = true
@@ -62,9 +66,9 @@ class DeckTapeFunctionalSpec extends FunctionalSpecification {
         'generic'   | 'useGenericProfile()'
     }
 
-    @Timeout(120)
     @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/381')
     @IgnoreIf({ OperatingSystem.current().isWindows() })
+    @Timeout(120)
     @Unroll
     void 'Standalone task can also export to #format in addition to PDF'() {
         setup:
@@ -153,11 +157,13 @@ class DeckTapeFunctionalSpec extends FunctionalSpecification {
             sourceDir 'src/docs/asciidoc'
         }
         
-        asciidoctorRevealJsExport.${chromeSandbox}  
+        asciidoctorRevealJsExport {
+            ${chromeSandbox}
+        }  
         """)
 
         when:
-        getGradleRunner(['-i', 'asciidoctorRevealJsExport']).build()
+        getGradleRunner(['-i', 'asciidoctorRevealJsExport', '--scan']).build()
 
         then:
         new File(testProjectDir.root, 'build/docs/asciidocRevealJs/index.html').exists()
