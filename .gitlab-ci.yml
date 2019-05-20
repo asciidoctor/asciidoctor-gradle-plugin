@@ -12,6 +12,8 @@ cache:
 
 variables:
     JDK8_TEST_IMAGE: $CI_REGISTRY/asciidoctor/testing-lab/openjdk8-with-libxss:latest
+    JDK11_TEST_IMAGE: $CI_REGISTRY/asciidoctor/testing-lab/openjdk11-with-libxss:latest
+    JDK12_TEST_IMAGE: $CI_REGISTRY/asciidoctor/testing-lab/openjdk12-with-libxss:latest
 
 testrepo:
   stage: infrastructure
@@ -99,7 +101,7 @@ test:integration:
 
 test:gradle_4.4.1,4.5.1:
   stage: test
-  image: openjdk:8
+  image: $JDK8_TEST_IMAGE
   except:
     - pages
     - gh-pages
@@ -117,7 +119,7 @@ test:gradle_4.4.1,4.5.1:
 
 test:gradle_4.6,4.7,4.8.1:
   stage: test
-  image: openjdk:8
+  image: $JDK8_TEST_IMAGE
   except:
     - pages
     - gh-pages
@@ -135,7 +137,7 @@ test:gradle_4.6,4.7,4.8.1:
 
 test:gradle_4.9,4.10.2:
   stage: test
-  image: openjdk:11
+  image: $JDK11_TEST_IMAGE
   except:
     - pages
     - gh-pages
@@ -153,7 +155,7 @@ test:gradle_4.9,4.10.2:
 
 test:gradle_5.0,5.1.1,5.3.1:
   stage: test
-  image: openjdk:11
+  image: $JDK11_TEST_IMAGE
   except:
     - pages
     - gh-pages
@@ -169,9 +171,9 @@ test:gradle_5.0,5.1.1,5.3.1:
     expire_in: 10 days
     when: on_failure
 
-test:gradle_5.4:
+test:gradle_5.4.1:
   stage: test
-  image: openjdk:12
+  image: $JDK12_TEST_IMAGE
   except:
     - pages
     - gh-pages
