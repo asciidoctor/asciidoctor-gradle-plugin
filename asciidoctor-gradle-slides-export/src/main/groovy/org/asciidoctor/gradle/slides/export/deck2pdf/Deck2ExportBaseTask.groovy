@@ -182,6 +182,7 @@ class Deck2ExportBaseTask extends AbstractExportBaseTask {
     }
 
     @Override
+    @Internal
     protected List<Profile> getSupportedProfiles() {
         PROFILES
     }

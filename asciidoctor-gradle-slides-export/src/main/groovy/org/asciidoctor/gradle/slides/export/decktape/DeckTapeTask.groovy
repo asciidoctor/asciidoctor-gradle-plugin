@@ -65,6 +65,7 @@ class DeckTapeTask extends AbstractExportBaseTask {
     final ScreenShots screenshots = new ScreenShots()
 
     private String genericKeyStroke = 'ArrowRight'
+    private final List<String> chromeArgs = []
     private final DeckTapeExtension decktape
     private String range
     private Integer interSlidePause
@@ -225,6 +226,32 @@ class DeckTapeTask extends AbstractExportBaseTask {
         cfg.execute(this.screenshots)
     }
 
+    /** Add additional arguments to pass to Chrome/Chromium instance.
+     *
+     * @param args Chrome/Chromium arguments
+     */
+    void chromeArgs(String... args) {
+        this.chromeArgs.addAll(args as List)
+    }
+
+    /** Replace existing Chrome/Chromium arguments with a new set.
+     *
+     * @param args Chrome/Chromium arguments
+     */
+    void setChromeArgs(List<String> args) {
+        this.chromeArgs.clear()
+        this.chromeArgs.addAll(args)
+    }
+
+    /** List of Chrome/Chromium arguments
+     *
+     * @return Additional arguments. Empty by default. Never {@code null}.
+     */
+    @Internal
+    List<String> getChromeArgs() {
+        this.chromeArgs
+    }
+
     @SuppressWarnings('UnnecessaryGetter')
     @TaskAction
     void exec() {
@@ -269,6 +296,7 @@ class DeckTapeTask extends AbstractExportBaseTask {
     }
 
     @Override
+    @Internal
     protected List<Profile> getSupportedProfiles() {
         PROFILES
     }
@@ -323,6 +351,11 @@ class DeckTapeTask extends AbstractExportBaseTask {
                 args.addAll(['--screenshots-size', "${width}x${height}".toString()])
             }
         }
+
+        if (this.chromeArgs) {
+            args.addAll(this.chromeArgs.collectMany { ['--chrome-arg', it] })
+        }
+
         args
     }
 }

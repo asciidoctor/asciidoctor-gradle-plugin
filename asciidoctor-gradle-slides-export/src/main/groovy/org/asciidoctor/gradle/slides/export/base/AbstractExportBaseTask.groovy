@@ -244,6 +244,7 @@ abstract class AbstractExportBaseTask extends DefaultTask {
      *
      * @return List of profiles. Never {@code null} or empty.
      */
+    @Internal
     abstract protected List<Profile> getSupportedProfiles()
 
     /** Provides the outputfile name given an input file name

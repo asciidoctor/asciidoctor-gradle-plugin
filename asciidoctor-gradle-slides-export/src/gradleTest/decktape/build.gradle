@@ -9,8 +9,8 @@ repositories {
     maven {url 'http://rubygems-proxy.torquebox.org/releases'}
 }
 
-asciidoctorRevealJs {
-
+if(System.getenv('GITLAB_CI')) {
+    asciidoctorRevealJsExport.chromeArgs = [ '--no-sandbox']
 }
 
 task runGradleTest {

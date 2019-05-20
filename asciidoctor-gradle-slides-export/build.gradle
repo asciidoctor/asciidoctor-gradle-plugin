@@ -45,9 +45,8 @@ configurePlugin 'org.asciidoctor.decktape',
         'Adds convenience rules to compliment Asciidoctor slide task types',
         ['asciidoctorj', 'asciidoctor.js', 'decktape', 'reveal.js', 'slides', 'pdf', 'jpg', 'png']
 
-// TODO: Fix a special docker container containing libXss so that these can be tested.
 ci {
     gitlabci {
-        gradleTest.enabled = false
+        intTest.systemProperties 'NO_CHROME_SANDBOX' : 1
     }
 }
