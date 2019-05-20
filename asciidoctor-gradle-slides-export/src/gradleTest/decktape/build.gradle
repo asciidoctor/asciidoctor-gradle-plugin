@@ -9,6 +9,10 @@ repositories {
     maven {url 'http://rubygems-proxy.torquebox.org/releases'}
 }
 
+asciidoctorRevealJs {
+
+}
+
 task runGradleTest {
     dependsOn 'asciidoctorRevealJsExport'
 }

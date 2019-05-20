@@ -60,10 +60,7 @@ class AsciidoctorDeckTapePlugin implements Plugin<Project> {
                     // (https://github.com/gradle/gradle-native/issues/772)
 
                     if (associate.get() instanceof SlidesToExportAware) {
-                        TaskProvider target = TaskProvider.registerTask(
-                                project, details.get().targetTaskName,
-                                details.get().type
-                        )
+                        Task target = project.tasks.create(details.get().targetTaskName, details.get().type)
                         Action configurator = new Action<DeckTapeTask>() {
                             @Override
                             void execute(DeckTapeTask t) {
@@ -77,7 +74,7 @@ class AsciidoctorDeckTapePlugin implements Plugin<Project> {
                                 }
                             }
                         }
-                        target.configure(configurator as Action<Task>)
+                        configurator.execute((DeckTapeTask)target)
                     }
                 } catch (Exception) {
                     // TaskProvider really needs a findTaskByName
