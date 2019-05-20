@@ -97,26 +97,7 @@ test:integration:
     expire_in: 10 days
     when: on_failure
 
-
-test:gradle_4.0.2,4.1,4.2.1:
-  stage: test
-  image: openjdk:8
-  except:
-    - pages
-    - gh-pages
-    - tags
-  dependencies:
-    - testrepo
-    - jdk8
-  script: ./run-compatibility-test-on-ci.sh
-  artifacts:
-    paths:
-      - '*/build/reports'
-      - '*/build/jacoco'
-    expire_in: 10 days
-    when: on_failure
-
-test:gradle_4.3.1,4.4.1,4.5.1:
+test:gradle_4.4.1,4.5.1:
   stage: test
   image: openjdk:8
   except:

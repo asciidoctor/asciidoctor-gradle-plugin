@@ -51,7 +51,7 @@ The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to 
 
 NOTE: This started as a port of the {asciidoctor-maven-plugin}[Asciidoctor Maven Plugin] project founded by {lightguard}[@LightGuard] and relies on {asciidoctorj}[{asciidoctorj-name}] founded by {lordofthejars}[@lordofthejars]. In fact the 1.5.x series of the {plugin-name} can still be considered a port. However the 2.x series and beyond is a complete departure with functionality far exceeding any plugins for another build tool. This new series allows for the creations of a true DocuOps pipeline by bringing together Gradle as a powerful and generic build tool and Asciidoctor as an agile and lightweight document generator.
 
-NOTE: This collection of plugins requires at least Gradle 4.0, JDK 8.0 and AsciidoctorJ 1.6.0 to run. If you need prior Gradle,  JDK or AsciidoctorJ support please use a plugin from the 1.5.x or 1.6.x release series.
+NOTE: This collection of plugins requires at least Gradle 4.4, JDK 8.0 and AsciidoctorJ 1.6.0 to run. If you need prior Gradle,  JDK or AsciidoctorJ support please use a plugin from the 1.5.x or 1.6.x release series.
 
 == Known Issues
 
@@ -61,7 +61,7 @@ This is still an alpha development, so expect some issues. These are the main on
   (KF8+EPUB3 or EPUB3+KF8) the conversion takes place in.
 * KF8 conversions fails under Windows. (Related to asciidoctor/asciidoctorj#659 & jruby/jruby#4943)
 * Does not work with JDK9 (but does with JDK10).
-* Not compatible with {kotlindsl} on Gradle *5.2.1* and *5.3*. See https://github.com/gradle/kotlin-dsl/issues/1353[KOTLIN-DSL-1353].
+* DeckTape export to JPG/PNG does not work on Windows (#381 & astefanutti/decktape#181).
 
 == Installation
 
