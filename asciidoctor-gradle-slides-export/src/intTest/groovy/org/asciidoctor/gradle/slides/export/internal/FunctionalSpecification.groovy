@@ -23,15 +23,15 @@ import org.junit.rules.TemporaryFolder
 import org.ysb33r.grolifant.api.OperatingSystem
 import spock.lang.Specification
 
+@SuppressWarnings('LineLength')
 class FunctionalSpecification extends Specification {
 
-    @SuppressWarnings('LineLength')
-    static
-    final String TEST_PROJECTS_DIR = System.getProperty('TEST_PROJECTS_DIR', './src/intTest/projects')
-    static
-    final String TEST_REPO_DIR = FunctionalTestSetup.offlineRepo.absolutePath
-    static
-    final OperatingSystem OS = OperatingSystem.current()
+    static final String TEST_PROJECTS_DIR = System.getProperty(
+            'TEST_PROJECTS_DIR',
+            './src/intTest/projects'
+    )
+    static final String TEST_REPO_DIR = FunctionalTestSetup.offlineRepo.absolutePath
+    static final OperatingSystem OS = OperatingSystem.current()
 
     @Rule
     TemporaryFolder testProjectDir
