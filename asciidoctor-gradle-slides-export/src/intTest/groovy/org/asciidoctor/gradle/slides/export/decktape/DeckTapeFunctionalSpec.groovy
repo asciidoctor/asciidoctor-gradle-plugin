@@ -32,6 +32,32 @@ class DeckTapeFunctionalSpec extends FunctionalSpecification {
     private static final boolean BASE_ONLY = true
 
     @Unroll
+    void 'Cannot set only #measure'() {
+        setup:
+        createTestProject('generic')
+        getBuildFile("""
+        import org.asciidoctor.gradle.slides.export.decktape.DeckTapeTask
+        
+        task standalonePdfConverter(type: DeckTapeTask) {
+            outputDir "\${buildDir}/generic"
+            slides asciidoctorRevealJs
+            profile 'reveal_js' 
+            ${measure.startsWith('screenshots') ? 'screenshots.format = "png"' : ''}
+            ${measure} = 1024
+        }
+        """, BASE_ONLY)
+
+        when:
+        BuildResult result = getGradleRunner(['standalonePdfConverter', '-i']).buildAndFail()
+
+        then:
+        result.output.contains('Must specify both height and width')
+
+        where:
+        measure << ['height', 'width', 'screenshots.height', 'screenshots.width']
+    }
+
+    @Unroll
     @Timeout(120)
     void 'Standalone asciidoctor slide task can be exported with #profile profile'() {
         setup:
@@ -48,7 +74,9 @@ class DeckTapeFunctionalSpec extends FunctionalSpecification {
 
         task standalonePdfConverter(type: DeckTapeTask) {
             outputDir "\${buildDir}/generic"
-            slides asciidoctorRevealJs
+            slides = [asciidoctorRevealJs] // Exercise setSlides()
+            width = 1024
+            height = 768
             ${profileDSL}  
             ${chromeSandbox}  
         }
