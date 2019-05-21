@@ -75,6 +75,8 @@ class DeckTapeTask extends AbstractExportBaseTask {
     static class ScreenShots {
 
         private String format = NONE
+        private Integer height
+        private Integer width
 
         @Input
         @Optional
@@ -99,13 +101,57 @@ class DeckTapeTask extends AbstractExportBaseTask {
             }
         }
 
+        /** Slide export image width
+         *
+         * @return Height as an integer
+         */
         @Input
         @Optional
-        String height
+        Integer getHeight() {
+            this.height
+        }
 
+        /** Set slide export image height.
+         *
+         * @param h Height
+         */
+        void setHeight(String h) {
+            this.height = h.toInteger()
+        }
+
+        /** Set slide export image height.
+         *
+         * @param h Height
+         */
+        void setHeight(Integer h) {
+            this.height = h
+        }
+
+        /** Slide export image width
+         *
+         * @return Width as an integer
+         */
         @Input
         @Optional
-        String width
+        Integer getWidth() {
+            this.width
+        }
+
+        /** Set slide export image width.
+         *
+         * @param h Width
+         */
+        void setWidth(String h) {
+            this.width = h.toInteger()
+        }
+
+        /** Set slide export image width.
+         *
+         * @param h Width
+         */
+        void setWidth(Integer h) {
+            this.width = h
+        }
     }
 
     DeckTapeTask() {
@@ -260,16 +306,17 @@ class DeckTapeTask extends AbstractExportBaseTask {
     @SuppressWarnings('UnnecessaryGetter')
     @TaskAction
     void exec() {
-        File home = decktape.toolingWorkDir
-        File decktapeExecutable = new File(home, 'node_modules/decktape/decktape.js')
-        File nodejs = project.extensions.getByType(AsciidoctorJSNodeExtension).resolvableNodeExecutable.executable
-
+        List<String> resolvedArgs = buildOptions()
         File outputDirCached = getOutputDir()
-        List<String> profileToUse = [deckTapeProfileName]
 
+        List<String> profileToUse = [deckTapeProfileName]
         if (deckTapeProfileName == 'generic') {
             profileToUse.addAll('--key', genericKeyStroke)
         }
+
+        File home = decktape.toolingWorkDir
+        File decktapeExecutable = new File(home, 'node_modules/decktape/decktape.js')
+        File nodejs = project.extensions.getByType(AsciidoctorJSNodeExtension).resolvableNodeExecutable.executable
 
         Closure configurator = { File sourceFile, File destFile, ExecSpec spec ->
             spec.with {
@@ -277,7 +324,7 @@ class DeckTapeTask extends AbstractExportBaseTask {
                 workingDir = home
                 executable nodejs
                 args(decktapeExecutable.absolutePath)
-                args(buildOptions())
+                args(resolvedArgs)
                 args(profileToUse)
                 args(sourceFile.absoluteFile.toURI())
                 args(destFile.absolutePath)
