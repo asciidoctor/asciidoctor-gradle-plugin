@@ -30,3 +30,5 @@ pluginManager.withPlugin('jacoco') {
 }
 
 configurations.gradleTestCompile.transitive = false
+
+validateTaskProperties.enabled = false
