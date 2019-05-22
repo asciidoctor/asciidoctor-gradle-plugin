@@ -17,7 +17,7 @@ package org.asciidoctor.gradle.jvm.pdf
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask
-import org.asciidoctor.gradle.jvm.ProcessMode
+import org.asciidoctor.gradle.base.process.ProcessMode
 import org.gradle.api.Project
 import org.gradle.api.UnknownDomainObjectException
 @java.lang.SuppressWarnings('NoWildcardImports')

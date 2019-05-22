@@ -22,14 +22,17 @@ import org.ysb33r.grolifant.api.AbstractCombinedProjectTaskExtension
 
 import static org.ysb33r.grolifant.api.StringUtils.stringize
 
-/**
+/** Base class for implementing extensions in the Asciidoctor Gradle suite.
+ *
+ * This class is engine agnostic.
+ *
  * @since 3.0
  */
 @CompileStatic
 abstract class AbstractImplementationEngineExtension extends AbstractCombinedProjectTaskExtension {
 
     private SafeMode safeMode
-
+    private final Map<String, String> defaultVersionMap
     private final List<AsciidoctorAttributeProvider> attributeProviders = []
     private final Map<String, Object> attributes = [:]
     private boolean onlyTaskAttributes = false
@@ -131,16 +134,25 @@ abstract class AbstractImplementationEngineExtension extends AbstractCombinedPro
         attributeProvider(provider as AsciidoctorAttributeProvider)
     }
 
-    protected AbstractImplementationEngineExtension(Project project) {
+    protected AbstractImplementationEngineExtension(Project project, String moduleResourceName) {
         super(project)
         this.safeMode = SafeMode.UNSAFE
         this.attributes['gradle-project-name'] = project.name
         this.attributes['gradle-project-group'] = { project.group ?: '' }
         this.attributes['gradle-project-version'] = { project.version ?: '' }
+        this.defaultVersionMap = ModuleVersionLoader.load(moduleResourceName)
     }
 
     protected AbstractImplementationEngineExtension(Task task, final String name) {
         super(task, name)
+    }
+
+    protected Map<String, String> getDefaultVersionMap() {
+        if (task) {
+            extFromProject.defaultVersionMap
+        } else {
+            this.defaultVersionMap
+        }
     }
 
     protected Map<String, Object> stringizeMapRecursive(

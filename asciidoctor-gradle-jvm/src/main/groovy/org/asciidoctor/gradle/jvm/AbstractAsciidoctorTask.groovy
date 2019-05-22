@@ -17,17 +17,21 @@ package org.asciidoctor.gradle.jvm
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import groovy.transform.PackageScope
 import org.asciidoctor.gradle.base.AbstractAsciidoctorBaseTask
 import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
 import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.base.internal.Workspace
+import org.asciidoctor.gradle.base.process.ProcessMode
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
 import org.asciidoctor.gradle.internal.ExecutorUtils
 import org.asciidoctor.gradle.internal.JavaExecUtils
 import org.asciidoctor.gradle.remote.AsciidoctorJExecuter
 import org.asciidoctor.gradle.remote.AsciidoctorJavaExec
+import org.asciidoctor.gradle.remote.AsciidoctorRemoteExecutionException
 import org.gradle.api.Action
+import org.gradle.api.GradleException
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.DependencyResolveDetails
@@ -61,9 +65,9 @@ import static org.ysb33r.grolifant.api.FileUtils.filesFromCopySpec
 @CompileStatic
 class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
 
-    final static ProcessMode IN_PROCESS = ProcessMode.IN_PROCESS
-    final static ProcessMode OUT_OF_PROCESS = ProcessMode.OUT_OF_PROCESS
-    final static ProcessMode JAVA_EXEC = ProcessMode.JAVA_EXEC
+    public final static ProcessMode IN_PROCESS = ProcessMode.IN_PROCESS
+    public final static ProcessMode OUT_OF_PROCESS = ProcessMode.OUT_OF_PROCESS
+    public final static ProcessMode JAVA_EXEC = ProcessMode.JAVA_EXEC
 
     @Internal
     protected final static GradleVersion LAST_GRADLE_WITH_CLASSPATH_LEAKAGE = GradleVersion.version(('5.99'))
@@ -72,7 +76,8 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
     private final AsciidoctorJExtension asciidoctorj
     private final WorkerExecutor worker
     private final List<Object> asciidocConfigurations = []
-    private
+
+    @PackageScope
     final org.ysb33r.grolifant.api.JavaForkOptions javaForkOptions = new org.ysb33r.grolifant.api.JavaForkOptions()
 
     /** Set how AsciidoctorJ should be run.
@@ -380,11 +385,10 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
     /** Configure Java fork options prior to execution
      *
      * The default method will copy anything configured via {@link #forkOptions(Closure c)} or
-     * {@link #forkOptions(Action c)} to the rpovided {@link JavaForkOptions}.
+     * {@link #forkOptions(Action c)} to the provided {@link JavaForkOptions}.
      *
      * @param pfo Fork options to be configured.
      */
-    @SuppressWarnings('UnusedMethodParameter')
     protected void configureForkOptions(JavaForkOptions pfo) {
         this.javaForkOptions.copyTo(pfo)
     }
@@ -492,14 +496,21 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         logger.debug("Serialised AsciidoctorJ configuration to ${execConfigurationData}")
         logger.info "Running AsciidoctorJ instance with classpath ${javaExecClasspath.files}"
 
-        project.javaexec { JavaExecSpec jes ->
-            configureForkOptions(jes)
-            logger.debug "Running AsciidoctorJ instance with environment: ${jes.environment}"
-            jes.with {
-                main = AsciidoctorJavaExec.canonicalName
-                classpath = javaExecClasspath
-                args execConfigurationData.absolutePath
+        try {
+            project.javaexec { JavaExecSpec jes ->
+                configureForkOptions(jes)
+                logger.debug "Running AsciidoctorJ instance with environment: ${jes.environment}"
+                jes.with {
+                    main = AsciidoctorJavaExec.canonicalName
+                    classpath = javaExecClasspath
+                    args execConfigurationData.absolutePath
+                }
             }
+        } catch (GradleException e) {
+            throw new AsciidoctorRemoteExecutionException(
+                    'Remote Asciidoctor process failed to complete successfully',
+                    e
+            )
         }
 
         executorConfigurations

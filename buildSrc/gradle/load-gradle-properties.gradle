@@ -1,0 +1,4 @@
+ext.gradleProperties = new Properties()
+project.file('../gradle.properties').withInputStream {
+    ext.gradleProperties.load(it)
+}

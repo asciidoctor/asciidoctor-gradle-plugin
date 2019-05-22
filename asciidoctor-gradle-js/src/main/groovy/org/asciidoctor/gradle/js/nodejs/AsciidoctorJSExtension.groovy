@@ -20,6 +20,7 @@ import org.asciidoctor.gradle.base.AsciidoctorModuleDefinition
 import org.asciidoctor.gradle.js.base.AbstractAsciidoctorJSExtension
 import org.asciidoctor.gradle.js.base.AsciidoctorJSModules
 import org.asciidoctor.gradle.js.nodejs.internal.AsciidoctorNodeJSModules
+import org.asciidoctor.gradle.js.nodejs.core.NodeJSDependencyFactory
 import org.asciidoctor.gradle.js.nodejs.internal.PackageDescriptor
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -27,7 +28,6 @@ import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.SelfResolvingDependency
 import org.ysb33r.gradle.nodejs.NpmDependency
-import org.ysb33r.gradle.nodejs.dependencies.npm.NpmSelfResolvingDependency
 
 /** Extension for configuring AsciidoctorJS.
  *
@@ -114,15 +114,16 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
      */
     @SuppressWarnings('UnnecessaryGetter')
     Configuration getConfiguration() {
-        final String docbook =  moduleVersion(modules.docbook)
-        final List<SelfResolvingDependency> deps = [createDependency(PACKAGE_ASCIIDOCTOR, getVersion())]
+        final String docbook = moduleVersion(modules.docbook)
+        final NodeJSDependencyFactory factory = new NodeJSDependencyFactory(project, nodejs, npm)
+        final List<SelfResolvingDependency> deps = [factory.createDependency(PACKAGE_ASCIIDOCTOR, getVersion())]
 
         if (docbook) {
-            deps.add(createDependency(packageDescriptorFor(modules.docbook), docbook))
+            deps.add(factory.createDependency(packageDescriptorFor(modules.docbook), docbook))
         }
 
         project.configurations.detachedConfiguration(
-            deps.toArray() as Dependency[]
+                deps.toArray() as Dependency[]
         )
     }
 
@@ -149,7 +150,7 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
      */
     @Override
     protected AsciidoctorJSModules createModulesConfiguration() {
-        new AsciidoctorNodeJSModules(this)
+        new AsciidoctorNodeJSModules(this, defaultVersionMap)
     }
 
     private List<NpmDependency> getAllAdditionalRequires() {
@@ -170,7 +171,7 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
     private boolean versionsDifferFromGlobal() {
         if (task) {
             if (version != extFromProject.version ||
-                modules.isSetVersionsDifferentTo(extFromProject.modules)
+                    modules.isSetVersionsDifferentTo(extFromProject.modules)
             ) {
                 true
             } else {
@@ -178,7 +179,7 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
                 this.additionalRequires.any { NpmDependency depLocal ->
                     global.any { NpmDependency depGlobal ->
                         depGlobal.scope == depLocal.scope && depGlobal.packageName == depLocal.packageName &&
-                            depGlobal.tagName != depLocal.tagName
+                                depGlobal.tagName != depLocal.tagName
                     }
                 }
             }
@@ -193,27 +194,6 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
 
     private AsciidoctorJSNpmExtension getNpm() {
         project.extensions.getByType(AsciidoctorJSNpmExtension)
-    }
-
-    @SuppressWarnings('FactoryMethodName')
-    private SelfResolvingDependency createDependency(final PackageDescriptor pkg, final String version) {
-        createDependency(pkg.name, version, pkg.scope)
-    }
-
-    @SuppressWarnings('FactoryMethodName')
-    private SelfResolvingDependency createDependency(final String name, final String version, final String scope) {
-        Map<String, Object> description = [
-            name          : name,
-            tag           : version,
-            type          : 'dev',
-            'install-args': ['--no-bin-links', '--no-package-lock', '--loglevel=error']
-        ]
-
-        if (scope) {
-            description.put('scope', scope)
-        }
-
-        new NpmSelfResolvingDependency(project, nodejs, npm, description)
     }
 
     private PackageDescriptor packageDescriptorFor(final AsciidoctorModuleDefinition module) {

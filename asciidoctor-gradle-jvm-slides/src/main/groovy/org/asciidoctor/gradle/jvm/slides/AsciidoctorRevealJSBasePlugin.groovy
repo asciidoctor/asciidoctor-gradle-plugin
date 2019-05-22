@@ -23,8 +23,8 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.ysb33r.grolifant.api.TaskProvider
 
-import static org.asciidoctor.gradle.jvm.gems.AsciidoctorGemSupportPlugin.GEM_CONFIGURATION
 import static org.asciidoctor.gradle.jvm.gems.AsciidoctorGemSupportPlugin.GEMPREP_TASK
+import static org.asciidoctor.gradle.jvm.gems.AsciidoctorGemSupportPlugin.GEM_CONFIGURATION
 
 /** Adds an extension and task to create Reveal.js slides.
  *
@@ -33,7 +33,7 @@ import static org.asciidoctor.gradle.jvm.gems.AsciidoctorGemSupportPlugin.GEMPRE
 @CompileStatic
 class AsciidoctorRevealJSBasePlugin implements Plugin<Project> {
 
-    final static String REVEALJS_GEM = 'asciidoctor-revealjs'
+    public final static String REVEALJS_GEM = 'asciidoctor-revealjs'
 
     @Override
     void apply(Project project) {

@@ -23,20 +23,53 @@ configurations {
     intTestOfflineRepo2
 }
 
+generateModuleVersions {
+    basename = 'asciidoctorjs-extension'
+    propertyNames ~/^asciidoctorjs$/, ~/^asciidoctorjs\./
+}
+
+ext {
+    nodejsCacheDir = "${offlineRepoBinariesRoot}/nodejs"
+}
+
+ext {
+    if (OS.windows) {
+        nodejsExt = 'zip'
+        if (System.getProperty('os.arch').contains('64')) {
+            nodejsArch = 'win-x64'
+        } else {
+            nodejsArch = 'win-x86'
+        }
+    } else if (OS.linux) {
+        nodejsExt = 'tar.xz'
+        if (System.getProperty('os.arch').contains('64')) {
+            nodejsArch = 'linux-x64'
+        } else {
+            nodejsArch = 'linux-x86'
+        }
+    } else if (OS.macOsX) {
+        nodejsExt = 'tar.gz'
+        nodejsArch = 'darwin-x64'
+    }
+}
+
 dependencies {
     compile project(':asciidoctor-gradle-base')
-    compile "${nodejsGradleVersion.endsWith('-SNAPSHOT')?'':'gradle.plugin.'}org.ysb33r.gradle:nodejs-gradle-plugin:${nodejsGradleVersion}"
+    compile "${nodejsGradleVersion.endsWith('-SNAPSHOT') ? '' : 'gradle.plugin.'}org.ysb33r.gradle:nodejs-gradle-plugin:${nodejsGradleVersion}"
+
+    // defaultNodeJsVersion is set in buildSrc
+    cachedBinaries.add "nodejs:node:${project.ext.defaultNodeJsVersion}:${nodejsArch}@${nodejsExt}"
 }
 
 configurePlugin 'org.asciidoctor.js.base',
-    'Asciidoctor.js Base Plugin',
-    'Base plugin for all Asciidoctor.js tasks & extensions. Provides the asciidoctorjs project extension.',
-    ['asciidoctor','asciidoctor.js']
+        'Asciidoctor.js Base Plugin',
+        'Base plugin for all Asciidoctor.js tasks & extensions. Provides the asciidoctorjs project extension.',
+        ['asciidoctor', 'asciidoctor.js']
 
 configurePlugin 'org.asciidoctor.js.convert',
-    'Asciidoctor.js General Purpose Document Conversion Plugin',
-    'Provides asciidoctor task and conventions',
-    ['asciidoctor', 'asciidoctor.js', 'html5', 'docbook']
+        'Asciidoctor.js General Purpose Document Conversion Plugin',
+        'Provides asciidoctor task and conventions',
+        ['asciidoctor', 'asciidoctor.js', 'html5', 'docbook']
 
 test {
     systemProperties ROOT_PROJECT_DIR: rootProject.projectDir.absolutePath
@@ -44,4 +77,10 @@ test {
 
 intTest {
     systemProperties TEST_PROJECTS_DIR: file('src/intTest/projects')
+}
+
+// Saves testing time and bandwidth, but pointing the tests to the locally cached
+// Nodejs. distribution
+[tasks.test,tasks.intTest,tasks.gradleTest].each {
+    it.systemProperties 'org.ysb33r.gradle.nodejs.uri'  : file(nodejsCacheDir).absoluteFile.toURI()
 }

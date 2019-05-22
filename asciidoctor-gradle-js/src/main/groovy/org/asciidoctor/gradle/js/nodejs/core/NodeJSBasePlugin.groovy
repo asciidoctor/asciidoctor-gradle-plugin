@@ -13,29 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.jvm
+package org.asciidoctor.gradle.js.nodejs.core
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.js.nodejs.AsciidoctorJSNodeExtension
+import org.asciidoctor.gradle.js.nodejs.AsciidoctorJSNpmExtension
+import org.gradle.api.Plugin
+import org.gradle.api.Project
 
-/** Ways of execuring Asciidoctor processes.
- *
- * @since 2.0.0
- * @author Schalk W. Cronjé
+/**
+ * @since 3.0
  */
 @CompileStatic
-enum ProcessMode {
-    /** Use Gradle worker in-process.
-     *
-     */
-    IN_PROCESS,
-
-    /** Use out-of-process Gradle worker.
-     *
-     */
-    OUT_OF_PROCESS,
-
-    /** Use a classic out-of-process Java execution.
-     *
-     */
-    JAVA_EXEC
+class NodeJSBasePlugin implements Plugin<Project> {
+    @Override
+    void apply(Project project) {
+        project.extensions.create( AsciidoctorJSNodeExtension.NAME, AsciidoctorJSNodeExtension, project )
+        project.extensions.create( AsciidoctorJSNpmExtension.NAME, AsciidoctorJSNpmExtension, project )
+    }
 }

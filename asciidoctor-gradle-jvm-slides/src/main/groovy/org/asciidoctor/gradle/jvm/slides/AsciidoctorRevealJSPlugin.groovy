@@ -28,7 +28,7 @@ import org.gradle.api.Project
 @CompileStatic
 class AsciidoctorRevealJSPlugin implements Plugin<Project> {
 
-    final static String REVEALJS_TASK = 'asciidoctorRevealJs'
+    public final static String REVEALJS_TASK = 'asciidoctorRevealJs'
 
     @Override
     @SuppressWarnings('LineLength')

@@ -20,7 +20,7 @@ import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask
 import org.asciidoctor.gradle.base.AsciidoctorExecutionException
-import org.asciidoctor.gradle.jvm.ProcessMode
+import org.asciidoctor.gradle.base.process.ProcessMode
 import org.asciidoctor.gradle.kindlegen.KindleGenExtension
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.util.PatternSet
@@ -39,8 +39,8 @@ import javax.inject.Inject
 @CompileStatic
 class AsciidoctorEpubTask extends AbstractAsciidoctorTask {
 
-    static final String KF8 = 'kf8'
-    static final String EPUB3 = 'epub3'
+    public static final String KF8 = 'kf8'
+    public static final String EPUB3 = 'epub3'
 
     private static final String BACKEND = 'epub3'
     private static final String EBOOK_FORMAT_ATTR = 'ebook-format'
@@ -58,6 +58,7 @@ class AsciidoctorEpubTask extends AbstractAsciidoctorTask {
         copyNoResources()
         inProcess = JAVA_EXEC
         kindleGenExtension = project.extensions.getByType(KindleGenExtension)
+        sourceDir = 'src/docs/asciidocEpub'
     }
 
     /** The eBook formats that needs to be generated.

@@ -1,0 +1,17 @@
+plugins {
+    id 'groovy'
+}
+
+apply from: 'gradle/load-gradle-properties.gradle'
+
+repositories {
+    jcenter()
+    gradlePluginPortal()
+}
+
+dependencies {
+    compile localGroovy()
+    compile gradleApi()
+    compile "gradle.plugin.org.ysb33r.gradle:nodejs-gradle-plugin:${gradleProperties.nodejsGradleVersion}"
+}
+

@@ -27,7 +27,7 @@ import org.ysb33r.grolifant.api.StringUtils
 @CompileStatic
 class RevealJSPluginExtension extends AbstractDownloadableComponent<LocalRevealJSPlugin, ResolvedRevealJSPlugin> {
 
-    final static String NAME = 'revealjsPlugins'
+    public final static String NAME = 'revealjsPlugins'
 
     RevealJSPluginExtension(Project project) {
         super(project)
@@ -51,11 +51,11 @@ class RevealJSPluginExtension extends AbstractDownloadableComponent<LocalRevealJ
      */
     @Override
     protected Closure convertible(final LocalRevealJSPlugin component) {
-        { ->
+        { Project project1 ->
             new ResolvedRevealJSPlugin() {
                 @Override
                 File getLocation() {
-                    project.file(component.location)
+                    project1.file(component.location)
                 }
 
                 @Override
@@ -63,7 +63,7 @@ class RevealJSPluginExtension extends AbstractDownloadableComponent<LocalRevealJ
                     StringUtils.stringize(component.name)
                 }
             }
-        }
+        }.curry(project)
     }
 
     /** Instantiates a resolved component.

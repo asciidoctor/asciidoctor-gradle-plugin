@@ -28,7 +28,7 @@ import org.ysb33r.grolifant.api.StringUtils
 @CompileStatic
 class AsciidoctorPdfThemesExtension extends AbstractDownloadableComponent<PdfLocalTheme, PdfThemeDescriptor> {
 
-    final static String NAME = 'pdfThemes'
+    public final static String NAME = 'pdfThemes'
 
     /** Describes tha name and location of a PDF theme.
      *

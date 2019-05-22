@@ -39,6 +39,7 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
         then:
         verifyAll {
             new File(testProjectDir.root, 'build/docs/asciidocRevealJs/revealjs.html').exists()
+            new File(testProjectDir.root, 'build/docs/asciidocRevealJs/subdir/revealjs2.html').exists()
             new File(testProjectDir.root, "${DEFAULT_REVEALJS_PATH}/css").exists()
             new File(testProjectDir.root, "${DEFAULT_REVEALJS_PATH}/lib").exists()
             new File(testProjectDir.root, "${DEFAULT_REVEALJS_PATH}/plugin").exists()
@@ -133,6 +134,7 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
 
             sources {
                 include 'revealjs.adoc'
+                include 'subdir/revealjs2.adoc'
             }
         }
 

@@ -27,9 +27,10 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.workers.WorkerExecutor
 import org.ysb33r.gradle.nodejs.NodeJSExtension
 import org.ysb33r.gradle.nodejs.NpmExtension
-import org.ysb33r.gradle.nodejs.utils.npm.NpmExecutor
 import org.ysb33r.grolifant.api.MapUtils
 import org.ysb33r.grolifant.api.StringUtils
+
+import static org.asciidoctor.gradle.js.nodejs.core.NodeJSUtils.initPackageJson
 
 /** Base class for all Asciidoctor tasks using Asciidoctor.js as rendering engine.
  *
@@ -145,43 +146,39 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
 
     @SuppressWarnings('UnnecessaryGetter')
     private AsciidoctorJSRunner getAsciidoctorJSRunnerFor(
-        final AsciidoctorJSRunner.FileLocations asciidoctorjsExe,
-        final String backend,
-        final Map<String, String> attributes
+            final AsciidoctorJSRunner.FileLocations asciidoctorjsExe,
+            final String backend,
+            final Map<String, String> attributes
     ) {
         new AsciidoctorJSRunner(
-            nodejs.resolvableNodeExecutable.executable,
-            project,
-            asciidoctorjsExe,
-            backend,
-            asciidoctorjs.safeMode,
-            getBaseDir(),
-            getOutputDirFor(backend),
-            attributes,
-            asciidoctorjs.requires,
-            Optional.empty(),
-            logDocuments
+                nodejs.resolvableNodeExecutable.executable,
+                project,
+                asciidoctorjsExe,
+                backend,
+                asciidoctorjs.safeMode,
+                getBaseDir(),
+                getOutputDirFor(backend),
+                attributes,
+                asciidoctorjs.requires,
+                Optional.empty(),
+                logDocuments
         )
     }
 
     private AsciidoctorJSRunner.FileLocations resolveAsciidoctorjsEnvironment() {
         File home = asciidoctorjs.toolingWorkDir
-        File packageJson = new File(home, 'package.json')
-        if (!packageJson.exists()) {
-            home.mkdirs()
-            NpmExecutor.initPkgJson(
+        initPackageJson(
+                home,
                 "${project.name}-${name}",
-                project.version ? StringUtils.stringize(project.version) : 'UNDEFINED',
                 project,
                 nodejs,
                 npm
-            )
-        }
+        )
 
         asciidoctorjs.configuration.resolve()
         new AsciidoctorJSRunner.FileLocations(
-            executable: new File(home, 'node_modules/asciidoctor/bin/asciidoctor'),
-            workingDir: home
+                executable: new File(home, 'node_modules/asciidoctor/bin/asciidoctor'),
+                workingDir: home
         )
     }
 
@@ -197,9 +194,9 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
         for (String backend : configuredOutputOptions.backends) {
             conversionGroups.each { String relativePath, List<File> sourceGroup ->
                 getAsciidoctorJSRunnerFor(
-                    asciidoctorjsEnv,
-                    backend,
-                    finalAttributes
+                        asciidoctorjsEnv,
+                        backend,
+                        finalAttributes
                 ).convert(sourceGroup.toSet(), relativePath)
             }
             if (copyResources.present && (copyResources.get().empty || backend in copyResources.get())) {

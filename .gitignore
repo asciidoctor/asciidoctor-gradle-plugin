@@ -6,3 +6,6 @@ out
 *.iml
 *.ipr
 *.iws
+buildSrc/gradle/wrapper
+buildSrc/gradlew*
+.asciidoctor-module-versions.generated
