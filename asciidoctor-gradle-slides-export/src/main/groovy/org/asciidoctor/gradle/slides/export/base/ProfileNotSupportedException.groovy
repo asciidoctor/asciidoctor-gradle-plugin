@@ -13,29 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.slides.export.deck2pdf
+package org.asciidoctor.gradle.slides.export.base
 
 import groovy.transform.CompileStatic
-import org.gradle.api.tasks.Input
-import org.gradle.workers.WorkerExecutor
+import groovy.transform.InheritConstructors
 
-/** Runs a conversion form a slide deck to a collection of images
+/** Thrown when a profile is not supported by a slide conversion task.
  *
- * @author Schalk W. Cronjé
- * @since 3.0
  */
 @CompileStatic
-class Deck2ImagesTask extends Deck2ExportBaseTask {
-
-    @Input
-    String fileNumberFormat = '%02d'
-
-    protected Deck2ImagesTask(WorkerExecutor we, final String imageFormat) {
-        super(we, imageFormat)
-    }
-
-    @Override
-    protected String formatOutputFilename(String filename) {
-        "${filename}-${fileNumberFormat}"
-    }
+@InheritConstructors
+class ProfileNotSupportedException extends Exception {
 }

@@ -17,18 +17,21 @@ package org.asciidoctor.gradle.jvm
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import groovy.transform.PackageScope
 import org.asciidoctor.gradle.base.AbstractAsciidoctorBaseTask
 import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
-import org.asciidoctor.gradle.base.process.ProcessMode
 import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.base.internal.Workspace
+import org.asciidoctor.gradle.base.process.ProcessMode
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
 import org.asciidoctor.gradle.internal.ExecutorUtils
 import org.asciidoctor.gradle.internal.JavaExecUtils
 import org.asciidoctor.gradle.remote.AsciidoctorJExecuter
 import org.asciidoctor.gradle.remote.AsciidoctorJavaExec
+import org.asciidoctor.gradle.remote.AsciidoctorRemoteExecutionException
 import org.gradle.api.Action
+import org.gradle.api.GradleException
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.DependencyResolveDetails
@@ -73,7 +76,8 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
     private final AsciidoctorJExtension asciidoctorj
     private final WorkerExecutor worker
     private final List<Object> asciidocConfigurations = []
-    private
+
+    @PackageScope
     final org.ysb33r.grolifant.api.JavaForkOptions javaForkOptions = new org.ysb33r.grolifant.api.JavaForkOptions()
 
     /** Set how AsciidoctorJ should be run.
@@ -492,14 +496,21 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         logger.debug("Serialised AsciidoctorJ configuration to ${execConfigurationData}")
         logger.info "Running AsciidoctorJ instance with classpath ${javaExecClasspath.files}"
 
-        project.javaexec { JavaExecSpec jes ->
-            configureForkOptions(jes)
-            logger.debug "Running AsciidoctorJ instance with environment: ${jes.environment}"
-            jes.with {
-                main = AsciidoctorJavaExec.canonicalName
-                classpath = javaExecClasspath
-                args execConfigurationData.absolutePath
+        try {
+            project.javaexec { JavaExecSpec jes ->
+                configureForkOptions(jes)
+                logger.debug "Running AsciidoctorJ instance with environment: ${jes.environment}"
+                jes.with {
+                    main = AsciidoctorJavaExec.canonicalName
+                    classpath = javaExecClasspath
+                    args execConfigurationData.absolutePath
+                }
             }
+        } catch (GradleException e) {
+            throw new AsciidoctorRemoteExecutionException(
+                    'Remote Asciidoctor process failed to complete successfully',
+                    e
+            )
         }
 
         executorConfigurations

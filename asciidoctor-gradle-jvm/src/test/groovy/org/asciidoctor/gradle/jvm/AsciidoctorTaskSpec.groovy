@@ -15,9 +15,11 @@
  */
 package org.asciidoctor.gradle.jvm
 
+import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.ysb33r.grolifant.api.JavaForkOptions
 import spock.lang.Specification
 
 /**
@@ -429,12 +431,44 @@ class AsciidoctorTaskSpec extends Specification {
         task.attributeProviders != project.extensions.getByType(AsciidoctorJExtension).attributeProviders
     }
 
+    void 'Set processMode via string'() {
+c
+    }
+
     void 'Asciidoctor task with non-default name has different source directory'() {
         when:
         AsciidoctorTask task = project.tasks.create(name: 'kilowatt', type: AsciidoctorTask)
 
         then:
         task.sourceDir == project.file('src/docs/asciidocKilowatt')
+    }
+
+    void 'Configure fork options via closure'() {
+        when:
+        AsciidoctorTask task = asciidoctorTask {
+            forkOptions {
+                debug = true
+            }
+        }
+
+        then:
+        task.javaForkOptions.debug == true
+    }
+
+    void 'Configure fork options via an Action'() {
+        when:
+        def withOptions = new Action<JavaForkOptions>() {
+            void execute(JavaForkOptions javaForkOptions) {
+                javaForkOptions.minHeapSize = '123'
+            }
+        }
+
+        AsciidoctorTask task = asciidoctorTask {
+            forkOptions withOptions
+        }
+
+        then:
+        task.javaForkOptions.minHeapSize == '123'
     }
 
     AsciidoctorTask asciidoctorTask(Closure cfg) {

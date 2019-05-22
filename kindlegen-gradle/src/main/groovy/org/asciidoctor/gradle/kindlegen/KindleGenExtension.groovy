@@ -32,7 +32,9 @@ import static org.asciidoctor.gradle.kindlegen.KindleGenDownloader.KINDLEGEN_BAS
 /** Extension for configuring the path to {@code kindlegen} or a version which will then
  * be bootstrapped by Gradle.
  *
- * @since 2.0.0* @author Schalk W. Cronjé
+ * @author Schalk W. Cronjé
+ *
+ * @since 2.0.0
  */
 @CompileStatic
 class KindleGenExtension extends AbstractToolExtension {

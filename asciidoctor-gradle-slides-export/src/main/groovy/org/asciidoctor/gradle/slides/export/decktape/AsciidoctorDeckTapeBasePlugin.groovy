@@ -13,29 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.slides.export.deck2pdf
+package org.asciidoctor.gradle.slides.export.decktape
 
 import groovy.transform.CompileStatic
-import org.gradle.api.tasks.Input
-import org.gradle.workers.WorkerExecutor
+import org.gradle.api.Plugin
+import org.gradle.api.Project
 
-/** Runs a conversion form a slide deck to a collection of images
+/** Plugin that will create an extension for configuring decktape
+ * globally.
  *
  * @author Schalk W. Cronjé
  * @since 3.0
  */
 @CompileStatic
-class Deck2ImagesTask extends Deck2ExportBaseTask {
-
-    @Input
-    String fileNumberFormat = '%02d'
-
-    protected Deck2ImagesTask(WorkerExecutor we, final String imageFormat) {
-        super(we, imageFormat)
-    }
-
+class AsciidoctorDeckTapeBasePlugin implements Plugin<Project> {
     @Override
-    protected String formatOutputFilename(String filename) {
-        "${filename}-${fileNumberFormat}"
+    void apply(Project project) {
+        project.apply plugin: 'org.asciidoctor.base'
+        project.apply plugin: 'org.asciidoctor.js.nodejs-base'
+        project.extensions.create(DeckTapeExtension.NAME, DeckTapeExtension, project)
     }
 }
