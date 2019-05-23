@@ -28,6 +28,7 @@ import org.gradle.api.InvalidUserDataException
 import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileTree
 import org.gradle.api.tasks.Console
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
@@ -423,6 +424,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      *
      * @param m Map with new options
      */
+    @Input
     abstract void attributes(Map<String, Object> m)
 
     /** Shortcut method to access additional providers of attributes.
@@ -432,6 +434,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      *
      * @return List of attribute providers.
      */
+    @Internal
     abstract List<AsciidoctorAttributeProvider> getAttributeProviders()
 
     /** Gets the CopySpec for additional resources
@@ -628,6 +631,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      *
      * @return {@code true} if a strategy has been configured.
      */
+    @Internal
     protected boolean isBaseDirConfigured() {
         this.baseDir != null
     }
@@ -644,6 +648,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      *
      * @return
      */
+    @Internal
     abstract protected String getEngineName()
 
     private void checkForInvalidSourceDocuments() {

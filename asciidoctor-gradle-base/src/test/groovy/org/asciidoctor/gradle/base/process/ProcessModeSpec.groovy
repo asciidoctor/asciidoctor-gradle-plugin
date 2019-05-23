@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.base.slides;
+package org.asciidoctor.gradle.base.process
 
-import groovy.transform.Internal;
-import org.gradle.api.Task;
+import spock.lang.Specification
+import spock.lang.Unroll
 
-/** For tasks types that creates slides and can be auto-recognised
- * for specific slide-to-pdf converters when such plugins are applied.
- *
- * @since 2.2.0
- */
-public interface SlidesToExportAware extends Task {
-    Profile getProfile();
+class ProcessModeSpec extends Specification {
+    @Unroll
+    void '#mode is a valid ProcessMode'() {
+        expect:
+        ProcessMode.valueOf(mode)
+
+        where:
+        mode << ['JAVA_EXEC', 'IN_PROCESS', 'OUT_OF_PROCESS']
+    }
 }
