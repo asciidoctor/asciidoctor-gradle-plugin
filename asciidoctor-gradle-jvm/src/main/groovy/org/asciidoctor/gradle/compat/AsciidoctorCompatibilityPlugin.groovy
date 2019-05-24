@@ -154,7 +154,7 @@ class AsciidoctorCompatibilityPlugin implements Plugin<Project> {
                     case 'none':
                         break
                     default:
-                        project.logger.lifecycle 'You are using one or more deprecated Asciidoctor task or plugins. To help with migration run with --warnings=all'
+                        project.logger.lifecycle 'You are using one or more deprecated Asciidoctor task or plugins. To help with migration run with --warning-mode=all'
                 }
             } else {
                 if (project.gradle.startParameter.logLevel != LogLevel.QUIET) {
