@@ -762,7 +762,7 @@ viewDistance:: Number of slides away from the current that are visible.
 
 == Upgrading From Older Versions of Asciidoctor
 
-NOTE: To help with migration the old plugin will print a number of messages to help with a conversion. The amount of text is controlled via `--warnings-mode` in Gradle 4.5+. For Gradle 4.0-4.4 use `--info` to get the full list of recommendations. Use of `--warnings-mode=none`  (Gradle 4.5+) or `--quiet` (Gradle 4.0-4.4) will produce migration information.
+NOTE: To help with migration the old plugin will print a number of messages to help with a conversion. The amount of text is controlled via `--warning-mode` in Gradle 4.5+. For Gradle 4.0-4.4 use `--info` to get the full list of recommendations. Use of `--warning-mode=none`  (Gradle 4.5+) or `--quiet` (Gradle 4.0-4.4) will produce migration information.
 
 Firstly replace plugin `org.asciidoctor.convert` with `org.asciidoctor.jvm.convert`.
 
