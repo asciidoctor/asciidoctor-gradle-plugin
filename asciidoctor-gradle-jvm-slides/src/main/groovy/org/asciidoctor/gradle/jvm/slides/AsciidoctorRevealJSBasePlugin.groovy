@@ -17,16 +17,11 @@ package org.asciidoctor.gradle.jvm.slides
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.jvm.AsciidoctorJBasePlugin
-import org.asciidoctor.gradle.jvm.AsciidoctorJExtension
-import org.asciidoctor.gradle.jvm.gems.AsciidoctorGemPrepare
-import org.asciidoctor.gradle.jvm.gems.AsciidoctorGemSupportPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.ysb33r.grolifant.api.TaskProvider
 
-import static org.asciidoctor.gradle.jvm.gems.AsciidoctorGemSupportPlugin.GEMPREP_TASK
 import static org.asciidoctor.gradle.jvm.gems.AsciidoctorGemSupportPlugin.GEM_CONFIGURATION
+import static org.asciidoctor.gradle.jvm.slides.AsciidoctorJRevealJSTask.REVEALJS_GEM
 
 /** Adds an extension and task to create Reveal.js slides.
  *
@@ -35,23 +30,13 @@ import static org.asciidoctor.gradle.jvm.gems.AsciidoctorGemSupportPlugin.GEM_CO
 @CompileStatic
 class AsciidoctorRevealJSBasePlugin implements Plugin<Project> {
 
-    public final static String REVEALJS_GEM = 'asciidoctor-revealjs'
-
     @Override
     void apply(Project project) {
-        project.apply plugin: AsciidoctorGemSupportPlugin
-        project.apply plugin: AsciidoctorJBasePlugin
+        project.apply plugin: 'org.asciidoctor.jvm.gems'
+        project.apply plugin: 'org.asciidoctor.jvm.base'
 
         project.extensions.create(RevealJSPluginExtension.NAME, RevealJSPluginExtension, project)
         project.extensions.create(RevealJSExtension.NAME, RevealJSExtension, project)
-
-        AsciidoctorJExtension asciidoctorj = project.extensions.getByType(AsciidoctorJExtension)
-        TaskProvider<AsciidoctorGemPrepare> gemPrepare = TaskProvider.taskByName(project, GEMPREP_TASK)
-
-        asciidoctorj.with {
-            requires(REVEALJS_GEM)
-            gemPaths { gemPrepare.get().outputDir }
-        }
 
         addGems(project)
     }
