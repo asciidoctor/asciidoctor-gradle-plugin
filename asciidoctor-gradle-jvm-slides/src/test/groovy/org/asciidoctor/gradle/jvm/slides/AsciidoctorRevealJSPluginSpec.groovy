@@ -26,7 +26,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
 import static org.asciidoctor.gradle.jvm.gems.AsciidoctorGemSupportPlugin.GEM_CONFIGURATION
-import static org.asciidoctor.gradle.jvm.slides.AsciidoctorRevealJSBasePlugin.REVEALJS_GEM
+import static org.asciidoctor.gradle.jvm.slides.AsciidoctorJRevealJSTask.REVEALJS_GEM
 import static org.asciidoctor.gradle.jvm.slides.AsciidoctorRevealJSPlugin.REVEALJS_TASK
 
 class AsciidoctorRevealJSPluginSpec extends Specification {
