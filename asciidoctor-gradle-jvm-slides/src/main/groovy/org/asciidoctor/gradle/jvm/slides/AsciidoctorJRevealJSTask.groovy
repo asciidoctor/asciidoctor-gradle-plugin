@@ -21,6 +21,8 @@ import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.base.slides.Profile
 import org.asciidoctor.gradle.base.slides.SlidesToExportAware
 import org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask
+import org.asciidoctor.gradle.jvm.AsciidoctorJExtension
+import org.asciidoctor.gradle.jvm.gems.AsciidoctorGemPrepare
 import org.gradle.api.Action
 import org.gradle.api.file.CopySpec
 
@@ -32,7 +34,9 @@ import org.ysb33r.grolifant.api.Version
 
 import javax.inject.Inject
 
+import static org.asciidoctor.gradle.jvm.gems.AsciidoctorGemSupportPlugin.GEMPREP_TASK
 import static org.asciidoctor.gradle.jvm.slides.RevealJSExtension.FIRST_VERSION_WITH_PLUGIN_SUPPORT
+import static org.ysb33r.grolifant.api.TaskProvider.*
 
 /**
  * @since 2.0
@@ -42,6 +46,7 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
 
     public static final String PLUGIN_CONFIGURATION_FILENAME = 'revealjs-plugin-configuration.js'
     public static final String PLUGIN_LIST_FILENAME = 'revealjs-plugins.js'
+    public final static String REVEALJS_GEM = 'asciidoctor-revealjs'
 
     private static final String BACKEND_NAME = 'revealjs'
 
@@ -62,6 +67,14 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
         this.revealjsOptions = new RevealJSOptions(project)
         configuredOutputOptions.backends = [BACKEND_NAME]
         copyAllResources()
+        org.ysb33r.grolifant.api.TaskProvider<AsciidoctorGemPrepare> gemPrepare = taskByName(project, GEMPREP_TASK)
+
+        AsciidoctorJExtension asciidoctorj = project.extensions.getByType(AsciidoctorJExtension)
+
+        asciidoctorj.with {
+            requires(REVEALJS_GEM)
+            gemPaths { gemPrepare.get().outputDir }
+        }
 
         inputs.file( { RevealJSOptions opt -> opt.highlightJsThemeIfFile }.curry(this.revealjsOptions) ).optional()
         inputs.file( { RevealJSOptions opt -> opt.parallaxBackgroundImageIfFile }.
