@@ -33,7 +33,7 @@ class AsciidoctorRevealJSPlugin implements Plugin<Project> {
     @Override
     @SuppressWarnings('LineLength')
     void apply(Project project) {
-        project.apply plugin: 'org.asciidoctor.jvm.revealjs.base'
+        project.apply plugin: AsciidoctorRevealJSBasePlugin
 
         AsciidoctorGemPrepare gemPrepare = (AsciidoctorGemPrepare)(project.tasks.getByName(AsciidoctorGemSupportPlugin.GEMPREP_TASK))
         AsciidoctorJRevealJSTask revealTask = project.tasks.create(REVEALJS_TASK, AsciidoctorJRevealJSTask)

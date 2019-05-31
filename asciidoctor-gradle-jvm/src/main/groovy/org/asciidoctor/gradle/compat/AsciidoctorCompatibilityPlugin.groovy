@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.compat
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.AsciidoctorTask
+import org.asciidoctor.gradle.base.AsciidoctorBasePlugin
 import org.asciidoctor.gradle.jvm.AsciidoctorJBasePlugin
 import org.gradle.api.Action
 import org.gradle.api.GradleException
@@ -71,7 +72,7 @@ class AsciidoctorCompatibilityPlugin implements Plugin<Project> {
             }
         }
 
-        project.apply plugin: 'org.asciidoctor.base'
+        project.apply plugin: AsciidoctorBasePlugin
 
         AsciidoctorExtension extension = project.extensions.create(ASCIIDOCTORJ, AsciidoctorExtension, project)
 
