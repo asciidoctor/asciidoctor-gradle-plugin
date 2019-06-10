@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle.jvm
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.base.AsciidoctorBasePlugin
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -37,7 +38,7 @@ class AsciidoctorJBasePlugin implements Plugin<Project> {
 
     void apply(Project project) {
         project.with {
-            apply plugin: 'org.asciidoctor.base'
+            apply plugin: AsciidoctorBasePlugin
 
             AsciidoctorJExtension asciidoctorj = extensions.create(
                 AsciidoctorJExtension.NAME,
