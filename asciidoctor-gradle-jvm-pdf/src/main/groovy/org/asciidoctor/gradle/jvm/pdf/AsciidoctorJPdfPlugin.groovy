@@ -40,7 +40,7 @@ class AsciidoctorJPdfPlugin implements Plugin<Project> {
 
     void apply(Project project) {
         project.with {
-            apply plugin: 'org.asciidoctor.jvm.base'
+            apply plugin: AsciidoctorJBasePlugin
 
             extensions.create(AsciidoctorPdfThemesExtension.NAME, AsciidoctorPdfThemesExtension, project)
             extensions.getByType(AsciidoctorJExtension).modules.pdf.use()

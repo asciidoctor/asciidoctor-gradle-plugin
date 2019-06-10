@@ -30,7 +30,7 @@ import static org.ysb33r.grolifant.api.TaskProvider.registerTask
 class AsciidoctorJPlugin implements Plugin<Project> {
 
     void apply(Project project) {
-        project.apply plugin: 'org.asciidoctor.jvm.base'
+        project.apply plugin: AsciidoctorJBasePlugin
 
         Action asciidoctorDefaults = new Action<AsciidoctorTask>() {
             @Override

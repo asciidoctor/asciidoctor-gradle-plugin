@@ -30,7 +30,7 @@ class AsciidoctorNodeJSPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         project.with {
-            apply plugin: 'org.asciidoctor.js.base'
+            apply plugin: AsciidoctorNodeJSBasePlugin
 
             Action<AsciidoctorTask> asciidoctorDefaults = new Action<AsciidoctorTask>() {
                 @Override
