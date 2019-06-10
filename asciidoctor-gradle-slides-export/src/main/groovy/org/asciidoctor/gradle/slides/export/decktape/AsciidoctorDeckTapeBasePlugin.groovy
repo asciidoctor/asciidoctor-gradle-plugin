@@ -16,6 +16,8 @@
 package org.asciidoctor.gradle.slides.export.decktape
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.base.AsciidoctorBasePlugin
+import org.asciidoctor.gradle.js.nodejs.core.NodeJSBasePlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -29,8 +31,8 @@ import org.gradle.api.Project
 class AsciidoctorDeckTapeBasePlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
-        project.apply plugin: 'org.asciidoctor.base'
-        project.apply plugin: 'org.asciidoctor.js.nodejs-base'
+        project.apply plugin: AsciidoctorBasePlugin
+        project.apply plugin: NodeJSBasePlugin
         project.extensions.create(DeckTapeExtension.NAME, DeckTapeExtension, project)
     }
 }

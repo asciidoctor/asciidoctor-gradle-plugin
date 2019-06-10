@@ -17,6 +17,8 @@ package org.asciidoctor.gradle.jvm.slides
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.jvm.AsciidoctorJBasePlugin
+import org.asciidoctor.gradle.jvm.gems.AsciidoctorGemSupportPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -32,8 +34,8 @@ class AsciidoctorRevealJSBasePlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        project.apply plugin: 'org.asciidoctor.jvm.gems'
-        project.apply plugin: 'org.asciidoctor.jvm.base'
+        project.apply plugin: AsciidoctorGemSupportPlugin
+        project.apply plugin: AsciidoctorJBasePlugin
 
         project.extensions.create(RevealJSPluginExtension.NAME, RevealJSPluginExtension, project)
         project.extensions.create(RevealJSExtension.NAME, RevealJSExtension, project)
