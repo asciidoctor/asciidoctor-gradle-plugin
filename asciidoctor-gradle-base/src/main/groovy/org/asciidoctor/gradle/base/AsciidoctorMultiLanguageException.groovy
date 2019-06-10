@@ -18,13 +18,11 @@ package org.asciidoctor.gradle.base
 import groovy.transform.CompileStatic
 import groovy.transform.InheritConstructors
 
-/** Exception when an Asciidoctor module is not found.
- *
+/**
+ * @since 3.0 (Moved from org.asciidoctor.gradle.jvm)
  * @author Schalk W. Cronjé
- *
- * @since 3.0.0
  */
 @CompileStatic
 @InheritConstructors
-class ModuleNotFoundException extends RuntimeException {
+class AsciidoctorMultiLanguageException extends RuntimeException {
 }

@@ -32,4 +32,13 @@ interface BaseDirStrategy {
      * @return Base directory
      */
     File getBaseDir()
+
+    /** Base directory location for a specific language.
+     *
+     * @param lang Source language
+     * @return Base directory
+     *
+     * @since 3.0.0
+     */
+    File getBaseDir(String lang)
 }

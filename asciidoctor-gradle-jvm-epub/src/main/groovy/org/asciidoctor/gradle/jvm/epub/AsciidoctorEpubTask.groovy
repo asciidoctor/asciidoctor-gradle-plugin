@@ -141,11 +141,13 @@ echo %1 %2 %3 %4 55 %6 %7 %8 %9 > ${tmpKindleGenLogFileForWindows}
     @Override
     protected Map<String, ExecutorConfiguration> getExecutorConfigurations(
         File workingSourceDir,
-        Set<File> sourceFiles
+        Set<File> sourceFiles,
+        Optional<String> lang
     ) {
         Map<String, ExecutorConfiguration> executorConfigurations = super.getExecutorConfigurations(
             workingSourceDir,
-            sourceFiles
+            sourceFiles,
+            lang
         )
 
         final Closure backendName = { String fmt ->

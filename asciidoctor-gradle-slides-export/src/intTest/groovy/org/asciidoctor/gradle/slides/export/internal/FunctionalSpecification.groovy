@@ -27,8 +27,8 @@ import spock.lang.Specification
 class FunctionalSpecification extends Specification {
 
     static final String TEST_PROJECTS_DIR = System.getProperty(
-            'TEST_PROJECTS_DIR',
-            './src/intTest/projects'
+        'TEST_PROJECTS_DIR',
+        './src/intTest/projects'
     )
     static final String TEST_REPO_DIR = FunctionalTestSetup.offlineRepo.absolutePath
     static final OperatingSystem OS = OperatingSystem.current()
@@ -36,10 +36,23 @@ class FunctionalSpecification extends Specification {
     @Rule
     TemporaryFolder testProjectDir
 
+    File projectDir
+    File testkitDir
+    boolean withBuildScan = false
+
+    void setup() {
+        projectDir = new File(testProjectDir.root, 'test-project')
+        testkitDir = new File(testProjectDir.root, 'testkit')
+
+        projectDir.mkdirs()
+        testkitDir.mkdirs()
+    }
+
     GradleRunner getGradleRunner(List<String> taskNames = ['asciidoctor']) {
         GradleRunner.create()
-            .withProjectDir(testProjectDir.root)
-            .withArguments(taskNames)
+            .withProjectDir(projectDir)
+            .withTestKitDir(testkitDir)
+            .withArguments(taskNames + (withBuildScan ? ['--scan'] : []))
             .withPluginClasspath()
             .forwardOutput()
             .withDebug(true)
@@ -47,7 +60,7 @@ class FunctionalSpecification extends Specification {
 
     @SuppressWarnings(['BuilderMethodWithSideEffects'])
     void createTestProject(String docGroup) {
-        FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, docGroup), testProjectDir.root)
+        FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, docGroup), projectDir)
     }
 
     @SuppressWarnings('LineLength')

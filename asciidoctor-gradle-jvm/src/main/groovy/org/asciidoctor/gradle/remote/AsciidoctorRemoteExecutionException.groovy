@@ -27,5 +27,5 @@ import groovy.transform.InheritConstructors
  */
 @CompileStatic
 @InheritConstructors
-class AsciidoctorRemoteExecutionException extends Exception {
+class AsciidoctorRemoteExecutionException extends RuntimeException {
 }
