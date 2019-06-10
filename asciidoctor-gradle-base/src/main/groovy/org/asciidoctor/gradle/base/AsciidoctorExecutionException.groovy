@@ -16,20 +16,14 @@
 package org.asciidoctor.gradle.base
 
 import groovy.transform.CompileStatic
-import org.gradle.api.GradleException
+import groovy.transform.InheritConstructors
 
 /**
  * @since 3.0 (Moved from org.asciidoctor.gradle.jvm)
  * @author Schalk W. Cronjé
  */
 @CompileStatic
-class AsciidoctorExecutionException extends GradleException {
+@InheritConstructors
+class AsciidoctorExecutionException extends RuntimeException {
 
-    AsciidoctorExecutionException(final String msg) {
-        super(msg)
-    }
-
-    AsciidoctorExecutionException(final String msg, Throwable t) {
-        super(msg, t)
-    }
 }
