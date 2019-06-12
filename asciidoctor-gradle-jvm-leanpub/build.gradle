@@ -1,0 +1,20 @@
+dependencies {
+    compile project(':asciidoctor-gradle-jvm')
+
+    intTestOfflineRepo "org.asciidoctor:asciidoctorj:${compileOnlyAsciidoctorJVersion}"
+    intTestOfflineRepo "org.asciidoctor:asciidoctor-leanpub-markdown:${downloadOnlyLeanpubVersion}"
+}
+
+intTest {
+    systemProperties TEST_PROJECTS_DIR: file('src/intTest/projects')
+}
+
+configurePlugin 'org.asciidoctor.jvm.leanpub',
+    'AsciidoctorJ Leanpub Plugin',
+    'Asciidoctor task for creating content suitable for Leanpub',
+    ['asciidoctorj', 'leanpub', 'markdown', 'markuva']
+
+configurePlugin 'org.asciidoctor.jvm.leanpub.dropbox-copy',
+    'Dropbox support for AsciidoctorJ Leanpub Plugin',
+    'Provides local Dropbox support for Asciidoctor Leanpub plugin',
+    ['asciidoctorj', 'leanpub', 'markdown', 'markuva', 'dropbox']
