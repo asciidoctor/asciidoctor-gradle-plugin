@@ -37,10 +37,22 @@ class BaseDirFollowsProject implements BaseDirStrategy {
 
     /** Base directory location.
      *
-     * @return Base directory
+     * @return Base directory.
      */
     @Override
     File getBaseDir() {
         project.projectDir
+    }
+
+    /** Base directory location.
+     *
+     * @param lang Ignored
+     * @return Base directory.
+     *
+     * @since 3.0.0
+     */
+    @Override
+    File getBaseDir(String lang) {
+        baseDir
     }
 }

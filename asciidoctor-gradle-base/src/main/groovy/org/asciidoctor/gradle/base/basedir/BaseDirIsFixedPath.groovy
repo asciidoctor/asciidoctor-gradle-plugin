@@ -43,4 +43,16 @@ class BaseDirIsFixedPath implements BaseDirStrategy {
     File getBaseDir() {
         location.get()
     }
+
+    /** Base directory location for a specific language.
+     *
+     * @param lang Source language
+     * @return Original base directory plus language subdirectory.
+     *
+     * @since 3.0.0
+     */
+    @Override
+    File getBaseDir(String lang) {
+        new File(baseDir, lang)
+    }
 }

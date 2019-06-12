@@ -93,8 +93,11 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
     @TaskAction
     void processAsciidocSources() {
         validateConditions()
-        Workspace workspace = prepareWorkspace()
-        runWithSubprocess(workspace.workingSourceDir)
+
+        languagesAsOptionals.each { Optional<String> lang ->
+            Workspace workspace = lang.present ? prepareWorkspace(lang.get()) : prepareWorkspace()
+            runWithSubprocess(workspace.workingSourceDir, lang)
+        }
     }
 
     /** Initialises the core an Asciidoctor task
@@ -146,44 +149,45 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
 
     @SuppressWarnings('UnnecessaryGetter')
     private AsciidoctorJSRunner getAsciidoctorJSRunnerFor(
-            final AsciidoctorJSRunner.FileLocations asciidoctorjsExe,
-            final String backend,
-            final Map<String, String> attributes
+        final AsciidoctorJSRunner.FileLocations asciidoctorjsExe,
+        final String backend,
+        final Map<String, String> attributes,
+        Optional<String> lang
     ) {
         new AsciidoctorJSRunner(
-                nodejs.resolvableNodeExecutable.executable,
-                project,
-                asciidoctorjsExe,
-                backend,
-                asciidoctorjs.safeMode,
-                getBaseDir(),
-                getOutputDirFor(backend),
-                attributes,
-                asciidoctorjs.requires,
-                Optional.empty(),
-                logDocuments
+            nodejs.resolvableNodeExecutable.executable,
+            project,
+            asciidoctorjsExe,
+            backend,
+            asciidoctorjs.safeMode,
+            lang.present ? getBaseDir(lang.get()) : getBaseDir(),
+            lang.present ? getOutputDirFor(backend, lang.get()) : getOutputDirFor(backend),
+            attributes,
+            asciidoctorjs.requires,
+            Optional.empty(),
+            logDocuments
         )
     }
 
     private AsciidoctorJSRunner.FileLocations resolveAsciidoctorjsEnvironment() {
         File home = asciidoctorjs.toolingWorkDir
         initPackageJson(
-                home,
-                "${project.name}-${name}",
-                project,
-                nodejs,
-                npm
+            home,
+            "${project.name}-${name}",
+            project,
+            nodejs,
+            npm
         )
 
         asciidoctorjs.configuration.resolve()
         new AsciidoctorJSRunner.FileLocations(
-                executable: new File(home, 'node_modules/asciidoctor/bin/asciidoctor'),
-                workingDir: home
+            executable: new File(home, 'node_modules/asciidoctor/bin/asciidoctor'),
+            workingDir: home
         )
     }
 
     @SuppressWarnings('UnnecessaryGetter')
-    private void runWithSubprocess(final File workingSourceDir) {
+    private void runWithSubprocess(final File workingSourceDir, Optional<String> lang) {
         logger.info 'Running Asciidoctor.js with subprocess.'
 
         Map<String, List<File>> conversionGroups = sourceFileGroupedByRelativePath
@@ -194,13 +198,14 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
         for (String backend : configuredOutputOptions.backends) {
             conversionGroups.each { String relativePath, List<File> sourceGroup ->
                 getAsciidoctorJSRunnerFor(
-                        asciidoctorjsEnv,
-                        backend,
-                        finalAttributes
+                    asciidoctorjsEnv,
+                    backend,
+                    finalAttributes,
+                    lang
                 ).convert(sourceGroup.toSet(), relativePath)
             }
             if (copyResources.present && (copyResources.get().empty || backend in copyResources.get())) {
-                copyResourcesByBackend(backend, workingSourceDir, getOutputDirFor(backend))
+                copyResourcesByBackend(backend, workingSourceDir, getOutputDirFor(backend), lang)
             }
         }
     }

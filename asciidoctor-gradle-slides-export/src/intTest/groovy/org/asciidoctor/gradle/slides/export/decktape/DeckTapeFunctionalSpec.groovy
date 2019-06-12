@@ -58,9 +58,10 @@ class DeckTapeFunctionalSpec extends FunctionalSpecification {
     }
 
     @Unroll
-    @Timeout(120)
+    @Timeout(240)
     void 'Standalone asciidoctor slide task can be exported with #profile profile'() {
         setup:
+        withBuildScan = true
         createTestProject('generic')
         getBuildFile("""
         import org.asciidoctor.gradle.slides.export.decktape.DeckTapeTask
@@ -86,7 +87,7 @@ class DeckTapeFunctionalSpec extends FunctionalSpecification {
         getGradleRunner(['standalonePdfConverter', '-i']).build()
 
         then:
-        new File(testProjectDir.root, 'build/generic/index.pdf').exists()
+        new File(projectDir, 'build/generic/index.pdf').exists()
 
         where:
         profile     | profileDSL
@@ -96,10 +97,11 @@ class DeckTapeFunctionalSpec extends FunctionalSpecification {
 
     @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/381')
     @IgnoreIf({ OperatingSystem.current().isWindows() })
-    @Timeout(120)
+    @Timeout(240)
     @Unroll
     void 'Standalone task can also export to #format in addition to PDF'() {
         setup:
+        withBuildScan = true
         createTestProject('generic')
         getBuildFile("""
         import org.asciidoctor.gradle.slides.export.decktape.DeckTapeTask
@@ -129,7 +131,7 @@ class DeckTapeFunctionalSpec extends FunctionalSpecification {
         getGradleRunner(['standalonePdfConverter', '-i']).build()
 
         then:
-        new File(testProjectDir.root, "build/generic/index_1_1024x768.${format}").exists()
+        new File(projectDir, "build/generic/index_1_1024x768.${format}").exists()
 
         where:
         format << ['jpg', 'png']
@@ -164,13 +166,13 @@ class DeckTapeFunctionalSpec extends FunctionalSpecification {
 
         when:
         BuildResult result = getGradleRunner([
-                '-i',
-                'standalonePdfConverter',
-                '--width=1024',
-                '--height=768',
-                '--range=2-3',
-                '--pause=1000',
-                '--load-pause=500'
+            '-i',
+            'standalonePdfConverter',
+            '--width=1024',
+            '--height=768',
+            '--range=2-3',
+            '--pause=1000',
+            '--load-pause=500'
         ]).build()
 
         then:
@@ -191,21 +193,23 @@ class DeckTapeFunctionalSpec extends FunctionalSpecification {
         """)
 
         when:
-        getGradleRunner(['-i', 'asciidoctorRevealJsExport', '--scan']).build()
+        getGradleRunner(['-i', 'asciidoctorRevealJsExport']).build()
 
         then:
-        new File(testProjectDir.root, 'build/docs/asciidocRevealJs/index.html').exists()
-        new File(testProjectDir.root, 'build/docs/asciidocRevealJsExport/index.pdf').exists()
+        new File(projectDir, 'build/docs/asciidocRevealJs/index.html').exists()
+        new File(projectDir, 'build/docs/asciidocRevealJsExport/index.pdf').exists()
     }
 
     private File getBuildFile(String extraContent, boolean baseOnly = false) {
-        File buildFile = testProjectDir.newFile('build.gradle')
+        File buildFile = new File(projectDir, 'build.gradle')
         buildFile << """
             plugins {
                 id 'org.asciidoctor.jvm.revealjs'
                 id 'org.asciidoctor.decktape${baseOnly ? '.base' : ''}'
             }
-            
+ 
+            ${buildScanTerm}
+
             ${offlineRepositories}
             
             ${extraContent}
@@ -215,6 +219,19 @@ class DeckTapeFunctionalSpec extends FunctionalSpecification {
             }
         """
         buildFile
+    }
+
+    private String getBuildScanTerm() {
+        if (withBuildScan) {
+            '''
+            buildScan {
+                termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+                termsOfServiceAgree = 'yes'
+            }           
+            '''
+        } else {
+            ''
+        }
     }
 
     private String getChromeSandbox() {

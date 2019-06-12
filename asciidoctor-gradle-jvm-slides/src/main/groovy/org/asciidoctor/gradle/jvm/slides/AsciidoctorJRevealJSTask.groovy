@@ -290,14 +290,16 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
     }
 
     /** Gets the CopySpec for additional resources
-     * Enhances the default operation from {@link AbstractAsciidoctorTask#getResourceCopySpec}
-     * to also include any custom background images and themes.
+     * If {@code resources} was never called, it will return a default CopySpec otherwise it will return the
+     * one built up via successive calls to {@code resources}
      *
+     * @param lang Language to to apply to or empty for no-language support.
      * @return A{@link CopySpec}. Never {@code null}.
      */
     @Override
-    protected CopySpec getResourceCopySpec() {
-        CopySpec rcs = super.resourceCopySpec
+    @SuppressWarnings('UnnecessaryPackageReference')
+    protected CopySpec getResourceCopySpec(java.util.Optional<String> lang) {
+        CopySpec rcs = super.getResourceCopySpec(lang)
         revealjsOptions.enhanceCopySpec(rcs)
         rcs
     }

@@ -344,6 +344,7 @@ copyAllResources:: Copy all resources to the output directory
 copyNoResources:: Do not copy any resources to the output directory
 copyResourcesOnlyIf:: Only copy resources if the backend matches the listed backend.
 inProcess:: Specifies whether Asciidoctor conversions should be run in-process or out-of-process. Default: `true` (in-process).
+languages:: Invoke source language support but specifying one or more languages.
 logDocuments:: Specifies if documents being processed should be logged on console. Type: boolean. Default: `false`.
 options:: A shortcut to`asciidoctorj.options`.
 outputDir:: where generated docs go.
@@ -481,12 +482,42 @@ resources {
 }
 ----
 
-If you do not want this behaviour, then it can be turned off by doing
+In case of languages the defeault behvaiour is
+
+[source,groovy]
+.build.gradle
+----
+resources {
+  from(new File(sourceDir,"${langName}") {
+    include 'images/**'
+  }
+}
+----
+
+If you do not want either of these two behaviours, then it can be turned off by doing
 
 [source,groovy]
 .build.gradle
 ----
 copyNoResources()
+----
+
+If you are using multiple languages and you have identical resource patterns for each languages within `sourceDir/${lang}` you need to explictly declare those on a per-language basis:
+
+[source,groovy]
+.build.gradle
+----
+resources 'en', {
+  from("${sourceDir}/en") {
+    include 'images/**'
+  }
+}
+
+resources 'es', {
+  from("${sourceDir}/es") {
+    include 'images/**'
+  }
+}
 ----
 
 === Choosing a Process Mode
@@ -519,6 +550,31 @@ asciidctor {
 === Docinfo processing
 
 When using the `docinfo` attribute with `html` and `docbook` backends, it is recommended that `baseDirFollowsSourceDir()` is always set. This will ensure that the docinfo files are picked up correctly from the same directory that is the source directory.
+
+=== Source language support
+
+Some scenarios work on a source set of docuemtns in a primary language and then translations of those sources into other languages. The Gradle plugin simplifies this scenario by allowing a structure such as
+
+[source]
+----
+│   └── src
+│       ├── asciidoc
+│       │   └── en
+│       │       └── index.adoc
+│       │   └── es
+│       │       └── index.adoc
+----
+
+This can be enabled in the DSL by doing
+
+[source,groovy]
+----
+asciidoctor {
+    languages 'en', 'es'
+}
+----
+
+Gradle will then process both the `en` and the `es` source set and output to the output directory using the same languages names. Intermediate working directories and multiple backends are also covered.
 
 == The New AsciidoctorJ Plugin
 
