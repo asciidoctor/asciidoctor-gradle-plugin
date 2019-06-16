@@ -43,6 +43,10 @@ class MultiLanguageFunctionalSpec extends FunctionalSpecification {
             languages 'en', 'es'
 
             sourceDir 'src/docs/asciidoc'
+
+            sources {
+                include 'sample.asciidoc'
+            }
         }
         """)
 
