@@ -263,8 +263,11 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
 
     /** Returns a FileTree containing all of the source documents
      *
-     * @return If{@code sources} was never called then all asciidoc source files below {@code sourceDir} will
-     * be included.
+     * If a filter with {@link #sources} was never set then all asciidoc source files
+     * below {@link #setSourceDir} will be included. If multiple languages are used all
+     * of the language source sets be will included.
+     *
+     * @return Applicable source trees.
      *
      * @since 1.5.1
      */
@@ -272,18 +275,34 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
     @SkipWhenEmpty
     @PathSensitive(RELATIVE)
     FileTree getSourceFileTree() {
-        getSourceFileTreeFrom(sourceDir)
+        if (languages.empty) {
+            getSourceFileTreeFrom(sourceDir)
+        } else {
+            languages.sum { lang ->
+                getLanguageSourceFileTree(lang)
+            } as FileTree
+        }
     }
 
     /** Returns a FileTree containing all of the secondary source documents.
      *
-     * @return Collection of secondary files
+     * If a filter with {@link #secondarySources} was never set then all asciidoc source files
+     * below {@link #setSourceDir} will be included. If multiple languages are used all
+     * of the language secondary source sets be will included.
+     *
+     * @return Collection of secondary source files
      *
      */
     @InputFiles
     @PathSensitive(RELATIVE)
     FileTree getSecondarySourceFileTree() {
-        getSecondarySourceFileTreeFrom(sourceDir)
+        if (languages.empty) {
+            getSecondarySourceFileTreeFrom(sourceDir)
+        } else {
+            languages.sum { lang ->
+                getLanguageSecondarySourceFileTree(lang)
+            } as FileTree
+        }
     }
 
     /** Add to the CopySpec for extra files. The destination of these files will always have a parent directory

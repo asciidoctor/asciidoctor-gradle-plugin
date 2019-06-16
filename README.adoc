@@ -482,7 +482,7 @@ resources {
 }
 ----
 
-In case of languages the defeault behvaiour is
+In case of languages the default behvaiour is
 
 [source,groovy]
 .build.gradle
