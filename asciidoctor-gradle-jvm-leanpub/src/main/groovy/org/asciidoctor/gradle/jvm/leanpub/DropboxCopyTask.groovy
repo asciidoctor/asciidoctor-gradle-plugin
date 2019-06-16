@@ -76,7 +76,7 @@ class DropboxCopyTask extends DefaultTask {
         this.bookPath != null ? StringUtils.stringize(this.bookPath) : null
     }
 
-    /** Sets the relative path of the eanpub book in Dropbox.
+    /** Sets the relative path of the Leanpub book in Dropbox.
      *
      * @param p Relative path of Leanpub as synchronised to Dropbox.
      */
