@@ -52,6 +52,8 @@ NOTE: This started as a port of the {asciidoctor-maven-plugin}[Asciidoctor Maven
 
 NOTE: This collection of plugins requires at least Gradle 4.0, JDK 8.0 and AsciidoctorJ 1.6.0 to run. If you need prior Gradle,  JDK or AsciidoctorJ support please use a plugin from the 1.5.x or 1.6.x release series.
 
+NOTE: The 2.x range of these plugins are NOT compatible with https://github.com/spring-projects/spring-restdocs[Spring REST Docs]. If you have to use the latter then stick to the older v1.5.11 or v1.5.12 versions and do not manually set the version of AsciidoctorJ in your build script.
+
 == Known Issues
 
 This is still an alpha development, so expect some issues. These are the main ones we know about:
