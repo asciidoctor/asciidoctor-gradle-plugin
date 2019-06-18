@@ -48,6 +48,8 @@ NOTE: This is a port of the {asciidoctor-maven-plugin}[Asciidoctor Maven Plugin]
 
 NOTE: The https://github.com/gradle/kotlin-dsl[Gradle Kotlin DSL] is not properly supported by this plugin yet but it can be used with the GKD. Examples and workarounds are described below.
 
+NOTE: The 1.6.x versions of this plugin is NOT comatible with https://github.com/spring-projects/spring-restdocs[Spring REST Docs]. Use v1.5.11 or v1.5.12 of this plugin instead and do not manually set the version of AsciidoctorJ in your build script.
+
 ifndef::env-site[]
 == Contributing
 
