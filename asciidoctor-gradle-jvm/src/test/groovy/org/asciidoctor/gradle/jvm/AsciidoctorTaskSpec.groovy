@@ -17,8 +17,12 @@ package org.asciidoctor.gradle.jvm
 
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
 import org.gradle.testfixtures.ProjectBuilder
+import spock.lang.Issue
 import spock.lang.Specification
+
+import java.util.concurrent.Callable
 
 /**
  * Asciidoctor task specification
@@ -225,8 +229,8 @@ class AsciidoctorTaskSpec extends Specification {
         when:
         asciidoctorTask {
             options = [
-                    doctype   : 'book',
-                    attributes: 'toc=right source-highlighter=coderay toc-title=Table\\ of\\ Contents'
+                doctype   : 'book',
+                attributes: 'toc=right source-highlighter=coderay toc-title=Table\\ of\\ Contents'
             ]
         }
 
@@ -238,9 +242,9 @@ class AsciidoctorTaskSpec extends Specification {
         when:
         asciidoctorTask {
             options = [doctype: 'book', attributes: [
-                    'toc=right',
-                    'source-highlighter=coderay',
-                    'toc-title=Table of Contents'
+                'toc=right',
+                'source-highlighter=coderay',
+                'toc-title=Table of Contents'
             ]]
         }
 
@@ -427,6 +431,27 @@ class AsciidoctorTaskSpec extends Specification {
 
         then:
         task.attributeProviders != project.extensions.getByType(AsciidoctorJExtension).attributeProviders
+    }
+
+    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/405')
+    void 'Configuration that be set as a provider'() {
+        when:
+        project.allprojects {
+            configurations {
+                asciidoctorExample
+            }
+        }
+
+        AsciidoctorTask task = asciidoctorTask {
+            configurations = [project.provider({
+                project.configurations.asciidoctorExample
+            } as Callable<Configuration>)]
+        }
+
+        task.configurations
+
+        then:
+        noExceptionThrown()
     }
 
     AsciidoctorTask asciidoctorTask(Closure cfg) {
