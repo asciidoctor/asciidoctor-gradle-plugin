@@ -65,7 +65,7 @@ This is still an alpha development, so expect some issues. These are the main on
 
 == Installation
 
-To start you need to use one of the plugins from the following Gradle snipper
+To start you need to use one of the plugins from the following Gradle snippet
 
 [source,groovy]
 [subs=attributes+]
@@ -83,7 +83,7 @@ For the {kotlindsl} the format is slightly different:
 .build.gradle.kts
 ----
 plugins {
-    id("org.asciidoctor.convert") version "{version-published}"
+    id("org.asciidoctor.jvm.convert") version "{version-published}"
 }
 ----
 
