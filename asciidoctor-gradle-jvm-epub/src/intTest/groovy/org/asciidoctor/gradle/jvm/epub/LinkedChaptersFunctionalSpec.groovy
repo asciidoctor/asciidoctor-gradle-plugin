@@ -16,13 +16,11 @@
 package org.asciidoctor.gradle.jvm.epub
 
 import org.asciidoctor.gradle.jvm.epub.internal.FunctionalSpecification
-import org.asciidoctor.gradle.testfixtures.jvm.JRubyTestVersions
 import org.gradle.testkit.runner.BuildResult
 import spock.lang.Issue
+import spock.lang.PendingFeature
 
 class LinkedChaptersFunctionalSpec extends FunctionalSpecification {
-
-    final static String JRUBY_TEST_VERSION = JRubyTestVersions.AJ20_SAFE_MAXIMUM
 
     void setup() {
         createTestProject('issue-409-link-regression')
@@ -32,17 +30,18 @@ class LinkedChaptersFunctionalSpec extends FunctionalSpecification {
     void 'Linked chapters should not produce a warning'() {
         given:
         getBuildFile("""
+        
         asciidoctorEpub {
             asciidoctorj {
                 fatalWarnings ~/.*invalid reference to (unknown )?anchor.*/
             }
-
+            
             ebookFormats EPUB3
 
             sources {
                 include 'epub3.adoc'
             }
-
+            
             baseDirFollowsSourceDir()
         }
         """)
