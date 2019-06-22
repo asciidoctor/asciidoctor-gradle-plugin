@@ -26,6 +26,7 @@ class LinkedChaptersFunctionalSpec extends FunctionalSpecification {
         createTestProject('issue-409-link-regression')
     }
 
+    @PendingFeature
     @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/408')
     void 'Linked chapters should not produce a warning'() {
         given:
