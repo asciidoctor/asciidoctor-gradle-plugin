@@ -8,7 +8,7 @@ apply from: "${System.getProperty('OFFLINE_REPO')}/repositories.gradle"
 
 // tag::revealjs-basics[]
 repositories {
-    maven { url 'http://rubygems-proxy.torquebox.org/releases' } // <2>
+    ruby.gems() // <2>
 }
 
 revealjsPlugins {

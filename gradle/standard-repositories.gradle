@@ -3,5 +3,9 @@ repositories {
     mavenCentral()
     if(version.endsWith('-SNAPSHOT')) {
         mavenLocal()
+
+        repositories {
+            maven { url "https://dl.bintray.com/jruby-gradle/plugins" }
+        }
     }
 }
