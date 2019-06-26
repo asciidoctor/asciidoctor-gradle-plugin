@@ -9,7 +9,7 @@ apply from: "${System.getProperty('OFFLINE_REPO')}/repositories.gradle"
 
 // tag::use-gems[]
 repositories {
-    maven { url 'http://rubygems-proxy.torquebox.org/releases' } // <1>
+    ruby.gems() // <1>
 }
 
 dependencies {
@@ -30,12 +30,11 @@ asciidoctor {
         include 'biblio.bib'
     }
 
-    attributes 'bibtex-file' : file("${sourceDir}/biblio.bib")
+    attributes 'bibtex-file': file("${sourceDir}/biblio.bib")
 }
 // end::use-gems[]
 
 task runGradleTest {
-
-        dependsOn asciidoctor
+    dependsOn asciidoctor
 }
 

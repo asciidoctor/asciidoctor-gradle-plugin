@@ -80,7 +80,7 @@ trait CachingTest {
         List<String> scanArguments = scan ? ['--scan'] : []
         BuildResult result = getGradleRunner(
             dslType,
-            projectDir, ['clean', task, '--build-cache'] + scanArguments
+            projectDir, ['clean', task, '--build-cache', '-s'] + scanArguments
         ).build()
         assert result.task(task).outcome == outcome
     }

@@ -17,6 +17,8 @@ package org.asciidoctor.gradle.jvm.slides
 
 import org.asciidoctor.gradle.jvm.slides.internal.FunctionalSpecification
 import org.asciidoctor.gradle.testfixtures.jvm.CachingTest
+import spock.lang.Issue
+import spock.lang.PendingFeature
 
 import static org.asciidoctor.gradle.testfixtures.JRubyTestVersions.AJ20_SAFE_MAXIMUM
 
@@ -31,6 +33,8 @@ class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecificati
         createTestProject('revealjs')
     }
 
+    @PendingFeature
+    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/485')
     void "Revealjs task is cacheable and relocatable"() {
         given:
         getBuildFile()
@@ -49,6 +53,8 @@ class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecificati
         outputFileInRelocatedDirectory.exists()
     }
 
+    @PendingFeature
+    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/485')
     void "Revealjs task is cached when only output directory is changed"() {
         given:
         getBuildFile()
@@ -74,6 +80,8 @@ class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecificati
         fileInRelocatedDirectory('build/asciidoc/revealjs.html').exists()
     }
 
+    @PendingFeature
+    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/485')
     void "Revealjs task is not cached when templates are added"() {
         given:
         getBuildFile()
@@ -106,6 +114,8 @@ class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecificati
         outputFileInRelocatedDirectory.exists()
     }
 
+    @PendingFeature
+    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/485')
     void "Revealjs task is not cached when plugins are added"() {
         given:
         getBuildFile
@@ -145,6 +155,8 @@ class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecificati
         outputFileInRelocatedDirectory.exists()
     }
 
+    @PendingFeature
+    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/485')
     void "Revealjs task is not cached when attributes change"() {
         given:
         getBuildFile('''
@@ -193,7 +205,7 @@ class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecificati
             ${offlineRepositories}
     
             repositories {
-                maven { url 'http://rubygems-proxy.torquebox.org/releases' }
+                ruby.gems()
             }
     
             asciidoctorRevealJs {

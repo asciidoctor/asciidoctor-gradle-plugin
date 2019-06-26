@@ -15,8 +15,7 @@
  */
 package org.asciidoctor.gradle.jvm.gems
 
-import com.github.jrubygradle.JRubyPluginExtension
-import groovy.transform.CompileDynamic
+import com.github.jrubygradle.api.core.JRubyCorePlugin
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.jvm.AsciidoctorJBasePlugin
 import org.asciidoctor.gradle.jvm.AsciidoctorJExtension
@@ -34,6 +33,7 @@ import static org.ysb33r.grolifant.api.TaskProvider.registerTask
  *
  * <ul>
  *  <li> Apply the {@code org.asciidoctor.jvm.base} plugin.</li>
+ *  <li> Apply the {@code com.github.jrubygradle.core} plugin.</li>
  *  <li> Create a {@code asciidoctorGems} configuration.</li>
  *  <li> Create a {@code asciidoctorGemsPrepare} task.</li>
  * </ul>
@@ -49,6 +49,7 @@ class AsciidoctorGemSupportPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         project.apply plugin: AsciidoctorJBasePlugin
+        project.apply plugin: JRubyCorePlugin
         Configuration gemConfig = project.configurations.maybeCreate(GEM_CONFIGURATION)
 
         Action gemPrepDefaults = new Action<AsciidoctorGemPrepare>() {
@@ -58,6 +59,7 @@ class AsciidoctorGemSupportPlugin implements Plugin<Project> {
                     dependencies gemConfig
                     group = 'dependencies'
                     description = 'Prepare additional GEMs for AsciidoctorJ'
+                    outputDir = "${project.buildDir}/.asciidoctorGems"
                 }
             }
         }
@@ -69,30 +71,5 @@ class AsciidoctorGemSupportPlugin implements Plugin<Project> {
             gemPrepDefaults
         )
         project.extensions.getByType(AsciidoctorJExtension).gemPaths { prepTask.get().outputDir }
-
-        workaroundEarlyEvaluationInPrepareTask(project, prepTask)
-        playNiceWithJrubyGradle(project)
-    }
-
-    @CompileDynamic
-    private void workaroundEarlyEvaluationInPrepareTask(Project project, TaskProvider<AsciidoctorGemPrepare> prepTask) {
-        project.afterEvaluate {
-            Action updater = new Action<AsciidoctorGemPrepare>() {
-                @Override
-                void execute(AsciidoctorGemPrepare asciidoctorGemPrepare) {
-                    asciidoctorGemPrepare.outputDir = project.file("${project.buildDir}/asciidoctorGems")
-                }
-            }
-            prepTask.configure(updater)
-        }
-    }
-
-    private void playNiceWithJrubyGradle(Project project) {
-        project.pluginManager.withPlugin('com.github.jruby-gradle.base') {
-            project.afterEvaluate {
-                project.extensions.getByType(JRubyPluginExtension).defaultVersion =
-                    project.extensions.getByType(AsciidoctorJExtension).jrubyVersion
-            }
-        }
     }
 }

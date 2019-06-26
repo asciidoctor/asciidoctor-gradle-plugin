@@ -6,7 +6,7 @@ plugins {
 apply from: "${System.getProperty('OFFLINE_REPO')}/repositories.gradle"
 
 repositories {
-    maven {url 'http://rubygems-proxy.torquebox.org/releases'}
+    ruby.gems()
 }
 
 if(System.getenv('GITLAB_CI')) {
