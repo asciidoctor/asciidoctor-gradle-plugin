@@ -33,7 +33,7 @@ class AsciidoctorGemSupportPluginSpec extends Specification {
 
         then:
         project.configurations.getByName(GEM_CONFIGURATION)
-        project.tasks.getByName(GEMPREP_TASK).outputDir == project.file( "${project.buildDir}/asciidoctorGems" )
+        project.tasks.getByName(GEMPREP_TASK).outputDir == project.file( "${project.buildDir}/.asciidoctorGems" )
         !project.tasks.getByName(GEMPREP_TASK).dependencies.empty
     }
 }

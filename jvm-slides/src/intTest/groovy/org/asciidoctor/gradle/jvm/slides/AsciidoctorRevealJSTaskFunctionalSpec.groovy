@@ -122,7 +122,7 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
         ${offlineRepositories}
 
         repositories {
-            maven { url 'http://rubygems-proxy.torquebox.org/releases' }
+            ruby.gems()
         }
 
         asciidoctorRevealJs {
