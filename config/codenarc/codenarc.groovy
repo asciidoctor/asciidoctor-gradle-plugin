@@ -332,7 +332,9 @@ ruleset {
 
     // rulesets/size.xml
     ClassSize
-    MethodCount
+    MethodCount {
+        doNotApplyToFileNames = '*Spec.groovy,*Specification.groovy'
+    }
     MethodSize
     NestedBlockDepth
     ParameterCount

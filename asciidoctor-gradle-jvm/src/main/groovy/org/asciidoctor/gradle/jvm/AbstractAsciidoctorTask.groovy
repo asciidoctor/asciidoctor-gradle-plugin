@@ -501,19 +501,16 @@ class AbstractAsciidoctorTask extends DefaultTask {
     FileCollection getConfigurations() {
         FileCollection fc = asciidoctorj.configuration
         FileCollection precompiledExtensions = findDependenciesInExtensions()
-        this.asciidocConfigurations.each {
-            if (it instanceof Configuration) {
-                fc = fc + (FileCollection) it
-            } else {
-                fc = fc + (FileCollection) (project.configurations.getByName(StringUtils.stringize(it)))
-            }
+        fc = this.asciidocConfigurations.inject(fc) { FileCollection base, Object next ->
+            base + fileCollectionFromConfiguration(next)
         }
         precompiledExtensions ? fc + precompiledExtensions : fc
     }
 
     /** Override any existing configurations except the ones available via the {@code asciidoctorj} task extension.
      *
-     * @param configs
+     * @param configs Iterable list of items that can be a {@link Configuration}, {@code Provider<Configuration>}
+     * or anything that is convertible to a string.
      */
     void setConfigurations(Iterable<Object> configs) {
         this.asciidocConfigurations.clear()
@@ -522,8 +519,8 @@ class AbstractAsciidoctorTask extends DefaultTask {
 
     /** Add additional configurations.
      *
-     * @param configs Instances of {@link Configuration} or anything convertible to a string than can be used
-     *   as a name of a runConfiguration.
+     * @param configs Iterable list of items that can be a {@link Configuration}, {@code Provider<Configuration>}
+     * or anything that is convertible to a string.
      */
     void configurations(Iterable<Object> configs) {
         this.asciidocConfigurations.addAll(configs)
@@ -531,8 +528,8 @@ class AbstractAsciidoctorTask extends DefaultTask {
 
     /** Add additional configurations.
      *
-     * @param configs Instances of {@link Configuration} or anything convertible to a string than can be used
-     *   as a name of a runConfiguration.
+     * @param configs Instances of {@link Configuration}, {@code Provider<Configuration>}
+     * or anything that is convertible to a string.
      */
     void configurations(Object... configs) {
         this.asciidocConfigurations.addAll(configs)
@@ -644,13 +641,13 @@ class AbstractAsciidoctorTask extends DefaultTask {
      * @return Executor configurations
      */
     protected Map<String, ExecutorConfiguration> getExecutorConfigurations(
-            final File workingSourceDir,
-            final Set<File> sourceFiles
+        final File workingSourceDir,
+        final Set<File> sourceFiles
     ) {
         configuredOutputOptions.backends.collectEntries { String activeBackend ->
             [
-                    "backend=${activeBackend}".toString(),
-                    getExecutorConfigurationFor(activeBackend, workingSourceDir, sourceFiles)
+                "backend=${activeBackend}".toString(),
+                getExecutorConfigurationFor(activeBackend, workingSourceDir, sourceFiles)
             ]
         }
     }
@@ -666,30 +663,30 @@ class AbstractAsciidoctorTask extends DefaultTask {
      */
     @SuppressWarnings('Instanceof')
     protected ExecutorConfiguration getExecutorConfigurationFor(
-            final String backendName,
-            final File workingSourceDir,
-            final Set<File> sourceFiles
+        final String backendName,
+        final File workingSourceDir,
+        final Set<File> sourceFiles
     ) {
         final List<String> crfb = this.copyResourcesForBackends
         boolean copyResources = crfb != null && (crfb.empty || backendName in crfb)
         new ExecutorConfiguration(
-                sourceDir: workingSourceDir,
-                sourceTree: sourceFiles,
-                outputDir: getOutputDirFor(backendName),
-                baseDir: getBaseDir(),
-                projectDir: project.projectDir,
-                rootDir: project.rootProject.projectDir,
-                options: evaluateProviders(options),
-                attributes: preparePreserialisedAttributes(workingSourceDir),
-                backendName: backendName,
-                logDocuments: logDocuments,
-                gemPath: gemPath,
-                fatalMessagePatterns: asciidoctorj.fatalWarnings,
-                asciidoctorExtensions: (asciidoctorJExtensions.findAll { !(it instanceof Dependency) }),
-                requires: requires,
-                copyResources: copyResources,
-                executorLogLevel: ExecutorUtils.getExecutorLogLevel(asciidoctorj.logLevel),
-                safeModeLevel: asciidoctorj.safeMode.level
+            sourceDir: workingSourceDir,
+            sourceTree: sourceFiles,
+            outputDir: getOutputDirFor(backendName),
+            baseDir: getBaseDir(),
+            projectDir: project.projectDir,
+            rootDir: project.rootProject.projectDir,
+            options: evaluateProviders(options),
+            attributes: preparePreserialisedAttributes(workingSourceDir),
+            backendName: backendName,
+            logDocuments: logDocuments,
+            gemPath: gemPath,
+            fatalMessagePatterns: asciidoctorj.fatalWarnings,
+            asciidoctorExtensions: (asciidoctorJExtensions.findAll { !(it instanceof Dependency) }),
+            requires: requires,
+            copyResources: copyResources,
+            executorLogLevel: ExecutorUtils.getExecutorLogLevel(asciidoctorj.logLevel),
+            safeModeLevel: asciidoctorj.safeMode.level
         )
     }
 
@@ -706,8 +703,8 @@ class AbstractAsciidoctorTask extends DefaultTask {
      */
     protected Map<String, Object> getTaskSpecificDefaultAttributes(File workingSourceDir) {
         Map<String, Object> attrs = [
-                includedir           : (Object) workingSourceDir.absolutePath,
-                'gradle-project-name': (Object) project.name
+            includedir           : (Object) workingSourceDir.absolutePath,
+            'gradle-project-name': (Object) project.name
         ]
 
         if (project.version != null) {
@@ -799,7 +796,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      */
     protected FileTree getSecondarySourceFileTreeFrom(File dir) {
         project.fileTree(dir).
-                matching(this.secondarySourceDocumentPattern ?: defaultSecondarySourceDocumentPattern)
+            matching(this.secondarySourceDocumentPattern ?: defaultSecondarySourceDocumentPattern)
     }
 
     /** Get the output directory for a specific backend.
@@ -863,7 +860,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
     protected ProcessMode getFinalProcessMode() {
         if (inProcess != JAVA_EXEC && GradleVersion.current() < GradleVersion.version(('4.3'))) {
             logger.warn('Gradle API classpath leakage will cause issues with Gradle < 4.3. ' +
-                    'Switching to JAVA_EXEC instead.')
+                'Switching to JAVA_EXEC instead.')
             JAVA_EXEC
         } else {
             this.inProcess
@@ -910,8 +907,8 @@ class AbstractAsciidoctorTask extends DefaultTask {
 
         if (sourceRoot != baseRoot || outputRoot != baseRoot) {
             throw new AsciidoctorExecutionException('sourceDir, outputDir and baseDir needs to have the same root ' +
-                    'filesystem for AsciidoctorJ to function correctly. ' + '' +
-                    'This is typically caused on Winwdows where everything is not on the same drive letter.')
+                'filesystem for AsciidoctorJ to function correctly. ' + '' +
+                'This is typically caused on Winwdows where everything is not on the same drive letter.')
         }
     }
 
@@ -920,33 +917,33 @@ class AbstractAsciidoctorTask extends DefaultTask {
     }
 
     private Map<String, ExecutorConfiguration> runWithWorkers(
-            final File workingSourceDir, final Set<File> sourceFiles) {
+        final File workingSourceDir, final Set<File> sourceFiles) {
         FileCollection asciidoctorClasspath = configurations
         logger.info "Running AsciidoctorJ with workers. Classpath = ${asciidoctorClasspath.files}"
 
         Map<String, ExecutorConfiguration> executorConfigurations = getExecutorConfigurations(
-                workingSourceDir,
-                sourceFiles
+            workingSourceDir,
+            sourceFiles
         )
 
         if (parallelMode) {
             executorConfigurations.each { String configName, ExecutorConfiguration executorConfiguration ->
                 worker.submit(AsciidoctorJExecuter) { WorkerConfiguration config ->
                     configureWorker(
-                            "Asciidoctor (task=${name}) conversion for ${configName}",
-                            config,
-                            asciidoctorClasspath,
-                            new ExecutorConfigurationContainer(executorConfiguration)
+                        "Asciidoctor (task=${name}) conversion for ${configName}",
+                        config,
+                        asciidoctorClasspath,
+                        new ExecutorConfigurationContainer(executorConfiguration)
                     )
                 }
             }
         } else {
             worker.submit(AsciidoctorJExecuter) { WorkerConfiguration config ->
                 configureWorker(
-                        "Asciidoctor (task=${name}) conversions for ${executorConfigurations.keySet().join(', ')}",
-                        config,
-                        asciidoctorClasspath,
-                        new ExecutorConfigurationContainer(executorConfigurations.values())
+                    "Asciidoctor (task=${name}) conversions for ${executorConfigurations.keySet().join(', ')}",
+                    config,
+                    asciidoctorClasspath,
+                    new ExecutorConfigurationContainer(executorConfigurations.values())
                 )
             }
         }
@@ -954,32 +951,32 @@ class AbstractAsciidoctorTask extends DefaultTask {
     }
 
     private void configureWorker(
-            final String displayName,
-            final WorkerConfiguration config,
-            final FileCollection asciidoctorClasspath,
-            final ExecutorConfigurationContainer ecContainer
+        final String displayName,
+        final WorkerConfiguration config,
+        final FileCollection asciidoctorClasspath,
+        final ExecutorConfigurationContainer ecContainer
     ) {
         config.isolationMode = inProcess == IN_PROCESS ? CLASSLOADER : PROCESS
         config.classpath = asciidoctorClasspath
         config.displayName = displayName
         config.params(
-                ecContainer
+            ecContainer
         )
         configureForkOptions(config.forkOptions)
     }
 
     private Map<String, ExecutorConfiguration> runWithJavaExec(
-            final File workingSourceDir,
-            final Set<File> sourceFiles
+        final File workingSourceDir,
+        final Set<File> sourceFiles
     ) {
         FileCollection javaExecClasspath = JavaExecUtils.getJavaExecClasspath(
-                project,
-                configurations,
-                asciidoctorj.injectInternalGuavaJar
+            project,
+            configurations,
+            asciidoctorj.injectInternalGuavaJar
         )
         Map<String, ExecutorConfiguration> executorConfigurations = getExecutorConfigurations(
-                workingSourceDir,
-                sourceFiles
+            workingSourceDir,
+            sourceFiles
         )
         File execConfigurationData = JavaExecUtils.writeExecConfigurationData(this, executorConfigurations.values())
 
@@ -998,8 +995,8 @@ class AbstractAsciidoctorTask extends DefaultTask {
             }
         } catch (GradleException e) {
             throw new AsciidoctorRemoteExecutionException(
-                    'Remote Asciidoctor process failed to complete successfully',
-                    e
+                'Remote Asciidoctor process failed to complete successfully',
+                e
             )
         }
 
@@ -1114,5 +1111,16 @@ class AbstractAsciidoctorTask extends DefaultTask {
         asciidoctorj.docExtensions.findAll {
             it instanceof Closure
         } as List<Closure>
+    }
+
+    private FileCollection fileCollectionFromConfiguration(Object c) {
+        switch (c) {
+            case Configuration:
+                return (FileCollection) c
+            case Provider:
+                return fileCollectionFromConfiguration(((Provider) c).get())
+            default:
+                (FileCollection) (project.configurations.getByName(StringUtils.stringize(c)))
+        }
     }
 }
