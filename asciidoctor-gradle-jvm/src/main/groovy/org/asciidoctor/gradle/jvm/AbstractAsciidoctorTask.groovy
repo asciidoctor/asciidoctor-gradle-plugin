@@ -36,7 +36,6 @@ import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.DependencyResolveDetails
 import org.gradle.api.file.FileCollection
-import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
@@ -376,7 +375,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
             projectDir: project.projectDir,
             rootDir: project.rootProject.projectDir,
             options: evaluateProviders(options),
-            attributes: preparePreserialisedAttributes(workingSourceDir),
+            attributes: preparePreserialisedAttributes(workingSourceDir, lang),
             backendName: backendName,
             logDocuments: logDocuments,
             gemPath: gemPath,
@@ -399,7 +398,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         asciidoctorj.docExtensions
     }
 
-    /** Configure Java fork options prior to execution
+    /** Configure Java fork options prior to execution.
      *
      * The default method will copy anything configured via {@link #forkOptions(Closure c)} or
      * {@link #forkOptions(Action c)} to the provided {@link JavaForkOptions}.
@@ -600,32 +599,14 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         cfg
     }
 
-    private Map<String, Object> evaluateProviders(final Map<String, Object> initialMap) {
-        initialMap.collectEntries { String k, Object v ->
-            if (v instanceof Provider) {
-                [k, v.get()]
-            } else {
-                [k, v]
-            }
-        } as Map<String, Object>
-    }
-
-    private Map<String, Object> preparePreserialisedAttributes(final File workingSourceDir) {
-        Map<String, Object> attrs = [:]
-        attrs.putAll(attributes)
-        attributeProviders.each {
-            attrs.putAll(it.attributes)
-        }
-        Set<String> userDefinedAttrKeys = attrs.keySet()
-
-        Map<String, Object> defaultAttrs = getTaskSpecificDefaultAttributes(workingSourceDir).findAll { k, v ->
-            !userDefinedAttrKeys.contains(k)
-        }.collectEntries { k, v ->
-            ["${k}@".toString(), v instanceof Serializable ? v : StringUtils.stringize(v)]
-        } as Map<String, Object>
-
-        attrs.putAll(defaultAttrs)
-        evaluateProviders(attrs)
+    private Map<String, Object> preparePreserialisedAttributes(final File workingSourceDir, Optional<String> lang) {
+        prepareAttributes(
+            workingSourceDir,
+            attributes,
+            lang.present ? asciidoctorj.getAttributesForLang(lang.get()) : [:],
+            attributeProviders,
+            lang
+        )
     }
 
     private List<Closure> findExtensionClosures() {
