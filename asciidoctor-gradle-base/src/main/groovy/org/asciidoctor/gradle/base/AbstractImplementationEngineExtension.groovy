@@ -35,7 +35,13 @@ abstract class AbstractImplementationEngineExtension extends AbstractCombinedPro
     private final Map<String, String> defaultVersionMap
     private final List<AsciidoctorAttributeProvider> attributeProviders = []
     private final Map<String, Object> attributes = [:]
+    private final Map<String, LanguageAttributes> langAttributes = [:]
     private boolean onlyTaskAttributes = false
+
+    private static class LanguageAttributes {
+        boolean onlyTask = false
+        final Map<String, Object> attributes = [:]
+    }
 
     /** Returns the Asciidoctor SafeMode under which a conversion will be run.
      *
@@ -132,6 +138,67 @@ abstract class AbstractImplementationEngineExtension extends AbstractCombinedPro
      */
     void attributeProvider(Closure provider) {
         attributeProvider(provider as AsciidoctorAttributeProvider)
+    }
+
+    /** Returns all of the Asciidoctor attributes for a specific language.
+     *
+     * @param lang Language for which attributes need to be returned
+     * @return Can be empty. Never {@code null}
+     */
+    Map<String, Object> getAttributesForLang(String lang) {
+        LanguageAttributes langAttrs = this.langAttributes[lang]
+
+        if (task && langAttrs) {
+            stringizeMapRecursive(
+                langAttrs.attributes,
+                langAttrs.onlyTask
+            ) { AbstractImplementationEngineExtension it ->
+                it.getAttributesForLang(lang)
+            }
+        } else if (task)  {
+            extFromProject.getAttributesForLang(lang)
+        } else {
+            langAttrs?.attributes ?: [:]
+        }
+    }
+
+    /** Apply a new set of Asciidoctor language-specific attributes, clearing any
+     * language-specific attributes previously set.
+     *
+     * This can be set globally for all Asciidoctor tasks in a project. If this is set in a task
+     * it will override the global attributes for the specific language.
+     *
+     * @param m Map with new language-specific attributes
+     * @param lang Language for which attributes need to be reset.
+     */
+    void resetAttributesForLang(Map<String,Object> m, String lang) {
+        if (!this.langAttributes.containsKey(lang)) {
+            this.langAttributes.put(lang, new LanguageAttributes())
+        }
+
+        this.langAttributes[lang].attributes.clear()
+        this.langAttributes[lang].attributes.putAll(m)
+
+        if (task) {
+            this.langAttributes[lang].onlyTask = true
+        }
+    }
+
+    /** Add additional Asciidoctor attributes.
+     *
+     * This can be set globally for all Asciidoctor tasks in a project. If this is set in a task
+     * it will use this attributes in the task in addition to any global attributes.
+     *
+     * @param m Map with additional language-specific attributes.
+     * @param lang Language for which attributes need to be reset.
+     */
+    @SuppressWarnings('ConfusingMethodName')
+    void attributesForLang(Map<String,Object> m, String lang) {
+        if (!this.langAttributes.containsKey(lang)) {
+            this.langAttributes.put(lang, new LanguageAttributes())
+        }
+
+        this.langAttributes[lang].attributes.putAll(m)
     }
 
     protected AbstractImplementationEngineExtension(Project project, String moduleResourceName) {
