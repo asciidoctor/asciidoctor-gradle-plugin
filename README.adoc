@@ -592,7 +592,7 @@ When applying `org.asciidoctor.jvm.pdf` it creates a single task of type `org.as
 
 The default task is named `asciidoctorPdf` and is configured to:
 
-* Output source to "${buildDir}/docs/asciidocPdf"
+* Output source to `${buildDir}/docs/asciidocPdf`
 * Not to copy any resources to the output directory
 * It will set also a default version for `asciidoctorj-pdf` artifact. To override set `asciidoctorj.modules.pdf.version` or `asciidoctorPdf.asciidoctorj.modules.pdf.version`.
 
