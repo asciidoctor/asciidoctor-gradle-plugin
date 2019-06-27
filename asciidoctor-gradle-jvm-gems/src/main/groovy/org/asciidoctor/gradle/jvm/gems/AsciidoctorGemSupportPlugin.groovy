@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.jvm.gems
 import com.github.jrubygradle.JRubyPluginExtension
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.jvm.AsciidoctorJBasePlugin
 import org.asciidoctor.gradle.jvm.AsciidoctorJExtension
 import org.gradle.api.Action
 import org.gradle.api.Plugin
@@ -47,7 +48,7 @@ class AsciidoctorGemSupportPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        project.apply plugin: 'org.asciidoctor.jvm.base'
+        project.apply plugin: AsciidoctorJBasePlugin
         Configuration gemConfig = project.configurations.maybeCreate(GEM_CONFIGURATION)
 
         Action gemPrepDefaults = new Action<AsciidoctorGemPrepare>() {

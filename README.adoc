@@ -52,6 +52,8 @@ NOTE: This started as a port of the {asciidoctor-maven-plugin}[Asciidoctor Maven
 
 NOTE: This collection of plugins requires at least Gradle 4.0, JDK 8.0 and AsciidoctorJ 1.6.0 to run. If you need prior Gradle,  JDK or AsciidoctorJ support please use a plugin from the 1.5.x or 1.6.x release series.
 
+NOTE: The 2.x range of these plugins are NOT compatible with https://github.com/spring-projects/spring-restdocs[Spring REST Docs]. If you have to use the latter then stick to the older v1.5.11 or v1.5.12 versions and do not manually set the version of AsciidoctorJ in your build script.
+
 == Known Issues
 
 This is still an alpha development, so expect some issues. These are the main ones we know about:
@@ -64,7 +66,7 @@ This is still an alpha development, so expect some issues. These are the main on
 
 == Installation
 
-To start you need to use one of the plugins from the following Gradle snipper
+To start you need to use one of the plugins from the following Gradle snippet
 
 [source,groovy]
 [subs=attributes+]
@@ -82,7 +84,7 @@ For the {kotlindsl} the format is slightly different:
 .build.gradle.kts
 ----
 plugins {
-    id("org.asciidoctor.convert") version "{version-published}"
+    id("org.asciidoctor.jvm.convert") version "{version-published}"
 }
 ----
 
@@ -325,7 +327,7 @@ asciidoctorj:: a task extension which allows a task to extend of override global
   This allow extensive flexibility. Any thing that can be configured in the global `asciidoctorj` extension can also be configured here.
 attributes:: A shortcut for `asciidoctorj.attributes`.
 baseDir:: Base directory for asciidoctor document conversion and root document inclusion.
-  The base directory will be the project directory, but default, but can be set to any other directory.
+  The base directory will be the project directory by default, but can be set to any other directory.
 baseDirFollowsSourceDir:: The base directory should be the same as the source directory even if the source directory is located within an intermediate working directory.
 baseDirIsProjectDir:: The base directory is always the current project directory.
 baseDirIsRootProjectDir:: The base directory is always the root project directory.
@@ -497,7 +499,7 @@ However it is not practical for everyone to use `{includedir}` and as from 2.2.0
 
 [source,groovy]
 ----
-asciidctor {
+asciidoctor {
     baseDirIsRootProjectDir() // <1>
     baseDirIsProjectDir() // <2>
     baseDirFollowsSourceDir() // <3>
@@ -762,7 +764,7 @@ viewDistance:: Number of slides away from the current that are visible.
 
 == Upgrading From Older Versions of Asciidoctor
 
-NOTE: To help with migration the old plugin will print a number of messages to help with a conversion. The amount of text is controlled via `--warnings-mode` in Gradle 4.5+. For Gradle 4.0-4.4 use `--info` to get the full list of recommendations. Use of `--warnings-mode=none`  (Gradle 4.5+) or `--quiet` (Gradle 4.0-4.4) will produce migration information.
+NOTE: To help with migration the old plugin will print a number of messages to help with a conversion. The amount of text is controlled via `--warning-mode` in Gradle 4.5+. For Gradle 4.0-4.4 use `--info` to get the full list of recommendations. Use of `--warning-mode=none`  (Gradle 4.5+) or `--quiet` (Gradle 4.0-4.4) will produce migration information.
 
 Firstly replace plugin `org.asciidoctor.convert` with `org.asciidoctor.jvm.convert`.
 

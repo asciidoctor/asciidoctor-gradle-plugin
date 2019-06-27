@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.compat
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.AsciidoctorTask
+import org.asciidoctor.gradle.base.AsciidoctorBasePlugin
 import org.asciidoctor.gradle.jvm.AsciidoctorJBasePlugin
 import org.gradle.api.Action
 import org.gradle.api.GradleException
@@ -71,7 +72,7 @@ class AsciidoctorCompatibilityPlugin implements Plugin<Project> {
             }
         }
 
-        project.apply plugin: 'org.asciidoctor.base'
+        project.apply plugin: AsciidoctorBasePlugin
 
         AsciidoctorExtension extension = project.extensions.create(ASCIIDOCTORJ, AsciidoctorExtension, project)
 
@@ -154,7 +155,7 @@ class AsciidoctorCompatibilityPlugin implements Plugin<Project> {
                     case 'none':
                         break
                     default:
-                        project.logger.lifecycle 'You are using one or more deprecated Asciidoctor task or plugins. To help with migration run with --warnings=all'
+                        project.logger.lifecycle 'You are using one or more deprecated Asciidoctor task or plugins. To help with migration run with --warning-mode=all'
                 }
             } else {
                 if (project.gradle.startParameter.logLevel != LogLevel.QUIET) {
