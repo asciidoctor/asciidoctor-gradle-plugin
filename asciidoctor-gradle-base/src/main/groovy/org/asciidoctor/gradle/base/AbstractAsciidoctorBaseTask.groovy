@@ -27,6 +27,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileTree
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Console
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
@@ -38,6 +39,7 @@ import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.util.PatternSet
 import org.ysb33r.grolifant.api.FileUtils
+import org.ysb33r.grolifant.api.StringUtils
 
 import java.nio.file.Path
 import java.util.concurrent.Callable
@@ -565,7 +567,8 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         inputs.files { filesFromCopySpec(getResourceCopySpec(Optional.empty())) }
     }
 
-    /** Gets the CopySpec for additional resources
+    /** Gets the CopySpec for additional resources.
+     *
      * If {@code resources} was never called, it will return a default CopySpec otherwise it will return the
      * one built up via successive calls to {@code resources}
      *
@@ -883,9 +886,80 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         checkForIncompatiblePathRoots()
     }
 
+    /** Prepare attributes to be serialisable
+     *
+     * @param workingSourceDir Working source directory from which source documents will be made available.
+     * @param seedAttributes Initial attributes set on the task.
+     * @param langAttributes Any language specific attributes.
+     * @param attributeProviders Additional attribute providers.
+     * @param lang Language being processed. Can be unset if multi-language feature is not used.
+     * @return Attributes ready for serialisation.
+     *
+     * @since 3.0.0
+     */
+    protected Map<String, Object> prepareAttributes(
+        final File workingSourceDir,
+        Map<String, Object> seedAttributes,
+        Map<String, Object> langAttributes,
+        List<AsciidoctorAttributeProvider> attributeProviders,
+        Optional<String> lang
+    ) {
+        Map<String, Object> attrs = [:]
+        attrs.putAll(seedAttributes)
+        attrs.putAll(langAttributes)
+        attributeProviders.each {
+            attrs.putAll(it.attributes)
+        }
+
+        Map<String, Object> defaultAttrs = prepareDefaultAttributes(
+            attrs,
+            getTaskSpecificDefaultAttributes(workingSourceDir),
+            lang
+        )
+        attrs.putAll(defaultAttrs)
+        evaluateProviders(attrs)
+    }
+
+    private Map<String, Object> prepareDefaultAttributes(
+        Map<String, Object> seedAttributes,
+        Map<String, Object> defaultAttributes,
+        Optional<String> lang
+    ) {
+        Set<String> userDefinedAttrKeys = seedAttributes.keySet()
+
+        Map<String, Object> defaultAttrs = defaultAttributes.findAll { k, v ->
+            !userDefinedAttrKeys.contains(k)
+        }.collectEntries { k, v ->
+            ["${k}@".toString(), v instanceof Serializable ? v : StringUtils.stringize(v)]
+        } as Map<String, Object>
+
+        if (lang.present) {
+            defaultAttrs.put('lang@', lang.get())
+        }
+
+        defaultAttrs
+    }
+
+    /** Evaluates a map of items potentially containing providers.
+     *
+     * No recursive evaluation will be performed.
+     *
+     * @param initialMap Map of items that needs to be searched for providers.
+     * @return Map of items with providers evaluated.
+     */
+    protected Map<String, Object> evaluateProviders(final Map<String, Object> initialMap) {
+        initialMap.collectEntries { String k, Object v ->
+            if (v instanceof Provider) {
+                [k, v.get()]
+            } else {
+                [k, v]
+            }
+        } as Map<String, Object>
+    }
+
     /** Name of the implementation engine.
      *
-     * @return
+     * @return Name of the Asciidoctor implementation engine.
      */
     @Internal
     abstract protected String getEngineName()

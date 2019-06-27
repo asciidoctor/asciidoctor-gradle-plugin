@@ -35,7 +35,7 @@ ifdef::env-github[]
 endif::[]
 
 ifdef::env-github[]
-NOTE: `master` now represents the code for the latest 2.x release of these plugins. Development for for 2.x is against the link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/development-2.0[development-2.0] branch. PRs are preferably taking against that branch. The 1.5.x series of the plugin is now in maintenance only mode. PRs for that should be raised against the https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/maintenance-1.5[maintenance-1.5] branch.
+NOTE: `master` now represents the code for the latest 2.x release of these plugins. Development for for 2.x is against the link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/development-2.0[development-2.0] branch. PRs are preferably taking against that branch. The 1.5.x series of the plugin is now in maintenance only mode. PRs for that should be raised against the https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/maintenance-1.5[maintenance-1.5] branch. PRs for the next generation work could preferably be raised against link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/development-3.x[development-3.x]
 endif::[]
 
 ifdef::status[]
@@ -161,11 +161,13 @@ asciidoctor {
 The entities that can be set are:
 
 [horizontal]
-attributes:: {asciidoctorj-epub-name} attributes.
-  Use `attributes` to append and `setAttributes` to replace any current attributes with a new set.
-  Attribute values are lazy-evaluated to strings.
 attributeProvider:: Register an additional provider of attributes.
   Attribute providers are a means of adding attributes that will not affect the up-to-date status of tasks.
+attributes:: {asciidoctorj-name} attributes.
+  Use `attributes` to append and `setAttributes` to replace any current attributes with a new set.
+  Attribute values are lazy-evaluated to strings.
+attributesForLang:: Language-specific attributes.
+  Specify additional attributes which will only be added if a  source set for the specified language is being processed.
 docExtensions:: Groovy DSL extensions.
   Use `docExtensions` to add one or more extensions. Use `setDocExtensions` to replace the current set of extensions with a new set.
   Extensions can be any kind of object that is serialisable, although in most cases they will be strings or files.
@@ -555,7 +557,7 @@ When using the `docinfo` attribute with `html` and `docbook` backends, it is rec
 
 === Source language support
 
-Some scenarios work on a source set of docuemtns in a primary language and then translations of those sources into other languages. The Gradle plugin simplifies this scenario by allowing a structure such as
+Some scenarios work on a source set of documents in a primary language and then translations of those sources into other languages. The Gradle plugin simplifies this scenario by allowing a structure such as
 
 [source]
 ----
@@ -576,7 +578,24 @@ asciidoctor {
 }
 ----
 
-Gradle will then process both the `en` and the `es` source set and output to the output directory using the same languages names. Intermediate working directories and multiple backends are also covered.
+Gradle will then process both the `en` and the `es` source set and output to the output directory using the same languages names. Intermediate working directories and multiple backends are also covered. In this case the `lang` attribute will be injected with the specific language as the value.
+
+It is also possible to specify additional attributes that will only be added when a specific language is processed
+
+[source,groovy]
+----
+asciidoctorj { // <1>
+    attributesForLang 'en', langName : 'English'
+    attributesForLang 'ca', langName : 'Catala'
+}
+
+asciidoctorjs { // <2>
+    attributesForLang 'en', langName : 'English'
+    attributesForLang 'ca', langName : 'Catala'
+}
+----
+<1> Configuration when using {asciidoctorj-name}
+<2> Configuration when using {asciidoctorjs-name}
 
 == The New AsciidoctorJ Plugin
 
