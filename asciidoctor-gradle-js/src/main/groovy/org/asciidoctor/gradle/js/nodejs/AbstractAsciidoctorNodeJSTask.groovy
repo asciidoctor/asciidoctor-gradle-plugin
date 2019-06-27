@@ -15,12 +15,12 @@
  */
 package org.asciidoctor.gradle.js.nodejs
 
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
 import org.asciidoctor.gradle.base.internal.Workspace
 import org.asciidoctor.gradle.js.base.AbstractAsciidoctorTask
 import org.asciidoctor.gradle.js.nodejs.internal.AsciidoctorJSRunner
-import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
@@ -28,7 +28,6 @@ import org.gradle.workers.WorkerExecutor
 import org.ysb33r.gradle.nodejs.NodeJSExtension
 import org.ysb33r.gradle.nodejs.NpmExtension
 import org.ysb33r.grolifant.api.MapUtils
-import org.ysb33r.grolifant.api.StringUtils
 
 import static org.asciidoctor.gradle.js.nodejs.core.NodeJSUtils.initPackageJson
 
@@ -119,32 +118,15 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
         'Asciidoctor.js'
     }
 
-    private Map<String, String> prepareAttributes(final File workingSourceDir) {
-        Map<String, Object> attrs = [:]
-        attrs.putAll(asciidoctorjs.attributes)
-        asciidoctorjs.attributeProviders.each {
-            attrs.putAll(it.attributes)
-        }
-        Set<String> userDefinedAttrKeys = attrs.keySet()
-
-        Map<String, Object> defaultAttrs = getTaskSpecificDefaultAttributes(workingSourceDir).findAll { k, v ->
-            !userDefinedAttrKeys.contains(k)
-        }.collectEntries { k, v ->
-            ["${k}@".toString(), v instanceof Serializable ? v : StringUtils.stringize(v)]
-        } as Map<String, Object>
-
-        attrs.putAll(defaultAttrs)
-        MapUtils.stringizeValues(evaluateProviders(attrs))
-    }
-
-    private Map<String, Object> evaluateProviders(final Map<String, Object> initialMap) {
-        initialMap.collectEntries { String k, Object v ->
-            if (v instanceof Provider) {
-                [k, v.get()]
-            } else {
-                [k, v]
-            }
-        } as Map<String, Object>
+    @CompileDynamic
+    private Map<String, String> prepareAttributesForSerialisation(final File workingSourceDir, Optional<String> lang) {
+        MapUtils.stringizeValues(prepareAttributes(
+            workingSourceDir,
+            asciidoctorjs.attributes,
+            lang.present ? asciidoctorjs.getAttributesForLang(lang.get()) : [:],
+            asciidoctorjs.attributeProviders,
+            lang
+        ))
     }
 
     @SuppressWarnings('UnnecessaryGetter')
@@ -191,7 +173,7 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
         logger.info 'Running Asciidoctor.js with subprocess.'
 
         Map<String, List<File>> conversionGroups = sourceFileGroupedByRelativePath
-        Map<String, String> finalAttributes = prepareAttributes(workingSourceDir)
+        Map<String, String> finalAttributes = prepareAttributesForSerialisation(workingSourceDir, lang)
         AsciidoctorJSRunner.FileLocations asciidoctorjsEnv = resolveAsciidoctorjsEnvironment()
         Optional<List<String>> copyResources = getCopyResourcesForBackends()
 
