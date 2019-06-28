@@ -15,13 +15,20 @@
  */
 package org.asciidoctor.gradle.jvm
 
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AsciidoctorBasePlugin
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.UnknownTaskException
+import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.diagnostics.DependencyReportTask
+import org.ysb33r.grolifant.api.TaskProvider
+
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 import static org.ysb33r.grolifant.api.TaskProvider.registerTask
 
@@ -35,6 +42,7 @@ class AsciidoctorJBasePlugin implements Plugin<Project> {
 
     static final String TASK_GROUP = 'Documentation'
     static final String DEPS_REPORT = 'asciidoctorjDependencies'
+    private static final Pattern DEPS_TASK_PATTERN = ~/^(.+)Dependencies$/
 
     void apply(Project project) {
         project.with {
@@ -50,8 +58,50 @@ class AsciidoctorJBasePlugin implements Plugin<Project> {
                 @Override
                 void execute(Task task) {
                     ((DependencyReportTask) task).configurations = [asciidoctorj.configuration].toSet()
+
+                    task.doLast {
+                        project.logger.warn "${task.name} is deprecated. " +
+                            "Use pattern <asciidocTaskName>Dependencies instead to get specific task's dependencies"
+                    }
                 }
             })
         }
+
+        registerDependencyReportRules(project)
     }
+
+    private void registerDependencyReportRules(Project project) {
+        TaskContainer tasks = project.tasks
+        tasks.addRule(
+            '<asciidocTaskName>Dependencies: Report dependencies for AsciidoctorJ tasks'
+        ) { String targetTaskName ->
+            Matcher matcher = targetTaskName =~ DEPS_TASK_PATTERN
+            if (matcher.matches()) {
+                try {
+                    TaskProvider associate = TaskProvider.taskByTypeAndName(
+                        project,
+                        AbstractAsciidoctorTask,
+                        taskBaseName(matcher)
+                    )
+
+                    tasks.create(targetTaskName, DependencyReportTask, new Action<Task>() {
+                        @Override
+                        void execute(Task task) {
+                            AbstractAsciidoctorTask asciidoctorTask = (AbstractAsciidoctorTask) associate.get()
+                            DependencyReportTask reportTask = (DependencyReportTask) task
+                            reportTask.configurations = asciidoctorTask.reportableConfigurations
+                        }
+                    })
+                } catch (UnknownTaskException e) {
+                    return
+                }
+            }
+        }
+    }
+
+    @CompileDynamic
+    private String taskBaseName(Matcher matcher) {
+        matcher[0][1]
+    }
+
 }
