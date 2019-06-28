@@ -507,6 +507,19 @@ class AbstractAsciidoctorTask extends DefaultTask {
         precompiledExtensions ? fc + precompiledExtensions : fc
     }
 
+    /** Configurations for which dependencies should be reported.
+     *
+     * @return Set of configurations. Can be empty, but never {@code null}.
+     *
+     * @since 2.3.0
+     */
+    @Internal
+    Set<Configuration> getReportableConfigurations() {
+        Transform.toSet(asciidocConfigurations) {
+            asConfiguration(it)
+        } + [asciidoctorj.configuration]
+    }
+
     /** Override any existing configurations except the ones available via the {@code asciidoctorj} task extension.
      *
      * @param configs Iterable list of items that can be a {@link Configuration}, {@code Provider<Configuration>}
@@ -1121,6 +1134,17 @@ class AbstractAsciidoctorTask extends DefaultTask {
                 return fileCollectionFromConfiguration(((Provider) c).get())
             default:
                 (FileCollection) (project.configurations.getByName(StringUtils.stringize(c)))
+        }
+    }
+
+    private Configuration asConfiguration(Object sourceConfig) {
+        switch (sourceConfig) {
+            case Configuration:
+                return (Configuration) sourceConfig
+            case Provider:
+                return asConfiguration(((Provider) sourceConfig).get())
+            default:
+                project.configurations.getByName(StringUtils.stringize(sourceConfig))
         }
     }
 }
