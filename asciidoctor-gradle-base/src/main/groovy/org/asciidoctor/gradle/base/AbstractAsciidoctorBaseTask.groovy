@@ -25,6 +25,7 @@ import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileTree
 import org.gradle.api.provider.Provider
@@ -561,6 +562,15 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      */
     @Internal
     abstract List<AsciidoctorAttributeProvider> getAttributeProviders()
+
+    /** Configurations for which dependencies should be reported.
+     *
+     * @return Set of configurations. Can be empty, but never {@code null}.
+     *
+     * @since 2.3.0 (Moved from org.asciidoctor.gradle.jvm)
+     */
+    @Internal
+    abstract Set<Configuration> getReportableConfigurations()
 
     protected AbstractAsciidoctorBaseTask() {
         super()

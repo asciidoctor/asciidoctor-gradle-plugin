@@ -21,6 +21,7 @@ import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
 import org.asciidoctor.gradle.base.internal.Workspace
 import org.asciidoctor.gradle.js.base.AbstractAsciidoctorTask
 import org.asciidoctor.gradle.js.nodejs.internal.AsciidoctorJSRunner
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
@@ -87,6 +88,15 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
     @Internal
     List<AsciidoctorAttributeProvider> getAttributeProviders() {
         asciidoctorjs.attributeProviders
+    }
+
+    /** Configurations for which dependencies should be reported.
+     *
+     * @return Set of configurations. Can be empty, but never {@code null}.
+     */
+    @Override
+    Set<Configuration> getReportableConfigurations() {
+        [asciidoctorjs.configuration].toSet()
     }
 
     @TaskAction

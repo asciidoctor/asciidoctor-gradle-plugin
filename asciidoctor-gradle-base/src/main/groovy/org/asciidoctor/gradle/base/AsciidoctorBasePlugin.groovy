@@ -15,18 +15,67 @@
  */
 package org.asciidoctor.gradle.base
 
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
+import org.gradle.api.UnknownTaskException
+import org.gradle.api.tasks.TaskContainer
+import org.gradle.api.tasks.diagnostics.DependencyReportTask
+import org.ysb33r.grolifant.api.TaskProvider
+
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 /** Base plugin for all Asciidoctor plugins (J & JS).
  *
- * @since 2.0.0
  * @author Schalk W. Cronjé
+ *
+ * @since 2.0.0
  */
 @CompileStatic
 class AsciidoctorBasePlugin implements Plugin<Project> {
+    private static final Pattern DEPS_TASK_PATTERN = ~/^(.+)Dependencies$/
+
     void apply(Project project) {
         project.apply plugin: 'base'
+        registerDependencyReportRules(project)
     }
+
+    private void registerDependencyReportRules(Project project) {
+        TaskContainer tasks = project.tasks
+        tasks.addRule(
+            '<asciidocTaskName>Dependencies: Report dependencies for AsciidoctorJ tasks'
+        ) { String targetTaskName ->
+            Matcher matcher = targetTaskName =~ DEPS_TASK_PATTERN
+            if (matcher.matches()) {
+                try {
+                    TaskProvider associate = TaskProvider.taskByTypeAndName(
+                        project,
+                        AbstractAsciidoctorBaseTask,
+                        taskBaseName(matcher)
+                    )
+
+                    tasks.create(targetTaskName, DependencyReportTask, new Action<Task>() {
+                        @Override
+                        void execute(Task task) {
+                            AbstractAsciidoctorBaseTask asciidoctorTask = (AbstractAsciidoctorBaseTask) associate.get()
+                            DependencyReportTask reportTask = (DependencyReportTask) task
+                            reportTask.configurations = asciidoctorTask.reportableConfigurations
+                        }
+                    })
+                } catch (UnknownTaskException e) {
+                    return
+                }
+            }
+        }
+    }
+
+    @CompileDynamic
+    private String taskBaseName(Matcher matcher) {
+        matcher[0][1]
+    }
+
 }
