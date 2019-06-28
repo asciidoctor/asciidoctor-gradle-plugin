@@ -45,10 +45,11 @@ import org.gradle.process.JavaForkOptions
 import org.gradle.util.GradleVersion
 import org.gradle.workers.WorkerConfiguration
 import org.gradle.workers.WorkerExecutor
-import org.ysb33r.grolifant.api.StringUtils
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClosure
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.getClassLocation
+import static org.asciidoctor.gradle.base.internal.ConfigurationUtils.asConfiguration
+import static org.asciidoctor.gradle.base.internal.ConfigurationUtils.asConfigurations
 import static org.gradle.workers.IsolationMode.CLASSLOADER
 import static org.gradle.workers.IsolationMode.PROCESS
 
@@ -235,14 +236,10 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
     @Classpath
     @SuppressWarnings('Instanceof')
     FileCollection getConfigurations() {
-        FileCollection fc = asciidoctorj.configuration
         FileCollection precompiledExtensions = findDependenciesInExtensions()
-        this.asciidocConfigurations.each {
-            if (it instanceof Configuration) {
-                fc = fc + (FileCollection) it
-            } else {
-                fc = fc + (FileCollection) (project.configurations.getByName(StringUtils.stringize(it)))
-            }
+        FileCollection fc = this.asciidocConfigurations.inject(asciidoctorj.configuration) {
+            FileCollection seed, Object it ->
+            seed + asConfiguration(project, it)
         }
         precompiledExtensions ? fc + precompiledExtensions : fc
     }
@@ -272,6 +269,17 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
      */
     void configurations(Object... configs) {
         this.asciidocConfigurations.addAll(configs)
+    }
+
+    /** Configurations for which dependencies should be reported.
+     *
+     * @return Set of configurations. Can be empty, but never {@code null}.
+     *
+     * @since 2.3.0
+     */
+    @Override
+    Set<Configuration> getReportableConfigurations() {
+        ([asciidoctorj.configuration] + asConfigurations(project, asciidocConfigurations)).toSet()
     }
 
     @SuppressWarnings('UnnecessaryGetter')
