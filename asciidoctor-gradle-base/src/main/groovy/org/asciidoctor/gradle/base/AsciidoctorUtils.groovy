@@ -39,6 +39,7 @@ class AsciidoctorUtils {
 
     public static final OperatingSystem OS = OperatingSystem.current()
     public static final String UNDERSCORE_LED_FILES = '**/_*'
+    public static final PatternSet UNDERSCORE_LED_PATTERN = new PatternSet().include(UNDERSCORE_LED_FILES)
 
     static final Spec<? super File> ACCEPT_ONLY_FILES = new Spec<File>() {
         @Override
