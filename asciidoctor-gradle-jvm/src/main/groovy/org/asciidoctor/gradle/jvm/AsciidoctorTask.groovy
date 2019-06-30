@@ -94,7 +94,7 @@ class AsciidoctorTask extends AbstractAsciidoctorTask {
     void processAsciidocSources() {
         if (!baseDirConfigured) {
             if (attributes.keySet() in ['docinfo', 'docinfo1', 'docinfo2']) {
-                logger.warn('You are using docinfo attributes,but a base directory strategy has not been configured.' +
+                logger.warn('You are using docinfo attributes, but a base directory strategy has not been configured.' +
                         'It is recommended that you set baseDirFollowsSourceDir() in your task.')
             }
         }
