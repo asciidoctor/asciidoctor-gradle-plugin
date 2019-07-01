@@ -14,6 +14,7 @@ stages:
     - quality
     - check
     - report
+    - docs
 
 jobs:
     include:
@@ -25,4 +26,7 @@ jobs:
       - stage: check
         name: 'Build and test'
         script: ./gradlew --console=plain --scan test intTest remoteTest gradleTest jacocoRootReport
-        after_success: ./gradlew coveralls; docs/publish-docs-from-travis
+        after_success: ./gradlew coveralls
+      - stage: docs
+        script: docs/publish-docs-from-travis
+        name: 'Push documentation'
