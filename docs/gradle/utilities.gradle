@@ -1,0 +1,16 @@
+ext {
+    asciidoctorGradleProjectDir = rootProject.projectDir.parentFile
+
+    pluginDirName = { String pluginName ->
+        switch(pluginName) {
+            case 'kindlegen':
+                return 'kindlegen-gradle'
+            default:
+                "asciidoctor-gradle-${pluginName}".toString()
+        }
+    }
+
+    pluginProjectDir = { String pluginName ->
+        new File( asciidoctorGradleProjectDir, pluginDirName(pluginName))
+    }
+}

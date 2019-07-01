@@ -1,0 +1,34 @@
+plugins {
+    id 'org.ajoberstar.git-publish'
+    id 'org.ajoberstar.grgit'
+}
+
+ext {
+    currentBranch = grgit.branch.current().name
+
+    // Only push documentation if the brnah
+    pushDocs = (currentBranch =~/^master|development-|maintenance-/).matches()
+}
+
+gitPublish {
+    repoUri = gitHubRepoUri
+    branch = pagesBranch
+
+    contents {
+        into currentBranch
+        from rootProject.tasks.combineDocs
+    }
+
+    preserve {
+        include '**'
+        exclude "${currentBranch}/**"
+    }
+
+    commitMessage = "Updating SNAPSHOT documentation for ${currentBranch} at ${version}"
+}
+
+['Reset','Push','Commit'].each {
+    tasks.named("gitPublish${it}") {
+        enabled = pushDocs
+    }
+}
