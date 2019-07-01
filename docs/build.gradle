@@ -16,7 +16,10 @@ ext {
     asciidoctorCombinedDocsDir = file("${buildDir}/docs/combined")
 
     docProjects = [
-        'base', 'jvm', 'jvm-epub', 'jvm-gems', 'jvm-slides', 'kindlegen'
+        'base', 'jvm', 'jvm-epub', 'jvm-gems',  'jvm-pdf',
+        'jvm-slides', 'slides-export',
+        'kindlegen',
+        'js'
     ]
 }
 

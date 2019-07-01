@@ -1,7 +1,6 @@
 = Asciidoctor Gradle Plugin Suite
 :icons: font
 :linkattrs:
-:version-published: 2.2.0
 :issues: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/
 :issues-asciidoctorj: https://github.com/asciidoctor/asciidoctorj/issues/
 :issues-jruby: https://github.com/asciidoctor/asciidoctorj/issues/
@@ -14,6 +13,7 @@
 :asciidoctorj-name: AsciidoctorJ
 :asciidoctorj-epub-name: Asciidoctorj-EPUB
 :asciidoctorj-pdf-name: Asciidoctorj-PDF
+:asciidoctorjs-name: Asciidoctor.js
 :asciidoctor-docs: http://asciidoctor.org/docs/
 :jruby-name: JRuby
 :lightguard: https://github.com/LightGuard[Jason Porter]
@@ -25,7 +25,7 @@
 
 The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to convert all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
 
-This started as a port of the {asciidoctor-maven-plugin} project founded by {lightguard} and relies on {asciidoctorj}[{asciidoctorj-name}] which was founded by {lordofthejars}. In fact the 1.5.x series of the {plugin-name} can still be considered a port. However the 2.x series and beyond is a complete departure with functionality far exceeding any lightweight markup plugins for any other build tool. This new series allows for the creation of a true DocuOps pipeline by bringing together Gradle as a powerful and generic build tool, and Asciidoctor as an agile and lightweight document generator.
+This started as a port of the {asciidoctor-maven-plugin} project founded by {lightguard} and relies on {asciidoctorj}[{asciidoctorj-name}] which was founded by {lordofthejars}. In fact the 1.5.x series of the {plugin-name} can still be considered a port. However with 2.x series came a complete departure with functionality far exceeding any lightweight markup plugins for any other build tool. With the 3.x serious allows for even more flexibility and options for the creation of a true DocuOps pipeline by bringing together Gradle as a powerful and generic build tool, and Asciidoctor as an agile and lightweight document generator.
 
 include::parts/compatibility.adoc[]
 
@@ -43,18 +43,19 @@ include::parts/asciidoctorj-epub-plugin.adoc[]
 
 include::parts/asciidoctorj-revealjs-plugin.adoc[]
 
+include::parts/asciidoctorj-leanpub-plugin.adoc[]
+
 include::parts/asciidoctor-diagram.adoc[]
 
 include::parts/asciidoctorj-gems-plugin.adoc[]
 
 include::parts/kindlegen-plugin.adoc[]
 
-include::parts/asciidoctorj-custom-extensions.adoc
+include::parts/asciidoctorj-custom-extensions.adoc[]
+
+include::parts/asciidoctorjs-plugin.adoc[]
 
 include::parts/upgrading.adoc[]
-
-// TODO: Remove in 3.x
-include::parts/asciidoctorj-compatitiblity-plugin.adoc[]
 
 include::appendix/tips-and-tricks.adoc[]
 

@@ -40,11 +40,11 @@ asciidoctor {
 The entities that can be set are:
 
 [horizontal]
-attributes:: {asciidoctorj-epub-name} attributes.
+attributes:: {asciidoctorj-name} attributes.
   Use `attributes` to append and `setAttributes` to replace any current attributes with a new set.
   Attribute values are lazy-evaluated to strings.
-attributeProvider:: Register an additional provider of attributes.
-  Attribute providers are a means of adding attributes that will not affect the up-to-date status of tasks.
+attributesForLang:: Language-specific attributes.
+  Specify additional attributes which will only be added if a  source set for the specified language is being processed.
 docExtensions:: Groovy DSL extensions.
   Use `docExtensions` to add one or more extensions. Use `setDocExtensions` to replace the current set of extensions with a new set.
   Extensions can be any kind of object that is serialisable, although in most cases they will be strings or files.
