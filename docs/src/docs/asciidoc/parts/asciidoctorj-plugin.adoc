@@ -1,0 +1,26 @@
+== The New AsciidoctorJ Plugin
+
+[source,groovy,role="primary"]
+[subs=attributes+]
+.build.gradle
+----
+plugins {
+    id 'org.asciidoctor.jvm.convert' version '{revnumber}'
+}
+----
+
+[source,kotlin,role="secondary"]
+[subs=attributes+]
+.build.gradle.kts
+----
+plugins {
+    id("org.asciidoctor.jvm.convert") version "{revnumber}"
+}
+----
+
+When applying `org.asciidoctor.jvm.convert` it creates a single task of type `org.asciidoctor.gradle.jvm.AsciidoctorTask` called `asciidoctor`.
+
+By convention it sets the
+* `sourceDir` to `src/docs/asciidoc`
+* `outputDir` to `${buildDir}/docs/asciidoc`
+
