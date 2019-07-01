@@ -1,0 +1,45 @@
+plugins {
+    id 'org.ajoberstar.git-publish'
+    id 'org.ajoberstar.grgit'
+}
+
+ext {
+    currentBranch = grgit.branch.current().name
+
+    // Only push documentation if the brnah
+    pushDocs = (currentBranch =~ /^master|development-3.x|maintenance-1.5|maintenance-1.6/).matches()
+}
+
+gitPublish {
+    repoUri = gitHubRepoUri
+    branch = antoraBranch
+
+    contents {
+        into version
+        from rootProject.tasks.prepareSources, {
+            into 'sources'
+        }
+        from "${rootDir}/src/docs", {
+            include 'asciidoc'
+        }
+
+        // TODO: Wait for Antora to support Javadoc
+        // See https://gitlab.com/antora/antora/issues/439
+//        from rootProject.tasks.combinedDocs, {
+//            exclude 'user-guide'
+//        }
+    }
+
+    preserve {
+        include '**'
+        exclude "${version}/**"
+    }
+
+    commitMessage = "Updating ${version} sources for Antora"
+}
+
+['Reset','Push','Commit'].each {
+    tasks.named("gitPublish${it}") {
+        enabled = pushDocs
+    }
+}

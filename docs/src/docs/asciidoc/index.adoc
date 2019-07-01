@@ -1,0 +1,7 @@
+= TEST
+
+.Example include from source
+[source,groovy]
+----
+include::{plugin-jvm-epub}/gradleTest/epub3/build.gradle[]
+----
