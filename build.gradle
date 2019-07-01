@@ -166,8 +166,16 @@ subprojects {
 
 apply from : 'gradle/coveralls.gradle'
 
-//idea {
-//    extended {
-//        workspace.junit.tasks = ['classes', 'pluginUnderTestMetadata']
-//    }
-//}
+task syncWrapper( type : Copy ) {
+    from 'gradle', {
+        include 'wrapper/**'
+    }
+    into 'docs/gradle'
+}
+
+wrapper {
+    finalizedBy syncWrapper
+}
+
+tasks.idea.dependsOn syncWrapper
+

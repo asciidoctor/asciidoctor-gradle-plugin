@@ -18,6 +18,7 @@ build_script:
 test_script:
   - gradlew.bat --console=plain --warning-mode=all -s check --no-parallel -Djava.net.preferIPv4Stack=true
 after_test:
+  - cd docs && gradlew.bat asciidoctor
   - gradlew.bat --stop
 cache:
   - testfixtures\offline-repo\build\repo

@@ -1,0 +1,21 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+task asciidoctorEditorConfig(type: Copy) {
+
+    ext {
+        pluginTokens = docProjects.collectEntries { proj ->
+            [ "plugin-${proj}".toString(), file("${pluginProjectDir(proj)}/src").absolutePath ]
+        }
+    }
+    group 'IDE tasks'
+    description 'Renders IDE config for Asciidoctor'
+
+    from 'gradle/asciidoctorconfig-template.txt'
+    into rootProject.projectDir
+    rename 'asciidoctorconfig-template.txt', '.asciidoctorconfig'
+
+    // try to keep the token list alphabetical.
+    filter ReplaceTokens, beginToken: '@@', endToken: '@@', tokens: pluginTokens
+}
+
+tasks.idea.dependsOn asciidoctorEditorConfig

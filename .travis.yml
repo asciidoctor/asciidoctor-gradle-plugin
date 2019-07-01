@@ -25,4 +25,4 @@ jobs:
       - stage: check
         name: 'Build and test'
         script: ./gradlew --console=plain --scan test intTest remoteTest gradleTest jacocoRootReport
-        after_success: ./gradlew coveralls
+        after_success: ./gradlew coveralls; docs/publish-docs-from-travis
