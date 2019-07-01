@@ -1,7 +1,63 @@
-= TEST
+= Asciidoctor Gradle Plugin Suite
+:icons: font
+:linkattrs:
+:version-published: 2.2.0
+:issues: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/
+:issues-asciidoctorj: https://github.com/asciidoctor/asciidoctorj/issues/
+:issues-jruby: https://github.com/asciidoctor/asciidoctorj/issues/
+:gradle-url: http://gradle.org/
+:asciidoctor-maven-plugin: https://github.com/asciidoctor/asciidoctor-maven-plugin[Asciidoctor Maven Plugin]
+:kotlindsl: https://github.com/gradle/kotlin-dsl[Gradle Kotlin DSL]
+:asciidoc-url: http://asciidoc.org
+:asciidoctor-url: http://asciidoctor.org
+:asciidoctorj: https://github.com/asciidoctor/asciidoctorj
+:asciidoctorj-name: AsciidoctorJ
+:asciidoctorj-epub-name: Asciidoctorj-EPUB
+:asciidoctorj-pdf-name: Asciidoctorj-PDF
+:asciidoctor-docs: http://asciidoctor.org/docs/
+:jruby-name: JRuby
+:lightguard: https://github.com/LightGuard[Jason Porter]
+:lordofthejars: https://github.com/lordofthejars[Alex Soto]
+:plugin-name: Asciidoctor Gradle plugin
+:project-name: asciidoctor-gradle-plugin
+:project-full-path: asciidoctor/asciidoctor-gradle-plugin
+:toc:
 
-.Example include from source
-[source,groovy]
-----
-include::{plugin-jvm-epub}/gradleTest/epub3/build.gradle[]
-----
+The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to convert all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
+
+This started as a port of the {asciidoctor-maven-plugin} project founded by {lightguard} and relies on {asciidoctorj}[{asciidoctorj-name}] which was founded by {lordofthejars}. In fact the 1.5.x series of the {plugin-name} can still be considered a port. However the 2.x series and beyond is a complete departure with functionality far exceeding any lightweight markup plugins for any other build tool. This new series allows for the creation of a true DocuOps pipeline by bringing together Gradle as a powerful and generic build tool, and Asciidoctor as an agile and lightweight document generator.
+
+include::parts/compatibility.adoc[]
+
+include::parts/quick-start.adoc[]
+
+include::parts/common-task-configuration.adoc[]
+
+include::parts/asciidoctorj-base-plugin.adoc[]
+
+include::parts/asciidoctorj-plugin.adoc[]
+
+include::parts/asciidoctorj-pdf-plugin.adoc[]
+
+include::parts/asciidoctorj-epub-plugin.adoc[]
+
+include::parts/asciidoctorj-revealjs-plugin.adoc[]
+
+include::parts/asciidoctor-diagram.adoc[]
+
+include::parts/asciidoctorj-gems-plugin.adoc[]
+
+include::parts/kindlegen-plugin.adoc[]
+
+include::parts/asciidoctorj-custom-extensions.adoc
+
+include::parts/upgrading.adoc[]
+
+// TODO: Remove in 3.x
+include::parts/asciidoctorj-compatitiblity-plugin.adoc[]
+
+include::appendix/tips-and-tricks.adoc[]
+
+include::appendix/known-limitations.adoc[]
+
+include::appendix/hacking.adoc[]
