@@ -6,8 +6,7 @@ plugins {
 ext {
     currentBranch = grgit.branch.current().name
 
-    // Only push documentation if the brnah
-    pushDocs = (currentBranch =~/^master|development-|maintenance-/).matches()
+    pushDocs = currentBranch.matches(~/^master|development-.+|maintenance-.+$/)
 }
 
 gitPublish {
@@ -27,8 +26,8 @@ gitPublish {
     commitMessage = "Updating SNAPSHOT documentation for ${currentBranch} at ${version}"
 }
 
-['Reset','Push','Commit'].each {
-    tasks.named("gitPublish${it}") {
-        enabled = pushDocs
+task publishDocs {
+    if(pushDocs) {
+        dependsOn gitPublishPush
     }
 }

@@ -6,8 +6,7 @@ plugins {
 ext {
     currentBranch = grgit.branch.current().name
 
-    // Only push documentation if the brnah
-    pushDocs = (currentBranch =~ /^master|development-3.x|maintenance-1.5|maintenance-1.6/).matches()
+    pushDocs = currentBranch.matches(~/^(master|development-3.x|maintenance-1.5|maintenance-1.6)$/)
 }
 
 gitPublish {
@@ -38,8 +37,8 @@ gitPublish {
     commitMessage = "Updating ${version} sources for Antora"
 }
 
-['Reset','Push','Commit'].each {
-    tasks.named("gitPublish${it}") {
-        enabled = pushDocs
+task publishDocs {
+    if(pushDocs) {
+        dependsOn gitPublishPush
     }
 }
