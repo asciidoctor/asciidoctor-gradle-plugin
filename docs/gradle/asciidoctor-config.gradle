@@ -5,7 +5,9 @@ task asciidoctorEditorConfig(type: Copy) {
     ext {
         pluginTokens = docProjects.collectEntries { proj ->
             [ "plugin-${proj}".toString(), file("${pluginProjectDir(proj)}/src").absolutePath ]
-        }
+        } + [
+            revnumber : version
+        ]
     }
     group 'IDE tasks'
     description 'Renders IDE config for Asciidoctor'
