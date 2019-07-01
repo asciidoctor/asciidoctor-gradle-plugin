@@ -1,10 +1,13 @@
 plugins {
     id 'org.ajoberstar.git-publish'
+    id 'org.ajoberstar.grgit'
 }
 
 ext {
-    currentBranch = System.getenv('TRAVIS_BRANCH') ?: 'not-on-travis-ci'
-    pushDocs = currentBranch.matches(~/^master|development-.+|maintenance-.+$/)
+    currentBranch = grgit.branch.current().name
+
+    // Only push documentation if the brnah
+    pushDocs = (currentBranch =~/^master|development-|maintenance-/).matches()
 }
 
 gitPublish {
@@ -24,11 +27,8 @@ gitPublish {
     commitMessage = "Updating SNAPSHOT documentation for ${currentBranch} at ${version}"
 }
 
-task publishDocs {
-    if(pushDocs) {
-        dependsOn gitPublishPush
-    }
-    doFirst {
-        logger.info "${currentBranch} is ${pushDocs ? 'a match. Push attempted' : 'not a match. Push skipped.'}"
+['Reset','Push','Commit'].each {
+    tasks.named("gitPublish${it}") {
+        enabled = pushDocs
     }
 }

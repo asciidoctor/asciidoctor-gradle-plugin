@@ -9,3 +9,9 @@ out
 buildSrc/gradle/wrapper
 buildSrc/gradlew*
 .asciidoctor-module-versions.generated
+
+# Because we auto-generate this from the main project
+# and it is only needed for IntelliJ
+docs/gradle/wrapper
+docs/.asciidoctorconfig
+

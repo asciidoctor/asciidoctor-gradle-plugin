@@ -1,8 +1,7 @@
 @rem
-@rem Credits to  Jez Higgins (@jezhiggins) & Ralph McArdell (@ralph-mcardell)
-@rem for hints on how to have a very simplified batch file.
+@rem Credits to Chris Oldwood (@chrisoldwood) for this file
 @rem
-@echo off
+@ECHO OFF
 
-setlocal enableextensions
+SETLOCAL ENABLEEXTENSIONS
 %~p0\..\gradlew.bat %*

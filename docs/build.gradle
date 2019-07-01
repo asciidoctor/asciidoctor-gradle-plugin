@@ -4,6 +4,7 @@ plugins {
     id 'idea'
     id 'org.asciidoctor.jvm.convert' apply false
     id 'org.ajoberstar.git-publish' version '2.1.1' apply false
+    id 'org.ajoberstar.grgit' version '3.1.1' apply false
 }
 
 repositories {
@@ -28,17 +29,7 @@ apply plugin: 'org.asciidoctor.jvm.convert'
 apply from: "${rootDir}/gradle/utilities.gradle"
 apply from: "${rootDir}/gradle/asciidoctor-config.gradle"
 
-configurations {
-    asciidocExtensions
-}
-
-dependencies {
-    asciidocExtensions 'com.bmuschko:asciidoctorj-tabbed-code-extension:0.1'
-}
-
 task prepareSources( type: Sync) {
-    group 'documentation'
-    description 'Copy sources from all plugin projects'
     into asciidoctorSourceSyncDir
 
     docProjects.each { proj ->
@@ -50,72 +41,22 @@ task prepareSources( type: Sync) {
     }
 }
 
-asciidoctorj {
-    fatalWarnings missingIncludes()
-}
-
 asciidoctor {
-    group 'documentation'
-    description 'Build HTML documentation'
-
-    baseDirFollowsSourceDir()
     dependsOn prepareSources
     sourceDir 'src/docs/asciidoc'
-    configurations 'asciidocExtensions'
+    baseDirFollowsSourceDir()
 
     sources {
         include 'index.adoc'
     }
-
-    attributes toc: 'right',
-        toclevels: 2,
-        'source-highlighter': 'coderay'
 
     docProjects.each { proj ->
         attributes "plugin-${proj}" : file("${prepareSources.destinationDir}/${pluginDirName(proj)}/src")
     }
 }
 
-task generateIndex {
-    group 'documentation'
-    description 'Generate index source file'
-    ext {
-        outputFile = file("${buildDir}/docs/index-source/index.adoc")
-    }
-    
-    inputs.property 'docProjects', docProjects
-    outputs.file outputFile
-
-    doLast {
-        outputFile.parentFile.mkdirs()
-        outputFile.withWriter { w ->
-            w.println "= Asciidoctor Gradle Plugin Suite v${version}"
-            w.println ''
-            w.println "* link:./user-guide/[User guide]"
-
-            docProjects.sort().each { proj ->
-                w.println "* link:./api-${pluginDirName(proj)}/[API: ${pluginDirName(proj)}]"
-            }
-        }
-    }
-}
-
-task asciidocIndex( type: org.asciidoctor.gradle.jvm.AsciidoctorTask ) {
-    group 'documentation'
-    description 'Generate HTML index'
-
-    dependsOn generateIndex
-    sourceDir generateIndex.outputFile.parentFile
-    outputDir "${buildDir}/docs/index"
-}
-
 task combineDocs (type : Sync) {
-    group 'documentation'
-    description 'Combine all generated documentation into a single tree'
     into asciidoctorCombinedDocsDir
-
-    from asciidocIndex
-
     from asciidoctor, {
         into 'user-guide'
     }

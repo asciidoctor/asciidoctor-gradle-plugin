@@ -10,4 +10,3 @@
 :plugin-jvm-gems: @@plugin-jvm-gems@@
 :plugin-jvm-slides: @@plugin-jvm-slides@@
 :plugin-kindlegen: @@plugin-kindlegen@@
-:revnumber: @@revnumber@@
