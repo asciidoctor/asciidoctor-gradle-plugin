@@ -1,0 +1,4 @@
+[appendix]
+== Development
+
+NOTE: The `master` branch represents the code for the latest 2.x release of these plugins. Development for for 2.x is against the link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/development-2.0[development-2.0] branch. PRs are preferably taking against that branch. The 1.5.x & 1.6.x series of the plugin is now in maintenance only mode. PRs for these should be raised against the https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/maintenance-1.5[maintenance-1.5] and https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/maintenance-1.6[maintenance-1.6]branch.

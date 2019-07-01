@@ -29,6 +29,14 @@ apply plugin: 'org.asciidoctor.jvm.convert'
 apply from: "${rootDir}/gradle/utilities.gradle"
 apply from: "${rootDir}/gradle/asciidoctor-config.gradle"
 
+configurations {
+    asciidocExtensions
+}
+
+dependencies {
+    asciidocExtensions 'com.bmuschko:asciidoctorj-tabbed-code-extension:0.1'
+}
+
 task prepareSources( type: Sync) {
     into asciidoctorSourceSyncDir
 
@@ -41,14 +49,22 @@ task prepareSources( type: Sync) {
     }
 }
 
+asciidoctorj {
+    fatalWarnings missingIncludes()
+}
+
 asciidoctor {
+    baseDirFollowsSourceDir()
     dependsOn prepareSources
     sourceDir 'src/docs/asciidoc'
-    baseDirFollowsSourceDir()
+    configurations 'asciidocExtensions'
 
     sources {
         include 'index.adoc'
     }
+
+    attributes toc: 'right',
+        toclevels: 2
 
     docProjects.each { proj ->
         attributes "plugin-${proj}" : file("${prepareSources.destinationDir}/${pluginDirName(proj)}/src")
