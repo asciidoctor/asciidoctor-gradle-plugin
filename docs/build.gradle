@@ -4,7 +4,6 @@ plugins {
     id 'idea'
     id 'org.asciidoctor.jvm.convert' apply false
     id 'org.ajoberstar.git-publish' version '2.1.1' apply false
-    id 'org.ajoberstar.grgit' version '3.1.1' apply false
 }
 
 repositories {
