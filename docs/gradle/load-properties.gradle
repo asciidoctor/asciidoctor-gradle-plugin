@@ -1,0 +1,13 @@
+class LoadProperties {
+    static Properties get(File path) {
+        def props = new Properties()
+        path.withInputStream { strm ->
+            props.load(strm)
+        }
+        props
+    }
+}
+
+ext {
+    pluginsGradleProperties = LoadProperties.get(file("${rootDir}/../gradle.properties"))
+}

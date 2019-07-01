@@ -1,0 +1,10 @@
+= IntelliJ support
+
+In order to edit the documents in IntelliJ add the `docs folder as a new module in IntelliJ. Check the `auto-import` box and use the `Gradle Wrapper` option.
+
+In order to have the correct attributes made available to the Asciidoctor preview in IntelliJ, do
+
+[listing.terminal]
+----
+$ cd docs && ./gradlew asciidoctorEditorConfig
+----

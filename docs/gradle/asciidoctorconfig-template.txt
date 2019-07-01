@@ -1,0 +1,12 @@
+// This is purely a template for Asciidoctor attributes
+// which will be substituted with values from the build environment.
+// It's main purpose is to provide context for Asciidoctor preview
+// in IntelliJ.
+//
+// Try to keep this alphabetical for simplified management
+:plugin-base: @@plugin-base@@
+:plugin-jvm: @@plugin-jvm@@
+:plugin-jvm-epub: @@plugin-jvm-epub@@
+:plugin-jvm-gems: @@plugin-jvm-gems@@
+:plugin-jvm-slides: @@plugin-jvm-slides@@
+:plugin-kindlegen: @@plugin-kindlegen@@
