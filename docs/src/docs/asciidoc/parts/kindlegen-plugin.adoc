@@ -1,0 +1,35 @@
+== Kindlegen plugin
+
+[source,groovy,role="primary"]
+[subs=attributes+]
+.build.gradle
+----
+plugins {
+    id 'org.asciidoctor.kindlegen.base' version '{revnumber}'
+}
+----
+
+[source,kotlin,role="secondary"]
+[subs=attributes+]
+.build.gradle.kts
+----
+plugins {
+    id("org.asciidoctor.kindlegen.base") version "{revnumber}"
+}
+----
+
+Producing KF* formats via the EPUB extension requires `kindlegen` to be installed. This plugin provides the capability of bootstrapping `kindlegen` on Windows, Mac & Linux without the user having to do anything.
+
+There is a base plugin `org.asciidoctor.kindlegen.base` which just provides a `kindlegen` extension. In order to use it
+you will need to agree to the Amazon terms of usage. To confirm this you need to configure
+
+[source,groovy]
+----
+kindlegen {
+  agreeToTermsOfUse = true
+}
+----
+
+If you do not, then the plugin will refuse to bootstrap `kindlegen`.
+
+NOTE: The base plugin is automatically applied by the EPUB plugin. If you only produce EPUB3 formats with the EPUB plugin you do not have to agree to the usage of `kindlegen`.

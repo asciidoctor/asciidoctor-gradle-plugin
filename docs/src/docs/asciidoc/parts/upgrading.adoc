@@ -1,0 +1,42 @@
+
+== Upgrading From Older Versions of Asciidoctor
+
+NOTE: To help with migration the old plugin will print a number of messages to help with a conversion. The amount of text is controlled via `--warning-mode` in Gradle 4.5+. For Gradle 4.0-4.4 use `--info` to get the full list of recommendations. Use of `--warning-mode=none`  (Gradle 4.5+) or `--quiet` (Gradle 4.0-4.4) will produce migration information.
+
+Firstly replace plugin `org.asciidoctor.convert` with `org.asciidoctor.jvm.convert`.
+
+If you used `separateOutputDirs`, yout need to change that to `outputOptions.separateOutputDirs`. If you only use one backend in the task you can delete this and it will default to `false` for single backends and `true` for multiple backends.
+
+The base directory is now set to the directory of the root project. This may influence how your includes are processed. Either set `baseDir` to specific directory or or use the `includedir` which is automatically calculates to be the correct source directory.
+
+Gradle injected a number of attributes into the build. Some of these names have been changed from 1.5/1.6. to indicate that they are injected:
+
+[cols="4*"]
+|===
+| *Old name* | *New name* | Substituable | *Usage*
+| `projectdir` | `gradle-projectdir` | No | The Gradle project directory which is running the Asciidoctor task.
+| `rootdir` | `gradle-rootdir` | No | The rootproject directory in a multi-project build.
+| `project-name` | `gradle-project-name` | Yes | The name of the current Gradle subproject. (Or the root project in case of a single project).
+| `project-group` | `gradle-project-group` | Yes | The project/artifact group if it is defined.
+| `project-version` | `revnumber` | Yes | The project version if it is defined.
+| - | `gradle-relative-srcdir` | No | The relative path from the parent of the current document that is being processed to the source document root. It is calcluated as moving from the current document towards the root. For instance `src/docs/asciidoc/subdir/sample.adoc` will set this attribute to `..` if `sourceDir` == `src/docs/asciidoc`.
+|===
+
+Substitutable attributes means that the build script author can change those attributes by setting them explicitly.
+
+If you used external GEMs via the http://jruby-gradle.github.io/[JRuby Gradle plugin], you should switch over to using `org.asciidoctor.jvm.gems` instead. You should also use the `asciidoctorGems` configuration rather than the `gems` configuration. Tasks should not depend on `JRubyPrepare`, but on `AsciidoctorGemsPrepare` instead.
+
+
+=== Configurations
+
+The `asciidoctor` configuration is no longer available. If you used that before to make artifacts available on the classpath you should use the `configurations` method on the task to add them. If you used it to manipulate versions of {asciidoctorj-name} and JRuby then you should rather use the explicit versions settings on `asciidoctorj`.
+
+=== Multiple Asciidoctor tasks
+
+If you have more than one Asciidoctor task, decide which `options`, `attributes` and `requires` should go in the `asciidoctorj` global project extension block and which should be customised within the tasks `asciidoctor` extension block.
+
+Importantly, you probably did `import org.asciidoctor.gradle.AsciidoctorTask`. You will need to change that to `import org.asciidoctor.gradle.jvm.AsciidoctorTask`.
+
+=== Extensions
+
+Extensions on the Gradle classpath are no longer detected. You need to declare them explicitly. This includes any extensions created in `buildSrc`.
