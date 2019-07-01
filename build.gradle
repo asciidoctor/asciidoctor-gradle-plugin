@@ -70,7 +70,7 @@ allprojects {
         ]
 
         withoutCompatibilityTests = [
-            'kindlegen-gradle',
+            'kindlegen-gradle'
         ]
 
         withoutCodeCoverage = [
@@ -168,3 +168,17 @@ subprojects {
 }
 
 apply from: 'gradle/coveralls.gradle'
+
+task syncWrapper( type : Copy ) {
+    from 'gradle', {
+        include 'wrapper/**'
+    }
+    into 'docs/gradle'
+}
+
+wrapper {
+    finalizedBy syncWrapper
+}
+
+tasks.idea.dependsOn syncWrapper
+
