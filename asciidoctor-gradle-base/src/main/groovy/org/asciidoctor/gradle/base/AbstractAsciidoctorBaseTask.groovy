@@ -662,33 +662,30 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * @return Source tree based upon configured pattern.
      */
     protected FileTree getSecondarySourceFileTreeFrom(File dir) {
-        project.fileTree(dir).
+        FileTree initialTree = project.fileTree(dir).
             matching(this.secondarySourceDocumentPattern ?: defaultSecondarySourceDocumentPattern)
+        (initialTree - getSourceFileTreeFrom(dir)).asFileTree
     }
 
     /** The default PatternSet that will be used if {@code sources} was never called
      *
-     * By default all *.adoc,*.ad,*.asc,*.asciidoc is included. Files beginning with underscore are excluded
+     * @return By default all *.adoc,*.ad,*.asc,*.asciidoc is included.
+     *   Files beginning with underscore are excluded
      *
      * @since 1.5.1
      */
     @Internal
     protected PatternSet getDefaultSourceDocumentPattern() {
-        PatternSet ps = new PatternSet()
-        ps.include '**/*.adoc'
-        ps.include '**/*.ad'
-        ps.include '**/*.asc'
-        ps.include '**/*.asciidoc'
-        ps.exclude UNDERSCORE_LED_FILES
+        asciidocPatterns.exclude UNDERSCORE_LED_FILES
     }
 
     /** The default pattern set for secondary sources.
      *
-     * @return {@link #getDefaultSourceDocumentPattern} + `*docinfo*`.
+     * @return By default all *.adoc,*.ad,*.asc,*.asciidoc is included.
      */
     @Internal
     protected PatternSet getDefaultSecondarySourceDocumentPattern() {
-        defaultSourceDocumentPattern
+        asciidocPatterns
     }
 
     /** A task may add some default attributes.
@@ -1000,42 +997,58 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         }
     }
 
-    @CompileDynamic
     private void prepareTempWorkspace(final File tmpDir) {
         if (!this.languages.empty) {
             throw new AsciidoctorMultiLanguageException('Use prepareTempWorkspace(tmpDir,lang) instead')
         }
-        if (tmpDir.exists()) {
-            tmpDir.deleteDir()
-        }
-        tmpDir.mkdirs()
-        project.copy {
-            into tmpDir
-            from sourceFileTree
-            from secondarySourceFileTree
-            with getResourceCopySpec(Optional.empty())
-        }
+        prepareTempWorkspace(
+            tmpDir,
+            sourceFileTree,
+            secondarySourceFileTree,
+            getResourceCopySpec(Optional.empty()),
+            Optional.empty()
+        )
     }
 
     private void prepareTempWorkspace(final File tmpDir, final String lang) {
+        prepareTempWorkspace(
+            tmpDir,
+            getLanguageSourceFileTree(lang),
+            getLanguageSecondarySourceFileTree(lang),
+            getResourceCopySpec(Optional.of(lang)),
+            Optional.ofNullable(this.languageResources[lang])
+        )
+    }
+
+    private void prepareTempWorkspace(
+        final File tmpDir,
+        final FileTree mainSourceTree,
+        final FileTree secondarySourceTree,
+        final CopySpec resourceTree,
+        final Optional<CopySpec> langResourcesTree
+    ) {
         if (tmpDir.exists()) {
             tmpDir.deleteDir()
         }
         tmpDir.mkdirs()
-
-        CopySpec langResources = this.languageResources[lang]
-        CopySpec stdResources = getResourceCopySpec(Optional.of(lang))
         project.copy { CopySpec cs ->
             cs.with {
                 into tmpDir
-                from getLanguageSourceFileTree(lang)
-                from getLanguageSecondarySourceFileTree(lang)
-                with stdResources
-
-                if (langResources) {
-                    with langResources
+                from mainSourceTree
+                from secondarySourceTree
+                with resourceTree
+                if (langResourcesTree.present) {
+                    with langResourcesTree.get()
                 }
             }
         }
+    }
+
+    private PatternSet getAsciidocPatterns() {
+        PatternSet ps = new PatternSet()
+        ps.include '**/*.adoc'
+        ps.include '**/*.ad'
+        ps.include '**/*.asc'
+        ps.include '**/*.asciidoc'
     }
 }
