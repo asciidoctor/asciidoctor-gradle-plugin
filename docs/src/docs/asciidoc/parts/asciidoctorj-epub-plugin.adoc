@@ -22,7 +22,7 @@ When applying `org.asciidoctor.jvm.epub` it creates a single task of type `org.a
 
 * Output source to "${buildDir}/docs/asciidocEpub"
 * Not to copy any resources to the output directory
-* It will set also a default version for `asciidoctorj-epub` artifact. To override set `asciidoctorj.epubVersion` or `asciidoctorPdf.asciidoctorj.epubVersion`.
+* It will set also a default version for `asciidoctorj-epub` artifact. To override set `asciidoctorj.epubVersion` or `asciidoctorEpub.asciidoctorj.epubVersion`.
 
 The `AsciidoctorEpubTask` task type has the following additional methods:
 
