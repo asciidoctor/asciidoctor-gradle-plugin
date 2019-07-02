@@ -1,5 +1,22 @@
 = Development documentation
+:siteroot: https://asciidoctor.github.io/asciidoctor-gradle-plugin
+:userguide: user-guide/index.html
+:dev2: development-2.0
+:dev3: development-3.x
+:dev1-5: maintenance-1.5
+:dev1-6: maintenance-1.6
 
 SNAPSHOT documentation for selected branches are posted here. 
 
 See the `docs` folder in the appropriate branch to see how it works.
+
+== Documents links
+
+|===
+| User Guide | Web Index | Raw
+| link:{siteroot}/master/{userguide}[Current release] | link:{siteroot}/master[Current release] | link:./master
+| link:{siteroot}/{dev3}/{userguide}[Development 3.x] | {siteroot}/{dev3}[Development 3.x] | link:./{dev3}
+| link:{siteroot}/{dev2}/{userguide}[Development 2.x] | {siteroot}/{dev2}[Development 2.x] | link:./{dev2}
+| link:{siteroot}/{dev1-6}/{userguide}[1.6.x] | - | -
+| link:{siteroot}/{dev1-5}/{userguide}[1.5.x] | - | -
+|===
