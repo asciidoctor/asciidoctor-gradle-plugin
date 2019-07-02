@@ -14,9 +14,9 @@ See the `docs` folder in the appropriate branch to see how it works.
 
 |===
 | User Guide | Web Index | Raw
-| link:{siteroot}/master/{userguide}[Current release] | link:{siteroot}/master[Current release] | link:./master
-| link:{siteroot}/{dev3}/{userguide}[Development 3.x] | {siteroot}/{dev3}[Development 3.x] | link:./{dev3}
-| link:{siteroot}/{dev2}/{userguide}[Development 2.x] | {siteroot}/{dev2}[Development 2.x] | link:./{dev2}
-| link:{siteroot}/{dev1-6}/{userguide}[1.6.x] | - | -
-| link:{siteroot}/{dev1-5}/{userguide}[1.5.x] | - | -
+| link:{siteroot}/master/{userguide}[Current release] | link:{siteroot}/master[Current release] | link:./master[master]
+| link:{siteroot}/{dev3}/{userguide}[Development 3.x] | {siteroot}/{dev3}[Development 3.x] | link:./{dev3}[{dev3}]
+| link:{siteroot}/{dev2}/{userguide}[Development 2.x] | {siteroot}/{dev2}[Development 2.x] | link:./{dev2}[{dev2}]
+| link:{siteroot}/{dev1-6}/{userguide}[1.6.x] | - | link:./{dev1-6}[{dev1-6}]
+| link:{siteroot}/{dev1-5}/{userguide}[1.5.x] | - | link:./{dev1-5}[{dev1-5}]
 |===
