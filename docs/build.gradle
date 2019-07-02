@@ -40,6 +40,8 @@ dependencies {
 }
 
 task prepareSources( type: Sync) {
+    group 'documentation'
+    description 'Copy sources from all plugin projects'
     into asciidoctorSourceSyncDir
 
     docProjects.each { proj ->
@@ -56,6 +58,9 @@ asciidoctorj {
 }
 
 asciidoctor {
+    group 'documentation'
+    description 'Build HTML documentation'
+
     baseDirFollowsSourceDir()
     dependsOn prepareSources
     sourceDir 'src/docs/asciidoc'
@@ -73,8 +78,46 @@ asciidoctor {
     }
 }
 
+task generateIndex {
+    group 'documentation'
+    description 'Generate index source file'
+    ext {
+        outputFile = file("${buildDir}/docs/index-source/index.adoc")
+    }
+    
+    inputs.property 'docProjects', docProjects
+    outputs.file outputFile
+
+    doLast {
+        outputFile.parentFile.mkdirs()
+        outputFile.withWriter { w ->
+            w.println "= Asciidoctor Gradle Plugin Suite v${version}"
+            w.println ''
+            w.println "* link:./user-guide/[User guide]"
+
+            docProjects.sort().each { proj ->
+                w.println "* link:./api-${pluginDirName(proj)}/[API: ${pluginDirName(proj)}]"
+            }
+        }
+    }
+}
+
+task asciidocIndex( type: org.asciidoctor.gradle.jvm.AsciidoctorTask ) {
+    group 'documentation'
+    description 'Generate HTML index'
+
+    dependsOn generateIndex
+    sourceDir generateIndex.outputFile.parentFile
+    outputDir "${buildDir}/docs/index"
+}
+
 task combineDocs (type : Sync) {
+    group 'documentation'
+    description 'Combine all generated documentation into a single tree'
     into asciidoctorCombinedDocsDir
+
+    from asciidocIndex
+
     from asciidoctor, {
         into 'user-guide'
     }
