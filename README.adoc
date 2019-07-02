@@ -1,0 +1,5 @@
+= Development documentation
+
+SNAPSHOT documentation for selected branches are posted here. 
+
+See the `docs` folder in the appropriate branch to see how it works.
