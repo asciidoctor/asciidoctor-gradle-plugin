@@ -1,0 +1,5 @@
+org.asciidoctor.gradle.js.base
+org.asciidoctor.gradle.js.base.internal
+org.asciidoctor.gradle.js.nodejs
+org.asciidoctor.gradle.js.nodejs.core
+org.asciidoctor.gradle.js.nodejs.internal
