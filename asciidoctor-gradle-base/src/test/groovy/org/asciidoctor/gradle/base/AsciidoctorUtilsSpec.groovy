@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.internal
+package org.asciidoctor.gradle.base
 
-import org.asciidoctor.gradle.base.AsciidoctorUtils
 import spock.lang.Specification
 import spock.lang.Unroll
 
