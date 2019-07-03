@@ -16,26 +16,29 @@
 package org.asciidoctor.gradle.internal
 
 import groovy.transform.CompileStatic
+import groovy.transform.InheritConstructors
 import org.asciidoctor.gradle.remote.AsciidoctorJavaExec
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.FileCollection
+import org.gradle.api.invocation.Gradle
 import org.gradle.util.GradleVersion
 import org.ysb33r.grolifant.api.FileUtils
+
+import java.util.regex.Pattern
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.getClassLocation
 
 /** Utilities for dealing with Asciidoctor in an external JavaExec process.
  *
- * @since 2.0* @author Sdhalk W. Cronjé
+ * @author Schalk W. Cronjé
+ *
+ * @since 2.0
  */
 @CompileStatic
 class JavaExecUtils {
 
-    /** The name of the Guava JAR used internally by Gradle.
-     *
-     */
-    public static final String INTERNAL_GUAVA_NAME = internalGuavaName()
+    private static final FilenameFilter INTERNAL_GUAVA_PATTERN = internalGuavaPattern()
 
     /** Get the classpath that needs to be passed to the external Java process.
      *
@@ -54,7 +57,7 @@ class JavaExecUtils {
 
         FileCollection fc = project.files(entryPoint, groovyJar, asciidoctorClasspath)
 
-        addInternalGuava ? project.files(fc, new File(project.gradle.gradleHomeDir, "lib/${INTERNAL_GUAVA_NAME}")) : fc
+        addInternalGuava ? project.files(fc, getInternalGuavaLocation(project.gradle)) : fc
     }
 
     /** The file to which execution configuration data can be serialised to.
@@ -88,13 +91,46 @@ class JavaExecUtils {
         getClassLocation(GroovyObject)
     }
 
-    private static String internalGuavaName() {
-        if (GradleVersion.current() >= GradleVersion.version('5.5')) {
-            'guava-27.1-android.jar'
-        } else if (GradleVersion.current() >= GradleVersion.version('5.0')) {
-            'guava-26.0-android.jar'
+    /** Locate the internal Guava JAR from the Gradle distribution
+     *
+     * @param gradle Gradle instance
+     * @return Return Guava location. Never {@code null}
+     * @throw InternalGuavaLocationException
+     */
+    static File getInternalGuavaLocation(Gradle gradle) {
+        File[] files = new File(gradle.gradleHomeDir, 'lib').listFiles(INTERNAL_GUAVA_PATTERN)
+
+        if (!files) {
+            throw new InternalGuavaLocationException('Cannot locate a Guava JAR in the Gradle distribution')
+        } else if (files.size() > 1) {
+            throw new InternalGuavaLocationException(
+                "Found more than one Guava JAR in the Gradle distribution: ${files*.name}"
+            )
+        }
+        files[0]
+    }
+
+    /** Thrown when an internal Guava JAR cannot be located.
+     *
+     * @since 3.0
+     */
+    @InheritConstructors
+    static class InternalGuavaLocationException extends RuntimeException {
+    }
+
+    private static FilenameFilter internalGuavaPattern() {
+        Pattern filter
+        if (GradleVersion.current() >= GradleVersion.version('5.0')) {
+            filter = ~/guava-([\d.]+)-android.jar/
         } else {
-            'guava-jdk5-17.0.jar'
+            filter = ~/guava-jdk5-([\d.]+).jar/
+        }
+
+        new FilenameFilter() {
+            @Override
+            boolean accept(File dir, String name) {
+                name.matches(filter)
+            }
         }
     }
 }
