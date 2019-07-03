@@ -1,27 +1,5 @@
 = Asciidoctor Gradle Plugin Suite
-:icons: font
-:linkattrs:
-:version-published: 2.2.0
-:issues: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/
-:issues-asciidoctorj: https://github.com/asciidoctor/asciidoctorj/issues/
-:issues-jruby: https://github.com/asciidoctor/asciidoctorj/issues/
-:gradle-url: http://gradle.org/
-:asciidoctor-maven-plugin: https://github.com/asciidoctor/asciidoctor-maven-plugin[Asciidoctor Maven Plugin]
-:kotlindsl: https://github.com/gradle/kotlin-dsl[Gradle Kotlin DSL]
-:asciidoc-url: http://asciidoc.org
-:asciidoctor-url: http://asciidoctor.org
-:asciidoctorj: https://github.com/asciidoctor/asciidoctorj
-:asciidoctorj-name: AsciidoctorJ
-:asciidoctorj-epub-name: Asciidoctorj-EPUB
-:asciidoctorj-pdf-name: Asciidoctorj-PDF
-:asciidoctor-docs: http://asciidoctor.org/docs/
-:jruby-name: JRuby
-:lightguard: https://github.com/LightGuard[Jason Porter]
-:lordofthejars: https://github.com/lordofthejars[Alex Soto]
-:plugin-name: Asciidoctor Gradle plugin
-:project-name: asciidoctor-gradle-plugin
-:project-full-path: asciidoctor/asciidoctor-gradle-plugin
-:toc:
+include::attributes.adoc[]
 
 The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to convert all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
 
@@ -53,7 +31,6 @@ include::parts/asciidoctorj-custom-extensions.adoc
 
 include::parts/upgrading.adoc[]
 
-// TODO: Remove in 3.x
 include::parts/asciidoctorj-compatitiblity-plugin.adoc[]
 
 include::appendix/tips-and-tricks.adoc[]

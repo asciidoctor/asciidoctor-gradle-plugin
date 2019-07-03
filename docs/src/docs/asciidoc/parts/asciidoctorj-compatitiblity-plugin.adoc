@@ -1,7 +1,6 @@
 == Asciidoctor Compatibility Plugin
 
-In order to help people upgrade a compatibility plugin has been kept which mostly behaves in the same way as the AsciidoctorJ plugins in the 1.5.x series of releases.
-
+In order to help people upgrade a compatibility plugin has been kept which mostly behaves in the same way as the {asciidoctorj-name} plugins in the 1.5.x series 
 [source,groovy,role="primary"]
 [subs=attributes+]
 .build.gradle

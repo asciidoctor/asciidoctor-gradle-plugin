@@ -4,13 +4,16 @@ task asciidoctorEditorConfig(type: Copy) {
 
     ext {
         pluginTokens = docProjects.collectEntries { proj ->
-            [ "plugin-${proj}".toString(), file("${pluginProjectDir(proj)}/src").absolutePath ]
+            ["plugin-${proj}".toString(), file("${pluginProjectDir(proj)}/src").absolutePath]
         } + [
-            revnumber : version
+            revnumber: version
         ]
+        additionalAttributes = file('src/docs/asciidoc/attributes.adoc')
     }
+
     group 'IDE tasks'
     description 'Renders IDE config for Asciidoctor'
+    inputs.file additionalAttributes
 
     from 'gradle/asciidoctorconfig-template.txt'
     into rootProject.projectDir
@@ -18,6 +21,13 @@ task asciidoctorEditorConfig(type: Copy) {
 
     // try to keep the token list alphabetical.
     filter ReplaceTokens, beginToken: '@@', endToken: '@@', tokens: pluginTokens
+
+    doLast {
+        new File(rootProject.projectDir, '.asciidoctorconfig').withWriterAppend { w ->
+            w << additionalAttributes.text
+
+        }
+    }
 }
 
 tasks.idea.dependsOn asciidoctorEditorConfig
