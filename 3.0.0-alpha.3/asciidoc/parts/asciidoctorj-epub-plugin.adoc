@@ -1,0 +1,33 @@
+[[asciidoctorj-epub-plugin,{asciidoctorj-name} EPUB plugin]]
+== The AsciidoctorEpub Plugin
+
+[source,groovy,role="primary"]
+[subs=attributes+]
+.build.gradle
+----
+plugins {
+    id 'org.asciidoctor.jvm.epub' version '{revnumber}'
+}
+----
+
+[source,kotlin,role="secondary"]
+[subs=attributes+]
+.build.gradle.kts
+----
+plugins {
+    id("org.asciidoctor.jvm.epub") version "{revnumber}"
+}
+----
+When applying `org.asciidoctor.jvm.epub` it creates a single task of type `org.asciidoctor.gradle.jvm.epub.AsciidoctorEpubTask` which is then configured to:
+
+* Output source to "${buildDir}/docs/asciidocEpub"
+* Not to copy any resources to the output directory
+* It will set also a default version for `asciidoctorj-epub` artifact. To override set `asciidoctorj.epubVersion` or `asciidoctorEpub.asciidoctorj.epubVersion`.
+
+The `AsciidoctorEpubTask` task type has the following additional methods:
+
+[horizontal]
+ebookFormats:: The epub formats to generate.
+  Specify one of more strings. Anything that is supported by the Asciidoctor EPUB backend can be used. Constants `EPUB3` and `KF8` are available for convenience. To override any previous set fomrats use `setEbookFormats`. To add to the existing list use `eBookFormats`.
+
+NOTE: KF8 formats cannot be generated under Windows at present.

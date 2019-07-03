@@ -82,14 +82,16 @@ class JavaExecUtils {
 
     /** Returns the location of the local Groovy Jar that is used by Gradle.
      *
-     * @return Location on filesysetm where the Groovy Jar is located.
+     * @return Location on filesystem where the Groovy Jar is located.
      */
     static File getLocalGroovy() {
         getClassLocation(GroovyObject)
     }
 
     private static String internalGuavaName() {
-        if (GradleVersion.current() >= GradleVersion.version('5.0')) {
+        if (GradleVersion.current() >= GradleVersion.version('5.5')) {
+            'guava-27.1-android.jar'
+        } else if (GradleVersion.current() >= GradleVersion.version('5.0')) {
             'guava-26.0-android.jar'
         } else {
             'guava-jdk5-17.0.jar'

@@ -1,0 +1,65 @@
+[[decktape-plugin,Decktape plugin]]
+== Exporting Slides
+
+If you have created HTML slides via an Asciidoctor task you can export them to PDF/PNG/JPG.
+
+The `org.asciidoctor.decktape.base` provides the ability to create tasks for exporting HTML slide decks to PDF, JPG and PNG.
+
+[source,groovy]
+----
+import org.asciidoctor.gradle.slides.export.decktape.DeckTapeTask
+
+asciidoctorRevealJs {
+    sourceDir 'src/docs/asciidoc'
+    sources {
+        include 'index.adoc'
+    }
+    theme 'beige'
+}
+
+task standalonePdfConverter(type: DeckTapeTask) {
+    outputDir "${buildDir}/generic"
+    slides asciidoctorRevealJs // <1>
+    profile 'reveal_js' // <2>
+    screenshots { // <3>
+        format = 'png' // <4>
+        width = 1024 // <5>
+        height = 768
+    }
+    range '1-3,5' // <6>
+ }
+----
+<1> Link the output of an Asciidoctor task to the input of the export task. The Asciidoctor task must provide an HTML output file (or files) in a slide format understood by DeckTape.
+<2> The slide profile type.
+<3> If screenshots are activated, then screenshot images of the slides are also produced.
+<4> Image format. PMG and JPG are supported.
+<5> Width and height of the exported slides.
+<6> Range of slides to export. By default all are exported.
+
+=== Combining with Reveal.js plugin
+
+If you do
+
+[source,groovy,role="primary"]
+[subs=attributes+]
+.build.gradle
+----
+plugins {
+    id 'org.asciidoctor.jvm.revealjs' version '{revnumber}'
+    id 'org.asciidoctor.decktape.base' version '{revnumber}'
+}
+----
+
+[source,kotlin,role="secondary"]
+[subs=attributes+]
+.build.gradle.kts
+----
+plugins {
+    id("org.asciidoctor.jvm.revealjs") version "{revnumber}"
+    id("org.asciidoctor.decktape.base") version "{revnumber}"
+}
+----
+
+a little bit of _magic_ happens. A task called on `asciidoctorRevealJsExport` is created on demand from a rule and all of the appropriate properties are set on it so that it can export slides created by the `asciidoctorRevealJs` task.
+
+You can configure the `asciidoctorRevealJsExport` task like any other `DeckTapeTask`.
