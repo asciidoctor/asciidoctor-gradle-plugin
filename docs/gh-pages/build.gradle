@@ -29,6 +29,6 @@ task publishDocs {
         dependsOn gitPublishPush
     }
     doFirst {
-        logger.info "${currentBranch} is ${pushDocs ? 'a match. Push attempted' : 'not a match. Push skipped.'}"
+        logger.lifecycle "${currentBranch} is ${pushDocs ? 'a match. Push attempted' : 'not a match. Push skipped.'}"
     }
 }
