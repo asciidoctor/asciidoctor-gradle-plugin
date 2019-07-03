@@ -17,7 +17,7 @@ gitPublish {
             into 'sources'
         }
         from "${rootDir}/src/docs", {
-            include 'asciidoc'
+            include 'asciidoc/**'
         }
 
         // TODO: Wait for Antora to support Javadoc
