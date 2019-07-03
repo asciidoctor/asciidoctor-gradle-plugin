@@ -1,0 +1,10 @@
+[appendix]
+== Known Issues
+
+These are the main ones we know about:
+
+* EPUB3 + KF8 in one task. Both formats in one task is currently failing. The exact failure message depends on which order
+  (KF8+EPUB3 or EPUB3+KF8) the conversion takes place in.
+* KF8 conversions fails under Windows. (Related to {issues-asciidoctorj}659[{asciidoctorj-name} #659] & {issues-jruby}4943[{jruby-name} #4943].
+* Does not work with JDK9 (but does with JDK10).
+* DeckTape export to JPG/PNG does not work on Windows (issues-asciidoctorj}[{asciidoctorj-name} #381] & https://github.com/astefanutti/decktape/issues[Decktape #181]).

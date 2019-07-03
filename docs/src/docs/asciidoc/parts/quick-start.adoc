@@ -1,0 +1,21 @@
+== Quick Start
+
+To start you need to use one of the plugins from the following Gradle snippet
+
+[source,groovy,role="primary"]
+[subs=attributes+]
+.build.gradle
+----
+plugins {
+    id 'org.asciidoctor.jvm.convert' version '{revnumber}'
+}
+----
+
+[source,kotlin,role="secondary"]
+[subs=attributes+]
+.build.gradle.kts
+----
+plugins {
+    id("org.asciidoctor.jvm.convert") version "{revnumber}"
+}
+----

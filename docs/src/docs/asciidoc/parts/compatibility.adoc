@@ -1,0 +1,5 @@
+== Compatibility
+
+This collection of plugins requires at least Gradle 4.4, JDK 8.0 and AsciidoctorJ 1.6.0 to run. If you need prior Gradle,  JDK or {asciidoctorj-name} support please use a plugin from the 1.5.x or 1.6.x release series.
+
+The 3.x range of these plugins are currently NOT compatible with https://github.com/spring-projects/spring-restdocs[Spring REST Docs]. Once the latter upgrades to support {asciidoctorj-name} v2+, you would be able to use 2.x of the Gradle plugins. If you have to use Spring REST Docs then stick to the older v1.5.11 or v1.5.12 versions and DO NOT manually set the version of {asciidoctorj-name} in your build script.

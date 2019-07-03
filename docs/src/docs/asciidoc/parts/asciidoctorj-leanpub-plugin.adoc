@@ -1,0 +1,9 @@
+[[asciidoctorj-leanpub-plugin,{asciidoctorj-name} Leanpub plugin]]
+== The AsciidoctorLeanpub Plugin
+
+When applying `org.asciidoctor.jvm.leanpub` it creates a single task of type `org.asciidoctor.gradle.jvm.epub.AsciidoctorLeanTask` which is then configured to:
+
+* Output source to "${buildDir}/docs/asciidocLeanpub"
+* Set also a default version for `asciidoctor-leanpub-backend` artifact. To override set `asciidoctorj.leanpubVersion` or `asciidoctorLeanpub.asciidoctorj.leanpubVersion`.
+
+If you use the traditional Dropbox mechanism of synchronising your writing to Dropbox you can apply the `org.asciidoctor.jvm.leanpub.dropbox-copy' plugn which will add a `copyAsciidocToDropbox` task which can copy your generated Leanpub content to the Dropbox folder which Leanpub has created for you.
