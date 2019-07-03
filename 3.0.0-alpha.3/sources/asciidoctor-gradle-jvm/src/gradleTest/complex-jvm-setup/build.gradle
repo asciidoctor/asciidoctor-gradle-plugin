@@ -1,0 +1,39 @@
+// tag::using-two-plugins-three-backends[]
+plugins {
+    id 'org.asciidoctor.jvm.convert'
+}
+
+repositories {
+    jcenter()
+}
+
+asciidoctorj {
+    modules {
+        diagram.version '1.5.16'    
+    }
+    logLevel 'INFO'
+}
+
+asciidoctor {
+
+    outputOptions {
+        backends 'html5', 'docbook'
+    }
+
+    sources {
+        include 'sample.asciidoc'
+    }
+
+    resources {
+        include 'images/**'
+    }
+
+    copyResourcesOnlyIf 'html5'
+    useIntermediateWorkDir()
+}
+
+// end::using-two-plugins-three-backends[]
+
+task runGradleTest {
+    dependsOn asciidoctor
+}

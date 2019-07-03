@@ -1,0 +1,30 @@
+// tag::using-two-plugins-three-backends[]
+plugins {
+    id 'org.asciidoctor.jvm.pdf'
+}
+
+repositories {
+    jcenter()
+}
+
+asciidoctorj {
+    modules {
+        diagram.use()
+    }
+    logLevel 'INFO'
+}
+
+asciidoctorPdf {
+    inProcess OUT_OF_PROCESS
+    logDocuments true
+    sourceDir 'src/docs/asciidoc'
+
+    sources {
+        include 'subdir/sample2.ad'
+    }
+}
+// end::using-two-plugins-three-backends[]
+
+task runGradleTest {
+    dependsOn asciidoctorPdf
+}

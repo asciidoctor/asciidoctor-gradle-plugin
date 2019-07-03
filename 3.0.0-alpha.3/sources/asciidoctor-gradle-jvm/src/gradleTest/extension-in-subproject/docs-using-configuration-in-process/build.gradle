@@ -1,0 +1,28 @@
+apply plugin: 'org.asciidoctor.jvm.convert'
+
+configurations {
+    asciidocExt
+}
+
+dependencies {
+    asciidocExt project(':extension')
+}
+
+asciidoctorj {
+    logLevel 'DEBUG'
+}
+
+asciidoctor {
+    configurations 'asciidocExt'
+    inProcess IN_PROCESS
+}
+
+
+// Gradle leak unnecessary JARs onto the classpath. Since this project is now
+// built with Gradle 5.x, we are swapping back to JAVA_EXEC if testing against
+// Gradle 4.x
+if (gradle.gradleVersion.startsWith('4.')) {
+    asciidoctor {
+        inProcess JAVA_EXEC
+    }
+}
