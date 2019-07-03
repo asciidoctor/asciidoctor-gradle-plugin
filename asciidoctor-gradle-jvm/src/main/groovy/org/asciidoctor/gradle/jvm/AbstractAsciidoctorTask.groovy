@@ -739,21 +739,16 @@ class AbstractAsciidoctorTask extends DefaultTask {
      */
     @Internal
     protected PatternSet getDefaultSourceDocumentPattern() {
-        PatternSet ps = new PatternSet()
-        ps.include '**/*.adoc'
-        ps.include '**/*.ad'
-        ps.include '**/*.asc'
-        ps.include '**/*.asciidoc'
-        ps.exclude UNDERSCORE_LED_FILES
+        asciidocPatterns.exclude UNDERSCORE_LED_FILES
     }
 
     /** The default pattern set for secondary sources.
      *
-     * @return {@link #getDefaultSourceDocumentPattern} + `*docinfo*`.
+     * @return {@link #getDefaultSourceDocumentPattern} + {@code _*.adoc}.
      */
     @Internal
     protected PatternSet getDefaultSecondarySourceDocumentPattern() {
-        defaultSourceDocumentPattern
+        asciidocPatterns
     }
 
     /** The default CopySpec that will be used if {@code resources} was never called
@@ -1146,5 +1141,13 @@ class AbstractAsciidoctorTask extends DefaultTask {
             default:
                 project.configurations.getByName(StringUtils.stringize(sourceConfig))
         }
+    }
+
+    private PatternSet getAsciidocPatterns() {
+        PatternSet ps = new PatternSet()
+        ps.include '**/*.adoc'
+        ps.include '**/*.ad'
+        ps.include '**/*.asc'
+        ps.include '**/*.asciidoc'
     }
 }

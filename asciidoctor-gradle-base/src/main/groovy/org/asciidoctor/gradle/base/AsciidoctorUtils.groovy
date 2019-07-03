@@ -36,7 +36,7 @@ import static groovy.lang.Closure.DELEGATE_FIRST
 class AsciidoctorUtils {
 
     public static final OperatingSystem OS = OperatingSystem.current()
-    public static final String UNDERSCORE_LED_FILES = '**/_*'
+    public static final String UNDERSCORE_LED_FILES = '**/_*.a*'
 
     static final Spec<? super File> ACCEPT_ONLY_FILES = new Spec<File>() {
         @Override
