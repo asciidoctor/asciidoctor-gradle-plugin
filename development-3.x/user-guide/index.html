@@ -535,17 +535,17 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="listingblock primary">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">plugins {
-    id 'org.asciidoctor.jvm.convert' version '3.0.0-alpha.3'
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">plugins</span> <span class="o">{</span>
+    <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.convert'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.3'</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="listingblock secondary">
 <div class="title">build.gradle.kts</div>
 <div class="content">
-<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">plugins {
-    id("org.asciidoctor.jvm.convert") version "3.0.0-alpha.3"
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="kotlin"><span class="n">plugins</span> <span class="p">{</span>
+    <span class="n">id</span><span class="p">(</span><span class="s">"org.asciidoctor.jvm.convert"</span><span class="p">)</span> <span class="n">version</span> <span class="s">"3.0.0-alpha.3"</span>
+<span class="p">}</span></code></pre>
 </div>
 </div>
 </div>
@@ -805,27 +805,27 @@ order to be discovered:</p>
 <div class="listingblock primary">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">asciidoctor {
-  sourceDir  file('docs')
-  sources {
-    include 'toplevel.adoc', 'another.adoc', 'third.adoc'
-  }
-  outputDir  file('build/docs')
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">asciidoctor</span> <span class="o">{</span>
+  <span class="n">sourceDir</span>  <span class="nf">file</span><span class="o">(</span><span class="s1">'docs'</span><span class="o">)</span>
+  <span class="n">sources</span> <span class="o">{</span>
+    <span class="n">include</span> <span class="s1">'toplevel.adoc'</span><span class="o">,</span> <span class="s1">'another.adoc'</span><span class="o">,</span> <span class="s1">'third.adoc'</span>
+  <span class="o">}</span>
+  <span class="n">outputDir</span>  <span class="nf">file</span><span class="o">(</span><span class="s1">'build/docs'</span><span class="o">)</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="listingblock secondary">
 <div class="title">build.gradle.kts</div>
 <div class="content">
-<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">tasks {
-  "asciidoctor"(AsciidoctorTask::class) {
-    sourceDir = file("docs")
-    sources(delegateClosureOf&lt;PatternSet&gt; {
-      include("toplevel.adoc", "another.adoc", "third.adoc")
-    })
-    outputDir = file("build/docs")
-  }
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="kotlin"><span class="n">tasks</span> <span class="p">{</span>
+  <span class="s">"asciidoctor"</span><span class="p">(</span><span class="n">AsciidoctorTask</span><span class="o">::</span><span class="k">class</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">sourceDir</span> <span class="p">=</span> <span class="n">file</span><span class="p">(</span><span class="s">"docs"</span><span class="p">)</span>
+    <span class="n">sources</span><span class="p">(</span><span class="n">delegateClosureOf</span><span class="p">&lt;</span><span class="n">PatternSet</span><span class="p">&gt;</span> <span class="p">{</span>
+      <span class="n">include</span><span class="p">(</span><span class="s">"toplevel.adoc"</span><span class="p">,</span> <span class="s">"another.adoc"</span><span class="p">,</span> <span class="s">"third.adoc"</span><span class="p">)</span>
+    <span class="p">})</span>
+    <span class="n">outputDir</span> <span class="p">=</span> <span class="n">file</span><span class="p">(</span><span class="s">"build/docs"</span><span class="p">)</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -842,35 +842,35 @@ this the <code>resources</code> method is used. It is provided with a closure th
 <div class="listingblock primary">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">resources {
-  from('src/resources/images') {
-    include 'images/**/*.png'
-    exclude 'images/**/notThisOne.png'
-  }
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">resources</span> <span class="o">{</span>
+  <span class="n">from</span><span class="o">(</span><span class="s1">'src/resources/images'</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">include</span> <span class="s1">'images/**/*.png'</span>
+    <span class="n">exclude</span> <span class="s1">'images/**/notThisOne.png'</span>
+  <span class="o">}</span>
 
-  from( "${buildDir}/downloads" ) {
-    include 'deck.js/**'
-  }
+  <span class="n">from</span><span class="o">(</span> <span class="s2">"${buildDir}/downloads"</span> <span class="o">)</span> <span class="o">{</span>
+    <span class="n">include</span> <span class="s1">'deck.js/**'</span>
+  <span class="o">}</span>
 
-  into './images'
-}</code></pre>
+  <span class="n">into</span> <span class="s1">'./images'</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="listingblock secondary">
 <div class="title">build.gradle.kts</div>
 <div class="content">
-<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">resources(delegateClosureOf&lt;CopySpec&gt; {
-  from("src/resources/images") {
-    include("images/**/*.png")
-    exclude("images/**/notThisOne.png")
-  }
+<pre class="rouge highlight"><code data-lang="kotlin"><span class="n">resources</span><span class="p">(</span><span class="n">delegateClosureOf</span><span class="p">&lt;</span><span class="n">CopySpec</span><span class="p">&gt;</span> <span class="p">{</span>
+  <span class="n">from</span><span class="p">(</span><span class="s">"src/resources/images"</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">include</span><span class="p">(</span><span class="s">"images/**/*.png"</span><span class="p">)</span>
+    <span class="n">exclude</span><span class="p">(</span><span class="s">"images/**/notThisOne.png"</span><span class="p">)</span>
+  <span class="p">}</span>
 
-  from("$buildDir/downloads") {
-    include("deck.js/**")
-  }
+  <span class="n">from</span><span class="p">(</span><span class="s">"$buildDir/downloads"</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">include</span><span class="p">(</span><span class="s">"deck.js/**"</span><span class="p">)</span>
+  <span class="p">}</span>
 
-  into("./images")
-})</code></pre>
+  <span class="n">into</span><span class="p">(</span><span class="s">"./images"</span><span class="p">)</span>
+<span class="p">})</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -885,11 +885,11 @@ this the <code>resources</code> method is used. It is provided with a closure th
 <div class="listingblock primary">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">resources {
-  from(sourceDir) {
-    include 'images/**'
-  }
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">resources</span> <span class="o">{</span>
+  <span class="n">from</span><span class="o">(</span><span class="n">sourceDir</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">include</span> <span class="s1">'images/**'</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -898,11 +898,11 @@ this the <code>resources</code> method is used. It is provided with a closure th
 <div class="listingblock primary">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">resources {
-  from(new File(sourceDir,"${langName}")) {
-    include 'images/**'
-  }
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">resources</span> <span class="o">{</span>
+  <span class="n">from</span><span class="o">(</span><span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="n">sourceDir</span><span class="o">,</span><span class="s2">"${langName}"</span><span class="o">))</span> <span class="o">{</span>
+    <span class="n">include</span> <span class="s1">'images/**'</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -911,7 +911,7 @@ this the <code>resources</code> method is used. It is provided with a closure th
 <div class="listingblock primary">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">copyNoResources()</code></pre>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">copyNoResources</span><span class="o">()</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -920,17 +920,17 @@ this the <code>resources</code> method is used. It is provided with a closure th
 <div class="listingblock primary">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">resources 'en', {
-  from("${sourceDir}/en") {
-    include 'images/**'
-  }
-}
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">resources</span> <span class="s1">'en'</span><span class="o">,</span> <span class="o">{</span>
+  <span class="n">from</span><span class="o">(</span><span class="s2">"${sourceDir}/en"</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">include</span> <span class="s1">'images/**'</span>
+  <span class="o">}</span>
+<span class="o">}</span>
 
-resources 'es', {
-  from("${sourceDir}/es") {
-    include 'images/**'
-  }
-}</code></pre>
+<span class="n">resources</span> <span class="s1">'es'</span><span class="o">,</span> <span class="o">{</span>
+  <span class="n">from</span><span class="o">(</span><span class="s2">"${sourceDir}/es"</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">include</span> <span class="s1">'images/**'</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 </div>
@@ -944,11 +944,11 @@ resources 'es', {
 </div>
 <div class="listingblock primary">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">asciidoctor {
-    baseDirIsRootProjectDir() <i class="conum" data-value="1"></i><b>(1)</b>
-    baseDirIsProjectDir() <i class="conum" data-value="2"></i><b>(2)</b>
-    baseDirFollowsSourceDir() <i class="conum" data-value="3"></i><b>(3)</b>
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">asciidoctor</span> <span class="o">{</span>
+    <span class="n">baseDirIsRootProjectDir</span><span class="o">()</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="n">baseDirIsProjectDir</span><span class="o">()</span> <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="n">baseDirFollowsSourceDir</span><span class="o">()</span> <i class="conum" data-value="3"></i><b>(3)</b>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -981,7 +981,7 @@ resources 'es', {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>│   └── src
+<pre class="rouge highlight"><code>│   └── src
 │       ├── asciidoc
 │       │   └── en
 │       │       └── index.adoc
@@ -994,9 +994,9 @@ resources 'es', {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">asciidoctor {
-    languages 'en', 'es'
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">asciidoctor</span> <span class="o">{</span>
+    <span class="n">languages</span> <span class="s1">'en'</span><span class="o">,</span> <span class="s1">'es'</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1007,15 +1007,15 @@ resources 'es', {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">asciidoctorj { <i class="conum" data-value="1"></i><b>(1)</b>
-    attributesForLang 'en', langName : 'English'
-    attributesForLang 'ca', langName : 'Catala'
-}
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">asciidoctorj</span> <span class="o">{</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="n">attributesForLang</span> <span class="s1">'en'</span><span class="o">,</span> <span class="n">langName</span> <span class="o">:</span> <span class="s1">'English'</span>
+    <span class="n">attributesForLang</span> <span class="s1">'ca'</span><span class="o">,</span> <span class="n">langName</span> <span class="o">:</span> <span class="s1">'Catala'</span>
+<span class="o">}</span>
 
-asciidoctorjs { <i class="conum" data-value="2"></i><b>(2)</b>
-    attributesForLang 'en', langName : 'English'
-    attributesForLang 'ca', langName : 'Catala'
-}</code></pre>
+<span class="n">asciidoctorjs</span> <span class="o">{</span> <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="n">attributesForLang</span> <span class="s1">'en'</span><span class="o">,</span> <span class="n">langName</span> <span class="o">:</span> <span class="s1">'English'</span>
+    <span class="n">attributesForLang</span> <span class="s1">'ca'</span><span class="o">,</span> <span class="n">langName</span> <span class="o">:</span> <span class="s1">'Catala'</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1075,14 +1075,14 @@ In certain cases the plugin will overrule your choice as it has some built-in ru
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">asciidoctorj {
-  version = '1.5.6' <i class="conum" data-value="1"></i><b>(1)</b>
-  groovyDslVersion = '1.0.0.Alpha2' <i class="conum" data-value="2"></i><b>(2)</b>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">asciidoctorj</span> <span class="o">{</span>
+  <span class="n">version</span> <span class="o">=</span> <span class="s1">'1.5.6'</span> <i class="conum" data-value="1"></i><b>(1)</b>
+  <span class="n">groovyDslVersion</span> <span class="o">=</span> <span class="s1">'1.0.0.Alpha2'</span> <i class="conum" data-value="2"></i><b>(2)</b>
 
-  options doctype: 'book', ruby: 'erubis' <i class="conum" data-value="3"></i><b>(3)</b>
+  <span class="n">options</span> <span class="nl">doctype:</span> <span class="s1">'book'</span><span class="o">,</span> <span class="nl">ruby:</span> <span class="s1">'erubis'</span> <i class="conum" data-value="3"></i><b>(3)</b>
 
-  attributes toclevel : 2 <i class="conum" data-value="4"></i><b>(4)</b>
-}</code></pre>
+  <span class="n">attributes</span> <span class="n">toclevel</span> <span class="o">:</span> <span class="mi">2</span> <i class="conum" data-value="4"></i><b>(4)</b>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1110,13 +1110,13 @@ In certain cases the plugin will overrule your choice as it has some built-in ru
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">asciidoctor {
-  asciidoctorj {
-      setOptions = [ doctype: 'article' ] <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">asciidoctor</span> <span class="o">{</span>
+  <span class="n">asciidoctorj</span> <span class="o">{</span>
+      <span class="n">setOptions</span> <span class="o">=</span> <span class="o">[</span> <span class="nl">doctype:</span> <span class="s1">'article'</span> <span class="o">]</span> <i class="conum" data-value="1"></i><b>(1)</b>
 
-      attributes toc : left <i class="conum" data-value="2"></i><b>(2)</b>
-  }
-}</code></pre>
+      <span class="n">attributes</span> <span class="n">toc</span> <span class="o">:</span> <span class="n">left</span> <i class="conum" data-value="2"></i><b>(2)</b>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1295,14 +1295,14 @@ a stylesheet for example. The following snippet shows a sample configuration def
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">asciidoctorj { <i class="conum" data-value="1"></i><b>(1)</b>
-    options doctype: 'book', ruby: 'erubis'
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">asciidoctorj</span> <span class="o">{</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="n">options</span> <span class="nl">doctype:</span> <span class="s1">'book'</span><span class="o">,</span> <span class="nl">ruby:</span> <span class="s1">'erubis'</span>
 
-    attributes 'source-highlighter': 'coderay',
-                toc                 : '',
-                idprefix            : '',
-                idseparator         : '-'
-}</code></pre>
+    <span class="n">attributes</span> <span class="s1">'source-highlighter'</span><span class="o">:</span> <span class="s1">'coderay'</span><span class="o">,</span>
+                <span class="n">toc</span>                 <span class="o">:</span> <span class="s1">''</span><span class="o">,</span>
+                <span class="n">idprefix</span>            <span class="o">:</span> <span class="s1">''</span><span class="o">,</span>
+                <span class="n">idseparator</span>         <span class="o">:</span> <span class="s1">'-'</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1319,20 +1319,20 @@ a stylesheet for example. The following snippet shows a sample configuration def
 <div class="listingblock">
 <div class="title">build.gradle.kts</div>
 <div class="content">
-<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">tasks {
-  "asciidoctor"(AsciidoctorTask::class) { <i class="conum" data-value="1"></i><b>(1)</b>
-    options(mapOf("doctype" to "book", "ruby" to "erubis"))
+<pre class="rouge highlight"><code data-lang="kotlin"><span class="n">tasks</span> <span class="p">{</span>
+  <span class="s">"asciidoctor"</span><span class="p">(</span><span class="n">AsciidoctorTask</span><span class="o">::</span><span class="k">class</span><span class="p">)</span> <span class="p">{</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="n">options</span><span class="p">(</span><span class="n">mapOf</span><span class="p">(</span><span class="s">"doctype"</span> <span class="n">to</span> <span class="s">"book"</span><span class="p">,</span> <span class="s">"ruby"</span> <span class="n">to</span> <span class="s">"erubis"</span><span class="p">))</span>
 
-    attributes(
-      mapOf(
-        "source-highlighter" to "coderay",
-        "toc"                to "",
-        "idprefix            to "",
-        "idseparator"        to "-"
-      )
-    )
-  }
-}</code></pre>
+    <span class="n">attributes</span><span class="p">(</span>
+      <span class="n">mapOf</span><span class="p">(</span>
+        <span class="s">"source-highlighter"</span> <span class="n">to</span> <span class="s">"coderay"</span><span class="p">,</span>
+        <span class="s">"toc"</span>                <span class="n">to</span> <span class="s">""</span><span class="p">,</span>
+        <span class="s">"idprefix            to "",
+</span>        <span class="s">"idseparator"</span>        <span class="n">to</span> <span class="s">"-"</span>
+      <span class="p">)</span>
+    <span class="p">)</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1370,7 +1370,7 @@ To do so, first create a docinfo file <code>src/docs/asciidoc/docinfo.html</code
 <div class="listingblock">
 <div class="title">src/docs/asciidoc/docinfo.html</div>
 <div class="content">
-<pre class="highlight"><code class="language-html" data-lang="html">&lt;script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.js"&gt;&lt;/script&gt;</code></pre>
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.js"</span><span class="nt">&gt;&lt;/script&gt;</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1379,7 +1379,7 @@ To do so, first create a docinfo file <code>src/docs/asciidoc/docinfo.html</code
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">attributes docinfo1: ''</code></pre>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">attributes</span> <span class="nl">docinfo1:</span> <span class="s1">''</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1401,22 +1401,22 @@ for more information.</p>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">asciidoctorj {
-  modules {
-    pdf { <i class="conum" data-value="1"></i><b>(1)</b>
-      version '1.2.3'
-    }
-    epub { <i class="conum" data-value="2"></i><b>(2)</b>
-      version '1.2.3'
-    }
-    diagram { <i class="conum" data-value="3"></i><b>(3)</b>
-      version '1.2.3'
-    }
-    groovyDsl { <i class="conum" data-value="4"></i><b>(4)</b>
-      version '1.2.3'
-    }
-  }
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">asciidoctorj</span> <span class="o">{</span>
+  <span class="n">modules</span> <span class="o">{</span>
+    <span class="n">pdf</span> <span class="o">{</span> <i class="conum" data-value="1"></i><b>(1)</b>
+      <span class="n">version</span> <span class="s1">'1.2.3'</span>
+    <span class="o">}</span>
+    <span class="n">epub</span> <span class="o">{</span> <i class="conum" data-value="2"></i><b>(2)</b>
+      <span class="n">version</span> <span class="s1">'1.2.3'</span>
+    <span class="o">}</span>
+    <span class="n">diagram</span> <span class="o">{</span> <i class="conum" data-value="3"></i><b>(3)</b>
+      <span class="n">version</span> <span class="s1">'1.2.3'</span>
+    <span class="o">}</span>
+    <span class="n">groovyDsl</span> <span class="o">{</span> <i class="conum" data-value="4"></i><b>(4)</b>
+      <span class="n">version</span> <span class="s1">'1.2.3'</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1444,13 +1444,13 @@ for more information.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">asciidoctorj {
-  modules {
-    pdf.version '1.2.3'
-  }
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">asciidoctorj</span> <span class="o">{</span>
+  <span class="n">modules</span> <span class="o">{</span>
+    <span class="n">pdf</span><span class="o">.</span><span class="na">version</span> <span class="s1">'1.2.3'</span>
+  <span class="o">}</span>
 
-  modules.pdf.version '1.2.3'
-}</code></pre>
+  <span class="n">modules</span><span class="o">.</span><span class="na">pdf</span><span class="o">.</span><span class="na">version</span> <span class="s1">'1.2.3'</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 </div>
@@ -1462,17 +1462,17 @@ for more information.</p>
 <div class="listingblock primary">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">plugins {
-    id 'org.asciidoctor.jvm.base' version '3.0.0-alpha.3'
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">plugins</span> <span class="o">{</span>
+    <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.base'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.3'</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="listingblock secondary">
 <div class="title">build.gradle.kts</div>
 <div class="content">
-<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">plugins {
-    id("org.asciidoctor.jvm.base") version "3.0.0-alpha.3"
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="kotlin"><span class="n">plugins</span> <span class="p">{</span>
+    <span class="n">id</span><span class="p">(</span><span class="s">"org.asciidoctor.jvm.base"</span><span class="p">)</span> <span class="n">version</span> <span class="s">"3.0.0-alpha.3"</span>
+<span class="p">}</span></code></pre>
 </div>
 </div>
 </div>
@@ -1484,17 +1484,17 @@ for more information.</p>
 <div class="listingblock primary">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">plugins {
-    id 'org.asciidoctor.jvm.convert' version '3.0.0-alpha.3'
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">plugins</span> <span class="o">{</span>
+    <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.convert'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.3'</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="listingblock secondary">
 <div class="title">build.gradle.kts</div>
 <div class="content">
-<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">plugins {
-    id("org.asciidoctor.jvm.convert") version "3.0.0-alpha.3"
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="kotlin"><span class="n">plugins</span> <span class="p">{</span>
+    <span class="n">id</span><span class="p">(</span><span class="s">"org.asciidoctor.jvm.convert"</span><span class="p">)</span> <span class="n">version</span> <span class="s">"3.0.0-alpha.3"</span>
+<span class="p">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1513,17 +1513,17 @@ for more information.</p>
 <div class="listingblock primary">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">plugins {
-    id 'org.asciidoctor.jvm.pdf' version '3.0.0-alpha.3'
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">plugins</span> <span class="o">{</span>
+    <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.pdf'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.3'</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="listingblock secondary">
 <div class="title">build.gradle.kts</div>
 <div class="content">
-<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">plugins {
-    id("org.asciidoctor.jvm.pdf") version "3.0.0-alpha.3"
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="kotlin"><span class="n">plugins</span> <span class="p">{</span>
+    <span class="n">id</span><span class="p">(</span><span class="s">"org.asciidoctor.jvm.pdf"</span><span class="p">)</span> <span class="n">version</span> <span class="s">"3.0.0-alpha.3"</span>
+<span class="p">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1576,12 +1576,12 @@ Optional. When specifying a theme name it must match one registered via <code>pd
 <div class="listingblock">
 <div class="title">Registering a local theme</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">pdfThemes {
-    local 'basic', { <i class="conum" data-value="1"></i><b>(1)</b>
-        styleDir = file('themes/basic') <i class="conum" data-value="2"></i><b>(2)</b>
-        styleName = 'very-basic' <i class="conum" data-value="3"></i><b>(3)</b>
-    }
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">pdfThemes</span> <span class="o">{</span>
+    <span class="n">local</span> <span class="s1">'basic'</span><span class="o">,</span> <span class="o">{</span> <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="n">styleDir</span> <span class="o">=</span> <span class="n">file</span><span class="o">(</span><span class="s1">'themes/basic'</span><span class="o">)</span> <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="n">styleName</span> <span class="o">=</span> <span class="s1">'very-basic'</span> <i class="conum" data-value="3"></i><b>(3)</b>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1603,17 +1603,17 @@ Optional. When specifying a theme name it must match one registered via <code>pd
 <div class="listingblock">
 <div class="title">Registering a GitHub or GitLab theme</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">pdfThemes {
-    github 'basic', { <i class="conum" data-value="1"></i><b>(1)</b>
-        organisation = 'fwilhe' <i class="conum" data-value="2"></i><b>(2)</b>
-        repository = 'corporate-theme' <i class="conum" data-value="3"></i><b>(3)</b>
-        relativePath = 'resources/themes' <i class="conum" data-value="4"></i><b>(4)</b>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">pdfThemes</span> <span class="o">{</span>
+    <span class="n">github</span> <span class="s1">'basic'</span><span class="o">,</span> <span class="o">{</span> <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="n">organisation</span> <span class="o">=</span> <span class="s1">'fwilhe'</span> <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="n">repository</span> <span class="o">=</span> <span class="s1">'corporate-theme'</span> <i class="conum" data-value="3"></i><b>(3)</b>
+        <span class="n">relativePath</span> <span class="o">=</span> <span class="s1">'resources/themes'</span> <i class="conum" data-value="4"></i><b>(4)</b>
 
-        branch = 'master' <i class="conum" data-value="5"></i><b>(5)</b>
-        tag = '1.0.1' <i class="conum" data-value="6"></i><b>(6)</b>
-        commit = '4910271e8c3964b60e186a62f3e4339ed0752714' <i class="conum" data-value="7"></i><b>(7)</b>
-    }
-}</code></pre>
+        <span class="n">branch</span> <span class="o">=</span> <span class="s1">'master'</span> <i class="conum" data-value="5"></i><b>(5)</b>
+        <span class="n">tag</span> <span class="o">=</span> <span class="s1">'1.0.1'</span> <i class="conum" data-value="6"></i><b>(6)</b>
+        <span class="n">commit</span> <span class="o">=</span> <span class="s1">'4910271e8c3964b60e186a62f3e4339ed0752714'</span> <i class="conum" data-value="7"></i><b>(7)</b>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1662,17 +1662,17 @@ Optional. When specifying a theme name it must match one registered via <code>pd
 <div class="listingblock primary">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">plugins {
-    id 'org.asciidoctor.jvm.epub' version '3.0.0-alpha.3'
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">plugins</span> <span class="o">{</span>
+    <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.epub'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.3'</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="listingblock secondary">
 <div class="title">build.gradle.kts</div>
 <div class="content">
-<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">plugins {
-    id("org.asciidoctor.jvm.epub") version "3.0.0-alpha.3"
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="kotlin"><span class="n">plugins</span> <span class="p">{</span>
+    <span class="n">id</span><span class="p">(</span><span class="s">"org.asciidoctor.jvm.epub"</span><span class="p">)</span> <span class="n">version</span> <span class="s">"3.0.0-alpha.3"</span>
+<span class="p">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1727,17 +1727,17 @@ KF8 formats cannot be generated under Windows at present.
 <div class="listingblock primary">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">plugins {
-    id 'org.asciidoctor.jvm.revealjs' version '3.0.0-alpha.3'
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">plugins</span> <span class="o">{</span>
+    <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.revealjs'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.3'</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="listingblock secondary">
 <div class="title">build.gradle.kts</div>
 <div class="content">
-<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">plugins {
-    id("org.asciidoctor.jvm.revealjs") version "3.0.0-alpha.3"
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="kotlin"><span class="n">plugins</span> <span class="p">{</span>
+    <span class="n">id</span><span class="p">(</span><span class="s">"org.asciidoctor.jvm.revealjs"</span><span class="p">)</span> <span class="n">version</span> <span class="s">"3.0.0-alpha.3"</span>
+<span class="p">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1803,15 +1803,15 @@ The theme must match one from the template.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">revealjs {
-  version = '1.1.3' <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">revealjs</span> <span class="o">{</span>
+  <span class="n">version</span> <span class="o">=</span> <span class="s1">'1.1.3'</span> <i class="conum" data-value="1"></i><b>(1)</b>
 
-  templateGitHub {  <i class="conum" data-value="2"></i><b>(2)</b>
-    organisation = 'hakimel'
-    repository = 'reveal.js'
-    tag = '3.7.0'
-  }
-}</code></pre>
+  <span class="n">templateGitHub</span> <span class="o">{</span>  <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="n">organisation</span> <span class="o">=</span> <span class="s1">'hakimel'</span>
+    <span class="n">repository</span> <span class="o">=</span> <span class="s1">'reveal.js'</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="s1">'3.7.0'</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1836,11 +1836,11 @@ The theme must match one from the template.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">asciidoctorRevealJs {
-  revealjsOptions { <i class="conum" data-value="1"></i><b>(1)</b>
-    controls = true
-  }
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">asciidoctorRevealJs</span> <span class="o">{</span>
+  <span class="n">revealjsOptions</span> <span class="o">{</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="n">controls</span> <span class="o">=</span> <span class="kc">true</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -2114,12 +2114,12 @@ diagramming will be available. If it is not set the <code>asciidoctorj-diagram</
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">asciidoctorj {
-    modules {
-       diagram.use() <i class="conum" data-value="1"></i><b>(1)</b>
-       diagram.version '1.5.16' <i class="conum" data-value="2"></i><b>(2)</b>
-    }
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">asciidoctorj</span> <span class="o">{</span>
+    <span class="n">modules</span> <span class="o">{</span>
+       <span class="n">diagram</span><span class="o">.</span><span class="na">use</span><span class="o">()</span> <i class="conum" data-value="1"></i><b>(1)</b>
+       <span class="n">diagram</span><span class="o">.</span><span class="na">version</span> <span class="s1">'1.5.16'</span> <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -2161,8 +2161,8 @@ If you using OpenJDK 9/10 on MacOS you might find an error such as below
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ sudo mkdir -p /Users/jenkins/workspace/openjdk10_build_x86-64_macos/openjdk/installedfreetype
-$ sudo ln -s /opt/local/lib /Users/jenkins/workspace/openjdk10_build_x86-64_macos/openjdk/installedfreetype/lib <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+<pre class="rouge highlight"><code data-lang="bash"><span class="nv">$ </span><span class="nb">sudo mkdir</span> <span class="nt">-p</span> /Users/jenkins/workspace/openjdk10_build_x86-64_macos/openjdk/installedfreetype
+<span class="nv">$ </span><span class="nb">sudo ln</span> <span class="nt">-s</span> /opt/local/lib /Users/jenkins/workspace/openjdk10_build_x86-64_macos/openjdk/installedfreetype/lib <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -2184,21 +2184,21 @@ $ sudo ln -s /opt/local/lib /Users/jenkins/workspace/openjdk10_build_x86-64_maco
 <div class="listingblock primary">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">plugins {
-    id 'org.asciidoctor.jvm.gems' version '3.0.0-alpha.3'
-}
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">plugins</span> <span class="o">{</span>
+    <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.gems'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.3'</span>
+<span class="o">}</span>
 
-repositories {
-    maven { url 'http://rubygems-proxy.torquebox.org/releases' } <i class="conum" data-value="1"></i><b>(1)</b>
-}
+<span class="n">repositories</span> <span class="o">{</span>
+    <span class="n">maven</span> <span class="o">{</span> <span class="n">url</span> <span class="s1">'http://rubygems-proxy.torquebox.org/releases'</span> <span class="o">}</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="o">}</span>
 
-dependencies {
-    asciidoctorGems 'rubygems:asciidoctor-revealjs:1.1.3' <i class="conum" data-value="2"></i><b>(2)</b>
-}
+<span class="n">dependencies</span> <span class="o">{</span>
+    <span class="n">asciidoctorGems</span> <span class="s1">'rubygems:asciidoctor-revealjs:1.1.3'</span> <i class="conum" data-value="2"></i><b>(2)</b>
+<span class="o">}</span>
 
-asciidoctorj {
-    requires 'asciidoctor-revealjs' <i class="conum" data-value="3"></i><b>(3)</b>
-}</code></pre>
+<span class="n">asciidoctorj</span> <span class="o">{</span>
+    <span class="n">requires</span> <span class="s1">'asciidoctor-revealjs'</span> <i class="conum" data-value="3"></i><b>(3)</b>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -2220,9 +2220,9 @@ asciidoctorj {
 <div class="listingblock secondary">
 <div class="title">build.gradle.kts</div>
 <div class="content">
-<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">plugins {
-    id("org.asciidoctor.jvm.gems") version "3.0.0-alpha.3"
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="kotlin"><span class="n">plugins</span> <span class="p">{</span>
+    <span class="n">id</span><span class="p">(</span><span class="s">"org.asciidoctor.jvm.gems"</span><span class="p">)</span> <span class="n">version</span> <span class="s">"3.0.0-alpha.3"</span>
+<span class="p">}</span></code></pre>
 </div>
 </div>
 </div>
@@ -2233,17 +2233,17 @@ asciidoctorj {
 <div class="listingblock primary">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">plugins {
-    id 'org.asciidoctor.kindlegen.base' version '3.0.0-alpha.3'
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">plugins</span> <span class="o">{</span>
+    <span class="n">id</span> <span class="s1">'org.asciidoctor.kindlegen.base'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.3'</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="listingblock secondary">
 <div class="title">build.gradle.kts</div>
 <div class="content">
-<pre class="highlight"><code class="language-kotlin" data-lang="kotlin">plugins {
-    id("org.asciidoctor.kindlegen.base") version "3.0.0-alpha.3"
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="kotlin"><span class="n">plugins</span> <span class="p">{</span>
+    <span class="n">id</span><span class="p">(</span><span class="s">"org.asciidoctor.kindlegen.base"</span><span class="p">)</span> <span class="n">version</span> <span class="s">"3.0.0-alpha.3"</span>
+<span class="p">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2255,9 +2255,9 @@ you will need to agree to the Amazon terms of usage. To confirm this you need to
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">kindlegen {
-  agreeToTermsOfUse = true
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">kindlegen</span> <span class="o">{</span>
+  <span class="n">agreeToTermsOfUse</span> <span class="o">=</span> <span class="kc">true</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2293,17 +2293,17 @@ is just like any other Java/Groovy project. You simply define a dependency using
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">configurations {
-    asciidoctorExt
-}
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">configurations</span> <span class="o">{</span>
+    <span class="n">asciidoctorExt</span>
+<span class="o">}</span>
 
-dependencies {
-    asciidoctorExt 'com.acme:asciidoctor-extensions:x.y.z'
-}
+<span class="n">dependencies</span> <span class="o">{</span>
+    <span class="n">asciidoctorExt</span> <span class="s1">'com.acme:asciidoctor-extensions:x.y.z'</span>
+<span class="o">}</span>
 
-asciidoctor {
-    configurations 'asciidoctorExt'
-}</code></pre>
+<span class="n">asciidoctor</span> <span class="o">{</span>
+    <span class="n">configurations</span> <span class="s1">'asciidoctorExt'</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 </div>
@@ -2316,7 +2316,7 @@ following setup:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>.
+<pre class="rouge highlight"><code>.
 ├── build.gradle
 ├── core
 │   ├── build.gradle
@@ -2348,25 +2348,25 @@ following setup:</p>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">plugins {
-   id 'org.asciidoctor.jvm.convert' version '3.0.0-alpha.3'
-}
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">plugins</span> <span class="o">{</span>
+   <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.convert'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.3'</span>
+<span class="o">}</span>
 
-repositories {
-    jcenter()
-}
+<span class="n">repositories</span> <span class="o">{</span>
+    <span class="n">jcenter</span><span class="o">()</span>
+<span class="o">}</span>
 
-configuration {
-    asciidoctorExtensions
-}
+<span class="n">configuration</span> <span class="o">{</span>
+    <span class="n">asciidoctorExtensions</span>
+<span class="o">}</span>
 
-dependencies {
-    asciidoctorExtensions project(':extension')
-}
+<span class="n">dependencies</span> <span class="o">{</span>
+    <span class="n">asciidoctorExtensions</span> <span class="nf">project</span><span class="o">(</span><span class="s1">':extension'</span><span class="o">)</span>
+<span class="o">}</span>
 
-asciidoctor {
-    configurations 'asciidoctorExtensions'
-}</code></pre>
+<span class="n">asciidoctor</span> <span class="o">{</span>
+    <span class="n">configurations</span> <span class="s1">'asciidoctorExtensions'</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2375,13 +2375,13 @@ asciidoctor {
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">plugins {
-   id 'org.asciidoctor.jvm.convert' version '3.0.0-alpha.3'
-}
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">plugins</span> <span class="o">{</span>
+   <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.convert'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.3'</span>
+<span class="o">}</span>
 
-asciidoctorj {
-    docExtensions project(':extension')
-}</code></pre>
+<span class="n">asciidoctorj</span> <span class="o">{</span>
+    <span class="n">docExtensions</span> <span class="nf">project</span><span class="o">(</span><span class="s1">':extension'</span><span class="o">)</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2398,18 +2398,18 @@ An extension is registered via the <code>docExtensions</code> element.</p>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">asciidoctorj {
-    docExtensions {
-        block(name: "BIG", contexts: [":paragraph"]) {
-            parent, reader, attributes -&gt;
-            def upperLines = reader.readLines()
-                .collect {it.toUpperCase()}
-                .inject("") {a, b -&gt; a + '\n' + b}
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">asciidoctorj</span> <span class="o">{</span>
+    <span class="n">docExtensions</span> <span class="o">{</span>
+        <span class="n">block</span><span class="o">(</span><span class="nl">name:</span> <span class="s2">"BIG"</span><span class="o">,</span> <span class="nl">contexts:</span> <span class="o">[</span><span class="s2">":paragraph"</span><span class="o">])</span> <span class="o">{</span>
+            <span class="n">parent</span><span class="o">,</span> <span class="n">reader</span><span class="o">,</span> <span class="n">attributes</span> <span class="o">-&gt;</span>
+            <span class="kt">def</span> <span class="n">upperLines</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="na">readLines</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">collect</span> <span class="o">{</span><span class="n">it</span><span class="o">.</span><span class="na">toUpperCase</span><span class="o">()}</span>
+                <span class="o">.</span><span class="na">inject</span><span class="o">(</span><span class="s2">""</span><span class="o">)</span> <span class="o">{</span><span class="n">a</span><span class="o">,</span> <span class="n">b</span> <span class="o">-&gt;</span> <span class="n">a</span> <span class="o">+</span> <span class="s1">'\n'</span> <span class="o">+</span> <span class="n">b</span><span class="o">}</span>
 
-            createBlock(parent, "paragraph", [upperLines], attributes, [:])
-        }
-    }
-}</code></pre>
+            <span class="n">createBlock</span><span class="o">(</span><span class="n">parent</span><span class="o">,</span> <span class="s2">"paragraph"</span><span class="o">,</span> <span class="o">[</span><span class="n">upperLines</span><span class="o">],</span> <span class="n">attributes</span><span class="o">,</span> <span class="o">[:])</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2421,22 +2421,22 @@ An extension is registered via the <code>docExtensions</code> element.</p>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">asciidoctorj {
-    docExtensions file('big.groovy')
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">asciidoctorj</span> <span class="o">{</span>
+    <span class="n">docExtensions</span> <span class="nf">file</span><span class="o">(</span><span class="s1">'big.groovy'</span><span class="o">)</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">big.groovy</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">block(name: "BIG", contexts: [":paragraph"]) {
-    parent, reader, attributes -&gt;
-    def upperLines = reader.readLines()
-        .collect {it.toUpperCase()}
-        .inject("") {a, b -&gt; a + '\n' + b}
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">block</span><span class="o">(</span><span class="nl">name:</span> <span class="s2">"BIG"</span><span class="o">,</span> <span class="nl">contexts:</span> <span class="o">[</span><span class="s2">":paragraph"</span><span class="o">])</span> <span class="o">{</span>
+    <span class="n">parent</span><span class="o">,</span> <span class="n">reader</span><span class="o">,</span> <span class="n">attributes</span> <span class="o">-&gt;</span>
+    <span class="kt">def</span> <span class="n">upperLines</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="na">readLines</span><span class="o">()</span>
+        <span class="o">.</span><span class="na">collect</span> <span class="o">{</span><span class="n">it</span><span class="o">.</span><span class="na">toUpperCase</span><span class="o">()}</span>
+        <span class="o">.</span><span class="na">inject</span><span class="o">(</span><span class="s2">""</span><span class="o">)</span> <span class="o">{</span><span class="n">a</span><span class="o">,</span> <span class="n">b</span> <span class="o">-&gt;</span> <span class="n">a</span> <span class="o">+</span> <span class="s1">'\n'</span> <span class="o">+</span> <span class="n">b</span><span class="o">}</span>
 
-    createBlock(parent, "paragraph", [upperLines], attributes, [:])
-}</code></pre>
+    <span class="n">createBlock</span><span class="o">(</span><span class="n">parent</span><span class="o">,</span> <span class="s2">"paragraph"</span><span class="o">,</span> <span class="o">[</span><span class="n">upperLines</span><span class="o">],</span> <span class="n">attributes</span><span class="o">,</span> <span class="o">[:])</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 </div>
@@ -2587,9 +2587,9 @@ If you are still on a 1.5/1.6 version of the plugin, upgrade to the latest 2.x v
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">asciidoctorj {
-    attributes revnumber : { project.version.toString() }
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">asciidoctorj</span> <span class="o">{</span>
+    <span class="n">attributes</span> <span class="n">revnumber</span> <span class="o">:</span> <span class="o">{</span> <span class="n">project</span><span class="o">.</span><span class="na">version</span><span class="o">.</span><span class="na">toString</span><span class="o">()</span> <span class="o">}</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 </div>
@@ -2601,12 +2601,12 @@ If you are still on a 1.5/1.6 version of the plugin, upgrade to the latest 2.x v
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">asciidoctor.doFirst {
-  // pre-process
-}
-asciidoctor.doLast {
-  // post-process
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">asciidoctor</span><span class="o">.</span><span class="na">doFirst</span> <span class="o">{</span>
+  <span class="c1">// pre-process</span>
+<span class="o">}</span>
+<span class="n">asciidoctor</span><span class="o">.</span><span class="na">doLast</span> <span class="o">{</span>
+  <span class="c1">// post-process</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2615,13 +2615,13 @@ asciidoctor.doLast {
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">asciidoctor.doLast {
-    copy {
-        from 'build/docs/html5'
-        into "$projectDir"
-        include 'index.html'
-    }
-}</code></pre>
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">asciidoctor</span><span class="o">.</span><span class="na">doLast</span> <span class="o">{</span>
+    <span class="n">copy</span> <span class="o">{</span>
+        <span class="n">from</span> <span class="s1">'build/docs/html5'</span>
+        <span class="n">into</span> <span class="s2">"$projectDir"</span>
+        <span class="n">include</span> <span class="s1">'index.html'</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 </div>
@@ -2641,29 +2641,29 @@ You need to have Python 2.x installed on a system or in a container for Pygments
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">plugins {
-  id 'org.asciidoctor.jvm.pdf' version '3.0.0-alpha.3'
-  id 'org.asciidoctor.jvm.gems' version '3.0.0-alpha.3'
-}
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">plugins</span> <span class="o">{</span>
+  <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.pdf'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.3'</span>
+  <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.gems'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.3'</span>
+<span class="o">}</span>
 
-repositories {
-    jcenter()
-    maven { url 'http://rubygems-proxy.torquebox.org/releases' }
-}
+<span class="n">repositories</span> <span class="o">{</span>
+    <span class="n">jcenter</span><span class="o">()</span>
+    <span class="n">maven</span> <span class="o">{</span> <span class="n">url</span> <span class="s1">'http://rubygems-proxy.torquebox.org/releases'</span> <span class="o">}</span>
+<span class="o">}</span>
 
-dependencies {
-  asciidoctorGems 'rubygems:pygments:1.2.1'
-}
+<span class="n">dependencies</span> <span class="o">{</span>
+  <span class="n">asciidoctorGems</span> <span class="s1">'rubygems:pygments:1.2.1'</span>
+<span class="o">}</span>
 
-asciidoctorPdf {
-  dependsOn asciidoctorGemsPrepare
-  sourceDir 'docs'
+<span class="n">asciidoctorPdf</span> <span class="o">{</span>
+  <span class="n">dependsOn</span> <span class="n">asciidoctorGemsPrepare</span>
+  <span class="n">sourceDir</span> <span class="s1">'docs'</span>
 
-  asciidoctorj {
-    requires 'pygments'
-    attributes 'source-highlighter' : 'pygments'
-  }
-}</code></pre>
+  <span class="n">asciidoctorj</span> <span class="o">{</span>
+    <span class="n">requires</span> <span class="s1">'pygments'</span>
+    <span class="n">attributes</span> <span class="s1">'source-highlighter'</span> <span class="o">:</span> <span class="s1">'pygments'</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 </div>
@@ -2715,8 +2715,219 @@ The <code>master</code> branch represents the code for the latest 2.x release of
 <div id="footer">
 <div id="footer-text">
 Version 3.0.0-alpha.3<br>
-Last updated 2019-07-03 20:33:40 UTC
+Last updated 2019-07-04 07:35:45 UTC
 </div>
 </div>
+<style>
+pre.rouge table td { padding: 5px; }
+pre.rouge table pre { margin: 0; }
+pre.rouge .cm {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .cp {
+  color: #999999;
+  font-weight: bold;
+}
+pre.rouge .c1 {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .cs {
+  color: #999999;
+  font-weight: bold;
+  font-style: italic;
+}
+pre.rouge .c, pre.rouge .cd {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .err {
+  color: #a61717;
+  background-color: #e3d2d2;
+}
+pre.rouge .gd {
+  color: #000000;
+  background-color: #ffdddd;
+}
+pre.rouge .ge {
+  color: #000000;
+  font-style: italic;
+}
+pre.rouge .gr {
+  color: #aa0000;
+}
+pre.rouge .gh {
+  color: #999999;
+}
+pre.rouge .gi {
+  color: #000000;
+  background-color: #ddffdd;
+}
+pre.rouge .go {
+  color: #888888;
+}
+pre.rouge .gp {
+  color: #555555;
+}
+pre.rouge .gs {
+  font-weight: bold;
+}
+pre.rouge .gu {
+  color: #aaaaaa;
+}
+pre.rouge .gt {
+  color: #aa0000;
+}
+pre.rouge .kc {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kd {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kn {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kp {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kr {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kt {
+  color: #445588;
+  font-weight: bold;
+}
+pre.rouge .k, pre.rouge .kv {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .mf {
+  color: #009999;
+}
+pre.rouge .mh {
+  color: #009999;
+}
+pre.rouge .il {
+  color: #009999;
+}
+pre.rouge .mi {
+  color: #009999;
+}
+pre.rouge .mo {
+  color: #009999;
+}
+pre.rouge .m, pre.rouge .mb, pre.rouge .mx {
+  color: #009999;
+}
+pre.rouge .sb {
+  color: #d14;
+}
+pre.rouge .sc {
+  color: #d14;
+}
+pre.rouge .sd {
+  color: #d14;
+}
+pre.rouge .s2 {
+  color: #d14;
+}
+pre.rouge .se {
+  color: #d14;
+}
+pre.rouge .sh {
+  color: #d14;
+}
+pre.rouge .si {
+  color: #d14;
+}
+pre.rouge .sx {
+  color: #d14;
+}
+pre.rouge .sr {
+  color: #009926;
+}
+pre.rouge .s1 {
+  color: #d14;
+}
+pre.rouge .ss {
+  color: #990073;
+}
+pre.rouge .s {
+  color: #d14;
+}
+pre.rouge .na {
+  color: #008080;
+}
+pre.rouge .bp {
+  color: #999999;
+}
+pre.rouge .nb {
+  color: #0086B3;
+}
+pre.rouge .nc {
+  color: #445588;
+  font-weight: bold;
+}
+pre.rouge .no {
+  color: #008080;
+}
+pre.rouge .nd {
+  color: #3c5d5d;
+  font-weight: bold;
+}
+pre.rouge .ni {
+  color: #800080;
+}
+pre.rouge .ne {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nf {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nl {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nn {
+  color: #555555;
+}
+pre.rouge .nt {
+  color: #000080;
+}
+pre.rouge .vc {
+  color: #008080;
+}
+pre.rouge .vg {
+  color: #008080;
+}
+pre.rouge .vi {
+  color: #008080;
+}
+pre.rouge .nv {
+  color: #008080;
+}
+pre.rouge .ow {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .o {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .w {
+  color: #bbbbbb;
+}
+pre.rouge {
+  background-color: #f8f8f8;
+}
+</style>
 </body>
 </html>
