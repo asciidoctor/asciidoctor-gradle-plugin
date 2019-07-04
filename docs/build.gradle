@@ -72,7 +72,8 @@ asciidoctor {
     }
 
     attributes toc: 'right',
-        toclevels: 2
+        toclevels: 2,
+        'source-highlighter': 'rouge'
 
     docProjects.each { proj ->
         attributes "plugin-${proj}" : file("${prepareSources.destinationDir}/${pluginDirName(proj)}/src")
