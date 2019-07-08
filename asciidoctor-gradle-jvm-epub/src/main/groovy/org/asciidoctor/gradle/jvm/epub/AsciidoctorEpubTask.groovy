@@ -62,7 +62,7 @@ class AsciidoctorEpubTask extends AbstractAsciidoctorTask {
         kindleGenExtension = project.extensions.getByType(KindleGenExtension)
         sourceDir = 'src/docs/asciidocEpub'
 
-        // TODO: We are setting this curretnly to fix a problem in asciidoctor-epub GEM.
+        // TODO: We are setting this currently to fix a problem in asciidoctor-epub GEM.
         useIntermediateWorkDir()
     }
 
