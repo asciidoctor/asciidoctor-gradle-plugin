@@ -61,6 +61,9 @@ class AsciidoctorEpubTask extends AbstractAsciidoctorTask {
         inProcess = JAVA_EXEC
         kindleGenExtension = project.extensions.getByType(KindleGenExtension)
         sourceDir = 'src/docs/asciidocEpub'
+
+        // TODO: We are setting this curretnly to fix a problem in asciidoctor-epub GEM.
+        useIntermediateWorkDir()
     }
 
     /** The eBook formats that needs to be generated.
