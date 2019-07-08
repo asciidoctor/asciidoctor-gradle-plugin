@@ -20,4 +20,3 @@
 :plugin-name: Asciidoctor Gradle plugin
 :project-full-path: asciidoctor/asciidoctor-gradle-plugin
 :project-name: asciidoctor-gradle-plugin
-:toc:
