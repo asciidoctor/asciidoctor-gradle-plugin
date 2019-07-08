@@ -69,6 +69,14 @@ class AbstractImplementationEngineExtensionSpec extends Specification {
         !projectExtension.getAttributesForLang(EN).foo2
     }
 
+    void 'Set single attribute'() {
+        when:
+        projectExtension.attribute('name', 'value')
+
+        then:
+        projectExtension.attributes['name'] == 'value'
+    }
+
     static class TestExtension extends AbstractImplementationEngineExtension {
         TestExtension(Project project) {
             super(project, 'org.asciidoctor.gradle.base.test')
