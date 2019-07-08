@@ -124,6 +124,17 @@ abstract class AbstractImplementationEngineExtension extends AbstractCombinedPro
         this.attributes.putAll(m)
     }
 
+    /** Add a single attribute
+     *
+     * @param key Name of attribute
+     * @param value Value of attribute.
+     *
+     * @since 3.0
+     */
+    void attribute(String key, Object value) {
+        this.attributes.put(key, value)
+    }
+
     /** Adds an additional attribute provider.
      *
      * @param provider
@@ -155,7 +166,7 @@ abstract class AbstractImplementationEngineExtension extends AbstractCombinedPro
             ) { AbstractImplementationEngineExtension it ->
                 it.getAttributesForLang(lang)
             }
-        } else if (task)  {
+        } else if (task) {
             extFromProject.getAttributesForLang(lang)
         } else {
             langAttrs?.attributes ?: [:]
@@ -171,7 +182,7 @@ abstract class AbstractImplementationEngineExtension extends AbstractCombinedPro
      * @param m Map with new language-specific attributes
      * @param lang Language for which attributes need to be reset.
      */
-    void resetAttributesForLang(Map<String,Object> m, String lang) {
+    void resetAttributesForLang(Map<String, Object> m, String lang) {
         if (!this.langAttributes.containsKey(lang)) {
             this.langAttributes.put(lang, new LanguageAttributes())
         }
@@ -193,7 +204,7 @@ abstract class AbstractImplementationEngineExtension extends AbstractCombinedPro
      * @param lang Language for which attributes need to be reset.
      */
     @SuppressWarnings('ConfusingMethodName')
-    void attributesForLang(Map<String,Object> m, String lang) {
+    void attributesForLang(Map<String, Object> m, String lang) {
         if (!this.langAttributes.containsKey(lang)) {
             this.langAttributes.put(lang, new LanguageAttributes())
         }
