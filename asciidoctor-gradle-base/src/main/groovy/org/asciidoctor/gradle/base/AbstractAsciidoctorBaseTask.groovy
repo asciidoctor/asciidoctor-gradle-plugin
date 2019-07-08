@@ -28,7 +28,9 @@ import org.gradle.api.InvalidUserDataException
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileTree
+import org.gradle.api.file.FileTreeElement
 import org.gradle.api.provider.Provider
+import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.Console
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
@@ -38,6 +40,7 @@ import org.gradle.api.tasks.OutputDirectories
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.SkipWhenEmpty
+import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.api.tasks.util.PatternSet
 import org.ysb33r.grolifant.api.FileUtils
 import org.ysb33r.grolifant.api.StringUtils
@@ -672,9 +675,14 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * @return Source tree based upon configured pattern.
      */
     protected FileTree getSecondarySourceFileTreeFrom(File dir) {
-        FileTree initialTree = project.fileTree(dir).
-            matching(this.secondarySourceDocumentPattern ?: defaultSecondarySourceDocumentPattern)
-        (initialTree - getSourceFileTreeFrom(dir)).asFileTree
+        FileTree doNotInclude = getSourceFileTreeFrom(dir)
+        project.fileTree(dir)
+            .matching(this.secondarySourceDocumentPattern ?: defaultSecondarySourceDocumentPattern)
+            .matching { PatternFilterable target ->
+                target.exclude({ FileTreeElement element ->
+                    doNotInclude.contains(element.file)
+                } as Spec<FileTreeElement>)
+            }
     }
 
     /** The default PatternSet that will be used if {@code sources} was never called
