@@ -1,5 +1,11 @@
 = Asciidoctor Gradle Plugin Suite
 include::attributes.adoc[]
+ifdef::env-idea[]
+:toc: preamble
+endif::[]
+ifeval::[{env}!=idea]
+:toc: right
+endif::[]
 
 The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to convert all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
 
