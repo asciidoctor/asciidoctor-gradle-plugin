@@ -56,7 +56,7 @@ import static org.ysb33r.grolifant.api.FileUtils.filesFromCopySpec
  * @since 3.0
  */
 @CompileStatic
-@SuppressWarnings(['MethodCount'])
+@SuppressWarnings(['MethodCount', 'ClassSize'])
 abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
 
     private Object srcDir
@@ -86,6 +86,16 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * @param f Any object convertible with {@code project.file}.
      */
     void setSourceDir(Object f) {
+        this.srcDir = f
+    }
+
+    /** Sets the new Asciidoctor parent source directory in a declarative style.
+     *
+     * @param f Any object convertible with {@code project.file}.
+     *
+     * @since 3.0
+     */
+    void sourceDir(Object f) {
         this.srcDir = f
     }
 
