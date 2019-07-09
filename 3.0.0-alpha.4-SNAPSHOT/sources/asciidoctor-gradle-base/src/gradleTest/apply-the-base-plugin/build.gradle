@@ -1,9 +1,0 @@
-plugins {
-    id 'org.asciidoctor.base'
-}
-
-task runGradleTest {
-    doLast {
-        println("hello")
-    }
-}
