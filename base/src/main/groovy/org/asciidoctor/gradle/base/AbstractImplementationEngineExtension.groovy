@@ -43,49 +43,13 @@ abstract class AbstractImplementationEngineExtension extends AbstractCombinedPro
         final Map<String, Object> attributes = [:]
     }
 
-    /** Returns the Asciidoctor SafeMode under which a conversion will be run.
-     *
-     * @return Asciidoctor Safe Mode
-     */
-    SafeMode getSafeMode() {
-        (task && this.safeMode || !task) ? this.safeMode : extFromProject.safeMode
-    }
-
-    /** Set Asciidoctor safe mode.
-     *
-     * @param mode An instance of Asciidoctor SafeMode.
-     */
-    void setSafeMode(SafeMode mode) {
-        this.safeMode = mode
-    }
-
-    /** Set Asciidoctor safe mode.
-     *
-     * @param mode A valid integer representing a Safe Mode
-     */
-    void setSafeMode(int mode) {
-        this.safeMode = SafeMode.safeMode(mode)
-    }
-
-    /** Set Asciidoctor safe mode.
-     *
-     * @param mode A valid string representing a Safe Mode
-     */
-    void setSafeMode(String mode) {
-        this.safeMode = SafeMode.valueOf(mode.toUpperCase())
-    }
-
-    /** Returns a list of additional attribute providers.
-     *
-     * @return List of providers. Can be empty. Never {@code null}.
-     */
-    List<AsciidoctorAttributeProvider> getAttributeProviders() {
-        if (task) {
-            this.attributeProviders.empty ? extFromProject.attributeProviders : this.attributeProviders
-        } else {
-            this.attributeProviders
-        }
-    }
+    /* -------------------------
+       tag::extension-property[]
+        attributes:: Asciidoctor attributes.
+          Use `attributes` to append and `setAttributes` to replace any current attributes with a new set.
+          Attribute values are lazy-evaluated to strings. See <<attributes>> for more detail.
+       end::extension-property[]
+       ------------------------- */
 
     /** Returns all of the Asciidoctor options.
      *
@@ -135,6 +99,25 @@ abstract class AbstractImplementationEngineExtension extends AbstractCombinedPro
         this.attributes.put(key, value)
     }
 
+    /* -------------------------
+       tag::extension-property[]
+       attributeProviders:: Additional sources where attributes can be obtained from.
+         Attribute providers are useful for where changes should not cause a rebuild of the docs.
+       end::extension-property[]
+       ------------------------- */
+
+    /** Returns a list of additional attribute providers.
+     *
+     * @return List of providers. Can be empty. Never {@code null}.
+     */
+    List<AsciidoctorAttributeProvider> getAttributeProviders() {
+        if (task) {
+            this.attributeProviders.empty ? extFromProject.attributeProviders : this.attributeProviders
+        } else {
+            this.attributeProviders
+        }
+    }
+
     /** Adds an additional attribute provider.
      *
      * @param provider
@@ -150,6 +133,14 @@ abstract class AbstractImplementationEngineExtension extends AbstractCombinedPro
     void attributeProvider(Closure provider) {
         attributeProvider(provider as AsciidoctorAttributeProvider)
     }
+
+    /* -------------------------
+       tag::extension-property[]
+       attributesForLang:: Language-specific attributes.
+         Specify additional attributes which will only be added if a  source set for the specified language
+         is being processed.
+       end::extension-property[]
+       ------------------------- */
 
     /** Returns all of the Asciidoctor attributes for a specific language.
      *
@@ -210,6 +201,46 @@ abstract class AbstractImplementationEngineExtension extends AbstractCombinedPro
         }
 
         this.langAttributes[lang].attributes.putAll(m)
+    }
+
+    /* -------------------------
+       tag::extension-property[]
+       safeMode:: Asciidoctor safe mode.
+         Set the Safe mode as either `UNSAFE`, `SAFE`, `SERVER`, `SECURE`.
+         Can be a number (0, 1, 10, 20), a string, or the entity name
+       end::extension-property[]
+       ------------------------- */
+
+    /** Returns the Asciidoctor SafeMode under which a conversion will be run.
+     *
+     * @return Asciidoctor Safe Mode
+     */
+    SafeMode getSafeMode() {
+        (task && this.safeMode || !task) ? this.safeMode : extFromProject.safeMode
+    }
+
+    /** Set Asciidoctor safe mode.
+     *
+     * @param mode An instance of Asciidoctor SafeMode.
+     */
+    void setSafeMode(SafeMode mode) {
+        this.safeMode = mode
+    }
+
+    /** Set Asciidoctor safe mode.
+     *
+     * @param mode A valid integer representing a Safe Mode
+     */
+    void setSafeMode(int mode) {
+        this.safeMode = SafeMode.safeMode(mode)
+    }
+
+    /** Set Asciidoctor safe mode.
+     *
+     * @param mode A valid string representing a Safe Mode
+     */
+    void setSafeMode(String mode) {
+        this.safeMode = SafeMode.valueOf(mode.toUpperCase())
     }
 
     protected AbstractImplementationEngineExtension(Project project, String moduleResourceName) {
@@ -306,5 +337,4 @@ abstract class AbstractImplementationEngineExtension extends AbstractCombinedPro
     private AbstractImplementationEngineExtension getExtFromProject() {
         task ? (AbstractImplementationEngineExtension) projectExtension : this
     }
-
 }

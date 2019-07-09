@@ -5,8 +5,10 @@ ext {
         switch(pluginName) {
             case 'kindlegen':
                 return 'kindlegen-gradle'
+            case 'jvm-gems':
+                return 'gems'
             default:
-                "asciidoctor-gradle-${pluginName}".toString()
+                pluginName
         }
     }
 
