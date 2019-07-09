@@ -1,6 +1,0 @@
-org.asciidoctor.gradle.base
-org.asciidoctor.gradle.base.basedir
-org.asciidoctor.gradle.base.internal
-org.asciidoctor.gradle.base.internal.slides
-org.asciidoctor.gradle.base.process
-org.asciidoctor.gradle.base.slides
