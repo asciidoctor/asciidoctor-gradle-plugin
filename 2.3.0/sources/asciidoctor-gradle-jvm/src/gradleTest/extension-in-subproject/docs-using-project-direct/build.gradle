@@ -1,0 +1,13 @@
+apply plugin : 'org.asciidoctor.jvm.convert'
+
+repositories {
+    jcenter()
+}
+
+asciidoctorj {
+    docExtensions project(':extension')
+}
+
+asciidoctor {
+    inProcess JAVA_EXEC
+}

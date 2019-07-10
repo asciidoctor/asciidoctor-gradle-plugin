@@ -1,0 +1,10 @@
+plugins {
+    id 'groovy'
+}
+
+
+dependencies {
+    compileOnly "org.codehaus.groovy:groovy:${System.getProperty('GROOVY_VERSION')}"
+    compileOnly "org.asciidoctor:asciidoctorj:${System.getProperty('ASCIIDOCTORJ_VERSION')}"
+}
+
