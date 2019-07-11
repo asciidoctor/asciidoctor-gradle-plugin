@@ -15,9 +15,11 @@
  */
 package org.asciidoctor.gradle.jvm.pdf
 
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask
 import org.asciidoctor.gradle.base.process.ProcessMode
+import org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask
+import org.asciidoctor.gradle.jvm.AsciidoctorJExtension
 import org.gradle.api.Project
 import org.gradle.api.UnknownDomainObjectException
 @java.lang.SuppressWarnings('NoWildcardImports')
@@ -30,8 +32,7 @@ import javax.inject.Inject
 
 /** Asciidoctor task that is specialises in PDF conversion.
  *
- * @since 2.0.0
- * @author Schalk W. Cronjé
+ * @since 2.0.0* @author Schalk W. Cronjé
  */
 @CompileStatic
 class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
@@ -86,8 +87,8 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
     @PathSensitive(PathSensitivity.RELATIVE)
     @Optional
     @SuppressWarnings('LineLength')
-    File getStylesDir() {
-        this.theme != null ? project.extensions.getByType(AsciidoctorPdfThemesExtension).getByName(this.theme).styleDir : null
+    File getThemesDir() {
+        themeDescriptor?.themeDir
     }
 
     /** The theme to use.
@@ -97,8 +98,8 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
     @Input
     @Optional
     @SuppressWarnings('LineLength')
-    String getStyleName() {
-        this.theme != null ? project.extensions.getByType(AsciidoctorPdfThemesExtension).getByName(this.theme).styleName : null
+    String getThemeName() {
+        themeDescriptor?.themeName
     }
 
     /** Selects a final process mode of PDF processing.
@@ -146,21 +147,37 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
     protected Map<String, Object> getTaskSpecificDefaultAttributes(File workingSourceDir) {
         Map<String, Object> attrs = super.getTaskSpecificDefaultAttributes(workingSourceDir)
 
+        boolean useOldAttributes = pdfVersion.startsWith('1.5.0-alpha')
+
         File fonts = getFontsDir()
         if (fonts != null) {
             attrs['pdf-fontsdir'] = fonts.absolutePath
         }
 
-        File styles = stylesDir
+        File styles = themesDir
         if (styles != null) {
-            attrs['pdf-stylesdir'] = styles.absolutePath
+            attrs[useOldAttributes ? 'pdf-stylesdir' : 'pdf-themesdir'] = styles.absolutePath
         }
 
-        String selectedTheme = styleName
+        String selectedTheme = themeName
         if (selectedTheme != null) {
-            attrs['pdf-style'] = selectedTheme
+            attrs[useOldAttributes ? 'pdf-style' : 'pdf-theme'] = selectedTheme
         }
 
         attrs
+    }
+
+    @CompileDynamic
+    private AsciidoctorPdfThemesExtension.PdfThemeDescriptor getThemeDescriptor() {
+        if (this.theme) {
+            AsciidoctorPdfThemesExtension pdfThemes = project.extensions.getByType(AsciidoctorPdfThemesExtension)
+            (AsciidoctorPdfThemesExtension.PdfThemeDescriptor) (pdfThemes.getByName(this.theme))
+        } else {
+            null
+        }
+    }
+
+    private String getPdfVersion() {
+        asciidoctorj.modules.pdf.version ?: project.extensions.getByType(AsciidoctorJExtension).modules.pdf.version
     }
 }
