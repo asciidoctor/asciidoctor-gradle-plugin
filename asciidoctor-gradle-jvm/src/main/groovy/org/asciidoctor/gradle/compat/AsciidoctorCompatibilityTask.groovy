@@ -52,6 +52,7 @@ import java.util.stream.Collectors
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.UNDERSCORE_LED_FILES
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.getClassLocation
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.getSourceFileTree
+import static org.asciidoctor.gradle.base.internal.DeprecatedFeatures.addDeprecationMessage
 import static org.asciidoctor.gradle.internal.JavaExecUtils.getJavaExecClasspath
 import static org.asciidoctor.gradle.jvm.AsciidoctorJExtension.GUAVA_REQUIRED_FOR_EXTERNALS
 import static org.ysb33r.grolifant.api.StringUtils.stringize
@@ -87,7 +88,6 @@ class AsciidoctorCompatibilityTask extends DefaultTask {
     private final List<Object> gemPaths = []
     private final Set<String> backends = []
     private final Set<String> requires = []
-    private final Set<String> migrationMessages = []
     private final Map opts = [:]
     private final Map attrs = [:]
     private PatternSet sourceDocumentPattern
@@ -660,12 +660,6 @@ Please use one of the following instead instead as current behaviour will no lon
         runJavaExec(execConfigurationData, javaExecClasspath)
     }
 
-    // Helper method to be able to produce migration messages
-    @Internal
-    Set<String> getMigrationMessages() {
-        this.migrationMessages
-    }
-
     @CompileDynamic
     protected static void processCollectionAttributes(Map attributes, List rawAttributes) {
         for (Object attr in rawAttributes) {
@@ -768,8 +762,10 @@ Please use one of the following instead instead as current behaviour will no lon
     }
 
     private void migrationMessage(final String currentMethod, final String upgradeInstructions) {
-        this.migrationMessages.add(
-            "You have used '${currentMethod}'. When upgrading you will need to: ${upgradeInstructions}".toString()
+        addDeprecationMessage(
+            project,
+            "Task: ${name}",
+            "You have used '${currentMethod}'. When upgrading you will need to: ${upgradeInstructions}"
         )
     }
 

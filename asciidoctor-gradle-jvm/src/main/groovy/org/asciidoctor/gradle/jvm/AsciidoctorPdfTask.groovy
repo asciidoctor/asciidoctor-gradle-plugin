@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle.jvm
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.base.internal.DeprecatedFeatures
 import org.gradle.api.Project
 import org.gradle.api.UnknownDomainObjectException
 @java.lang.SuppressWarnings('NoWildcardImports')
@@ -84,8 +85,19 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
     @PathSensitive(PathSensitivity.RELATIVE)
     @Optional
     @SuppressWarnings('LineLength')
-    File getStylesDir() {
+    File getThemesDir() {
         this.theme != null ? project.extensions.getByType(AsciidoctorPdfThemesExtension).getByName(this.theme).styleDir : null
+    }
+
+    @Internal
+    @Deprecated
+    File getStylesDir() {
+        DeprecatedFeatures.addDeprecationMessage(
+            project,
+            "Task: ${name}",
+            'getStylesDir() is deprecated. Use getThemesDir() instead.'
+        )
+        themesDir
     }
 
     /** The theme to use.
@@ -95,8 +107,19 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
     @Input
     @Optional
     @SuppressWarnings('LineLength')
-    String getStyleName() {
+    String getThemeName() {
         this.theme != null ? project.extensions.getByType(AsciidoctorPdfThemesExtension).getByName(this.theme).styleName : null
+    }
+
+    @Internal
+    @Deprecated
+    String getStyleName() {
+        DeprecatedFeatures.addDeprecationMessage(
+            project,
+            "Task: ${name}",
+            'getStyleName() is deprecated. Use getThemesName() instead.'
+        )
+        themeName
     }
 
     /** Selects a final process mode of PDF processing.
@@ -142,6 +165,7 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
      */
     @Override
     protected Map<String, Object> getTaskSpecificDefaultAttributes(File workingSourceDir) {
+        boolean useOldAttributes = extensions.getByType(AsciidoctorJExtension).pdfVersion.startsWith('1.5.0-alpha')
         Map<String, Object> attrs = super.getTaskSpecificDefaultAttributes(workingSourceDir)
 
         File fonts = getFontsDir()
@@ -149,14 +173,14 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
             attrs['pdf-fontsdir'] = fonts.absolutePath
         }
 
-        File styles = stylesDir
+        File styles = themesDir
         if (styles != null) {
-            attrs['pdf-stylesdir'] = styles.absolutePath
+            attrs[useOldAttributes ? 'pdf-stylesdir' : 'pdf-themesdir'] = styles.absolutePath
         }
 
-        String selectedTheme = styleName
+        String selectedTheme = themeName
         if (selectedTheme != null) {
-            attrs['pdf-style'] = selectedTheme
+            attrs[useOldAttributes ? 'pdf-style' : 'pdf-theme'] = selectedTheme
         }
 
         attrs

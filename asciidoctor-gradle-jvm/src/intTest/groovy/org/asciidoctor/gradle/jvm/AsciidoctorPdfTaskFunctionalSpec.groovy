@@ -124,7 +124,7 @@ asciidoctorPdf {
         """)
 
         when:
-        getGradleRunner([DEFAULT_TASK, '-i']).build()
+        getGradleRunner([DEFAULT_TASK, '-i']).withDebug(true).build()
 
         then:
         verifyAll {
