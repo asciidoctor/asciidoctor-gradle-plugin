@@ -299,7 +299,6 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
             }
         } else {
             this.jrubyVersion?.present ? stringize(this.jrubyVersion.get()) : null
-
         }
     }
 

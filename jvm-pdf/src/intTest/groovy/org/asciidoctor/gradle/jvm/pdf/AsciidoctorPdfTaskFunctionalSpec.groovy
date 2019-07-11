@@ -112,7 +112,7 @@ asciidoctorPdf {
         getBuildFile("""
         pdfThemes {
             local 'basic', {
-                styleDir = 'src/docs/asciidoc/pdf-theme'
+                themeDir = 'src/docs/asciidoc/pdf-theme'
             }
         }
 
