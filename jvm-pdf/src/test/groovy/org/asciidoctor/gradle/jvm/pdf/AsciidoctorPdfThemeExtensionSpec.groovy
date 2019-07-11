@@ -55,7 +55,7 @@ class AsciidoctorPdfThemeExtensionSpec extends Specification {
     void 'Configure local theme'() {
         given:
         pdfThemes.local 'basic', {
-            styleDir = 'foo'
+            themeDir = 'foo'
         }
 
         when:

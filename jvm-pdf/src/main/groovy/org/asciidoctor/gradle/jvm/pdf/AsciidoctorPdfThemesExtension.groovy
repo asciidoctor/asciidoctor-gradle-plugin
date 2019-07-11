@@ -16,12 +16,9 @@
 package org.asciidoctor.gradle.jvm.pdf
 
 import groovy.transform.CompileStatic
-import groovy.transform.PackageScope
 import org.asciidoctor.gradle.base.AbstractDownloadableComponent
 import org.gradle.api.Project
 import org.ysb33r.grolifant.api.StringUtils
-
-import static org.asciidoctor.gradle.base.internal.DeprecatedFeatures.addDeprecationMessage
 
 /** Easy way to configure themes for Asciidoctor PDF either as local themes or
  * as downloadable.
@@ -41,38 +38,9 @@ class AsciidoctorPdfThemesExtension extends AbstractDownloadableComponent<PdfLoc
         final File themeDir
         final String themeName
 
-        @Deprecated
-        File getStyleDir() {
-            migrationMessage(
-                'getStyleDir() is deprecated. Use getThemeDir() instead()'
-            )
-            themeDir
-        }
-
-        @Deprecated
-        String getStyleName() {
-            migrationMessage(
-                'getThemeName() is deprecated. Use getThemeName() instead()'
-            )
-            themeName
-        }
-
         PdfThemeDescriptor(final String name, final File dir) {
             this.themeDir = dir
             this.themeName = name
-        }
-
-        @PackageScope
-        Project project
-
-        private void migrationMessage(final String msg) {
-            if (project) {
-                addDeprecationMessage(
-                    project,
-                    'PdfThemeDescriptor',
-                    msg
-                )
-            }
         }
     }
 
@@ -91,51 +59,6 @@ class AsciidoctorPdfThemesExtension extends AbstractDownloadableComponent<PdfLoc
          *
          */
         Object themeName
-
-        @Deprecated
-        Object getStyleDir() {
-            migrationMessage(
-                'getStyleDir() is deprecated. Use getThemeDir() instead()'
-            )
-            themeDir
-        }
-
-        @Deprecated
-        Object getStyleName() {
-            migrationMessage(
-                'getThemeName() is deprecated. Use getThemeName() instead()'
-            )
-            themeName
-        }
-
-        @Deprecated
-        void setStyleDir(Object o) {
-            migrationMessage(
-                'setStyleDir() is deprecated. Use setThemeDir() instead()'
-            )
-            themeDir = o
-        }
-
-        @Deprecated
-        void setStyleName(Object o) {
-            migrationMessage(
-                'setStyleName() is deprecated. Use setThemeName() instead()'
-            )
-            themeName = o
-        }
-
-        @PackageScope
-        Project project
-
-        private void migrationMessage(final String msg) {
-            if (project) {
-                addDeprecationMessage(
-                    project,
-                    'PdfLocalTheme',
-                    msg
-                )
-            }
-        }
     }
 
     /** Extension for configuring PDF themes.
@@ -148,13 +71,12 @@ class AsciidoctorPdfThemesExtension extends AbstractDownloadableComponent<PdfLoc
 
     /** Instantiates a component of type {@code C}.
      *
-     * @param name Name of componenet
+     * @param name Name of component
      * @return New component source description
      */
     @Override
     protected PdfLocalTheme instantiateComponentSource(String name) {
         PdfLocalTheme theme = new PdfLocalTheme()
-        theme.project = project
         theme.themeName = name
         theme
     }
@@ -173,8 +95,6 @@ class AsciidoctorPdfThemesExtension extends AbstractDownloadableComponent<PdfLoc
 
     @Override
     protected PdfThemeDescriptor instantiateResolvedComponent(String name, File path) {
-        PdfThemeDescriptor descriptor = new PdfThemeDescriptor(name, path)
-        descriptor.project = project
-        descriptor
+        new PdfThemeDescriptor(name, path)
     }
 }
