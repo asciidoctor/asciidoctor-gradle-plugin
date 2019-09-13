@@ -27,7 +27,7 @@ include::parts/asciidoctorj-gems-plugin.adoc[]
 
 include::parts/kindlegen-plugin.adoc[]
 
-include::parts/asciidoctorj-custom-extensions.adoc
+include::parts/asciidoctorj-custom-extensions.adoc[]
 
 include::parts/upgrading.adoc[]
 
