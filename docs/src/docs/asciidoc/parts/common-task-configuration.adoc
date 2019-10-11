@@ -193,9 +193,9 @@ resources 'es', {
 
 === Include directives and base directory
 
-These plugins do not change the way link:https://asciidoctor.org/docs/user-manual/#include-resolution[include::] directive works, but it is important to note how setting `baseDir` will affect top level includes. It is recommended that you always use `{includedir}` as a prefix for the file path. This attribute is always set to the correct top-level folder where the sources will be located.
+These plugins do not change the way link:https://asciidoctor.org/docs/user-manual/#include-resolution[include::] directive works, but it is important to note how setting `baseDir` will affect top level includes. It is recommended that you always use `\{includedir}` as a prefix for the file path. This attribute is always set to the correct top-level folder where the sources will be located.
 
-However it is not practical for everyone to use `{includedir}` and as from 2.2.0 it is possible to add a strategy for controlling the base directory:
+However it is not practical for everyone to use `\{includedir}` and as from 2.2.0 it is possible to add a strategy for controlling the base directory:
 
 [source,groovy,role="primary"]
 .build.gradle
