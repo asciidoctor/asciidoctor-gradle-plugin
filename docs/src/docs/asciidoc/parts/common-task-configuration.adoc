@@ -167,6 +167,7 @@ These plugins do not change the way link:https://asciidoctor.org/docs/user-manua
 However it is not practical for everyone to use `\{includedir}` and as from 2.2.0 it is possible to add a strategy for controlling the base directory:
 
 [source,groovy,role="primary"]
+.build.gradle
 ----
 asciidoctor {
     baseDirIsRootProjectDir() // <1>
