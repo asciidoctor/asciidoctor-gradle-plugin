@@ -643,10 +643,10 @@ class AbstractAsciidoctorTask extends DefaultTask {
 
         addInputProperty 'required-ruby-modules', { asciidoctorj.requires }
         addInputProperty 'gemPath', { asciidoctorj.asGemPath() }
-        addInputProperty 'trackBaseDir', { getBaseDir().absolutePath }
+        addInputProperty 'trackBaseDir', { project.relativePath(getBaseDir()) }
 
         inputs.files { asciidoctorj.gemPaths }
-        inputs.files { filesFromCopySpec(resourceCopySpec) }
+        inputs.files { filesFromCopySpec(resourceCopySpec) }.withPathSensitivity(RELATIVE)
     }
 
     /** Returns all of the executor configurations for this task
