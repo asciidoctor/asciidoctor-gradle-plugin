@@ -40,6 +40,9 @@ class FunctionalSpecification extends Specification {
     @Rule
     TemporaryFolder testProjectDir
 
+    @Rule
+    TemporaryFolder alternateProjectDir
+
     @CompileStatic
     GradleRunner getGradleRunner(List<String> taskNames = ['asciidoctor']) {
         FunctionalTestSetup.getGradleRunner(GROOVY_DSL, testProjectDir.root, taskNames)
@@ -91,5 +94,4 @@ class FunctionalSpecification extends Specification {
             ''
         }
     }
-
 }
