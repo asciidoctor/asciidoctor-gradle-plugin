@@ -18,7 +18,6 @@ package org.asciidoctor.gradle.testfixtures.jvm
 import groovy.transform.CompileStatic
 import org.apache.commons.io.FileUtils
 import org.asciidoctor.gradle.testfixtures.DslType
-import org.asciidoctor.gradle.testfixtures.FunctionalTestSetup
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.rules.TemporaryFolder
@@ -27,6 +26,9 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 import static org.asciidoctor.gradle.testfixtures.DslType.GROOVY_DSL
+import static org.asciidoctor.gradle.testfixtures.FunctionalTestSetup.getGradleRunner
+import static org.gradle.testkit.runner.TaskOutcome.FROM_CACHE
+import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 
 /**
  * A set of convenience methods for testing compatibility with the build cache.
@@ -37,6 +39,9 @@ import static org.asciidoctor.gradle.testfixtures.DslType.GROOVY_DSL
  */
 @CompileStatic
 trait CachingTest {
+    Boolean scan
+    String scanServer
+
     void setupCache() {
         // Use a test-specific build cache directory.  This ensures that we'll only use cached outputs generated
         // during this test and we won't accidentally use cached outputs from a different test or a different build.
@@ -51,13 +56,32 @@ trait CachingTest {
         """
     }
 
+    String getBuildScanConfiguration() {
+        """
+            buildScan {
+                ${scanServer ? "server = '${scanServer}'" : ''}
+                termsOfServiceUrl = "https://gradle.com/terms-of-service"
+                termsOfServiceAgree = "yes"
+            }
+        """
+    }
+
+    void enableBuildScan(String server = null) {
+        scan = true
+        scanServer = server
+    }
+
     void assertTaskRunsWithOutcomeInDir(
         String task,
         TaskOutcome outcome,
         File projectDir,
         DslType dslType = GROOVY_DSL
     ) {
-        BuildResult result = FunctionalTestSetup.getGradleRunner(dslType, projectDir, [task, '--build-cache']).build()
+        List<String> scanArguments = scan ? ['--scan'] : []
+        BuildResult result = getGradleRunner(
+            dslType,
+            projectDir, ['clean', task, '--build-cache'] + scanArguments
+        ).build()
         assert result.task(task).outcome == outcome
     }
 
@@ -66,30 +90,32 @@ trait CachingTest {
     }
 
     void assertDefaultTaskExecutes() {
-        assertTaskRunsWithOutcome(defaultTask, TaskOutcome.SUCCESS)
+        assertTaskRunsWithOutcome(defaultTask, SUCCESS)
     }
 
     void assertDefaultTaskIsCached() {
-        deleteIfExists(outputFile)
-        assertTaskRunsWithOutcome(defaultTask, TaskOutcome.FROM_CACHE)
+        assertTaskRunsWithOutcome(defaultTask, FROM_CACHE)
     }
 
-    void assertDefaultTaskIsCachedInAlternateDirectory() {
-        deleteIfExists(outputFileInAlternateDirectory)
-        assertTaskRunsWithOutcomeInDir(defaultTask, TaskOutcome.FROM_CACHE, alternateProjectDir.root)
+    void assertDefaultTaskIsCachedInRelocatedDirectory() {
+        assertTaskRunsWithOutcomeInDir(defaultTask, FROM_CACHE, alternateProjectDir.root)
     }
 
     void assertDefaultTaskIsCachedAndRelocatable() {
         assertDefaultTaskIsCached()
         FileUtils.copyDirectory(testProjectDir.root, alternateProjectDir.root)
-        assertDefaultTaskIsCachedInAlternateDirectory()
+        assertDefaultTaskIsCachedInRelocatedDirectory()
     }
 
-    File getOutputFileInAlternateDirectory() {
+    File getOutputFileInRelocatedDirectory() {
         Path basePath = Paths.get(testProjectDir.root.toURI())
         Path outputFilePath = Paths.get(outputFile.toURI())
         Path relativeOutputFilePath = basePath.relativize(outputFilePath)
-        new File(alternateProjectDir.root, relativeOutputFilePath.toString())
+        fileInRelocatedDirectory(relativeOutputFilePath.toString())
+    }
+
+    File fileInRelocatedDirectory(String relativePath) {
+        new File(alternateProjectDir.root, relativePath)
     }
 
     void deleteIfExists(File file) {
