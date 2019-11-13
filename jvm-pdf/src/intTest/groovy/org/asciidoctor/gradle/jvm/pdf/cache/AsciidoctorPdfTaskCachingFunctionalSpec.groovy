@@ -18,7 +18,11 @@ package org.asciidoctor.gradle.jvm.cache
 import org.asciidoctor.gradle.testfixtures.jvm.CachingTest
 import org.asciidoctor.gradle.jvm.pdf.internal.FunctionalSpecification
 
-class AsciidoctorPdfTaskCachingSpec extends FunctionalSpecification implements CachingTest {
+/**
+ *
+ * @author Gary Hale
+ */
+class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification implements CachingTest {
     static final String DEFAULT_TASK = 'asciidoctorPdf'
     static final String DEFAULT_OUTPUT_FILE = 'build/docs/asciidocPdf/sample.pdf'
 
@@ -46,10 +50,10 @@ class AsciidoctorPdfTaskCachingSpec extends FunctionalSpecification implements C
 
         then:
         outputFile.exists()
-        outputFileInAlternateDirectory.exists()
+        outputFileInRelocatedDirectory.exists()
     }
 
-    def "PDF task is not cached when relative inputs change"() {
+    def "PDF task is not cached when inputs change"() {
         given:
         getBuildFile("""
             pdfThemes {
@@ -93,6 +97,10 @@ class AsciidoctorPdfTaskCachingSpec extends FunctionalSpecification implements C
 
         then:
         assertDefaultTaskIsCachedAndRelocatable()
+
+        and:
+        outputFile.exists()
+        outputFileInRelocatedDirectory.exists()
     }
 
     File getBuildFile(String extraContent) {
@@ -102,6 +110,7 @@ class AsciidoctorPdfTaskCachingSpec extends FunctionalSpecification implements C
                 id 'org.asciidoctor.jvm.pdf'
             }
             
+            ${-> scan ? buildScanConfiguration : ""}
             ${offlineRepositories}
             
             ${extraContent}
