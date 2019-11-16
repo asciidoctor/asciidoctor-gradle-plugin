@@ -53,7 +53,7 @@ class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification im
         outputFileInRelocatedDirectory.exists()
     }
 
-    def "PDF task is not cached when inputs change"() {
+    def "PDF task is not cached when pdf-specific inputs change"() {
         given:
         getBuildFile("""
             pdfThemes {
