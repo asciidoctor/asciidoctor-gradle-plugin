@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.jvm.cache
+package org.asciidoctor.gradle.jvm
 
 import org.asciidoctor.gradle.internal.FunctionalSpecification
 import org.asciidoctor.gradle.testfixtures.jvm.CachingTest
@@ -49,7 +49,7 @@ class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification im
         outputFileInRelocatedDirectory.exists()
     }
 
-    def "PDF task is not cached when inputs change"() {
+    def "PDF task is not cached when pdf-specific inputs change"() {
         given:
         getBuildFile("""
             pdfThemes {

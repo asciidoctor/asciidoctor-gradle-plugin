@@ -30,12 +30,12 @@ trait CachingTest {
     Boolean scan
     String scanServer
 
-    def setupCache() {
-        // Use a test-specific build cache directory.  This ensures that we'll only use cached outputs generated during this
-        // test and we won't accidentally use cached outputs from a different test or a different build.
+    void setupCache() {
+        // Use a test-specific build cache directory.  This ensures that we'll only use cached outputs generated during
+        // this test and we won't accidentally use cached outputs from a different test or a different build.
         file('settings.gradle') << """
             rootProject.name = 'test'
-            
+
             buildCache {
                 local(DirectoryBuildCache) {
                     directory = new File(rootDir, 'build-cache')
@@ -45,9 +45,9 @@ trait CachingTest {
     }
 
     String getBuildScanConfiguration() {
-        return """
+        """
             buildScan {
-                ${scanServer ? "server = '${scanServer}'" : ""}
+                ${scanServer ? "server = '${scanServer}'" : ''}
                 termsOfServiceUrl = "https://gradle.com/terms-of-service"
                 termsOfServiceAgree = "yes"
             }
@@ -60,8 +60,9 @@ trait CachingTest {
     }
 
     void assertTaskRunsWithOutcomeInDir(String task, TaskOutcome outcome, File projectDir) {
-        def scanArguments = scan ? ["--scan"] : []
-        BuildResult result = FunctionalTestSetup.getGradleRunner(projectDir, ["clean", task, '--build-cache'] + scanArguments).build()
+        List<String> scanArguments = scan ? ['--scan'] : []
+        List<String> buildArguments = ['clean', task, '--build-cache'] + scanArguments
+        BuildResult result = FunctionalTestSetup.getGradleRunner(projectDir, buildArguments).build()
         assert result.task(task).outcome == outcome
     }
 
