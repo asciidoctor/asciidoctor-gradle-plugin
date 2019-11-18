@@ -36,6 +36,9 @@ class FunctionalSpecification extends Specification {
     @Rule
     TemporaryFolder testProjectDir
 
+    @Rule
+    TemporaryFolder alternateProjectDir
+
     GradleRunner getGradleRunner(List<String> taskNames) {
         GradleRunner.create()
             .withProjectDir(testProjectDir.root)
