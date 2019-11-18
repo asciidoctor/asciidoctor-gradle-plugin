@@ -31,10 +31,12 @@ import org.ysb33r.grolifant.api.Version
 import javax.inject.Inject
 
 import static org.asciidoctor.gradle.jvm.slides.RevealJSExtension.FIRST_VERSION_WITH_PLUGIN_SUPPORT
+import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 
 /**
  * @since 2.0
  */
+@CacheableTask
 @CompileStatic
 class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
 
@@ -60,9 +62,6 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
         this.revealjsOptions = new RevealJSOptions(project)
         configuredOutputOptions.backends = [BACKEND_NAME]
         copyAllResources()
-
-        inputs.file({ revealjsOptions.highlightJsThemeIfFile }).optional()
-        inputs.file({ revealjsOptions.parallaxBackgroundImageIfFile }).optional()
     }
 
     /** Options for Reveal.JS slides.
@@ -92,6 +91,7 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
      * @return
      */
     @InputDirectory
+    @PathSensitive(RELATIVE)
     File getTemplateSourceDir() {
         revealjsExtension.templateProvider.get()
     }
@@ -205,8 +205,9 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask {
      *
      * @return Location of file. Can be {@code null}
      */
-    @InputFile
     @Optional
+    @InputFile
+    @PathSensitive(RELATIVE)
     File getPluginConfigurationFile() {
         this.pluginConfigurationFile ? project.file(this.pluginConfigurationFile) : null
     }

@@ -91,6 +91,7 @@ class AsciidoctorEpubTaskCachingFunctionalSpec extends FunctionalSpecification i
                 id 'org.asciidoctor.jvm.epub'
             }
             
+            ${-> scan ? buildScanConfiguration : ""}
             ${offlineRepositories}
             
             ${extraContent}
