@@ -21,13 +21,26 @@ import com.github.jrubygradle.internal.JRubyExecUtils
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.jvm.AsciidoctorJExtension
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.file.FileCollection
+import org.gradle.api.tasks.CacheableTask
+import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.PathSensitive
+
+import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 
 /** Prepare additional GEMs for AsciidoctorJ.
  *
  * @since 2.0
  */
+@CacheableTask
 @CompileStatic
 class AsciidoctorGemPrepare extends JRubyPrepare {
+
+    @InputFiles
+    @PathSensitive(RELATIVE)
+    FileCollection getGemDependencies() {
+        project.files(dependencies)
+    }
 
     @Override
     @SuppressWarnings('Instanceof')

@@ -15,10 +15,10 @@
  */
 package org.asciidoctor.gradle.jvm.cache
 
-import org.asciidoctor.gradle.testfixtures.jvm.CachingTest
 import org.asciidoctor.gradle.jvm.pdf.internal.FunctionalSpecification
+import org.asciidoctor.gradle.testfixtures.jvm.CachingTest
 
-/**
+/** AsciidoctorPdfTaskCachingFunctionalSpec
  *
  * @author Gary Hale
  */
@@ -31,7 +31,7 @@ class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification im
         createTestProject()
     }
 
-    def "PDF task is cacheable and relocatable"() {
+    void "PDF task is cacheable and relocatable"() {
         given:
         getBuildFile("""
             asciidoctorPdf {
@@ -53,7 +53,7 @@ class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification im
         outputFileInRelocatedDirectory.exists()
     }
 
-    def "PDF task is not cached when pdf-specific inputs change"() {
+    void "PDF task is not cached when pdf-specific inputs change"() {
         given:
         getBuildFile("""
             pdfThemes {
@@ -77,7 +77,10 @@ class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification im
 
         when:
         file('src/docs/themes/pdf-theme').mkdirs()
-        file('src/docs/themes/pdf-theme/basic-theme.yml').text = file('src/docs/asciidoc/pdf-theme/basic-theme.yml').text.replace("333333", "333334")
+        file('src/docs/themes/pdf-theme/basic-theme.yml').text =
+            file('src/docs/asciidoc/pdf-theme/basic-theme.yml').text
+                .replace('333333', '333334')
+
         changeBuildConfigurationTo("""
             pdfThemes {
                 local 'basic', {
@@ -110,7 +113,7 @@ class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification im
                 id 'org.asciidoctor.jvm.pdf'
             }
             
-            ${-> scan ? buildScanConfiguration : ""}
+            ${ -> scan ? buildScanConfiguration : '' }
             ${offlineRepositories}
             
             ${extraContent}
@@ -119,10 +122,10 @@ class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification im
     }
 
     String getDefaultTask() {
-        return ":${DEFAULT_TASK}"
+        ":${DEFAULT_TASK}"
     }
 
     File getOutputFile() {
-        return file(DEFAULT_OUTPUT_FILE)
+        file(DEFAULT_OUTPUT_FILE)
     }
 }
