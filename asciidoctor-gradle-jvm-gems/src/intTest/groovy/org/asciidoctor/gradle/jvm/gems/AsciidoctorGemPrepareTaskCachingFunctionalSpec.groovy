@@ -90,8 +90,9 @@ class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecifica
     }
 
     void "gemPrepare task is not cached when gems change"() {
-        def alternateGemName = 'json'
-        def alternatGemVersion = '1.8.0'
+        String alternateGemName = 'json'
+        String alternatGemVersion = '1.8.0'
+        String alternateGemPath = "${OUTPUT_DIR_PATH}/gems/${alternateGemName}-${alternatGemVersion}-java"
 
         given:
         getBuildFile("""
@@ -122,8 +123,8 @@ class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecifica
         assertDefaultTaskIsCachedAndRelocatable()
 
         then:
-        file("${OUTPUT_DIR_PATH}/gems/${alternateGemName}-${alternatGemVersion}")
-        fileInRelocatedDirectory("${OUTPUT_DIR_PATH}/gems/${alternateGemName}-${alternatGemVersion}")
+        file(alternateGemPath).exists()
+        fileInRelocatedDirectory(alternateGemPath).exists()
     }
 
     @Override
