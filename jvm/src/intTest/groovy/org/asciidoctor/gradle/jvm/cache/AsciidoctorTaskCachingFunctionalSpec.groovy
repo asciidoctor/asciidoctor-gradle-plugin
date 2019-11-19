@@ -22,7 +22,7 @@ import static org.asciidoctor.gradle.testfixtures.AsciidoctorjTestVersions.SERIE
 import static org.asciidoctor.gradle.testfixtures.JRubyTestVersions.AJ20_ABSOLUTE_MINIMUM
 import static org.asciidoctor.gradle.testfixtures.JRubyTestVersions.AJ20_SAFE_MAXIMUM
 
-/**
+/** AsciidoctorTaskCachingFunctionalSpec
  *
  * @author Gary Hale
  */
@@ -242,17 +242,17 @@ class AsciidoctorTaskCachingFunctionalSpec extends FunctionalSpecification imple
 
     @Override
     File getOutputFile() {
-        return file(DEFAULT_OUTPUT_FILE)
+        file(DEFAULT_OUTPUT_FILE)
     }
 
     @Override
     String getDefaultTask() {
-        return ":${DEFAULT_TASK}"
+        ":${DEFAULT_TASK}"
     }
 
     File getBuildFile(String extraContent) {
         getJvmConvertGroovyBuildFile("""
-            ${-> scan ? buildScanConfiguration : ""}
+            ${scan ? buildScanConfiguration : ''}
 
             asciidoctorj {
                 jrubyVersion = '${AJ20_SAFE_MAXIMUM}'

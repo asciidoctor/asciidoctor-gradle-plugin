@@ -13,26 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.jvm.epub.internal
+package org.asciidoctor.gradle.jvm.gems.internal
 
 import org.apache.commons.io.FileUtils
-import org.asciidoctor.gradle.testfixtures.FunctionalTestSetup
 import org.gradle.testkit.runner.GradleRunner
-import org.gradle.util.VersionNumber
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import org.ysb33r.grolifant.api.OperatingSystem
 import spock.lang.Specification
 
 class FunctionalSpecification extends Specification {
-
-    @SuppressWarnings('LineLength')
-    static
-    final String TEST_PROJECTS_DIR = System.getProperty('TEST_PROJECTS_DIR', './src/intTest/projects')
-    static
-    final String TEST_REPO_DIR = FunctionalTestSetup.offlineRepo.absolutePath
-    static
-    final OperatingSystem OS = OperatingSystem.current()
+    public static final String TEST_PROJECTS_DIR = System.getProperty(
+        'TEST_PROJECTS_DIR',
+        './asciidoctor-gradle-jvm-gems/src/intTest/projects'
+    )
+    public static final String TEST_REPO_DIR = System.getProperty(
+        'OFFLINE_REPO',
+        './testfixtures/offline-repo/build/repo'
+    )
+    public static final OperatingSystem OS = OperatingSystem.current()
 
     @Rule
     TemporaryFolder testProjectDir
@@ -40,7 +39,7 @@ class FunctionalSpecification extends Specification {
     @Rule
     TemporaryFolder alternateProjectDir
 
-    GradleRunner getGradleRunner(List<String> taskNames = ['asciidoctor']) {
+    GradleRunner getGradleRunner(List<String> taskNames) {
         GradleRunner.create()
             .withProjectDir(testProjectDir.root)
             .withArguments(taskNames)
@@ -50,15 +49,16 @@ class FunctionalSpecification extends Specification {
     }
 
     @SuppressWarnings(['BuilderMethodWithSideEffects'])
-    void createTestProject(String docGroup = 'epub3') {
+    void createTestProject(String docGroup) {
         FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, docGroup), testProjectDir.root)
     }
 
-    @SuppressWarnings('LineLength')
     String getOfflineRepositories() {
         File repo = new File(TEST_REPO_DIR, 'repositories.gradle')
         if (!repo.exists()) {
-            throw new FileNotFoundException("${repo} not found. Run ':testfixture-offline-repo:buildOfflineRepositories' build task")
+            throw new FileNotFoundException(
+                "${repo} not found. Run ':testfixture-offline-repo:buildOfflineRepositories' build task"
+            )
         }
 
         if (OS.windows) {
@@ -66,10 +66,5 @@ class FunctionalSpecification extends Specification {
         } else {
             "apply from: '${repo.absolutePath}'"
         }
-    }
-
-    static boolean isWindowsOr64bitOnlyMacOS() {
-        VersionNumber version = VersionNumber.parse(OS.version)
-        OS.windows || (OS.macOsX && version.major >= 10 && version.minor >= 15)
     }
 }

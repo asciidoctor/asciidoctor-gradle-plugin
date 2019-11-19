@@ -19,12 +19,11 @@ import org.asciidoctor.gradle.jvm.epub.internal.FunctionalSpecification
 import org.asciidoctor.gradle.testfixtures.jvm.CachingTest
 import spock.lang.IgnoreIf
 
-import static org.asciidoctor.gradle.jvm.epub.internal.FunctionalSpecification.windowsOr64bitOnlyMacOS
 import static org.asciidoctor.gradle.testfixtures.JRubyTestVersions.AJ20_SAFE_MAXIMUM
 
 class AsciidoctorEpubTaskCachingFunctionalSpec extends FunctionalSpecification implements CachingTest {
-    private static final String DEFAULT_TASK = "asciidoctorEpub"
-    private static final String DEFAULT_OUTPUT_FILE = "build/docs/asciidocEpub/epub3.epub"
+    private static final String DEFAULT_TASK = 'asciidoctorEpub'
+    private static final String DEFAULT_OUTPUT_FILE = 'build/docs/asciidocEpub/epub3.epub'
     private static final String JRUBY_TEST_VERSION = AJ20_SAFE_MAXIMUM
 
     void setup() {
@@ -32,9 +31,9 @@ class AsciidoctorEpubTaskCachingFunctionalSpec extends FunctionalSpecification i
         createTestProject()
     }
 
-    def "epub task is cacheable and relocatable"() {
+    void "Epub task is cacheable and relocatable"() {
         given:
-        getBuildFile(singleFormatConfiguration("EPUB3"))
+        getBuildFile(singleFormatConfiguration('EPUB3'))
 
         when:
         assertDefaultTaskExecutes()
@@ -52,10 +51,9 @@ class AsciidoctorEpubTaskCachingFunctionalSpec extends FunctionalSpecification i
 
     // kindlegen is only available as a 32-bit executable and won't run on MacOS Catalina
     @IgnoreIf({ isWindowsOr64bitOnlyMacOS() })
-    def "epub task is not cached when format changes"() {
-
+    void "Epub task is not cached when format changes"() {
         given:
-        getBuildFile(singleFormatConfiguration("EPUB3"))
+        getBuildFile(singleFormatConfiguration('EPUB3'))
 
         when:
         assertDefaultTaskExecutes()
@@ -64,7 +62,7 @@ class AsciidoctorEpubTaskCachingFunctionalSpec extends FunctionalSpecification i
         outputFile.exists()
 
         when:
-        changeBuildConfigurationTo(singleFormatConfiguration("KF8"))
+        changeBuildConfigurationTo(singleFormatConfiguration('KF8'))
         assertDefaultTaskExecutes()
 
         then:
@@ -76,12 +74,12 @@ class AsciidoctorEpubTaskCachingFunctionalSpec extends FunctionalSpecification i
 
     @Override
     File getOutputFile() {
-        return file(DEFAULT_OUTPUT_FILE)
+        file(DEFAULT_OUTPUT_FILE)
     }
 
     @Override
     String getDefaultTask() {
-        return ":${DEFAULT_TASK}"
+        ":${DEFAULT_TASK}"
     }
 
     File getBuildFile(String extraContent) {
@@ -91,7 +89,7 @@ class AsciidoctorEpubTaskCachingFunctionalSpec extends FunctionalSpecification i
                 id 'org.asciidoctor.jvm.epub'
             }
             
-            ${-> scan ? buildScanConfiguration : ""}
+            ${scan ? buildScanConfiguration : ''}
             ${offlineRepositories}
             
             ${extraContent}
@@ -100,7 +98,7 @@ class AsciidoctorEpubTaskCachingFunctionalSpec extends FunctionalSpecification i
     }
 
     String singleFormatConfiguration(String format) {
-        return """
+        """
             asciidoctorEpub {
                 sourceDir 'src/docs/asciidoc'
                 ebookFormats ${format}
