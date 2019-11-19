@@ -18,25 +18,24 @@ package org.asciidoctor.gradle.jvm.gems
 import org.asciidoctor.gradle.jvm.gems.internal.FunctionalSpecification
 import org.asciidoctor.gradle.testfixtures.jvm.CachingTest
 
-
 class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecification implements CachingTest {
-    private static final String DEFAULT_TASK = "asciidoctorGemsPrepare"
-    private static final String OUTPUT_DIR_PATH = "build/asciidoctorGems"
-    private static final String DEFAULT_GEM_NAME = "asciidoctor-revealjs"
-    private static final String DEFAULT_GEM_VERSION = "2.0.0"
+    private static final String DEFAULT_TASK = 'asciidoctorGemsPrepare'
+    private static final String OUTPUT_DIR_PATH = 'build/asciidoctorGems'
+    private static final String DEFAULT_GEM_NAME = 'asciidoctor-revealjs'
+    private static final String DEFAULT_GEM_VERSION = '2.0.0'
 
-    def setup() {
+    void setup() {
         setupCache()
     }
 
-    def "gemPrepare task is cacheable and relocatable"() {
+    void "gemPrepare task is cacheable and relocatable"() {
         given:
         getBuildFile("""
             dependencies {
                 asciidoctorGems("rubygems:${DEFAULT_GEM_NAME}:${DEFAULT_GEM_VERSION}") {
                     exclude module: 'asciidoctor'
                 }
-            }    
+            }
         """)
 
         when:
@@ -53,14 +52,14 @@ class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecifica
         outputFileInRelocatedDirectory.exists()
     }
 
-    def "gemPrepare task is cached when only the output directory changes"() {
+    void "gemPrepare task is cached when only the output directory changes"() {
         given:
         getBuildFile("""
             dependencies {
                 asciidoctorGems("rubygems:${DEFAULT_GEM_NAME}:${DEFAULT_GEM_VERSION}") {
                     exclude module: 'asciidoctor'
                 }
-            }    
+            }
         """)
 
         when:
@@ -75,11 +74,11 @@ class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecifica
                 asciidoctorGems("rubygems:${DEFAULT_GEM_NAME}:${DEFAULT_GEM_VERSION}") {
                     exclude module: 'asciidoctor'
                 }
-            }   
-            
+            }
+
             asciidoctorGemsPrepare {
                 outputDir 'build/asciidoc'
-            } 
+            }
         """)
 
         then:
@@ -90,9 +89,9 @@ class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecifica
         fileInRelocatedDirectory("build/asciidoc/gems/${DEFAULT_GEM_NAME}-${DEFAULT_GEM_VERSION}")
     }
 
-    def "gemPrepare task is not cached when gems change"() {
-        def alternateGemName = "json"
-        def alternatGemVersion = "1.8.0"
+    void "gemPrepare task is not cached when gems change"() {
+        def alternateGemName = 'json'
+        def alternatGemVersion = '1.8.0'
 
         given:
         getBuildFile("""
@@ -100,7 +99,7 @@ class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecifica
                 asciidoctorGems("rubygems:${DEFAULT_GEM_NAME}:${DEFAULT_GEM_VERSION}") {
                     exclude module: 'asciidoctor'
                 }
-            }    
+            }
         """)
 
         when:
@@ -113,7 +112,7 @@ class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecifica
         changeBuildConfigurationTo("""
             dependencies {
                 asciidoctorGems("rubygems:${alternateGemName}:${alternatGemVersion}")
-            }    
+            }
         """)
 
         then:
@@ -134,10 +133,10 @@ class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecifica
             plugins {
                 id 'org.asciidoctor.jvm.gems'
             }
-    
-            ${-> scan ? buildScanConfiguration : ""}
+
+            ${ -> scan ? buildScanConfiguration : '' }
             ${offlineRepositories}
-    
+
             repositories {
                 maven { url 'http://rubygems-proxy.torquebox.org/releases' }
             }
@@ -149,11 +148,11 @@ class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecifica
 
     @Override
     File getOutputFile() {
-        return file("${OUTPUT_DIR_PATH}/gems/${DEFAULT_GEM_NAME}-${DEFAULT_GEM_VERSION}")
+        file("${OUTPUT_DIR_PATH}/gems/${DEFAULT_GEM_NAME}-${DEFAULT_GEM_VERSION}")
     }
 
     @Override
     String getDefaultTask() {
-        return ":${DEFAULT_TASK}"
+        ":${DEFAULT_TASK}"
     }
 }

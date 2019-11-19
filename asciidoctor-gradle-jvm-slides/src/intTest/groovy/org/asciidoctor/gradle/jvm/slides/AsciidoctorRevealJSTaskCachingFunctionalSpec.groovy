@@ -20,18 +20,18 @@ import org.asciidoctor.gradle.testfixtures.jvm.CachingTest
 import org.asciidoctor.gradle.testfixtures.jvm.JRubyTestVersions
 
 class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecification implements CachingTest {
-    private static final String DEFAULT_TASK = "asciidoctorRevealJs"
+    private static final String DEFAULT_TASK = 'asciidoctorRevealJs'
     private static final String JRUBY_TEST_VERSION = JRubyTestVersions.AJ16_SAFE_MAXIMUM
-    private static final String DEFAULT_REVEALJS_PATH = "build/docs/asciidocRevealJs"
+    private static final String DEFAULT_REVEALJS_PATH = 'build/docs/asciidocRevealJs'
 
     void setup() {
         setupCache()
         createTestProject('revealjs')
     }
 
-    def "revealjs task is cacheable and relocatable"() {
+    void "revealjs task is cacheable and relocatable"() {
         given:
-        getBuildFile()
+        getBuildFile('')
 
         when:
         assertDefaultTaskExecutes()
@@ -47,9 +47,9 @@ class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecificati
         outputFileInRelocatedDirectory.exists()
     }
 
-    def "revealjs task is cached when only output directory is changed"() {
+    void "revealjs task is cached when only output directory is changed"() {
         given:
-        getBuildFile()
+        getBuildFile('')
 
         when:
         assertDefaultTaskExecutes()
@@ -72,9 +72,9 @@ class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecificati
         fileInRelocatedDirectory('build/asciidoc/revealjs.html').exists()
     }
 
-    def "revealjs task is not cached when templates are added"() {
+    void "revealjs task is not cached when templates are added"() {
         given:
-        getBuildFile()
+        getBuildFile('')
 
         when:
         assertDefaultTaskExecutes()
@@ -104,9 +104,9 @@ class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecificati
         outputFileInRelocatedDirectory.exists()
     }
 
-    def "revealjs task is not cached when plugins are added"() {
+    void "revealjs task is not cached when plugins are added"() {
         given:
-        getBuildFile()
+        getBuildFile('')
 
         when:
         assertDefaultTaskExecutes()
@@ -123,7 +123,7 @@ class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecificati
                     branch = 'master'
                 }
             }
-    
+
             asciidoctorRevealJs {
                 plugins 'rajgoel/chart/Chart.js'
                 pluginConfigurationFile 'src/docs/asciidoc/empty-plugin-configuration.js'
@@ -143,7 +143,7 @@ class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecificati
         outputFileInRelocatedDirectory.exists()
     }
 
-    def "revealjs task is not cached when attributes change"() {
+    void "revealjs task is not cached when attributes change"() {
         given:
         getBuildFile('''
             asciidoctorRevealJs {
@@ -186,26 +186,26 @@ class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecificati
             plugins {
                 id 'org.asciidoctor.jvm.revealjs'
             }
-    
-            ${-> scan ? buildScanConfiguration : ""}
+
+            ${ -> scan ? buildScanConfiguration : '' }
             ${offlineRepositories}
-    
+
             repositories {
                 maven { url 'http://rubygems-proxy.torquebox.org/releases' }
             }
-    
+
             asciidoctorRevealJs {
                 sourceDir 'src/docs/asciidoc'
-    
+
                 asciidoctorj {
                     jrubyVersion = '${JRUBY_TEST_VERSION}'
                 }
-    
+
                 sources {
                     include 'revealjs.adoc'
                 }
             }
-    
+
             ${extraContent}
         """
         buildFile
@@ -213,11 +213,11 @@ class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecificati
 
     @Override
     File getOutputFile() {
-        return file("${DEFAULT_REVEALJS_PATH}/revealjs.html")
+        file("${DEFAULT_REVEALJS_PATH}/revealjs.html")
     }
 
     @Override
     String getDefaultTask() {
-        return ":${DEFAULT_TASK}"
+        ":${DEFAULT_TASK}"
     }
 }

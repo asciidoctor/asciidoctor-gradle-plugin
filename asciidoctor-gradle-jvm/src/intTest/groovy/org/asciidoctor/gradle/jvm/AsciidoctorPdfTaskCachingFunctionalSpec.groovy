@@ -27,7 +27,7 @@ class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification im
         createTestProject()
     }
 
-    def "PDF task is cacheable and relocatable"() {
+    void "PDF task is cacheable and relocatable"() {
         given:
         getBuildFile("""
             asciidoctorPdf {
@@ -49,7 +49,7 @@ class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification im
         outputFileInRelocatedDirectory.exists()
     }
 
-    def "PDF task is not cached when pdf-specific inputs change"() {
+    void "PDF task is not cached when pdf-specific inputs change"() {
         given:
         getBuildFile("""
             pdfThemes {
@@ -57,7 +57,7 @@ class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification im
                     styleDir = 'src/docs/asciidoc/pdf-theme'
                 }
             }
-            
+
             asciidoctorPdf {
                 sourceDir 'src/docs/asciidoc'
                 fontsDir 'src/docs/asciidoc/pdf-theme'
@@ -72,15 +72,17 @@ class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification im
         outputFile.exists()
 
         when:
+        File original = file('src/docs/asciidoc/pdf-theme/basic-theme.yml')
         file('src/docs/themes/pdf-theme').mkdirs()
-        file('src/docs/themes/pdf-theme/basic-theme.yml').text = file('src/docs/asciidoc/pdf-theme/basic-theme.yml').text.replace("333333", "333334")
+        file('src/docs/themes/pdf-theme/basic-theme.yml').text = original.text.replace('333333', '333334')
+
         changeBuildConfigurationTo("""
             pdfThemes {
                 local 'basic', {
                     styleDir = 'src/docs/themes/pdf-theme'
                 }
             }
-            
+
             asciidoctorPdf {
                 sourceDir 'src/docs/asciidoc'
                 fontsDir 'src/docs/themes/pdf-theme'
@@ -105,20 +107,20 @@ class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification im
             plugins {
                 id 'org.asciidoctor.jvm.pdf'
             }
-            
-            ${-> scan ? buildScanConfiguration : ""}
+
+            ${ -> scan ? buildScanConfiguration : '' }
             ${offlineRepositories}
-            
+
             ${extraContent}
         """
         buildFile
     }
 
     String getDefaultTask() {
-        return ":${DEFAULT_TASK}"
+        ":${DEFAULT_TASK}"
     }
 
     File getOutputFile() {
-        return file(DEFAULT_OUTPUT_FILE)
+        file(DEFAULT_OUTPUT_FILE)
     }
 }

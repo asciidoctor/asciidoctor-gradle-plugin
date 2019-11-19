@@ -24,7 +24,6 @@ import static org.asciidoctor.gradle.testfixtures.jvm.JRubyTestVersions.AJ16_ABS
 import static org.asciidoctor.gradle.testfixtures.jvm.JRubyTestVersions.AJ16_SAFE_MAXIMUM
 import static org.asciidoctor.gradle.testfixtures.jvm.JRubyTestVersions.AJ20_ABSOLUTE_MINIMUM
 
-
 class AsciidoctorTaskCachingFunctionalSpec extends FunctionalSpecification implements CachingTest {
     static final String DEFAULT_TASK = 'asciidoctor'
     static final String DEFAULT_OUTPUT_FILE = 'build/docs/asciidoc/html5/sample.html'
@@ -35,12 +34,12 @@ class AsciidoctorTaskCachingFunctionalSpec extends FunctionalSpecification imple
         createTestProject()
     }
 
-    def "asciidoctor task is cacheable and relocatable"() {
+    void "asciidoctor task is cacheable and relocatable"() {
         given:
         getBuildFile("""
             asciidoctor {
                 sourceDir 'src/docs/asciidoc'
-                
+
                 outputOptions {
                     backends 'html5', 'docbook'
                 }
@@ -64,12 +63,12 @@ class AsciidoctorTaskCachingFunctionalSpec extends FunctionalSpecification imple
         fileInRelocatedDirectory(DOCBOOK_OUTPUT_FILE).exists()
     }
 
-    def "asciidoctor task is cached when only output directory is changed"() {
+    void "asciidoctor task is cached when only output directory is changed"() {
         given:
         getBuildFile("""
             asciidoctor {
                 sourceDir 'src/docs/asciidoc'
-                
+
                 outputOptions {
                     backends 'html5', 'docbook'
                 }
@@ -87,7 +86,7 @@ class AsciidoctorTaskCachingFunctionalSpec extends FunctionalSpecification imple
             asciidoctor {
                 sourceDir 'src/docs/asciidoc'
                 outputDir 'build/asciidoc'
-                
+
                 outputOptions {
                     backends 'html5', 'docbook'
                 }
@@ -106,12 +105,12 @@ class AsciidoctorTaskCachingFunctionalSpec extends FunctionalSpecification imple
         fileInRelocatedDirectory('build/asciidoc/docbook/sample.xml').exists()
     }
 
-    def "asciidoctor task is not cached when backends change"() {
+    void "asciidoctor task is not cached when backends change"() {
         given:
         getBuildFile("""
             asciidoctor {
                 sourceDir 'src/docs/asciidoc'
-                
+
                 outputOptions {
                     backends 'html5', 'html'
                 }
@@ -128,7 +127,7 @@ class AsciidoctorTaskCachingFunctionalSpec extends FunctionalSpecification imple
         changeBuildConfigurationTo("""
             asciidoctor {
                 sourceDir 'src/docs/asciidoc'
-                
+
                 outputOptions {
                     backends 'html5', 'docbook'
                 }
@@ -142,7 +141,7 @@ class AsciidoctorTaskCachingFunctionalSpec extends FunctionalSpecification imple
         assertDefaultTaskIsCachedAndRelocatable()
     }
 
-    def "asciidoctor task is not cached when asciidoctorj/jruby versions change"() {
+    void "asciidoctor task is not cached when asciidoctorj/jruby versions change"() {
         given:
         getBuildFile("""
             asciidoctorj {
@@ -151,7 +150,7 @@ class AsciidoctorTaskCachingFunctionalSpec extends FunctionalSpecification imple
             }
             asciidoctor {
                 sourceDir 'src/docs/asciidoc'
-                
+
                 outputOptions {
                     backends 'html5', 'docbook'
                 }
@@ -170,10 +169,10 @@ class AsciidoctorTaskCachingFunctionalSpec extends FunctionalSpecification imple
                 version = '${SERIES_16}'
                 jrubyVersion = '${AJ16_ABSOLUTE_MINIMUM}'
             }
-            
+
             asciidoctor {
                 sourceDir 'src/docs/asciidoc'
-                
+
                 outputOptions {
                     backends 'html5', 'docbook'
                 }
@@ -187,16 +186,16 @@ class AsciidoctorTaskCachingFunctionalSpec extends FunctionalSpecification imple
         assertDefaultTaskIsCachedAndRelocatable()
     }
 
-    def "asciidoctor task is not cached when attributes change"() {
+    void "asciidoctor task is not cached when attributes change"() {
         given:
         getBuildFile("""
             asciidoctor {
                 sourceDir 'src/docs/asciidoc'
-                
+
                 outputOptions {
                     backends 'html5', 'docbook'
                 }
-                
+
                 attributes 'source-highlighter': 'coderay',
                             'imagesdir': 'images',
                             'toc': 'left',
@@ -217,11 +216,11 @@ class AsciidoctorTaskCachingFunctionalSpec extends FunctionalSpecification imple
         changeBuildConfigurationTo("""
             asciidoctor {
                 sourceDir 'src/docs/asciidoc'
-                
+
                 outputOptions {
                     backends 'html5', 'docbook'
                 }
-                
+
                 attributes 'source-highlighter': 'coderay',
                             'imagesdir': 'images',
                             'toc': 'right',
@@ -241,22 +240,22 @@ class AsciidoctorTaskCachingFunctionalSpec extends FunctionalSpecification imple
 
     @Override
     File getOutputFile() {
-        return file(DEFAULT_OUTPUT_FILE)
+        file(DEFAULT_OUTPUT_FILE)
     }
 
     @Override
     String getDefaultTask() {
-        return ":${DEFAULT_TASK}"
+        ":${DEFAULT_TASK}"
     }
 
     File getBuildFile(String extraContent) {
         getJvmConvertGroovyBuildFile("""
-            ${-> scan ? buildScanConfiguration : ""}
+            ${ -> scan ? buildScanConfiguration : '' }
 
             asciidoctorj {
                 jrubyVersion = '${AJ16_SAFE_MAXIMUM}'
             }
-            
+
             ${extraContent}
         """)
     }

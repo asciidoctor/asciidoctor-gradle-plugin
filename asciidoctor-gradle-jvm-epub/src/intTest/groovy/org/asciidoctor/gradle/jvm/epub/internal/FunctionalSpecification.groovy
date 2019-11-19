@@ -69,6 +69,6 @@ class FunctionalSpecification extends Specification {
 
     static boolean isWindowsOr64bitOnlyMacOS() {
         VersionNumber version = VersionNumber.parse(OS.version)
-        return OS.windows || (OS.macOsX && version.major >= 10 && version.minor >= 15)
+        OS.windows || (OS.macOsX && version.major >= 10 && version.minor >= 15)
     }
 }
