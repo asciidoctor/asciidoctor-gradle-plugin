@@ -35,6 +35,7 @@ import javax.inject.Inject
  * @since 2.0.0* @author Schalk W. Cronjé
  */
 @CompileStatic
+@CacheableTask
 class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
 
     private Object fontsDir
