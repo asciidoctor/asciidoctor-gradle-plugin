@@ -1,7 +1,7 @@
 = Asciidoctor Gradle Plugin
 Andres Almiray <https://github.com/aalmiray[@aalmiray]>
-:version: 2.2.0
-:version-published: 2.2.0
+:version: 2.3.0
+:version-published: 2.3.0
 :asciidoc-url: http://asciidoc.org
 :asciidoctor-url: http://asciidoctor.org
 :issues: https://github.com/asciidoctor/asciidoctor-maven-plugin/issues
@@ -46,8 +46,6 @@ endif::[]
 The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to convert all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
 
 Documentation:: We are migrating our documentation to the new Asciidoctor Antora-based site when it is ready. In the meantime you can read a snapshot of the new documentation at {asciidoctor-development-docs}{github-branch}
-
-Incompatibilities:: The 2.x range of these plugins are NOT compatible with https://github.com/spring-projects/spring-restdocs[Spring REST Docs]. If you have to use the latter then stick to the older v1.5.11 or v1.5.12 versions and do not manually set the version of {asciidoctorj-name} in your build script.
 
 ifdef::env-github[]
 Structure:: `master` now represents the code for the latest 2.x release of these plugins. Development for for 2.x is against the link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/development-2.0[development-2.0] branch. PRs are preferably taking against that branch. The 1.5.x series of the plugin is now in maintenance only mode. PRs for that should be raised against the https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/maintenance-1.5[maintenance-1.5] branch.
