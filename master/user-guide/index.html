@@ -636,6 +636,13 @@ $(addBlockSwitches);
 <li><a href="#diagram">Using AsciidoctorJ Diagram</a></li>
 <li><a href="#asciidoctorj-gems-plugin">Ruby GEM support</a></li>
 <li><a href="#_kindlegen_plugin">Kindlegen plugin</a></li>
+<li><a href="#_adding_custom_extensions">Adding Custom Extensions</a>
+<ul class="sectlevel2">
+<li><a href="#_as_external_library">As External Library</a></li>
+<li><a href="#_as_project_dependency">As Project Dependency</a></li>
+<li><a href="#_as_inline_script">As Inline Script</a></li>
+</ul>
+</li>
 <li><a href="#_upgrading_from_older_versions_of_asciidoctor">Upgrading From Older Versions of Asciidoctor</a>
 <ul class="sectlevel2">
 <li><a href="#_configurations">Configurations</a></li>
@@ -1658,7 +1665,7 @@ Optional. When specifying a theme name it must match one registered via <code>pd
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">pdfThemes {
     github <span class="string"><span class="delimiter">'</span><span class="content">basic</span><span class="delimiter">'</span></span>, { <i class="conum" data-value="1"></i><b>(1)</b>
-        organisation = <span class="string"><span class="delimiter">'</span><span class="content">fwilhe</span><span class="delimiter">'</span></span> <i class="conum" data-value="2"></i><b>(2)</b>
+        organisation = <span class="string"><span class="delimiter">'</span><span class="content">fwilhe2</span><span class="delimiter">'</span></span> <i class="conum" data-value="2"></i><b>(2)</b>
         repository = <span class="string"><span class="delimiter">'</span><span class="content">corporate-theme</span><span class="delimiter">'</span></span> <i class="conum" data-value="3"></i><b>(3)</b>
         relativePath = <span class="string"><span class="delimiter">'</span><span class="content">resources/themes</span><span class="delimiter">'</span></span> <i class="conum" data-value="4"></i><b>(4)</b>
 
@@ -2294,8 +2301,170 @@ The base plugin is automatically applied by the EPUB plugin. If you only produce
 </tr>
 </table>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_adding_custom_extensions">Adding Custom Extensions</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>include::parts/asciidoctorj-custom-extensions.adoc</p>
+<p>Starting with version 1.5.0 you were able to write your own Asciidoctor extensions in Groovy, or any other JVM language
+for that matter. Now with the 2.0.0 you have even more flexibility in that extensions can be applied on a per task basis on globally. There are several options available to make it happen.</p>
+</div>
+<div class="sect2">
+<h3 id="_as_external_library">As External Library</h3>
+<div class="paragraph">
+<p>This is the most versatile option, as it allows you to reuse the same extension in different projects. An external library
+is just like any other Java/Groovy project. You simply define a dependency using the <code>asciidoctor</code> configuration.</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">configurations {
+    asciidoctorExt
+}
+
+dependencies {
+    asciidoctorExt <span class="string"><span class="delimiter">'</span><span class="content">com.acme:asciidoctor-extensions:x.y.z</span><span class="delimiter">'</span></span>
+}
+
+asciidoctor {
+    configurations <span class="string"><span class="delimiter">'</span><span class="content">asciidoctorExt</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_as_project_dependency">As Project Dependency</h3>
+<div class="paragraph">
+<p>The next option is to host the extension project in a multi-project build. This allows for a much quicker development cycle
+as you don&#8217;t have to publish the jar to a repository every time you make adjustments to the code. Take for example the
+following setup:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>.
+├── build.gradle
+├── core
+│   ├── build.gradle
+│   └── src
+│       ├── asciidoc
+│       │   └── index.adoc
+│       └── main
+│           └── java
+├── extension
+│   ├── build.gradle
+│   └── src
+│       └── main
+│           ├── groovy
+│           │   └── org
+│           │       └── asciidoctor
+│           │           └── example
+│           │               ├── ExampleExtensionRegistry.groovy
+│           │               └── YellBlock.groovy
+│           └── resources
+│               └── META-INF
+│                   └── services
+│                       └── org.asciidoctor.extension.spi.ExtensionRegistry
+└── settings.gradle</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>extension</code> project is a sibling for <code>core</code>. The build file for the latter looks like this:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">plugins {
+   id <span class="string"><span class="delimiter">'</span><span class="content">org.asciidoctor.jvm.convert</span><span class="delimiter">'</span></span> version <span class="string"><span class="delimiter">'</span><span class="content">2.3.0</span><span class="delimiter">'</span></span>
+}
+
+repositories {
+    jcenter()
+}
+
+configuration {
+    asciidoctorExtensions
+}
+
+dependencies {
+    asciidoctorExtensions project(<span class="string"><span class="delimiter">'</span><span class="content">:extension</span><span class="delimiter">'</span></span>)
+}
+
+asciidoctor {
+    configurations <span class="string"><span class="delimiter">'</span><span class="content">asciidoctorExtensions</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatively you can add the project to the extension directly</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">plugins {
+   id <span class="string"><span class="delimiter">'</span><span class="content">org.asciidoctor.jvm.convert</span><span class="delimiter">'</span></span> version <span class="string"><span class="delimiter">'</span><span class="content">2.3.0</span><span class="delimiter">'</span></span>
+}
+
+asciidoctorj {
+    docExtensions project(<span class="string"><span class="delimiter">'</span><span class="content">:extension</span><span class="delimiter">'</span></span>)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the less-common case where extension is not supplied via the default configuration, he latter shortcur will not work, and you will need to use the longer method described above.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_as_inline_script">As Inline Script</h3>
+<div class="paragraph">
+<p>The next option is to define extensions directly in the build script.
+This approach is based on the project asciidoctorj-groovy-dsl that allows to define Asciidoctor extensions in Groovy.
+An extension is registered via the <code>docExtensions</code> element.</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">asciidoctorj {
+    docExtensions {
+        block(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">BIG</span><span class="delimiter">&quot;</span></span>, <span class="key">contexts</span>: [<span class="string"><span class="delimiter">&quot;</span><span class="content">:paragraph</span><span class="delimiter">&quot;</span></span>]) {
+            parent, reader, attributes -&gt;
+            <span class="keyword">def</span> upperLines = reader.readLines()
+                .collect {<span class="local-variable">it</span>.toUpperCase()}
+                .inject(<span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span>) {a, b -&gt; a + <span class="string"><span class="delimiter">'</span><span class="content">\n</span><span class="delimiter">'</span></span> + b}
+
+            createBlock(parent, <span class="string"><span class="delimiter">&quot;</span><span class="content">paragraph</span><span class="delimiter">&quot;</span></span>, [upperLines], attributes, [:])
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><a href="http://github.com/asciidoctor/asciidoctorj-groovy-dsl" class="bare">http://github.com/asciidoctor/asciidoctorj-groovy-dsl</a> contains a description of the DSL itself.</p>
+</div>
+<div class="paragraph">
+<p>Groovy extensions can also be included as files.</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">asciidoctorj {
+    docExtensions file(<span class="string"><span class="delimiter">'</span><span class="content">big.groovy</span><span class="delimiter">'</span></span>)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">big.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">block(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">BIG</span><span class="delimiter">&quot;</span></span>, <span class="key">contexts</span>: [<span class="string"><span class="delimiter">&quot;</span><span class="content">:paragraph</span><span class="delimiter">&quot;</span></span>]) {
+    parent, reader, attributes -&gt;
+    <span class="keyword">def</span> upperLines = reader.readLines()
+        .collect {<span class="local-variable">it</span>.toUpperCase()}
+        .inject(<span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span>) {a, b -&gt; a + <span class="string"><span class="delimiter">'</span><span class="content">\n</span><span class="delimiter">'</span></span> + b}
+
+    createBlock(parent, <span class="string"><span class="delimiter">&quot;</span><span class="content">paragraph</span><span class="delimiter">&quot;</span></span>, [upperLines], attributes, [:])
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -2718,7 +2887,7 @@ The <code>master</code> branch represents the code for the latest 2.x release of
 <div id="footer">
 <div id="footer-text">
 Version 2.3.0<br>
-Last updated 2019-11-23 11:08:44 UTC
+Last updated 2019-11-23 11:34:20 UTC
 </div>
 </div>
 </body>
