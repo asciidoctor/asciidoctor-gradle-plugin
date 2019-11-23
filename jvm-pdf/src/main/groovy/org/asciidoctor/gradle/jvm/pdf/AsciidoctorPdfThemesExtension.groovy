@@ -35,12 +35,12 @@ class AsciidoctorPdfThemesExtension extends AbstractDownloadableComponent<PdfLoc
      */
     @SuppressWarnings('ClassName')
     static class PdfThemeDescriptor {
-        final File styleDir
-        final String styleName
+        final File themeDir
+        final String themeName
 
         PdfThemeDescriptor(final String name, final File dir) {
-            this.styleDir = dir
-            this.styleName = name
+            this.themeDir = dir
+            this.themeName = name
         }
     }
 
@@ -53,17 +53,17 @@ class AsciidoctorPdfThemesExtension extends AbstractDownloadableComponent<PdfLoc
         /** Directory where local theme is to be found.
          *
          */
-        Object styleDir
+        Object themeDir
 
         /** Name of theme.
          *
          */
-        Object styleName
+        Object themeName
     }
 
     /** Extension for configuring PDF themes.
      *
-     * @param project Prjoect this extension has been associated with.
+     * @param project Project this extension has been associated with.
      */
     AsciidoctorPdfThemesExtension(final Project project) {
         super(project)
@@ -71,13 +71,13 @@ class AsciidoctorPdfThemesExtension extends AbstractDownloadableComponent<PdfLoc
 
     /** Instantiates a component of type {@code C}.
      *
-     * @param name Name of componenet
+     * @param name Name of component
      * @return New component source description
      */
     @Override
     protected PdfLocalTheme instantiateComponentSource(String name) {
         PdfLocalTheme theme = new PdfLocalTheme()
-        theme.styleName = name
+        theme.themeName = name
         theme
     }
 
@@ -89,7 +89,7 @@ class AsciidoctorPdfThemesExtension extends AbstractDownloadableComponent<PdfLoc
     @Override
     protected Closure convertible(PdfLocalTheme theme) {
         return { ->
-            new PdfThemeDescriptor(StringUtils.stringize(theme.styleName), project.file(theme.styleDir))
+            new PdfThemeDescriptor(StringUtils.stringize(theme.themeName), project.file(theme.themeDir))
         }
     }
 

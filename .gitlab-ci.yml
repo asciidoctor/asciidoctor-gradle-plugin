@@ -172,7 +172,7 @@ test:gradle_5.0,5.1.1,5.3.1:
     expire_in: 10 days
     when: on_failure
 
-test:gradle_5.4.1:
+test:gradle_5.4.1,5.5.1:
   stage: test
   image: $JDK12_TEST_IMAGE
   except:

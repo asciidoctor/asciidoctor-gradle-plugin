@@ -149,7 +149,7 @@ abstract class AbstractDownloadableComponent<ComponentSrc, ResolvedComponent> {
      * @param component Component to be converted.
      * @return Converting closure.
      */
-    abstract protected Closure convertible(ComponentSrc component)
+    abstract protected Closure convertible(@DelegatesTo.Target ComponentSrc component)
 
     /** Instantiates a resolved component.
      *
