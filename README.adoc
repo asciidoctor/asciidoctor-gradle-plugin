@@ -48,8 +48,6 @@ The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to 
 
 Documentation:: We are migrating our documentation to the new Asciidoctor Antora-based site when it is ready. In the meantime you can read a snapshot of the new documentation at {asciidoctor-development-docs}{github-branch}
 
-Incompatibilities:: The 3.x range of these plugins are currently NOT compatible with https://github.com/spring-projects/spring-restdocs[Spring REST Docs]. Once the latter upgrades to support {asciidoctorj-name} v2+, you would be able to use 2.x of the Gradle plugins. If you have to use Spring REST Docs then stick to the older v1.5.11 or v1.5.12 versions and DO NOT manually set the version of {asciidoctorj-name} in your build script.
-
 ifdef::env-github[]
 Structure:: `master` now represents the code for the latest 2.x release of these plugins. Development for for 2.x is against the link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/development-2.0[development-2.0] branch. PRs are preferably taking against that branch. The 1.5.x series of the plugin is now in maintenance only mode. PRs for that should be raised against the https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/maintenance-1.5[maintenance-1.5] branch. PRs for the next generation work could preferably be raised against link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/development-3.x[development-3.x]
 endif::[]
