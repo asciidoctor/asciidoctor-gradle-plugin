@@ -57,7 +57,7 @@ pdfThemes {
 ----
 pdfThemes {
     github 'basic', { // <1>
-        organisation = 'fwilhe' // <2>
+        organisation = 'fwilhe2' // <2>
         repository = 'corporate-theme' // <3>
         relativePath = 'resources/themes' // <4>
 
