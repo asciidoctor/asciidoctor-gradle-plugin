@@ -680,9 +680,6 @@ $(addBlockSwitches);
 <div class="paragraph">
 <p>This collection of plugins requires at least Gradle 4.0, JDK 8.0 and AsciidoctorJ 1.6.0 to run. If you need prior Gradle,  JDK or AsciidoctorJ support please use a plugin from the 1.5.x or 1.6.x release series.</p>
 </div>
-<div class="paragraph">
-<p>The 2.x range of these plugins are NOT compatible with <a href="https://github.com/spring-projects/spring-restdocs">Spring REST Docs</a>. If you have to use the latter then stick to the older v1.5.11 or v1.5.12 versions and do not manually set the version of AsciidoctorJ in your build script.</p>
-</div>
 </div>
 </div>
 <div class="sect1">
@@ -1056,12 +1053,13 @@ this the <code>resources</code> method is used. It is provided with a closure th
 <div class="sect2">
 <h3 id="_include_directives_and_base_directory">Include directives and base directory</h3>
 <div class="paragraph">
-<p>These plugins do not change the way <a href="https://asciidoctor.org/docs/user-manual/#include-resolution">include::</a> directive works, but it is important to note how setting <code>baseDir</code> will affect top level includes. It is recommended that you always use <code>/home/travis/build/asciidoctor/asciidoctor-gradle-plugin/docs/src/docs/asciidoc</code> as a prefix for the file path. This attribute is always set to the correct top-level folder where the sources will be located.</p>
+<p>These plugins do not change the way <a href="https://asciidoctor.org/docs/user-manual/#include-resolution">include::</a> directive works, but it is important to note how setting <code>baseDir</code> will affect top level includes. It is recommended that you always use <code>{includedir}</code> as a prefix for the file path. This attribute is always set to the correct top-level folder where the sources will be located.</p>
 </div>
 <div class="paragraph">
-<p>However it is not practical for everyone to use <code>/home/travis/build/asciidoctor/asciidoctor-gradle-plugin/docs/src/docs/asciidoc</code> and as from 2.2.0 it is possible to add a strategy for controlling the base directory:</p>
+<p>However it is not practical for everyone to use <code>{includedir}</code> and as from 2.2.0 it is possible to add a strategy for controlling the base directory:</p>
 </div>
 <div class="listingblock primary">
+<div class="title">build.gradle</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">asciidoctor {
     baseDirIsRootProjectDir() <i class="conum" data-value="1"></i><b>(1)</b>
@@ -1667,7 +1665,7 @@ Optional. When specifying a theme name it must match one registered via <code>pd
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">pdfThemes {
     github <span class="string"><span class="delimiter">'</span><span class="content">basic</span><span class="delimiter">'</span></span>, { <i class="conum" data-value="1"></i><b>(1)</b>
-        organisation = <span class="string"><span class="delimiter">'</span><span class="content">fwilhe</span><span class="delimiter">'</span></span> <i class="conum" data-value="2"></i><b>(2)</b>
+        organisation = <span class="string"><span class="delimiter">'</span><span class="content">fwilhe2</span><span class="delimiter">'</span></span> <i class="conum" data-value="2"></i><b>(2)</b>
         repository = <span class="string"><span class="delimiter">'</span><span class="content">corporate-theme</span><span class="delimiter">'</span></span> <i class="conum" data-value="3"></i><b>(3)</b>
         relativePath = <span class="string"><span class="delimiter">'</span><span class="content">resources/themes</span><span class="delimiter">'</span></span> <i class="conum" data-value="4"></i><b>(4)</b>
 
@@ -2889,7 +2887,7 @@ The <code>master</code> branch represents the code for the latest 2.x release of
 <div id="footer">
 <div id="footer-text">
 Version 2.4.0<br>
-Last updated 2019-11-23 10:50:02 UTC
+Last updated 2019-11-23 11:38:20 UTC
 </div>
 </div>
 </body>
