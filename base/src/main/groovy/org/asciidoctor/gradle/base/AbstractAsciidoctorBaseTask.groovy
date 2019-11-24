@@ -884,6 +884,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      *
      * @since 3.0.0
      */
+    @Internal
     protected List<Optional<String>> getLanguagesAsOptionals() {
         if (this.languages.empty) {
             [Optional.empty() as Optional<String>]
