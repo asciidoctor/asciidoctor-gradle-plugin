@@ -1122,7 +1122,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
     }
 
     private FileCollection fileCollectionFromConfiguration(Object c) {
-        switch (c) {
+        switch (c.class) {
             case Configuration:
                 return (FileCollection) c
             case Provider:
@@ -1133,7 +1133,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
     }
 
     private Configuration asConfiguration(Object sourceConfig) {
-        switch (sourceConfig) {
+        switch (sourceConfig.class) {
             case Configuration:
                 return (Configuration) sourceConfig
             case Provider:
