@@ -38,7 +38,7 @@ class ConfigurationUtils {
      * @throw {@code UnknownConfigurationException}
      */
     static Configuration asConfiguration(Project project, Object sourceConfig) {
-        switch (sourceConfig) {
+        switch (sourceConfig.class) {
             case Configuration:
                 return (Configuration) sourceConfig
             case Provider:
