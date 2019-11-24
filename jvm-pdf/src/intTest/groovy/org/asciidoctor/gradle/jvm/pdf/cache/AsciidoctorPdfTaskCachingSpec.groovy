@@ -15,8 +15,8 @@
  */
 package org.asciidoctor.gradle.jvm.cache
 
-import org.asciidoctor.gradle.internal.FunctionalSpecification
 import org.asciidoctor.gradle.testfixtures.jvm.CachingTest
+import org.asciidoctor.gradle.jvm.pdf.internal.FunctionalSpecification
 
 class AsciidoctorPdfTaskCachingSpec extends FunctionalSpecification implements CachingTest {
     static final String DEFAULT_TASK = 'asciidoctorPdf'
@@ -54,7 +54,7 @@ class AsciidoctorPdfTaskCachingSpec extends FunctionalSpecification implements C
         getBuildFile("""
             pdfThemes {
                 local 'basic', {
-                    styleDir = 'src/docs/asciidoc/pdf-theme'
+                    themeDir = 'src/docs/asciidoc/pdf-theme'
                 }
             }
             
@@ -77,7 +77,7 @@ class AsciidoctorPdfTaskCachingSpec extends FunctionalSpecification implements C
         changeBuildConfigurationTo("""
             pdfThemes {
                 local 'basic', {
-                    styleDir = 'src/docs/themes/pdf-theme'
+                    themeDir = 'src/docs/themes/pdf-theme'
                 }
             }
             
