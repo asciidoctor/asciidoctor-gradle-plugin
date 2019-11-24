@@ -57,8 +57,8 @@ class FunctionalTestSetup {
         pluginClasspathResource.readLines().collect { new File(it) }
     }
 
-    static GradleRunner getGradleRunner(DslType dsl, File projectDir, List<String> taskNames) {
-        getGradleRunner(dsl, projectDir, null, taskNames)
+    static GradleRunner getGradleRunner(DslType dsl, File projectDir, List<String> taskNamesAndParameters) {
+        getGradleRunner(dsl, projectDir, null, taskNamesAndParameters)
     }
 
     static GradleRunner getGradleRunner(
