@@ -22,6 +22,7 @@ import org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask
 import org.asciidoctor.gradle.jvm.AsciidoctorExecutionException
 import org.asciidoctor.gradle.jvm.ProcessMode
 import org.asciidoctor.gradle.kindlegen.KindleGenExtension
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.process.JavaForkOptions
@@ -36,6 +37,7 @@ import javax.inject.Inject
  * @since 2.0.0
  * @author Schalk W. Cronjé
  */
+@CacheableTask
 @CompileStatic
 class AsciidoctorEpubTask extends AbstractAsciidoctorTask {
 

@@ -22,11 +22,13 @@ import org.gradle.api.Project
 import org.gradle.api.file.CopySpec
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.PathSensitive
 import org.ysb33r.grolifant.api.StringUtils
 
 import java.nio.file.FileSystems
 import java.nio.file.Path
 
+import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 import static org.ysb33r.grolifant.api.MapUtils.stringizeValues
 import static org.ysb33r.grolifant.api.StringUtils.stringize
 
@@ -340,6 +342,7 @@ class RevealJSOptions {
      */
     @org.gradle.api.tasks.Optional
     @InputFile
+    @PathSensitive(RELATIVE)
     File getParallaxBackgroundImageIfFile() {
         getIfFile(this.parallaxBackgroundImage)
     }
@@ -360,6 +363,7 @@ class RevealJSOptions {
      */
     @org.gradle.api.tasks.Optional
     @InputFile
+    @PathSensitive(RELATIVE)
     File getHighlightJsThemeIfFile() {
         getIfFile(this.highlightJsTheme)
     }
@@ -411,6 +415,7 @@ class RevealJSOptions {
      */
     @org.gradle.api.tasks.Optional
     @InputFile
+    @PathSensitive(RELATIVE)
     File getCustomThemeIfFile() {
         getIfFile(this.customTheme)
     }
