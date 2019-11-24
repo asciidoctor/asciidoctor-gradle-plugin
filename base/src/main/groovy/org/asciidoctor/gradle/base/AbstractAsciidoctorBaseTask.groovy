@@ -589,6 +589,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
     protected AbstractAsciidoctorBaseTask() {
         super()
         inputs.files { filesFromCopySpec(getResourceCopySpec(Optional.empty())) }
+            .withPathSensitivity(RELATIVE)
     }
 
     /** Gets the CopySpec for additional resources.

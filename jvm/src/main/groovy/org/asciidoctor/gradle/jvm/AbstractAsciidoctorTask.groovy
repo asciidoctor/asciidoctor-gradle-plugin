@@ -50,6 +50,7 @@ import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClos
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.getClassLocation
 import static org.asciidoctor.gradle.base.internal.ConfigurationUtils.asConfiguration
 import static org.asciidoctor.gradle.base.internal.ConfigurationUtils.asConfigurations
+import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 import static org.gradle.workers.IsolationMode.CLASSLOADER
 import static org.gradle.workers.IsolationMode.PROCESS
 
@@ -239,7 +240,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         FileCollection precompiledExtensions = findDependenciesInExtensions()
         FileCollection fc = this.asciidocConfigurations.inject(asciidoctorj.configuration) {
             FileCollection seed, Object it ->
-            seed + asConfiguration(project, it)
+                seed + asConfiguration(project, it)
         }
         precompiledExtensions ? fc + precompiledExtensions : fc
     }
@@ -332,6 +333,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         addInputProperty 'gemPath', { asciidoctorj.asGemPath() }
 
         inputs.files { asciidoctorj.gemPaths }
+            .withPathSensitivity(RELATIVE)
     }
 
     /**

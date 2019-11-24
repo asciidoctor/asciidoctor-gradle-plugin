@@ -15,7 +15,10 @@
  */
 package org.asciidoctor.gradle.testfixtures.jvm
 
+import groovy.transform.CompileStatic
 import org.apache.commons.io.FileUtils
+import org.asciidoctor.gradle.testfixtures.DslType
+import org.asciidoctor.gradle.testfixtures.FunctionalTestSetup
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.rules.TemporaryFolder
@@ -23,16 +26,23 @@ import org.junit.rules.TemporaryFolder
 import java.nio.file.Path
 import java.nio.file.Paths
 
+import static org.asciidoctor.gradle.testfixtures.DslType.GROOVY_DSL
+
 /**
  * A set of convenience methods for testing compatibility with the build cache.
+ *
+ * @author Gary Hale
+ *
+ * @since 3.0
  */
+@CompileStatic
 trait CachingTest {
-    def setupCache() {
-        // Use a test-specific build cache directory.  This ensures that we'll only use cached outputs generated during this
-        // test and we won't accidentally use cached outputs from a different test or a different build.
+    void setupCache() {
+        // Use a test-specific build cache directory.  This ensures that we'll only use cached outputs generated
+        // during this test and we won't accidentally use cached outputs from a different test or a different build.
         file('settings.gradle') << """
             rootProject.name = 'test'
-            
+
             buildCache {
                 local(DirectoryBuildCache) {
                     directory = new File(rootDir, 'build-cache')
@@ -41,8 +51,13 @@ trait CachingTest {
         """
     }
 
-    void assertTaskRunsWithOutcomeInDir(String task, TaskOutcome outcome, File projectDir) {
-        BuildResult result = FunctionalTestSetup.getGradleRunner(projectDir, [task, '--build-cache']).build()
+    void assertTaskRunsWithOutcomeInDir(
+        String task,
+        TaskOutcome outcome,
+        File projectDir,
+        DslType dslType = GROOVY_DSL
+    ) {
+        BuildResult result = FunctionalTestSetup.getGradleRunner(dslType, projectDir, [task, '--build-cache']).build()
         assert result.task(task).outcome == outcome
     }
 
@@ -93,8 +108,12 @@ trait CachingTest {
     }
 
     abstract File getBuildFile(String extraContent)
+
     abstract File getOutputFile()
+
     abstract String getDefaultTask()
+
     abstract TemporaryFolder getTestProjectDir()
+
     abstract TemporaryFolder getAlternateProjectDir()
 }
