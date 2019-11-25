@@ -31,18 +31,21 @@ import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.options.Option
 import org.gradle.util.GradleVersion
 
 import java.util.concurrent.Callable
 
+import static org.gradle.api.tasks.PathSensitivity.RELATIVE
+
 /** Base task for all HTML slide export tasks.
  *
  */
 @CompileStatic
 abstract class AbstractExportBaseTask extends DefaultTask {
-    private final static boolean GRADLE_4_8_OR_LATER = GradleVersion.current() >= GradleVersion.version('4.8')
+    private final static boolean GRADLE_GE_4_8 = GradleVersion.current() >= GradleVersion.version('4.8')
     private final static String HTML_EXT = '.html'
     private final List<Object> slideInputFiles = []
     private Object outputDir
@@ -124,6 +127,7 @@ abstract class AbstractExportBaseTask extends DefaultTask {
      * @return Outpur directory
      */
     @OutputDirectory
+    @PathSensitive(RELATIVE)
     File getOutputDir() {
         project.file(this.outputDir)
     }
@@ -165,6 +169,7 @@ abstract class AbstractExportBaseTask extends DefaultTask {
      */
     @InputFiles
     @SkipWhenEmpty
+    @PathSensitive(RELATIVE)
     Provider<Set<File>> getSlides() {
         if (slideInputFiles.empty) {
             project.providers.provider { [] as Set<File> }
@@ -259,7 +264,7 @@ abstract class AbstractExportBaseTask extends DefaultTask {
         dependsOn tasks.findAll {
             if (it instanceof Task) {
                 true
-            } else if (GRADLE_4_8_OR_LATER) {
+            } else if (GRADLE_GE_4_8) {
                 it instanceof org.gradle.api.tasks.TaskProvider
             } else {
                 false

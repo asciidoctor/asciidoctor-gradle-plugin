@@ -142,6 +142,16 @@ class RevealJSExtensionSpec extends Specification {
             boolean isPresent() {
                 false
             }
+
+            @Override
+            Provider<File> orElse(File value) {
+                null
+            }
+
+            @Override
+            Provider<File> orElse(Provider<? extends File> provider) {
+                null
+            }
         }
     }
 }
