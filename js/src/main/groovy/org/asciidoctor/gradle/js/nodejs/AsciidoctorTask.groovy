@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.js.nodejs
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.OutputOptions
 import org.gradle.api.Action
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.workers.WorkerExecutor
 import org.ysb33r.grolifant.api.FileUtils
 
@@ -25,10 +26,12 @@ import javax.inject.Inject
 
 import static groovy.lang.Closure.DELEGATE_FIRST
 
-/**
+/** Build using {@code asciidoctor.js}.
+ *
  * @since 3.0
  */
 @CompileStatic
+@CacheableTask
 class AsciidoctorTask extends AbstractAsciidoctorNodeJSTask {
 
     @Inject

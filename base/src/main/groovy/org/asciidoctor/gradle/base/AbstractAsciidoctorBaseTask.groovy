@@ -39,6 +39,7 @@ import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.OutputDirectories
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.api.tasks.util.PatternSet
@@ -115,6 +116,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      *
      */
     @OutputDirectory
+    @PathSensitive(PathSensitivity.NAME_ONLY)
     File getOutputDir() {
         this.outDir != null ? project.file(this.outDir) : null
     }
@@ -484,6 +486,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * @since 1.5.1
      */
     @OutputDirectories
+    @PathSensitive(RELATIVE)
     Set<File> getBackendOutputDirectories() {
         if (languages.empty) {
             Transform.toSet(configuredOutputOptions.backends) {
