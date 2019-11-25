@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.jvm
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.OutputOptions
 import org.gradle.api.Action
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.workers.WorkerExecutor
 import org.ysb33r.grolifant.api.FileUtils
@@ -51,6 +52,7 @@ import static groovy.lang.Closure.DELEGATE_FIRST
  */
 @SuppressWarnings(['MethodCount', 'Instanceof'])
 @CompileStatic
+@CacheableTask
 class AsciidoctorTask extends AbstractAsciidoctorTask {
 
     /** Configures output options for this task.
