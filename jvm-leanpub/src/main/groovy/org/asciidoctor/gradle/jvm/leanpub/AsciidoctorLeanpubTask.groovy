@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.jvm.leanpub
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.workers.WorkerExecutor
 
@@ -28,6 +29,7 @@ import javax.inject.Inject
  * @since 3.0.0
  */
 @CompileStatic
+@CacheableTask
 class AsciidoctorLeanpubTask extends AbstractAsciidoctorTask {
 
     public static final String DISCUSSION = 'discussion'
