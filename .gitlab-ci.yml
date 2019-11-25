@@ -172,7 +172,25 @@ test:gradle_5.0,5.1.1,5.3.1:
     expire_in: 10 days
     when: on_failure
 
-test:gradle_5.4.1,5.5.1:
+test:gradle_5.4.1,5.5.1,5.6.4:
+  stage: test
+  image: $JDK12_TEST_IMAGE
+  except:
+    - pages
+    - gh-pages
+    - tags
+  dependencies:
+    - testrepo
+    - jdk11
+  script: ./run-compatibility-test-on-ci.sh
+  artifacts:
+    paths:
+      - '*/build/reports'
+      - '*/build/jacoco'
+    expire_in: 10 days
+    when: on_failure
+
+test:gradle_6_0_1:
   stage: test
   image: $JDK12_TEST_IMAGE
   except:
