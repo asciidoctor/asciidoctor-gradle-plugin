@@ -31,17 +31,15 @@ import static org.asciidoctor.gradle.testfixtures.FunctionalTestSetup.getOffline
 import static org.asciidoctor.gradle.testfixtures.FunctionalTestSetup.getOfflineRepositoriesKotlinDsl
 
 class FunctionalSpecification extends Specification {
-    @SuppressWarnings('LineLength')
-    static
-    final String TEST_PROJECTS_DIR = System.getProperty('TEST_PROJECTS_DIR', './src/intTest/projects')
-    static
-    final String TEST_REPO_DIR = FunctionalTestSetup.offlineRepo.absolutePath
-
-    static
-    final OperatingSystem OS = OperatingSystem.current()
+    public static final String TEST_PROJECTS_DIR = System.getProperty(
+        'TEST_PROJECTS_DIR',
+        './src/intTest/projects'
+    )
+    public static final String TEST_REPO_DIR = FunctionalTestSetup.offlineRepo.absolutePath
+//    public static final OperatingSystem OS = OperatingSystem.current()
 
     @Rule
-    final TemporaryFolder testProjectDir = new TemporaryFolder()
+    TemporaryFolder testProjectDir = new TemporaryFolder()
 
     @CompileStatic
     GradleRunner getGradleRunner(List<String> taskNames = ['asciidoctor']) {
