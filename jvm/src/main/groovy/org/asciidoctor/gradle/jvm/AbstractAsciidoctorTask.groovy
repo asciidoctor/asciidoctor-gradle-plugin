@@ -50,6 +50,7 @@ import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClos
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.getClassLocation
 import static org.asciidoctor.gradle.base.internal.ConfigurationUtils.asConfiguration
 import static org.asciidoctor.gradle.base.internal.ConfigurationUtils.asConfigurations
+import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 import static org.gradle.workers.IsolationMode.CLASSLOADER
 import static org.gradle.workers.IsolationMode.PROCESS
 
@@ -239,7 +240,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         FileCollection precompiledExtensions = findDependenciesInExtensions()
         FileCollection fc = this.asciidocConfigurations.inject(asciidoctorj.configuration) {
             FileCollection seed, Object it ->
-            seed + asConfiguration(project, it)
+                seed + asConfiguration(project, it)
         }
         precompiledExtensions ? fc + precompiledExtensions : fc
     }
@@ -311,12 +312,6 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         }
     }
 
-    @Override
-    @Internal
-    protected String getEngineName() {
-        'AsciidoctorJ'
-    }
-
     /** Initialises the core an Asciidoctor task
      *
      * @param we {@link WorkerExecutor}. This is usually injected into the
@@ -328,10 +323,30 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         this.worker = we
         this.asciidoctorj = extensions.create(AsciidoctorJExtension.NAME, AsciidoctorJExtension, this)
 
-        addInputProperty 'required-ruby-modules', { AsciidoctorJExtension aj -> aj.requires }.curry(this.asciidoctorj)
-        addInputProperty 'gemPath', { asciidoctorj.asGemPath() }
+        addInputProperty 'gemPath', { AsciidoctorJExtension aj -> aj.asGemPath() }
+            .curry(this.asciidoctorj)
+
+        addInputProperty 'required-ruby-modules', { AsciidoctorJExtension aj -> aj.requires }
+            .curry(this.asciidoctorj)
+
+        addInputProperty 'asciidoctor-version', { AsciidoctorJExtension aj -> aj.version }
+            .curry(this.asciidoctorj)
+
+        addOptionalInputProperty 'jruby-version', { AsciidoctorJExtension aj -> aj.jrubyVersion }
+            .curry(this.asciidoctorj)
 
         inputs.files { asciidoctorj.gemPaths }
+            .withPathSensitivity(RELATIVE)
+    }
+
+    /** Name of implementation engine.
+     *
+     * @return Always{@code AsciidoctorJ}
+     */
+    @Override
+    @Internal
+    protected String getEngineName() {
+        'AsciidoctorJ'
     }
 
     /**

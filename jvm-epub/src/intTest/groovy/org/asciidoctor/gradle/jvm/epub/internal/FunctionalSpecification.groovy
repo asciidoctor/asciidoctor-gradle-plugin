@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.jvm.epub.internal
 import org.apache.commons.io.FileUtils
 import org.asciidoctor.gradle.testfixtures.FunctionalTestSetup
 import org.gradle.testkit.runner.GradleRunner
+import org.gradle.util.VersionNumber
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import org.ysb33r.grolifant.api.OperatingSystem
@@ -35,6 +36,9 @@ class FunctionalSpecification extends Specification {
 
     @Rule
     TemporaryFolder testProjectDir
+
+    @Rule
+    TemporaryFolder alternateProjectDir
 
     GradleRunner getGradleRunner(List<String> taskNames = ['asciidoctor']) {
         GradleRunner.create()
@@ -62,5 +66,10 @@ class FunctionalSpecification extends Specification {
         } else {
             "apply from: '${repo.absolutePath}'"
         }
+    }
+
+    static boolean isWindowsOr64bitOnlyMacOS() {
+        VersionNumber version = VersionNumber.parse(OS.version)
+        OS.windows || (OS.macOsX && version.major >= 10 && version.minor >= 15)
     }
 }

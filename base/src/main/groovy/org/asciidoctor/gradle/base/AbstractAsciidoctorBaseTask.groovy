@@ -42,6 +42,7 @@ import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.api.tasks.util.PatternSet
+import org.gradle.util.GradleVersion
 import org.ysb33r.grolifant.api.FileUtils
 import org.ysb33r.grolifant.api.StringUtils
 
@@ -62,10 +63,11 @@ import static org.ysb33r.grolifant.api.FileUtils.filesFromCopySpec
 @SuppressWarnings(['MethodCount', 'ClassSize'])
 abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
 
+    private static final boolean GRADLE_LT_4_3 = GradleVersion.current() < GradleVersion.version('4.3')
+
     private Object srcDir
     private Object outDir
     private BaseDirStrategy baseDir
-
     private PatternSet sourceDocumentPattern
     private PatternSet secondarySourceDocumentPattern
     private CopySpec resourceCopy
@@ -545,6 +547,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      *
      * @return Access to attributes hashmap
      */
+    @Input
     abstract Map<String, Object> getAttributes()
 
     /** Shortcut method to apply a new set of Asciidoctor attributes, clearing any attributes previously set.
@@ -588,6 +591,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
     protected AbstractAsciidoctorBaseTask() {
         super()
         inputs.files { filesFromCopySpec(getResourceCopySpec(Optional.empty())) }
+            .withPathSensitivity(RELATIVE)
     }
 
     /** Gets the CopySpec for additional resources.
@@ -775,7 +779,23 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      */
     @CompileDynamic
     protected void addInputProperty(String propName, Object value) {
-        inputs.property propName, value
+        inputs.property(propName, value)
+    }
+
+    /** Adds an optional input property.
+     *
+     * Serves as a proxy method in order to deal with the API differences between Gradle 4.0-4.2 and 4.3
+     *
+     * @param propName Name of property
+     * @param value Value of the input property
+     */
+    @CompileDynamic
+    protected void addOptionalInputProperty(String propName, Object value) {
+        if (GRADLE_LT_4_3) {
+            inputs.property propName, { -> StringUtils.stringize(value) ?: '' }
+        } else {
+            inputs.property(propName, value).optional(true)
+        }
     }
 
     /** Prepares a workspace prior to conversion.

@@ -37,10 +37,12 @@ import javax.inject.Inject
 import static org.asciidoctor.gradle.jvm.gems.AsciidoctorGemSupportPlugin.GEMPREP_TASK
 import static org.asciidoctor.gradle.jvm.slides.RevealJSExtension.FIRST_VERSION_WITH_PLUGIN_SUPPORT
 import static org.ysb33r.grolifant.api.TaskProvider.*
+import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 
 /**
  * @since 2.0
  */
+@CacheableTask
 @CompileStatic
 class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements SlidesToExportAware {
 
@@ -108,6 +110,7 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
      * @return
      */
     @InputDirectory
+    @PathSensitive(RELATIVE)
     File getTemplateSourceDir() {
         revealjsExtension.templateProvider.get()
     }
@@ -221,8 +224,9 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
      *
      * @return Location of file. Can be {@code null}
      */
-    @InputFile
     @Optional
+    @InputFile
+    @PathSensitive(RELATIVE)
     File getPluginConfigurationFile() {
         this.pluginConfigurationFile ? project.file(this.pluginConfigurationFile) : null
     }

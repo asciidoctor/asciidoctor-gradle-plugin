@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.jvm.slides.internal
+package org.asciidoctor.gradle.jvm.gems.internal
 
 import org.apache.commons.io.FileUtils
 import org.gradle.testkit.runner.GradleRunner
@@ -25,11 +25,11 @@ import spock.lang.Specification
 class FunctionalSpecification extends Specification {
     public static final String TEST_PROJECTS_DIR = System.getProperty(
         'TEST_PROJECTS_DIR',
-        './src/intTest/projects'
+        './asciidoctor-gradle-jvm-gems/src/intTest/projects'
     )
     public static final String TEST_REPO_DIR = System.getProperty(
         'OFFLINE_REPO',
-        '../testfixtures/offline-repo/build/repo'
+        './testfixtures/offline-repo/build/repo'
     )
     public static final OperatingSystem OS = OperatingSystem.current()
 
