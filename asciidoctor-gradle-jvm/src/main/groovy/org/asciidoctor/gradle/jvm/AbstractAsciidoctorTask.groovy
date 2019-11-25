@@ -878,6 +878,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      *
      * @return {@code true} is a strategy has been configured
      */
+    @Internal
     protected boolean isBaseDirConfigured() {
         this.baseDir != null
     }
