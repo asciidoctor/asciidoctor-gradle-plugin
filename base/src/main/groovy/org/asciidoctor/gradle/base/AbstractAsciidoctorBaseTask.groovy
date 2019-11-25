@@ -545,6 +545,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      *
      * @return Access to attributes hashmap
      */
+    @Input
     abstract Map<String, Object> getAttributes()
 
     /** Shortcut method to apply a new set of Asciidoctor attributes, clearing any attributes previously set.
