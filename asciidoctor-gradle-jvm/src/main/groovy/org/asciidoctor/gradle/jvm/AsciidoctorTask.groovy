@@ -52,7 +52,6 @@ import static groovy.lang.Closure.DELEGATE_FIRST
 @SuppressWarnings(['MethodCount', 'Instanceof'])
 @CacheableTask
 @CompileStatic
-@CacheableTask
 class AsciidoctorTask extends AbstractAsciidoctorTask {
 
     /** Configures output options for this task.
