@@ -39,7 +39,6 @@ import javax.inject.Inject
  */
 @CacheableTask
 @CompileStatic
-@CacheableTask
 class AsciidoctorEpubTask extends AbstractAsciidoctorTask {
 
     static final String KF8 = 'kf8'
