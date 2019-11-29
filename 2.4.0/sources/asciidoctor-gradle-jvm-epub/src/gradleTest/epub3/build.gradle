@@ -1,0 +1,20 @@
+plugins {
+    id 'org.asciidoctor.jvm.epub'
+}
+
+apply from: "${System.getProperty('OFFLINE_REPO')}/repositories.gradle"
+
+
+asciidoctorEpub {
+    ebookFormats = [EPUB3]
+
+    sources {
+        include 'epub3.adoc'
+    }
+
+    inProcess IN_PROCESS
+}
+
+task runGradleTest {
+    dependsOn asciidoctorEpub
+}

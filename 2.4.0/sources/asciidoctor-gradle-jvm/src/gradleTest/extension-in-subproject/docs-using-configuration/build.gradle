@@ -1,0 +1,18 @@
+apply plugin : 'org.asciidoctor.jvm.convert'
+
+configurations {
+    asciidocExt
+}
+
+dependencies {
+    asciidocExt project(':extension')
+}
+
+asciidoctorj {
+    logLevel 'DEBUG'
+}
+
+asciidoctor {
+    configurations 'asciidocExt'
+    inProcess JAVA_EXEC
+}
