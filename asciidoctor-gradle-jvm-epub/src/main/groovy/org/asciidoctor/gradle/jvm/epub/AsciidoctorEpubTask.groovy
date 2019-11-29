@@ -37,6 +37,7 @@ import javax.inject.Inject
  * @since 2.0.0
  * @author Schalk W. Cronjé
  */
+@CacheableTask
 @CompileStatic
 @CacheableTask
 class AsciidoctorEpubTask extends AbstractAsciidoctorTask {

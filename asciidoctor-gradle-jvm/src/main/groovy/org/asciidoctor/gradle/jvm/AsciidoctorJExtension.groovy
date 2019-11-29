@@ -37,6 +37,7 @@ import org.ysb33r.grolifant.api.OperatingSystem
 
 import java.util.regex.Pattern
 
+import static org.asciidoctor.gradle.base.internal.DeprecatedFeatures.addDeprecationMessage
 import static org.ysb33r.grolifant.api.ClosureUtils.configureItem
 import static org.ysb33r.grolifant.api.StringUtils.stringize
 
@@ -572,7 +573,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
 
     /**
 
-     * @deprecated Use {@link #getDocExtensions}
+     * @deprecated Use{@link #getDocExtensions}
 
      */
     @Deprecated
@@ -583,7 +584,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
 
     /**
 
-     * @deprecated Use {@link #asciidoctorExtensions}
+     * @deprecated Use{@link #asciidoctorExtensions}
 
      */
     @Deprecated
@@ -594,7 +595,7 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
 
     /**
 
-     * @deprecated Use {@link #setDocExtensions}
+     * @deprecated Use{@link #setDocExtensions}
 
      */
     @Deprecated
@@ -955,11 +956,19 @@ class AsciidoctorJExtension extends AbstractCombinedProjectTaskExtension {
 
     @SuppressWarnings('LineLength')
     private void warnVersionMethodDeprecated(final String oldMethod, final String newMethod) {
-        project.logger.warn("${NAME}.${oldMethod} is deprecated and will be removed in 3.0. Use ${NAME}.${newMethod} instead.")
+        addDeprecationMessage(
+            project,
+            "Extension: ${NAME}",
+            "${NAME}.${oldMethod} is deprecated. Use ${NAME}.${newMethod} instead."
+        )
     }
 
     @SuppressWarnings('LineLength')
     private void warnExtensionsDeprecated(String oldMethod, String newMethod) {
-        project.logger.warn "${oldMethod} is deprecated and will be removed in 3.0 of this plugin suite. Use ${newMethod} instead"
+        addDeprecationMessage(
+            project,
+            "Extension: ${NAME}",
+            "${oldMethod} is deprecated. Use ${newMethod} instead."
+        )
     }
 }

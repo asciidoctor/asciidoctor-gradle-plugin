@@ -64,7 +64,6 @@ allprojects {
         offlineRepoDescriptionFile = file("${offlineRepoRoot}/repositories.gradle")
 
         withoutIntegrationTests = [
-            'asciidoctor-gradle-jvm-gems',
             'kindlegen-gradle'
         ]
 

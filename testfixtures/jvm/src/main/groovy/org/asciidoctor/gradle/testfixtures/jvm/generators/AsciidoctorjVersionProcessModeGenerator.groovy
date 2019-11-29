@@ -27,9 +27,9 @@ import org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions
 @CompileStatic
 class AsciidoctorjVersionProcessModeGenerator {
 
-    static final String JAVA_EXEC = 'JAVA_EXEC'
-    static final String IN_PROCESS = 'IN_PROCESS'
-    static final String OUT_OF_PROCESS = 'OUT_OF_PROCESS'
+    public static final String JAVA_EXEC = 'JAVA_EXEC'
+    public static final String IN_PROCESS = 'IN_PROCESS'
+    public static final String OUT_OF_PROCESS = 'OUT_OF_PROCESS'
 
     @SuppressWarnings('ClassName')
     @EqualsAndHashCode
@@ -49,7 +49,7 @@ class AsciidoctorjVersionProcessModeGenerator {
     }
 
     static List<VersionProcess> get() {
-        if (System.getenv('APPVEYOR') || System.getenv('TRAVIS')) {
+        if (System.getenv('APPVEYOR') || System.getenv('TRAVIS') || System.getenv('GITLAB_CI')) {
             [AsciidoctorjTestVersions.SERIES_20, AsciidoctorjTestVersions.SERIES_16].collect {
                 VersionProcess.of(it, JAVA_EXEC)
             }.toUnique()
