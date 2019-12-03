@@ -118,7 +118,7 @@ tasks {
       mapOf(
         "source-highlighter" to "coderay",
         "toc"                to "",
-        "idprefix            to "",
+        "idprefix"           to "",
         "idseparator"        to "-"
       )
     )
