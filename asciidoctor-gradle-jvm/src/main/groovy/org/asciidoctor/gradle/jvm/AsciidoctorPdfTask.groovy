@@ -105,6 +105,7 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
      *
      * @return Theme name or {@code null} if no theme was set.
      */
+    @Internal
     @SuppressWarnings('LineLength')
     String getThemeName() {
         this.theme != null ? project.extensions.getByType(AsciidoctorPdfThemesExtension).getByName(this.theme).styleName : null

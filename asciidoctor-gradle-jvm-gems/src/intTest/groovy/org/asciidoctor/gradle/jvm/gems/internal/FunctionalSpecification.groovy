@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle.jvm.gems.internal
 
 import org.apache.commons.io.FileUtils
+import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
@@ -38,6 +39,9 @@ class FunctionalSpecification extends Specification {
 
     @Rule
     TemporaryFolder alternateProjectDir
+
+    @SuppressWarnings(['PrivateFieldCouldBeFinal'])
+    private List<String> allowedDeprecations = []
 
     GradleRunner getGradleRunner(List<String> taskNames) {
         GradleRunner.create()
@@ -66,5 +70,22 @@ class FunctionalSpecification extends Specification {
         } else {
             "apply from: '${repo.absolutePath}'"
         }
+    }
+
+    void assertNoDeprecatedUsages(BuildResult result) {
+        List<String> outputLines = result.output.readLines()
+
+        outputLines.each { String line ->
+            assert !isUnallowedDeprecation(line) : "Output contains an unallowed deprecation: ${line}"
+        }
+    }
+
+    boolean isUnallowedDeprecation(String line) {
+        line.contains('has been deprecated') &&
+                !allowedDeprecations.any { String allowedDeprecation -> line.startsWith(allowedDeprecation) }
+    }
+
+    void allowDeprecation(String allowedDeprecation) {
+        allowedDeprecations.add(allowedDeprecation)
     }
 }

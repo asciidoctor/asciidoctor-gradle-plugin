@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle.jvm.epub.internal
 
 import org.apache.commons.io.FileUtils
+import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.util.VersionNumber
 import org.junit.Rule
@@ -38,6 +39,9 @@ class FunctionalSpecification extends Specification {
 
     @Rule
     TemporaryFolder alternateProjectDir
+
+    @SuppressWarnings(['PrivateFieldCouldBeFinal'])
+    private List<String> allowedDeprecations = []
 
     GradleRunner getGradleRunner(List<String> taskNames = ['asciidoctor']) {
         GradleRunner.create()
@@ -70,5 +74,22 @@ class FunctionalSpecification extends Specification {
     static boolean isWindowsOr64bitOnlyMacOS() {
         VersionNumber version = VersionNumber.parse(OS.version)
         OS.windows || (OS.macOsX && version.major >= 10 && version.minor >= 15)
+    }
+
+    void assertNoDeprecatedUsages(BuildResult result) {
+        List<String> outputLines = result.output.readLines()
+
+        outputLines.each { String line ->
+            assert !isUnallowedDeprecation(line) : "Output contains an unallowed deprecation: ${line}"
+        }
+    }
+
+    boolean isUnallowedDeprecation(String line) {
+        line.contains('has been deprecated') &&
+                !allowedDeprecations.any { String allowedDeprecation -> line.startsWith(allowedDeprecation) }
+    }
+
+    void allowDeprecation(String allowedDeprecation) {
+        allowedDeprecations.add(allowedDeprecation)
     }
 }

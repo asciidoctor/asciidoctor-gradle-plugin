@@ -17,6 +17,8 @@ package org.asciidoctor.gradle.jvm.gems
 
 import org.asciidoctor.gradle.jvm.gems.internal.FunctionalSpecification
 import org.asciidoctor.gradle.testfixtures.jvm.CachingTest
+import org.gradle.testkit.runner.BuildResult
+import spock.lang.Unroll
 
 class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecification implements CachingTest {
     private static final String DEFAULT_TASK = 'asciidoctorGemsPrepare'
@@ -125,6 +127,35 @@ class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecifica
         then:
         file(alternateGemPath).exists()
         fileInRelocatedDirectory(alternateGemPath).exists()
+    }
+
+    @Unroll
+    void 'there are no deprecated usages with Gradle v#version'() {
+        given:
+        getBuildFile("""
+            dependencies {
+                asciidoctorGems("rubygems:${DEFAULT_GEM_NAME}:${DEFAULT_GEM_VERSION}") {
+                    exclude module: 'asciidoctor'
+                }
+            }
+        """)
+
+        when:
+        BuildResult result = getGradleRunner([DEFAULT_TASK, '--warning-mode', 'all'])
+                .withGradleVersion(version)
+                .build()
+
+        and:
+        // This property comes from a task in the jruby plugin
+        allowDeprecation('Property \'dependencies\' is not annotated with an input or output annotation.')
+        // This is due to the gem repository used in the test (does not appear to be an https alternative)
+        allowDeprecation('Using insecure protocols with repositories has been deprecated.')
+
+        then:
+        assertNoDeprecatedUsages(result)
+
+        where:
+        version << ['5.6.4', '6.0.1']
     }
 
     @Override
