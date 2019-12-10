@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.jvm
 
 import org.asciidoctor.gradle.internal.FunctionalSpecification
 import org.asciidoctor.gradle.testfixtures.jvm.generators.PdfBackendJRubyAsciidoctorJCombinationGenerator
+import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Unroll
 
@@ -124,12 +125,41 @@ asciidoctorPdf {
         """)
 
         when:
-        getGradleRunner([DEFAULT_TASK, '-i']).withDebug(true).build()
+        getGradleRunner([DEFAULT_TASK, '-i']).build()
 
         then:
         verifyAll {
             new File(testProjectDir.root, DEFAULT_OUTPUT_FILE).exists()
         }
+    }
+
+    @Unroll
+    void 'there are no deprecated usages with Gradle v#version'() {
+        given:
+        getBuildFile("""
+            pdfThemes {
+                local 'basic', {
+                    styleDir = 'src/docs/asciidoc/pdf-theme'
+                }
+            }
+
+            asciidoctorPdf {
+                theme 'basic'
+                sourceDir 'src/docs/asciidoc'
+                fontsDir 'src/docs/asciidoc/pdf-theme'
+            }
+        """)
+
+        when:
+        BuildResult result = getGradleRunner([DEFAULT_TASK, '--warning-mode', 'all'])
+                .withGradleVersion(version)
+                .build()
+
+        then:
+        assertNoDeprecatedUsages(result)
+
+        where:
+        version << ['5.6.4', '6.0.1']
     }
 
     File getBuildFile(String extraContent) {

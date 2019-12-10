@@ -135,6 +135,23 @@ class AsciidoctorEpubTaskFunctionalSpec extends FunctionalSpecification {
         result.output.contains('No eBook format specified for task')
     }
 
+    @Unroll
+    void 'there are no deprecated usages with Gradle v#version'() {
+        given:
+        getSingleFormatBuildFile('EPUB3')
+
+        when:
+        BuildResult result = getGradleRunner(['asciidoctorEpub', '--warning-mode', 'all'])
+                .withGradleVersion(version)
+                .build()
+
+        then:
+        assertNoDeprecatedUsages(result)
+
+        where:
+        version << ['5.6.4', '6.0.1']
+    }
+
     File getSingleFormatBuildFile(final String format) {
         getBuildFile( """
 
