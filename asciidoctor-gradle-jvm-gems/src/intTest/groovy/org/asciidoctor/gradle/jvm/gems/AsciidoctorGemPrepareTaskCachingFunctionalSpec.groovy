@@ -170,7 +170,14 @@ class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecifica
             ${offlineRepositories}
 
             repositories {
-                maven { url 'http://rubygems-proxy.torquebox.org/releases' }
+                maven { 
+                    url 'http://rubygems-proxy.torquebox.org/releases'
+                    try {
+                        allowInsecureProtocol = true
+                    } catch (Exception ignore) {
+                        // available for Gradle 6.0+
+                    }
+                }
             }
 
            ${extraContent}
