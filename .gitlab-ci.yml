@@ -186,6 +186,24 @@ test:gradle_5.3:
     expire_in: 10 days
     when: on_failure
 
+test:gradle_6_0_1:
+  stage: test
+  image: openjdk:11
+  except:
+    - pages
+    - gh-pages
+    - tags
+  dependencies:
+    - testrepo
+    - jdk11
+  script: ./run-compatibility-test-on-ci.sh
+  artifacts:
+    paths:
+      - '*/build/reports'
+      - '*/build/jacoco'
+    expire_in: 10 days
+    when: on_failure
+
 htmldocs:
   stage: docs
   image: openjdk:11
