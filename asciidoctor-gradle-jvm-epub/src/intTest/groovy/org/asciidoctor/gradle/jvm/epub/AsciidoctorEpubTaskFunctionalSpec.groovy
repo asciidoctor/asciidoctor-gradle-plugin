@@ -45,7 +45,8 @@ class AsciidoctorEpubTaskFunctionalSpec extends FunctionalSpecification {
         }
     }
 
-    @IgnoreIf({ FunctionalSpecification.OS.windows })
+    // kindlegen is only available as a 32-bit executable and won't run on MacOS Catalina
+    @IgnoreIf({ isWindowsOr64bitOnlyMacOS() })
     void 'Non-Windows: Run a EPUB generator with format KF8 (only in JAVA_EXEC mode on)'() {
         given:
         getSingleFormatBuildFile('KF8')

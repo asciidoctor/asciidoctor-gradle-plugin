@@ -642,11 +642,10 @@ class AbstractAsciidoctorTask extends DefaultTask {
         this.asciidoctorj = extensions.create(AsciidoctorJExtension.NAME, AsciidoctorJExtension, this)
 
         addInputProperty 'required-ruby-modules', { asciidoctorj.requires }
-        addInputProperty 'gemPath', { asciidoctorj.asGemPath() }
-        addInputProperty 'trackBaseDir', { getBaseDir().absolutePath }
+        addInputProperty 'trackBaseDir', { project.relativePath(getBaseDir()) }
 
-        inputs.files { asciidoctorj.gemPaths }
-        inputs.files { filesFromCopySpec(resourceCopySpec) }
+        inputs.files { asciidoctorj.gemPaths }.withPathSensitivity(RELATIVE)
+        inputs.files { filesFromCopySpec(resourceCopySpec) }.withPathSensitivity(RELATIVE)
     }
 
     /** Returns all of the executor configurations for this task
@@ -879,6 +878,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
      *
      * @return {@code true} is a strategy has been configured
      */
+    @Internal
     protected boolean isBaseDirConfigured() {
         this.baseDir != null
     }
@@ -1122,7 +1122,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
     }
 
     private FileCollection fileCollectionFromConfiguration(Object c) {
-        switch (c) {
+        switch (c.class) {
             case Configuration:
                 return (FileCollection) c
             case Provider:
@@ -1133,7 +1133,7 @@ class AbstractAsciidoctorTask extends DefaultTask {
     }
 
     private Configuration asConfiguration(Object sourceConfig) {
-        switch (sourceConfig) {
+        switch (sourceConfig.class) {
             case Configuration:
                 return (Configuration) sourceConfig
             case Provider:

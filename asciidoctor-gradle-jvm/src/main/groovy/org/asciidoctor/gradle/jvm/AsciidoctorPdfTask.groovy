@@ -32,8 +32,8 @@ import javax.inject.Inject
  * @since 2.0.0
  * @author Schalk W. Cronjé
  */
-@CompileStatic
 @CacheableTask
+@CompileStatic
 class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
 
     private Object fontsDir
@@ -105,8 +105,6 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
      *
      * @return Theme name or {@code null} if no theme was set.
      */
-    @Input
-    @Optional
     @SuppressWarnings('LineLength')
     String getThemeName() {
         this.theme != null ? project.extensions.getByType(AsciidoctorPdfThemesExtension).getByName(this.theme).styleName : null

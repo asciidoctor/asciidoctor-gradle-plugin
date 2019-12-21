@@ -50,8 +50,8 @@ import static groovy.lang.Closure.DELEGATE_FIRST
  * @author Robert Panzer
  */
 @SuppressWarnings(['MethodCount', 'Instanceof'])
-@CompileStatic
 @CacheableTask
+@CompileStatic
 class AsciidoctorTask extends AbstractAsciidoctorTask {
 
     /** Configures output options for this task.
