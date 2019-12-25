@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.jvm.slides
 import org.asciidoctor.gradle.jvm.slides.internal.FunctionalSpecification
 import org.asciidoctor.gradle.testfixtures.jvm.JRubyTestVersions
 import org.gradle.testkit.runner.BuildResult
+import spock.lang.Unroll
 
 class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
 
@@ -105,6 +106,29 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
             revealjsHtml.contains(pluginConfig)
             new File(testProjectDir.root, "${DEFAULT_REVEALJS_PATH}/plugin/rajgoel/chart/Chart.js").exists()
         }
+    }
+
+    @Unroll
+    void 'there are no deprecated usages with Gradle v#version'() {
+        given:
+        getBuildFile('')
+
+        when:
+        BuildResult result = getGradleRunner(['asciidoctorRevealJs', '--warning-mode', 'all'])
+                .withGradleVersion(version)
+                .build()
+
+        and:
+        // This property comes from a task in the jruby plugin
+        allowDeprecation('Property \'dependencies\' is not annotated with an input or output annotation.')
+        // This is due to the gem repository used in the test (does not appear to be an https alternative)
+        allowDeprecation('Using insecure protocols with repositories has been deprecated.')
+
+        then:
+        assertNoDeprecatedUsages(result)
+
+        where:
+        version << ['5.6.4', '6.0.1']
     }
 
     BuildResult build() {

@@ -37,7 +37,7 @@ trait CachingTest {
             rootProject.name = 'test'
 
             buildCache {
-                local(DirectoryBuildCache) {
+                local() {
                     directory = new File(rootDir, 'build-cache')
                 }
             }
