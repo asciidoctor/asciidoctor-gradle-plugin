@@ -12,7 +12,9 @@ plugins {
 }
 
 repositories {
-    maven { url 'http://rubygems-proxy.torquebox.org/releases' } // <1>
+    ruby {
+        gems() // <1>
+    }
 }
 
 dependencies {
@@ -24,7 +26,7 @@ asciidoctorj {
 }
 
 ----
-<1> Always specify a GEM proxy.
+<1> Always specify a GEM proxy. In this case use the internal proxy to https://rubygems.org.
 <2> Specify GEMs as per usual.
 <3> Add the GEM to the project-wide (or task-specific) list of `requires`.
 

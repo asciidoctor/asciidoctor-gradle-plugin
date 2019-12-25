@@ -143,12 +143,14 @@ class RevealJSExtensionSpec extends Specification {
                 false
             }
 
-            @Override
+            @SuppressWarnings('UnusedMethodParameter')
+//            @Override
             Provider<File> orElse(File value) {
                 null
             }
 
-            @Override
+            @SuppressWarnings('UnusedMethodParameter')
+//            @Override
             Provider<File> orElse(Provider<? extends File> provider) {
                 null
             }

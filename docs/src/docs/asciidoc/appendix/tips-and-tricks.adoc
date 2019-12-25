@@ -57,7 +57,7 @@ plugins {
 
 repositories {
     jcenter()
-    maven { url 'http://rubygems-proxy.torquebox.org/releases' }
+    ruby.gems()
 }
 
 dependencies {

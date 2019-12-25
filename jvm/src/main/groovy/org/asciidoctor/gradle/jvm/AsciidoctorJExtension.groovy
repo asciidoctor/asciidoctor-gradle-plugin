@@ -20,6 +20,7 @@ import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AbstractImplementationEngineExtension
 import org.asciidoctor.gradle.base.ModuleNotFoundException
 import org.asciidoctor.gradle.base.Transform
+import org.asciidoctor.gradle.internal.JavaExecUtils
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.NonExtensible
@@ -61,7 +62,7 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     private static final String ASCIIDOCTORJ_EPUB_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-epub3"
     private static final String ASCIIDOCTORJ_DIAGRAM_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-diagram"
     private static final String ASCIIDOCTORJ_LEANPUB_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctor-leanpub-markdown"
-    private static final String JRUBY_COMPLETE_DEPENDENCY = 'org.jruby:jruby-complete'
+    private static final String JRUBY_COMPLETE_DEPENDENCY = JavaExecUtils.JRUBY_COMPLETE_DEPENDENCY
     private static final String ASCIIDOCTOR_DEPENDENCY_PROPERTY_NAME = 'asciidoctorj'
     private static final OperatingSystem OS = OperatingSystem.current()
     private static final boolean GUAVA_REQUIRED_FOR_EXTERNALS = GradleVersion.current() >= GradleVersion.version('4.8')
@@ -286,8 +287,8 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
      * If no version of JRuby is specified the one that is linked to AsciidoctorJ
      * will be used.
      *
-     * @return Version of JRuby to use or {@code null} to use the JRUby version that is
-     * linked to the specified vesrion of AsciidoctorJ.
+     * @return Version of JRuby to use or {@code null} to use the JRuby version that is
+     * linked to the specified version of AsciidoctorJ.
      *
      */
     String getJrubyVersion() {

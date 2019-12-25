@@ -38,6 +38,14 @@ import static org.asciidoctor.gradle.base.AsciidoctorUtils.getClassLocation
 @CompileStatic
 class JavaExecUtils {
 
+    /** The {@code jruby-complete} dependency without a version.
+     *
+     */
+    public static final String JRUBY_COMPLETE_DEPENDENCY = 'org.jruby:jruby-complete'
+
+    /** The name of the Guava JAR used internally by Gradle.
+     *
+     */
     private static final FilenameFilter INTERNAL_GUAVA_PATTERN = internalGuavaPattern()
 
     /** Get the classpath that needs to be passed to the external Java process.

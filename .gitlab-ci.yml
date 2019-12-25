@@ -100,42 +100,6 @@ test:integration:
     expire_in: 10 days
     when: on_failure
 
-test:gradle_4.4.1,4.5.1:
-  stage: test
-  image: $JDK8_TEST_IMAGE
-  except:
-    - pages
-    - gh-pages
-    - tags
-  dependencies:
-    - testrepo
-    - jdk8
-  script: ./run-compatibility-test-on-ci.sh
-  artifacts:
-    paths:
-      - '*/build/reports'
-      - '*/build/jacoco'
-    expire_in: 10 days
-    when: on_failure
-
-test:gradle_4.6,4.7,4.8.1:
-  stage: test
-  image: $JDK8_TEST_IMAGE
-  except:
-    - pages
-    - gh-pages
-    - tags
-  dependencies:
-    - testrepo
-    - jdk8
-  script: ./run-compatibility-test-on-ci.sh
-  artifacts:
-    paths:
-      - '*/build/reports'
-      - '*/build/jacoco'
-    expire_in: 10 days
-    when: on_failure
-
 test:gradle_4.9,4.10.2:
   stage: test
   image: $JDK11_TEST_IMAGE

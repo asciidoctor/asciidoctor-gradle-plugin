@@ -15,18 +15,15 @@
  */
 package org.asciidoctor.gradle.jvm.gems
 
-import com.github.jrubygradle.GemUtils
-import com.github.jrubygradle.JRubyPrepare
-import com.github.jrubygradle.internal.JRubyExecUtils
+import com.github.jrubygradle.api.core.AbstractJRubyPrepare
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.jvm.AsciidoctorJExtension
-import org.gradle.api.artifacts.Configuration
-import org.gradle.api.file.FileCollection
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.CacheableTask
-import org.gradle.api.tasks.InputFiles
-import org.gradle.api.tasks.PathSensitive
 
-import static org.gradle.api.tasks.PathSensitivity.RELATIVE
+import java.util.concurrent.Callable
+
+import static com.github.jrubygradle.api.gems.GemUtils.JRUBY_ARCHIVE_NAME
 
 /** Prepare additional GEMs for AsciidoctorJ.
  *
@@ -34,32 +31,32 @@ import static org.gradle.api.tasks.PathSensitivity.RELATIVE
  */
 @CacheableTask
 @CompileStatic
-class AsciidoctorGemPrepare extends JRubyPrepare {
+class AsciidoctorGemPrepare extends AbstractJRubyPrepare {
 
-    @InputFiles
-    @PathSensitive(RELATIVE)
-    FileCollection getGemDependencies() {
-        project.files(dependencies)
+    /** Location of {@code jruby-complete} JAR.
+     *
+     * @return Path on local filesystem
+     */
+    @Override
+    protected Provider<File> getJrubyJarLocation() {
+        project.provider({ AsciidoctorJExtension jruby ->
+            jruby.configuration.files.find { it.name.startsWith(JRUBY_ARCHIVE_NAME) }
+        }.curry(jruby) as Callable<File>)
     }
 
+    /** Version of JRuby that will be used if explicitly set
+     *
+     * This method does not resolve any files to obtain the version.
+     *
+     * @return Explicitly configured project global version of JRuby or
+     * {@code null} if inferred from the asciidoctorj dependency.
+     */
     @Override
-    @SuppressWarnings('Instanceof')
-    void copy() {
-        File jruby = JRubyExecUtils.jrubyJar(project.extensions.getByType(AsciidoctorJExtension).configuration)
-        GemUtils.extractGems(
-            project,
-            jruby,
-            GemUtils.getGems(project.files(dependencies)),
-            outputDir,
-            GemUtils.OverwriteAction.SKIP
-        )
+    protected String getProposedJRubyVersion() {
+        jruby.jrubyVersion
+    }
 
-        if (!dependencies.isEmpty()) {
-            dependencies.each {
-                if (it instanceof Configuration) {
-                    GemUtils.setupJars(it, outputDir, GemUtils.OverwriteAction.SKIP)
-                }
-            }
-        }
+    private AsciidoctorJExtension getJruby() {
+        project.extensions.getByType(AsciidoctorJExtension)
     }
 }
