@@ -441,7 +441,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <h1>Asciidoctor Gradle Plugin Suite</h1>
 <div class="details">
-<span id="revnumber">version 3.0.0-alpha.4-SNAPSHOT</span>
+<span id="revnumber">version 3.0.0-alpha.4</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -460,8 +460,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_asciidoctorj_base_plugin">AsciidoctorJ Base Plugin</a>
 <ul class="sectlevel2">
-<li><a href="#_options_attributes">Options &amp; Attributes</a></li>
-<li><a href="#_versions_of_components">Versions of components</a></li>
+<li><a href="#options">Options &amp; Attributes</a></li>
+<li><a href="#asciidoctorj-modules">Versions of modules</a></li>
 <li><a href="#_applying_the_asciidoctorj_base_plugin_on_its_own">Applying the AsciidoctorJ Base plugin on its own</a></li>
 </ul>
 </li>
@@ -477,7 +477,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#diagram">Using AsciidoctorJ Diagram</a></li>
 <li><a href="#asciidoctorj-gems-plugin">Ruby GEM support</a></li>
 <li><a href="#_kindlegen_plugin">Kindlegen plugin</a></li>
-<li><a href="#_adding_custom_extensions">Adding Custom Extensions</a>
+<li><a href="#asciidoctorj-extensions">Adding Custom Extensions</a>
 <ul class="sectlevel2">
 <li><a href="#_as_external_library">As External Library</a></li>
 <li><a href="#_as_project_dependency">As Project Dependency</a></li>
@@ -485,6 +485,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </li>
 <li><a href="#asciidoctorjs-plugin">Working with Asciidoctor.js instead</a></li>
+<li><a href="#_extra_content_for_html_docbook_backends">Extra content for HTML &amp; Docbook backends</a></li>
 <li><a href="#_upgrading_from_older_versions_of_asciidoctor">Upgrading From Older Versions of Asciidoctor</a>
 <ul class="sectlevel2">
 <li><a href="#_configurations">Configurations</a></li>
@@ -519,10 +520,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="_compatibility">Compatibility</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This collection of plugins requires at least Gradle 4.4, JDK 8.0 and AsciidoctorJ 1.6.0 to run. If you need prior Gradle,  JDK or AsciidoctorJ support please use a plugin from the 1.5.x or 1.6.x release series.</p>
-</div>
-<div class="paragraph">
-<p>The 3.x range of these plugins are currently NOT compatible with <a href="https://github.com/spring-projects/spring-restdocs">Spring REST Docs</a>. Once the latter upgrades to support AsciidoctorJ v2+, you would be able to use 2.x of the Gradle plugins. If you have to use Spring REST Docs then stick to the older v1.5.11 or v1.5.12 versions and DO NOT manually set the version of AsciidoctorJ in your build script.</p>
+<p>This collection of plugins requires at least Gradle 4.9, JDK 8.0 and AsciidoctorJ 2.0.0 to run. If you need prior Gradle,  JDK or AsciidoctorJ support please use a plugin from the 1.5.x or 1.6.x release series.</p>
 </div>
 </div>
 </div>
@@ -536,15 +534,15 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="title">build.gradle</div>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="groovy"><span class="n">plugins</span> <span class="o">{</span>
-    <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.convert'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.4-SNAPSHOT'</span>
+    <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.convert'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.4'</span>
 <span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="listingblock secondary">
 <div class="title">build.gradle.kts</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="kotlin"><span class="n">plugins</span> <span class="p">{</span>
-    <span class="n">id</span><span class="p">(</span><span class="s">"org.asciidoctor.jvm.convert"</span><span class="p">)</span> <span class="n">version</span> <span class="s">"3.0.0-alpha.4-SNAPSHOT"</span>
+<pre class="rouge highlight"><code data-lang="kotlin"><span class="nf">plugins</span> <span class="p">{</span>
+    <span class="nf">id</span><span class="p">(</span><span class="s">"org.asciidoctor.jvm.convert"</span><span class="p">)</span> <span class="n">version</span> <span class="s">"3.0.0-alpha.4"</span>
 <span class="p">}</span></code></pre>
 </div>
 </div>
@@ -817,13 +815,13 @@ order to be discovered:</p>
 <div class="listingblock secondary">
 <div class="title">build.gradle.kts</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="kotlin"><span class="n">tasks</span> <span class="p">{</span>
-  <span class="s">"asciidoctor"</span><span class="p">(</span><span class="n">AsciidoctorTask</span><span class="o">::</span><span class="k">class</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">sourceDir</span> <span class="p">=</span> <span class="n">file</span><span class="p">(</span><span class="s">"docs"</span><span class="p">)</span>
-    <span class="n">sources</span><span class="p">(</span><span class="n">delegateClosureOf</span><span class="p">&lt;</span><span class="n">PatternSet</span><span class="p">&gt;</span> <span class="p">{</span>
-      <span class="n">include</span><span class="p">(</span><span class="s">"toplevel.adoc"</span><span class="p">,</span> <span class="s">"another.adoc"</span><span class="p">,</span> <span class="s">"third.adoc"</span><span class="p">)</span>
+<pre class="rouge highlight"><code data-lang="kotlin"><span class="nf">tasks</span> <span class="p">{</span>
+  <span class="s">"asciidoctor"</span><span class="p">(</span><span class="nc">AsciidoctorTask</span><span class="o">::</span><span class="k">class</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">sourceDir</span> <span class="p">=</span> <span class="nf">file</span><span class="p">(</span><span class="s">"docs"</span><span class="p">)</span>
+    <span class="nf">sources</span><span class="p">(</span><span class="n">delegateClosureOf</span><span class="p">&lt;</span><span class="nc">PatternSet</span><span class="p">&gt;</span> <span class="p">{</span>
+      <span class="nf">include</span><span class="p">(</span><span class="s">"toplevel.adoc"</span><span class="p">,</span> <span class="s">"another.adoc"</span><span class="p">,</span> <span class="s">"third.adoc"</span><span class="p">)</span>
     <span class="p">})</span>
-    <span class="n">outputDir</span> <span class="p">=</span> <span class="n">file</span><span class="p">(</span><span class="s">"build/docs"</span><span class="p">)</span>
+    <span class="n">outputDir</span> <span class="p">=</span> <span class="nf">file</span><span class="p">(</span><span class="s">"build/docs"</span><span class="p">)</span>
   <span class="p">}</span>
 <span class="p">}</span></code></pre>
 </div>
@@ -859,17 +857,17 @@ this the <code>resources</code> method is used. It is provided with a closure th
 <div class="listingblock secondary">
 <div class="title">build.gradle.kts</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="kotlin"><span class="n">resources</span><span class="p">(</span><span class="n">delegateClosureOf</span><span class="p">&lt;</span><span class="n">CopySpec</span><span class="p">&gt;</span> <span class="p">{</span>
-  <span class="n">from</span><span class="p">(</span><span class="s">"src/resources/images"</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">include</span><span class="p">(</span><span class="s">"images/**/*.png"</span><span class="p">)</span>
-    <span class="n">exclude</span><span class="p">(</span><span class="s">"images/**/notThisOne.png"</span><span class="p">)</span>
+<pre class="rouge highlight"><code data-lang="kotlin"><span class="nf">resources</span><span class="p">(</span><span class="n">delegateClosureOf</span><span class="p">&lt;</span><span class="nc">CopySpec</span><span class="p">&gt;</span> <span class="p">{</span>
+  <span class="nf">from</span><span class="p">(</span><span class="s">"src/resources/images"</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nf">include</span><span class="p">(</span><span class="s">"images/**/*.png"</span><span class="p">)</span>
+    <span class="nf">exclude</span><span class="p">(</span><span class="s">"images/**/notThisOne.png"</span><span class="p">)</span>
   <span class="p">}</span>
 
-  <span class="n">from</span><span class="p">(</span><span class="s">"$buildDir/downloads"</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">include</span><span class="p">(</span><span class="s">"deck.js/**"</span><span class="p">)</span>
+  <span class="nf">from</span><span class="p">(</span><span class="s">"$buildDir/downloads"</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nf">include</span><span class="p">(</span><span class="s">"deck.js/**"</span><span class="p">)</span>
   <span class="p">}</span>
 
-  <span class="n">into</span><span class="p">(</span><span class="s">"./images"</span><span class="p">)</span>
+  <span class="nf">into</span><span class="p">(</span><span class="s">"./images"</span><span class="p">)</span>
 <span class="p">})</span></code></pre>
 </div>
 </div>
@@ -937,12 +935,13 @@ this the <code>resources</code> method is used. It is provided with a closure th
 <div class="sect2">
 <h3 id="_include_directives_and_base_directory">Include directives and base directory</h3>
 <div class="paragraph">
-<p>These plugins do not change the way <a href="https://asciidoctor.org/docs/user-manual/#include-resolution">include::</a> directive works, but it is important to note how setting <code>baseDir</code> will affect top level includes. It is recommended that you always use <code>/home/travis/build/asciidoctor/asciidoctor-gradle-plugin/docs/src/docs/asciidoc</code> as a prefix for the file path. This attribute is always set to the correct top-level folder where the sources will be located.</p>
+<p>These plugins do not change the way <a href="https://asciidoctor.org/docs/user-manual/#include-resolution">include::</a> directive works, but it is important to note how setting <code>baseDir</code> will affect top level includes. It is recommended that you always use <code>{includedir}</code> as a prefix for the file path. This attribute is always set to the correct top-level folder where the sources will be located.</p>
 </div>
 <div class="paragraph">
-<p>However it is not practical for everyone to use <code>/home/travis/build/asciidoctor/asciidoctor-gradle-plugin/docs/src/docs/asciidoc</code> and as from 2.2.0 it is possible to add a strategy for controlling the base directory:</p>
+<p>However it is not practical for everyone to use <code>{includedir}</code> and as from 2.2.0 it is possible to add a strategy for controlling the base directory:</p>
 </div>
 <div class="listingblock primary">
+<div class="title">build.gradle</div>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="groovy"><span class="n">asciidoctor</span> <span class="o">{</span>
     <span class="n">baseDirIsRootProjectDir</span><span class="o">()</span> <i class="conum" data-value="1"></i><b>(1)</b>
@@ -1132,39 +1131,21 @@ In certain cases the plugin will overrule your choice as it has some built-in ru
 </table>
 </div>
 <div class="paragraph">
-<p>The entities that can be set are:</p>
+<p>The AsciidoctorJ-specific entities that can be set are:</p>
 </div>
 <div class="hdlist">
 <table>
 <tr>
 <td class="hdlist1">
-attributes
-</td>
-<td class="hdlist2">
-<p>AsciidoctorJ attributes.
-Use <code>attributes</code> to append and <code>setAttributes</code> to replace any current attributes with a new set.
-Attribute values are lazy-evaluated to strings.</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-attributesForLang
-</td>
-<td class="hdlist2">
-<p>Language-specific attributes.
-Specify additional attributes which will only be added if a  source set for the specified language is being processed.</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
 docExtensions
 </td>
 <td class="hdlist2">
-<p>Groovy DSL extensions.
-Use <code>docExtensions</code> to add one or more extensions. Use <code>setDocExtensions</code> to replace the current set of extensions with a new set.
-Extensions can be any kind of object that is serialisable, although in most cases they will be strings or files.
-If extensions are detached dependencies, they will not be serialised, but rather will be placed on the classpath in
-order that AsciidoctorJ can pick them up automatically.</p>
+<p>Groovy DSL and project-based extensions.
+Use <code>docExtensions</code> to add one or more extensions. Use <code>setDocExtensions</code> to replace the current set of
+extensions with a new set. Extensions can be any kind of object that is serialisable, although in most cases
+they will be strings or files. If extensions are detached dependencies, they will not be serialised, but
+rather will be placed on the classpath in order that AsciidoctorJ can pick them up automatically.
+See &lt;asciidoctorj-extensions&gt;&gt; for more details.</p>
 </td>
 </tr>
 <tr>
@@ -1173,9 +1154,9 @@ fatalWarnings
 </td>
 <td class="hdlist2">
 <p>Patterns for AsciidoctorJ log messages that should be treated as fatal errors.
-The list is empty be default. Use <code>setFatalWarnings</code> to clear any existing patterns or to decouple a task&#8217;s configuration from the global
-configuration. Use <code>fatalWarnings</code> to add more patterns. Pass <code>missingIncludes()</code> to add the common use-case of
-missing include files.</p>
+The list is empty be default. Use <code>setFatalWarnings</code> to clear any existing patterns or to decouple a task&#8217;s
+configuration from the global configuration. Use <code>fatalWarnings</code> to add more patterns.
+Pass <code>missingIncludes()</code> to add the common use-case of missing include files.</p>
 </td>
 </tr>
 <tr>
@@ -1186,7 +1167,7 @@ gemPaths
 <p>One or more gem installation directories (separated by the system path separator).
 Use <code>gemPaths</code> to append. Use <code>setGemPaths</code> or <code>gemPaths=['path1','path2']</code> to overwrite.
 Use <code>asGemPath</code> to obtain a path string, separated by platform-specific separator.
-Type: FileCollection, but any collection of objects convertible with <code>project.files</code> can be passed
+Type: <code>FileCollection</code>, but any collection of objects convertible with <code>project.files</code> can be passed
 Default: empty</p>
 </td>
 </tr>
@@ -1196,7 +1177,8 @@ jrubyVersion
 </td>
 <td class="hdlist2">
 <p>Minimum version of JRuby to be used.
-The exact version that will be used could be higher due to AsciidoctorJ having a transitive dependency that is newer.</p>
+The exact version that will be used could be higher due to AsciidoctorJ having a transitive dependency
+that is newer.</p>
 </td>
 </tr>
 <tr>
@@ -1205,8 +1187,8 @@ logLevel
 </td>
 <td class="hdlist2">
 <p>The log level at which AsciidoctorJ will log.
-This is specified as a Gradle logging level. The plugin will translate it to the appropriate AsciidoctorJ logging level.
-Default is <code>project.logger.level</code>.</p>
+This is specified as a Gradle logging level. The plugin will translate it to the appropriate
+AsciidoctorJ logging level. Default is whatever <code>project.logger.level</code> is at the time of execution.</p>
 </td>
 </tr>
 <tr>
@@ -1214,7 +1196,8 @@ Default is <code>project.logger.level</code>.</p>
 modules
 </td>
 <td class="hdlist2">
-<p>Configuration for version of specific compoenents and converters that can be used.</p>
+<p>Configuration for version of specific components and converters that can be used.
+See <a href="#asciidoctorj-modules">AsciidoctorJ Modules</a> for which moduels are supported.</p>
 </td>
 </tr>
 <tr>
@@ -1224,7 +1207,7 @@ options
 <td class="hdlist2">
 <p>AsciidoctorJ options.
 Use <code>options</code> to append and <code>setOptions</code> to replace any current options with a new set.
-Options are evaluated as late as possible.</p>
+Options are evaluated as late as possible. See <a href="#options">Setting Options</a> for more details.</p>
 </td>
 </tr>
 <tr>
@@ -1243,17 +1226,9 @@ resolutionStrategy
 </td>
 <td class="hdlist2">
 <p>Strategies for resolving Asciidoctorj-related dependencies.
-Asciidoctor dependencies are held in a detached configuration. If for some special reason, you need to modify the way the dependency set is resolved, you can modify the behaviour by adding one or more strategies.</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-safeMode
-</td>
-<td class="hdlist2">
-<p>AsciidoctorJ safe mode.
-Set the Safe mode as either <code>UNSAFE</code>, <code>SAFE</code>, <code>SERVER</code>, <code>SECURE</code>.
-Can be a number (0, 1, 10, 20), a string, or the entity name</p>
+AsciidoctorJ dependencies are held in a detached configuration.
+If for some special reason, you need to modify the way the dependency set is resolved, you can modify the
+behaviour by adding one or more strategies.</p>
 </td>
 </tr>
 <tr>
@@ -1261,14 +1236,59 @@ Can be a number (0, 1, 10, 20), a string, or the entity name</p>
 version
 </td>
 <td class="hdlist2">
-<p>Asciidoctorj version.
-If not specified a version will be used.</p>
+<p>AsciidoctorJ version. If not specified a sane default version will be used.</p>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The following common entities can also be set:</p>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+attributes
+</td>
+<td class="hdlist2">
+<p>Asciidoctor attributes.
+Use <code>attributes</code> to append and <code>setAttributes</code> to replace any current attributes with a new set.
+Attribute values are lazy-evaluated to strings. See <a href="#attributes">[attributes]</a> for more detail.</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+attributeProviders
+</td>
+<td class="hdlist2">
+<p>Additional sources where attributes can be obtained from.
+Attribute providers are useful for where changes should not cause a rebuild of the docs.</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+attributesForLang
+</td>
+<td class="hdlist2">
+<p>Language-specific attributes.
+Specify additional attributes which will only be added if a  source set for the specified language
+is being processed.</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+safeMode
+</td>
+<td class="hdlist2">
+<p>Asciidoctor safe mode.
+Set the Safe mode as either <code>UNSAFE</code>, <code>SAFE</code>, <code>SERVER</code>, <code>SECURE</code>.
+Can be a number (0, 1, 10, 20), a string, or the entity name</p>
 </td>
 </tr>
 </table>
 </div>
 <div class="sect2">
-<h3 id="_options_attributes">Options &amp; Attributes</h3>
+<h3 id="options">Options &amp; Attributes</h3>
 <div class="paragraph">
 <p>The following options may be set using the extension&#8217;s <code>options</code> property</p>
 </div>
@@ -1292,7 +1312,7 @@ If not specified a version will be used.</p>
 <p>Any key/values set on <code>attributes</code> is sent as is to Asciidoctor. You may use this Map to specify
 a stylesheet for example. The following snippet shows a sample configuration defining attributes.</p>
 </div>
-<div class="listingblock">
+<div class="listingblock primary">
 <div class="title">build.gradle</div>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="groovy"><span class="n">asciidoctorj</span> <span class="o">{</span> <i class="conum" data-value="1"></i><b>(1)</b>
@@ -1316,19 +1336,19 @@ a stylesheet for example. The following snippet shows a sample configuration def
 <div class="paragraph">
 <p>Or in the <a href="https://github.com/gradle/kotlin-dsl">Gradle Kotlin DSL</a>:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock secondary">
 <div class="title">build.gradle.kts</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="kotlin"><span class="n">tasks</span> <span class="p">{</span>
-  <span class="s">"asciidoctor"</span><span class="p">(</span><span class="n">AsciidoctorTask</span><span class="o">::</span><span class="k">class</span><span class="p">)</span> <span class="p">{</span> <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="n">options</span><span class="p">(</span><span class="n">mapOf</span><span class="p">(</span><span class="s">"doctype"</span> <span class="n">to</span> <span class="s">"book"</span><span class="p">,</span> <span class="s">"ruby"</span> <span class="n">to</span> <span class="s">"erubis"</span><span class="p">))</span>
+<pre class="rouge highlight"><code data-lang="kotlin"><span class="nf">tasks</span> <span class="p">{</span>
+  <span class="s">"asciidoctor"</span><span class="p">(</span><span class="nc">AsciidoctorTask</span><span class="o">::</span><span class="k">class</span><span class="p">)</span> <span class="p">{</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="nf">options</span><span class="p">(</span><span class="nf">mapOf</span><span class="p">(</span><span class="s">"doctype"</span> <span class="n">to</span> <span class="s">"book"</span><span class="p">,</span> <span class="s">"ruby"</span> <span class="n">to</span> <span class="s">"erubis"</span><span class="p">))</span>
 
-    <span class="n">attributes</span><span class="p">(</span>
-      <span class="n">mapOf</span><span class="p">(</span>
+    <span class="nf">attributes</span><span class="p">(</span>
+      <span class="nf">mapOf</span><span class="p">(</span>
         <span class="s">"source-highlighter"</span> <span class="n">to</span> <span class="s">"coderay"</span><span class="p">,</span>
         <span class="s">"toc"</span>                <span class="n">to</span> <span class="s">""</span><span class="p">,</span>
-        <span class="s">"idprefix            to "",
-</span>        <span class="s">"idseparator"</span>        <span class="n">to</span> <span class="s">"-"</span>
+        <span class="s">"idprefix"</span>           <span class="n">to</span> <span class="s">""</span><span class="p">,</span>
+        <span class="s">"idseparator"</span>        <span class="n">to</span> <span class="s">"-"</span>
       <span class="p">)</span>
     <span class="p">)</span>
   <span class="p">}</span>
@@ -1349,13 +1369,13 @@ a stylesheet for example. The following snippet shows a sample configuration def
 <div class="ulist">
 <ul>
 <li>
-<p>project-name : matches <code>$project.name</code></p>
+<p>gradle-project-name : matches <code>$project.name</code></p>
 </li>
 <li>
-<p>project-version: matches <code>$project.version</code> (if defined). Empty String value if undefined</p>
+<p>gradle-project-version: matches <code>$project.version</code> (if defined). Empty String value if undefined</p>
 </li>
 <li>
-<p>project-group: matches <code>$project.group</code> (if defined). Empty String value if undefined</p>
+<p>gradle-project-group: matches <code>$project.group</code> (if defined). Empty String value if undefined</p>
 </li>
 </ul>
 </div>
@@ -1363,30 +1383,9 @@ a stylesheet for example. The following snippet shows a sample configuration def
 <p>These attributes may be overridden by explicit user input.</p>
 </div>
 <div class="paragraph">
-<p>You may need to include extra content into the head of the exported document.
-For example, you might want to include jQuery inside the <code>&lt;head&gt;</code> element of the HTML export.
-To do so, first create a docinfo file <code>src/docs/asciidoc/docinfo.html</code> containing the content to include, in this case the <code>&lt;script&gt;</code> tag to load jQuery.</p>
-</div>
-<div class="listingblock">
-<div class="title">src/docs/asciidoc/docinfo.html</div>
-<div class="content">
-<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.js"</span><span class="nt">&gt;&lt;/script&gt;</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Then, add the <code>docinfo1</code> attribute to the attributes list in the previous example:</p>
-</div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
-<div class="content">
-<pre class="rouge highlight"><code data-lang="groovy"><span class="n">attributes</span> <span class="nl">docinfo1:</span> <span class="s1">''</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
 <p>Refer to the <a href="http://asciidoctor.org/docs/">Asciidoctor documentation</a> to learn more about these options and attributes.</p>
 </div>
 <div class="paragraph">
-<div class="title">Note</div>
 <p>Attribute values defined on the build file will win over values defined on the documents themselves. You can change
 this behavior by appending an <code>@</code> at the end of the value when defined in the build file. Please refer to
 <a href="http://asciidoctor.org/docs/user-manual/#attribute-assignment-precedence" target="_blank" rel="noopener">Attribute assignment precedence</a>
@@ -1394,7 +1393,7 @@ for more information.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_versions_of_components">Versions of components</h3>
+<h3 id="asciidoctorj-modules">Versions of modules</h3>
 <div class="paragraph">
 <p>The modules block currently supports four elements</p>
 </div>
@@ -1413,6 +1412,9 @@ for more information.</p>
       <span class="n">version</span> <span class="s1">'1.2.3'</span>
     <span class="o">}</span>
     <span class="n">groovyDsl</span> <span class="o">{</span> <i class="conum" data-value="4"></i><b>(4)</b>
+      <span class="n">version</span> <span class="s1">'1.2.3'</span>
+    <span class="o">}</span>
+    <span class="n">leanpub</span> <span class="o">{</span> <i class="conum" data-value="5"></i><b>(5)</b>
       <span class="n">version</span> <span class="s1">'1.2.3'</span>
     <span class="o">}</span>
   <span class="o">}</span>
@@ -1437,12 +1439,17 @@ for more information.</p>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
 <td>Version of Groovy Extensions DSL. If not specified and no extensions are specified, Groovy DSL will not be used. However, if any extensions are added without setting an explicit version and default version will be used.</td>
 </tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>{asciidoctorj-leanpub-name} version. If not specified asciidoctorj-leanpub will not be on the classpath. If you plan to use the Leanpub backend and not using the Leanpub plugin, then you need to set a version here.</td>
+</tr>
 </table>
 </div>
 <div class="paragraph">
 <p>When using the {kotlin-dsl} the same settings can be achieved use something similar <code>getModules().getPdf().version("1.2.3")</code>. In a similar fashion shortcuts can be achived in the {groovy-dsl}:</p>
 </div>
-<div class="listingblock">
+<div class="listingblock primary">
+<div class="title">build.gradle</div>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="groovy"><span class="n">asciidoctorj</span> <span class="o">{</span>
   <span class="n">modules</span> <span class="o">{</span>
@@ -1452,6 +1459,27 @@ for more information.</p>
   <span class="n">modules</span><span class="o">.</span><span class="na">pdf</span><span class="o">.</span><span class="na">version</span> <span class="s1">'1.2.3'</span>
 <span class="o">}</span></code></pre>
 </div>
+</div>
+<div class="listingblock secondary">
+<div class="title">build.gradle.kts</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="kotlin"><span class="nf">asciidoctorj</span> <span class="p">{</span>
+  <span class="nf">getModules</span><span class="p">().</span><span class="nf">getPdf</span><span class="p">().</span><span class="nf">version</span><span class="p">(</span><span class="s">"1.2.3"</span><span class="p">)</span> <i class="conum" data-value="1"></i><b>(1)</b>
+  <span class="nf">getModules</span><span class="p">().</span><span class="nf">getPdf</span><span class="p">().</span><span class="nf">use</span><span class="p">()</span> <i class="conum" data-value="2"></i><b>(2)</b>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Set the Asciidoctorj-PDF version to <code>1.2.3</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Use the default version of Asciidoctorj-PDF.</td>
+</tr>
+</table>
 </div>
 </div>
 <div class="sect2">
@@ -1463,15 +1491,15 @@ for more information.</p>
 <div class="title">build.gradle</div>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="groovy"><span class="n">plugins</span> <span class="o">{</span>
-    <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.base'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.4-SNAPSHOT'</span>
+    <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.base'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.4'</span>
 <span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="listingblock secondary">
 <div class="title">build.gradle.kts</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="kotlin"><span class="n">plugins</span> <span class="p">{</span>
-    <span class="n">id</span><span class="p">(</span><span class="s">"org.asciidoctor.jvm.base"</span><span class="p">)</span> <span class="n">version</span> <span class="s">"3.0.0-alpha.4-SNAPSHOT"</span>
+<pre class="rouge highlight"><code data-lang="kotlin"><span class="nf">plugins</span> <span class="p">{</span>
+    <span class="nf">id</span><span class="p">(</span><span class="s">"org.asciidoctor.jvm.base"</span><span class="p">)</span> <span class="n">version</span> <span class="s">"3.0.0-alpha.4"</span>
 <span class="p">}</span></code></pre>
 </div>
 </div>
@@ -1485,15 +1513,15 @@ for more information.</p>
 <div class="title">build.gradle</div>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="groovy"><span class="n">plugins</span> <span class="o">{</span>
-    <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.convert'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.4-SNAPSHOT'</span>
+    <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.convert'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.4'</span>
 <span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="listingblock secondary">
 <div class="title">build.gradle.kts</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="kotlin"><span class="n">plugins</span> <span class="p">{</span>
-    <span class="n">id</span><span class="p">(</span><span class="s">"org.asciidoctor.jvm.convert"</span><span class="p">)</span> <span class="n">version</span> <span class="s">"3.0.0-alpha.4-SNAPSHOT"</span>
+<pre class="rouge highlight"><code data-lang="kotlin"><span class="nf">plugins</span> <span class="p">{</span>
+    <span class="nf">id</span><span class="p">(</span><span class="s">"org.asciidoctor.jvm.convert"</span><span class="p">)</span> <span class="n">version</span> <span class="s">"3.0.0-alpha.4"</span>
 <span class="p">}</span></code></pre>
 </div>
 </div>
@@ -1514,15 +1542,15 @@ for more information.</p>
 <div class="title">build.gradle</div>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="groovy"><span class="n">plugins</span> <span class="o">{</span>
-    <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.pdf'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.4-SNAPSHOT'</span>
+    <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.pdf'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.4'</span>
 <span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="listingblock secondary">
 <div class="title">build.gradle.kts</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="kotlin"><span class="n">plugins</span> <span class="p">{</span>
-    <span class="n">id</span><span class="p">(</span><span class="s">"org.asciidoctor.jvm.pdf"</span><span class="p">)</span> <span class="n">version</span> <span class="s">"3.0.0-alpha.4-SNAPSHOT"</span>
+<pre class="rouge highlight"><code data-lang="kotlin"><span class="nf">plugins</span> <span class="p">{</span>
+    <span class="nf">id</span><span class="p">(</span><span class="s">"org.asciidoctor.jvm.pdf"</span><span class="p">)</span> <span class="n">version</span> <span class="s">"3.0.0-alpha.4"</span>
 <span class="p">}</span></code></pre>
 </div>
 </div>
@@ -1605,7 +1633,7 @@ Optional. When specifying a theme name it must match one registered via <code>pd
 <div class="content">
 <pre class="rouge highlight"><code data-lang="groovy"><span class="n">pdfThemes</span> <span class="o">{</span>
     <span class="n">github</span> <span class="s1">'basic'</span><span class="o">,</span> <span class="o">{</span> <i class="conum" data-value="1"></i><b>(1)</b>
-        <span class="n">organisation</span> <span class="o">=</span> <span class="s1">'fwilhe'</span> <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="n">organisation</span> <span class="o">=</span> <span class="s1">'fwilhe2'</span> <i class="conum" data-value="2"></i><b>(2)</b>
         <span class="n">repository</span> <span class="o">=</span> <span class="s1">'corporate-theme'</span> <i class="conum" data-value="3"></i><b>(3)</b>
         <span class="n">relativePath</span> <span class="o">=</span> <span class="s1">'resources/themes'</span> <i class="conum" data-value="4"></i><b>(4)</b>
 
@@ -1663,15 +1691,15 @@ Optional. When specifying a theme name it must match one registered via <code>pd
 <div class="title">build.gradle</div>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="groovy"><span class="n">plugins</span> <span class="o">{</span>
-    <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.epub'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.4-SNAPSHOT'</span>
+    <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.epub'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.4'</span>
 <span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="listingblock secondary">
 <div class="title">build.gradle.kts</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="kotlin"><span class="n">plugins</span> <span class="p">{</span>
-    <span class="n">id</span><span class="p">(</span><span class="s">"org.asciidoctor.jvm.epub"</span><span class="p">)</span> <span class="n">version</span> <span class="s">"3.0.0-alpha.4-SNAPSHOT"</span>
+<pre class="rouge highlight"><code data-lang="kotlin"><span class="nf">plugins</span> <span class="p">{</span>
+    <span class="nf">id</span><span class="p">(</span><span class="s">"org.asciidoctor.jvm.epub"</span><span class="p">)</span> <span class="n">version</span> <span class="s">"3.0.0-alpha.4"</span>
 <span class="p">}</span></code></pre>
 </div>
 </div>
@@ -1728,15 +1756,15 @@ KF8 formats cannot be generated under Windows at present.
 <div class="title">build.gradle</div>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="groovy"><span class="n">plugins</span> <span class="o">{</span>
-    <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.revealjs'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.4-SNAPSHOT'</span>
+    <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.revealjs'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.4'</span>
 <span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="listingblock secondary">
 <div class="title">build.gradle.kts</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="kotlin"><span class="n">plugins</span> <span class="p">{</span>
-    <span class="n">id</span><span class="p">(</span><span class="s">"org.asciidoctor.jvm.revealjs"</span><span class="p">)</span> <span class="n">version</span> <span class="s">"3.0.0-alpha.4-SNAPSHOT"</span>
+<pre class="rouge highlight"><code data-lang="kotlin"><span class="nf">plugins</span> <span class="p">{</span>
+    <span class="nf">id</span><span class="p">(</span><span class="s">"org.asciidoctor.jvm.revealjs"</span><span class="p">)</span> <span class="n">version</span> <span class="s">"3.0.0-alpha.4"</span>
 <span class="p">}</span></code></pre>
 </div>
 </div>
@@ -2185,11 +2213,13 @@ If you using OpenJDK 9/10 on MacOS you might find an error such as below
 <div class="title">build.gradle</div>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="groovy"><span class="n">plugins</span> <span class="o">{</span>
-    <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.gems'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.4-SNAPSHOT'</span>
+    <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.gems'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.4'</span>
 <span class="o">}</span>
 
 <span class="n">repositories</span> <span class="o">{</span>
-    <span class="n">maven</span> <span class="o">{</span> <span class="n">url</span> <span class="s1">'http://rubygems-proxy.torquebox.org/releases'</span> <span class="o">}</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="n">ruby</span> <span class="o">{</span>
+        <span class="n">gems</span><span class="o">()</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="o">}</span>
 <span class="o">}</span>
 
 <span class="n">dependencies</span> <span class="o">{</span>
@@ -2205,7 +2235,7 @@ If you using OpenJDK 9/10 on MacOS you might find an error such as below
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Always specify a GEM proxy.</td>
+<td>Always specify a GEM proxy. In this case use the internal proxy to <a href="https://rubygems.org" class="bare">https://rubygems.org</a>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
@@ -2220,8 +2250,8 @@ If you using OpenJDK 9/10 on MacOS you might find an error such as below
 <div class="listingblock secondary">
 <div class="title">build.gradle.kts</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="kotlin"><span class="n">plugins</span> <span class="p">{</span>
-    <span class="n">id</span><span class="p">(</span><span class="s">"org.asciidoctor.jvm.gems"</span><span class="p">)</span> <span class="n">version</span> <span class="s">"3.0.0-alpha.4-SNAPSHOT"</span>
+<pre class="rouge highlight"><code data-lang="kotlin"><span class="nf">plugins</span> <span class="p">{</span>
+    <span class="nf">id</span><span class="p">(</span><span class="s">"org.asciidoctor.jvm.gems"</span><span class="p">)</span> <span class="n">version</span> <span class="s">"3.0.0-alpha.4"</span>
 <span class="p">}</span></code></pre>
 </div>
 </div>
@@ -2234,15 +2264,15 @@ If you using OpenJDK 9/10 on MacOS you might find an error such as below
 <div class="title">build.gradle</div>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="groovy"><span class="n">plugins</span> <span class="o">{</span>
-    <span class="n">id</span> <span class="s1">'org.asciidoctor.kindlegen.base'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.4-SNAPSHOT'</span>
+    <span class="n">id</span> <span class="s1">'org.asciidoctor.kindlegen.base'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.4'</span>
 <span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="listingblock secondary">
 <div class="title">build.gradle.kts</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="kotlin"><span class="n">plugins</span> <span class="p">{</span>
-    <span class="n">id</span><span class="p">(</span><span class="s">"org.asciidoctor.kindlegen.base"</span><span class="p">)</span> <span class="n">version</span> <span class="s">"3.0.0-alpha.4-SNAPSHOT"</span>
+<pre class="rouge highlight"><code data-lang="kotlin"><span class="nf">plugins</span> <span class="p">{</span>
+    <span class="nf">id</span><span class="p">(</span><span class="s">"org.asciidoctor.kindlegen.base"</span><span class="p">)</span> <span class="n">version</span> <span class="s">"3.0.0-alpha.4"</span>
 <span class="p">}</span></code></pre>
 </div>
 </div>
@@ -2278,7 +2308,7 @@ The base plugin is automatically applied by the EPUB plugin. If you only produce
 </div>
 </div>
 <div class="sect1">
-<h2 id="_adding_custom_extensions">Adding Custom Extensions</h2>
+<h2 id="asciidoctorj-extensions">Adding Custom Extensions</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Starting with version 1.5.0 you were able to write your own Asciidoctor extensions in Groovy, or any other JVM language
@@ -2349,7 +2379,7 @@ following setup:</p>
 <div class="title">build.gradle</div>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="groovy"><span class="n">plugins</span> <span class="o">{</span>
-   <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.convert'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.4-SNAPSHOT'</span>
+   <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.convert'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.4'</span>
 <span class="o">}</span>
 
 <span class="n">repositories</span> <span class="o">{</span>
@@ -2376,7 +2406,7 @@ following setup:</p>
 <div class="title">build.gradle</div>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="groovy"><span class="n">plugins</span> <span class="o">{</span>
-   <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.convert'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.4-SNAPSHOT'</span>
+   <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.convert'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.4'</span>
 <span class="o">}</span>
 
 <span class="n">asciidoctorj</span> <span class="o">{</span>
@@ -2469,6 +2499,44 @@ An extension is registered via the <code>docExtensions</code> element.</p>
 <p>Additional NPM modules can be added via <code>asciidoctorj.require</code>.</p>
 </li>
 </ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_extra_content_for_html_docbook_backends">Extra content for HTML &amp; Docbook backends</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You may need to include extra content into the head of the exported document.
+For example, you might want to include jQuery inside the <code>&lt;head&gt;</code> element of the HTML export.
+To do so, first create a docinfo file in your source directory i.e. <code>src/docs/asciidoc/docinfo.html</code> containing the content to include, in this case the <code>&lt;script&gt;</code> tag to load jQuery.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/docs/asciidoc/docinfo.html</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.js"</span><span class="nt">&gt;&lt;/script&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then, add the <code>docinfo1</code> attribute to the attributes list in the previous example:</p>
+</div>
+<div class="listingblock primary">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">asciidoctorj</span> <span class="o">{</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="n">attribute</span> <span class="s1">'docinfo1'</span><span class="o">,</span> <span class="s1">''</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Substitute <code>asciidoctorjs</code> if you are using the Asciidoctor.js engine.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>See <a href="http://asciidoctor.org/docs/user-manual/#docinfo-file">Asciidoctor User Manual</a> for more information on <code>docinfo</code> and friends.</p>
 </div>
 </div>
 </div>
@@ -2642,13 +2710,13 @@ You need to have Python 2.x installed on a system or in a container for Pygments
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="groovy"><span class="n">plugins</span> <span class="o">{</span>
-  <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.pdf'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.4-SNAPSHOT'</span>
-  <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.gems'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.4-SNAPSHOT'</span>
+  <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.pdf'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.4'</span>
+  <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.gems'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.4'</span>
 <span class="o">}</span>
 
 <span class="n">repositories</span> <span class="o">{</span>
     <span class="n">jcenter</span><span class="o">()</span>
-    <span class="n">maven</span> <span class="o">{</span> <span class="n">url</span> <span class="s1">'http://rubygems-proxy.torquebox.org/releases'</span> <span class="o">}</span>
+    <span class="n">ruby</span><span class="o">.</span><span class="na">gems</span><span class="o">()</span>
 <span class="o">}</span>
 
 <span class="n">dependencies</span> <span class="o">{</span>
@@ -2714,8 +2782,8 @@ The <code>master</code> branch represents the code for the latest 2.x release of
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 3.0.0-alpha.4-SNAPSHOT<br>
-Last updated 2019-07-09 08:09:50 UTC
+Version 3.0.0-alpha.4<br>
+Last updated 2019-12-26 00:56:06 UTC
 </div>
 </div>
 <style>
@@ -2738,7 +2806,7 @@ pre.rouge .cs {
   font-weight: bold;
   font-style: italic;
 }
-pre.rouge .c, pre.rouge .cd {
+pre.rouge .c, pre.rouge .ch, pre.rouge .cd, pre.rouge .cpf {
   color: #999988;
   font-style: italic;
 }
@@ -2858,7 +2926,7 @@ pre.rouge .s1 {
 pre.rouge .ss {
   color: #990073;
 }
-pre.rouge .s {
+pre.rouge .s, pre.rouge .sa, pre.rouge .dl {
   color: #d14;
 }
 pre.rouge .na {
@@ -2888,7 +2956,7 @@ pre.rouge .ne {
   color: #990000;
   font-weight: bold;
 }
-pre.rouge .nf {
+pre.rouge .nf, pre.rouge .fm {
   color: #990000;
   font-weight: bold;
 }
@@ -2911,7 +2979,7 @@ pre.rouge .vg {
 pre.rouge .vi {
   color: #008080;
 }
-pre.rouge .nv {
+pre.rouge .nv, pre.rouge .vm {
   color: #008080;
 }
 pre.rouge .ow {

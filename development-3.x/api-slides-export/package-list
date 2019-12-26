@@ -1,0 +1,2 @@
+org.asciidoctor.gradle.slides.export.base
+org.asciidoctor.gradle.slides.export.decktape
