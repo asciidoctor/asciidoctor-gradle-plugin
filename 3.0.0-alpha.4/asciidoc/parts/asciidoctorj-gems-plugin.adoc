@@ -1,0 +1,40 @@
+[[asciidoctorj-gems-plugin,AsciidoctorJ GEMs plugin]]
+== Ruby GEM support
+
+GEM support is simplified via the `org.asciidoctor.jvm.gems` plugin.
+
+[source,groovy,role="primary"]
+[subs=attributes+]
+.build.gradle
+----
+plugins {
+    id 'org.asciidoctor.jvm.gems' version '{revnumber}'
+}
+
+repositories {
+    ruby {
+        gems() // <1>
+    }
+}
+
+dependencies {
+    asciidoctorGems 'rubygems:asciidoctor-revealjs:1.1.3' // <2>
+}
+
+asciidoctorj {
+    requires 'asciidoctor-revealjs' // <3>
+}
+
+----
+<1> Always specify a GEM proxy. In this case use the internal proxy to https://rubygems.org.
+<2> Specify GEMs as per usual.
+<3> Add the GEM to the project-wide (or task-specific) list of `requires`.
+
+[source,kotlin,role="secondary"]
+[subs=attributes+]
+.build.gradle.kts
+----
+plugins {
+    id("org.asciidoctor.jvm.gems") version "{revnumber}"
+}
+----

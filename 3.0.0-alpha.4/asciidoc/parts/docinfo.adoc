@@ -1,0 +1,24 @@
+== Extra content for HTML & Docbook backends
+
+You may need to include extra content into the head of the exported document.
+For example, you might want to include jQuery inside the `<head>` element of the HTML export.
+To do so, first create a docinfo file in your source directory i.e. `src/docs/asciidoc/docinfo.html` containing the content to include, in this case the `<script>` tag to load jQuery.
+
+[source,html]
+.src/docs/asciidoc/docinfo.html
+----
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.js"></script>
+----
+
+Then, add the `docinfo1` attribute to the attributes list in the previous example:
+
+[source,groovy,role="primary"]
+.build.gradle
+----
+asciidoctorj { // <1>
+    attribute 'docinfo1', ''
+}
+----
+<1> Substitute `asciidoctorjs` if you are using the {asciidoctorjs-name} engine.
+
+See link:{asciidoctor-userguide}#docinfo-file[{asciidoctor-userguide-name}] for more information on `docinfo` and friends.
