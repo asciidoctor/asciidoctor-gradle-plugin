@@ -215,7 +215,7 @@ class DeckTapeFunctionalSpec extends FunctionalSpecification {
             ${extraContent}
             
             repositories {
-                maven {url 'http://rubygems-proxy.torquebox.org/releases'}
+                ruby.gems()
             }
         """
         buildFile

@@ -28,6 +28,7 @@ syncRemoteRepositories {
 
         if (version.endsWith('-SNAPSHOT')) {
             mavenLocal()
+            maven { url "https://dl.bintray.com/jruby-gradle/plugins" }
         }
     }
 
