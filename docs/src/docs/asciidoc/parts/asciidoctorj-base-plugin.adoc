@@ -118,7 +118,7 @@ tasks {
       mapOf(
         "source-highlighter" to "coderay",
         "toc"                to "",
-        "idprefix            to "",
+        "idprefix"           to "",
         "idseparator"        to "-"
       )
     )
@@ -129,9 +129,9 @@ tasks {
 
 The following attributes are automatically set by the `asciidoctorj` extension:
 
- * project-name : matches `$project.name`
- * project-version: matches `$project.version` (if defined). Empty String value if undefined
- * project-group: matches `$project.group` (if defined). Empty String value if undefined
+ * gradle-project-name : matches `$project.name`
+ * gradle-project-version: matches `$project.version` (if defined). Empty String value if undefined
+ * gradle-project-group: matches `$project.group` (if defined). Empty String value if undefined
 
 These attributes may be overridden by explicit user input.
 
