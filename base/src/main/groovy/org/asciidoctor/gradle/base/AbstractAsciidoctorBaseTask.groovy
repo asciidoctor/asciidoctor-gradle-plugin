@@ -133,7 +133,6 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      *
      */
     @OutputDirectory
-    @PathSensitive(PathSensitivity.NAME_ONLY)
     File getOutputDir() {
         this.outDir.asFile.get()
     }
@@ -528,7 +527,6 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * @since 1.5.1
      */
     @OutputDirectories
-    @PathSensitive(RELATIVE)
     Set<File> getBackendOutputDirectories() {
         if (languages.empty) {
             Transform.toSet(configuredOutputOptions.backends) {

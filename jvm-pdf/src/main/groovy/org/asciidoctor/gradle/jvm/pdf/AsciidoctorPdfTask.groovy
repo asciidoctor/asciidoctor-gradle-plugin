@@ -97,6 +97,8 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
      * @return Theme name or {@code null} if no theme was set.
      */
     @SuppressWarnings('LineLength')
+    @Input
+    @Optional
     String getThemeName() {
         themeDescriptor?.themeName
     }

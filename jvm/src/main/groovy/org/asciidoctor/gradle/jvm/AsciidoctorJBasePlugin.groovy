@@ -40,6 +40,10 @@ class AsciidoctorJBasePlugin implements Plugin<Project> {
                 AsciidoctorJExtension,
                 project
             )
+
+            tasks.all {
+
+            }
         }
     }
 }

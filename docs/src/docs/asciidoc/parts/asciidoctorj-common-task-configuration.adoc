@@ -1,6 +1,6 @@
 == Task Configuration
 
-All Asciidoctor tasks will have the following methods and properties:
+All AsciidoctorJ tasks will have the following methods and properties:
 
 .Properties and methods common all {asciidoctorj-name} tasks
 [horizontal]
@@ -28,9 +28,8 @@ outputDir:: where generated docs go.
   Default: `$buildDir/asciidoc`.
 parallelMode:: Specifies whether each backend or other variant of a converting tasks huodl be run in parallel or sequential.
   Sequential conversions might have less initialisation overhead, but may suffer from `gemPath` and extension pollution. Default: `true` (parallel).
-resources:: specify which additional files (image etc.) must be copied to output directory using a
-  http://www.gradle.org/docs/current/javadoc/org/gradle/api/file/CopySpec.html[CopySpec].
-secondarySources: Specify which source files should be monitor for change. These are typically files which are included by top-level files as well as doctype files.
+resources:: specify which additional files (image etc.) must be copied to output directory using a http://www.gradle.org/docs/current/javadoc/org/gradle/api/file/CopySpec.html[CopySpec].
+secondarySources:: Specify which source files should be monitor for change. These are typically files which are included by top-level files as well as doctype files.
   Default: All files in sourceDir which matches `getDefaultSourceDocumentPattern()` as well as doctype files.
 sourceDir:: where the asciidoc sources are.
   Use either `sourceDir path`, `setSourceDir path` or `sourceDir=path`

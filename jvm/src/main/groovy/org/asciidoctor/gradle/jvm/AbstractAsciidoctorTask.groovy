@@ -69,7 +69,6 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
     public final static ProcessMode OUT_OF_PROCESS = ProcessMode.OUT_OF_PROCESS
     public final static ProcessMode JAVA_EXEC = ProcessMode.JAVA_EXEC
 
-    @Internal
     protected final static GradleVersion LAST_GRADLE_WITH_CLASSPATH_LEAKAGE = GradleVersion.version(('5.99'))
 
     protected final AsciidoctorJExtension asciidoctorj

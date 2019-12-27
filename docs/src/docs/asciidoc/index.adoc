@@ -15,8 +15,6 @@ include::parts/compatibility.adoc[]
 
 include::parts/quick-start.adoc[]
 
-include::parts/common-task-configuration.adoc[]
-
 include::parts/asciidoctorj-base-plugin.adoc[]
 
 include::parts/asciidoctorj-plugin.adoc[]
@@ -28,6 +26,8 @@ include::parts/asciidoctorj-epub-plugin.adoc[]
 include::parts/asciidoctorj-revealjs-plugin.adoc[]
 
 include::parts/asciidoctorj-leanpub-plugin.adoc[]
+
+include::parts/asciidoctorj-common-task-configuration.adoc[]
 
 include::parts/asciidoctor-diagram.adoc[]
 
