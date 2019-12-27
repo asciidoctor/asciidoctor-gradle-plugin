@@ -53,11 +53,12 @@ NOTE: You need to have Python 2.x installed on a system or in a container for Py
 plugins {
   id 'org.asciidoctor.jvm.pdf' version '{revnumber}'
   id 'org.asciidoctor.jvm.gems' version '{revnumber}'
+  id 'com.github.jruby-gradle.base' version '1.7.0'
 }
 
 repositories {
     jcenter()
-    maven { url 'http://rubygems-proxy.torquebox.org/releases' }
+    rubygems('https://rubygems.org')
 }
 
 dependencies {

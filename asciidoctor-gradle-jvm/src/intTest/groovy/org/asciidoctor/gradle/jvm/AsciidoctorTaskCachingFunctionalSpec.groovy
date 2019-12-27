@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.jvm
 
 import org.asciidoctor.gradle.internal.FunctionalSpecification
 import org.asciidoctor.gradle.testfixtures.jvm.CachingTest
+import spock.lang.PendingFeature
 
 import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.SERIES_16
 import static org.asciidoctor.gradle.testfixtures.jvm.AsciidoctorjTestVersions.SERIES_20
@@ -34,6 +35,7 @@ class AsciidoctorTaskCachingFunctionalSpec extends FunctionalSpecification imple
         createTestProject()
     }
 
+    @PendingFeature
     void "asciidoctor task is cacheable and relocatable"() {
         given:
         getBuildFile("""
@@ -63,6 +65,7 @@ class AsciidoctorTaskCachingFunctionalSpec extends FunctionalSpecification imple
         fileInRelocatedDirectory(DOCBOOK_OUTPUT_FILE).exists()
     }
 
+    @PendingFeature
     void "asciidoctor task is cached when only output directory is changed"() {
         given:
         getBuildFile("""
@@ -105,6 +108,7 @@ class AsciidoctorTaskCachingFunctionalSpec extends FunctionalSpecification imple
         fileInRelocatedDirectory('build/asciidoc/docbook/sample.xml').exists()
     }
 
+    @PendingFeature
     void "asciidoctor task is not cached when backends change"() {
         given:
         getBuildFile("""
@@ -141,6 +145,7 @@ class AsciidoctorTaskCachingFunctionalSpec extends FunctionalSpecification imple
         assertDefaultTaskIsCachedAndRelocatable()
     }
 
+    @PendingFeature
     void "asciidoctor task is not cached when asciidoctorj/jruby versions change"() {
         given:
         getBuildFile("""
@@ -186,6 +191,7 @@ class AsciidoctorTaskCachingFunctionalSpec extends FunctionalSpecification imple
         assertDefaultTaskIsCachedAndRelocatable()
     }
 
+    @PendingFeature
     void "asciidoctor task is not cached when attributes change"() {
         given:
         getBuildFile("""

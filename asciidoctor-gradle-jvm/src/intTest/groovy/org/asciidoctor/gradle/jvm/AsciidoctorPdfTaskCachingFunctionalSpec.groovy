@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.jvm
 
 import org.asciidoctor.gradle.internal.FunctionalSpecification
 import org.asciidoctor.gradle.testfixtures.jvm.CachingTest
+import spock.lang.PendingFeature
 
 class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification implements CachingTest {
     static final String DEFAULT_TASK = 'asciidoctorPdf'
@@ -27,6 +28,7 @@ class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification im
         createTestProject()
     }
 
+    @PendingFeature
     void "PDF task is cacheable and relocatable"() {
         given:
         getBuildFile("""
@@ -49,6 +51,7 @@ class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification im
         outputFileInRelocatedDirectory.exists()
     }
 
+    @PendingFeature
     void "PDF task is not cached when pdf-specific inputs change"() {
         given:
         getBuildFile("""

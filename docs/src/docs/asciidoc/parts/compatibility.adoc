@@ -1,3 +1,5 @@
 == Compatibility
 
 This collection of plugins requires at least Gradle 4.0, JDK 8.0 and {asciidoctorj-name} 1.6.0 to run. If you need prior Gradle,  JDK or {asciidoctorj-name} support please use a plugin from the 1.5.x or 1.6.x release series.
+
+Gradle 6.x compatibility with the 2.x series will be supported on a best-effort basis as and when community patches are received. Gradle 7.x will *NOT* be supported.

@@ -17,7 +17,6 @@ package org.asciidoctor.gradle.jvm
 
 import groovy.transform.CompileStatic
 import org.gradle.api.Action
-import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.workers.WorkerExecutor
 import org.ysb33r.grolifant.api.FileUtils
@@ -32,7 +31,7 @@ import static groovy.lang.Closure.DELEGATE_FIRST
  * is {@code "src/docs/asciidoc"} if the task is named {@code aciidoctor}. For all other instances
  * of this task type the default source directory is {@code "src/docs/${task.name.capitalize()}"}.
  *
- * In a similar fasion the default output directory is either {@code "${buildDir}/asciidoc"} or
+ * In a similar fashion the default output directory is either {@code "${buildDir}/asciidoc"} or
  * {@code "${buildDir}/asciidoc${task.name.capitalize()}"}.
  *
  * @author Noam Tenne
@@ -92,7 +91,7 @@ class AsciidoctorTask extends AbstractAsciidoctorTask {
         if (!baseDirConfigured) {
             if (attributes.keySet() in ['docinfo', 'docinfo1', 'docinfo2']) {
                 logger.warn('You are using docinfo attributes,but a base directory strategy has not been configured.' +
-                        'It is recommended that you set baseDirFollowsSourceDir() in your task.')
+                    'It is recommended that you set baseDirFollowsSourceDir() in your task.')
             }
         }
         super.processAsciidocSources()
