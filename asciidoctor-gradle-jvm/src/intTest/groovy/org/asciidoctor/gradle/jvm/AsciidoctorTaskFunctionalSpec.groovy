@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle.jvm
 
 import org.asciidoctor.gradle.internal.FunctionalSpecification
+import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Issue
 import spock.lang.Timeout
@@ -213,6 +214,31 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         then:
         new File(testProjectDir.root, 'build/docs/asciidoc/sample.html').text
                 .contains('<meta name="asciidoctor-docinfo-test"/>')
+    }
+
+    @Unroll
+    void 'there are no deprecated usages with Gradle v#version'() {
+        given:
+        getBuildFile("""
+            asciidoctor {
+                sourceDir 'src/docs/asciidoc'
+
+                outputOptions {
+                    backends 'html5', 'docbook'
+                }
+            }
+        """)
+
+        when:
+        BuildResult result = getGradleRunner(DEFAULT_ARGS + ['--warning-mode', 'all'])
+                .withGradleVersion(version)
+                .build()
+
+        then:
+        assertNoDeprecatedUsages(result)
+
+        where:
+        version << ['5.6.4', '6.0.1']
     }
 
     File getBuildFile(String extraContent) {
