@@ -2,6 +2,7 @@
 plugins {
     id 'org.asciidoctor.jvm.convert'
     id 'org.asciidoctor.jvm.gems'
+    id 'com.github.jruby-gradle.base' version '1.7.0'
 }
 // end::use-gems[]
 
@@ -9,7 +10,7 @@ apply from: "${System.getProperty('OFFLINE_REPO')}/repositories.gradle"
 
 // tag::use-gems[]
 repositories {
-    maven { url 'http://rubygems-proxy.torquebox.org/releases' } // <1>
+    rubygems('https://rubygems.org') // <1>
 }
 
 dependencies {

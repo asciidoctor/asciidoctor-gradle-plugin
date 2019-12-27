@@ -3,36 +3,41 @@
 
 GEM support is simplified via the `org.asciidoctor.jvm.gems` plugin.
 
+NOTE: Since the demise of Torquebox, the only way to pull down GEMs from the public `rubygems.org` is via an experimental embedded service in the JRuby Gradle plugin. This might require increasing the memory requirements of the Gradle daemon.
+
 [source,groovy,role="primary"]
 [subs=attributes+]
 .build.gradle
 ----
 plugins {
     id 'org.asciidoctor.jvm.gems' version '{revnumber}'
+    id 'com.github.jruby-gradle.base' version '1.7.0' // <1>
 }
 
 repositories {
-    maven { url 'http://rubygems-proxy.torquebox.org/releases' } // <1>
+    rubygems('https://rubygems.org') // <2>
 }
 
 dependencies {
-    asciidoctorGems 'rubygems:asciidoctor-revealjs:1.1.3' // <2>
+    asciidoctorGems 'rubygems:asciidoctor-revealjs:1.1.3' // <3>
 }
 
 asciidoctorj {
-    requires 'asciidoctor-revealjs' // <3>
+    requires 'asciidoctor-revealjs' // <4>
 }
 
 ----
-<1> Always specify a GEM proxy.
-<2> Specify GEMs as per usual.
-<3> Add the GEM to the project-wide (or task-specific) list of `requires`.
+<1> Bring in `1.7.0` of the JRuby Gradle plugin. Do *NOT* use any other version with the {revnumber} version of `org.asciidoctor.jvm.gems`.
+<2> Use the embedded servlet.
+<3> Specify GEMs as per usual.
+<4> Add the GEM to the project-wide (or task-specific) list of `requires`.
 
-[source,kotlin,role="secondary"]
-[subs=attributes+]
-.build.gradle.kts
-----
-plugins {
-    id("org.asciidoctor.jvm.gems") version "{revnumber}"
-}
-----
+
+//[source,kotlin,role="secondary"]
+//[subs=attributes+]
+//.build.gradle.kts
+//----
+//plugins {
+//    id("org.asciidoctor.jvm.gems") version "{revnumber}"
+//}
+//----
