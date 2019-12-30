@@ -21,8 +21,41 @@ If you have {asciidoctorj-name} binary extensions you'll need to recompile them 
 
 Substitutable attributes means that the build script author can change those attributes by setting them explicitly.
 
+=== GEMs
+
 If you used external GEMs via the http://jruby-gradle.github.io/[JRuby Gradle plugin], you should switch over to using `org.asciidoctor.jvm.gems` instead. You should also use the `asciidoctorGems` configuration rather than the `gems` configuration. Tasks should not depend on `JRubyPrepare`, but on `AsciidoctorGemsPrepare` instead.
 
+If you have the following in your build
+
+[source,groovy]
+----
+plugins {
+    id 'org.asciidoctor.jvm.gems' version '2.4.1'
+    id 'com.github.jruby-gradle.base' version '1.7.0'
+}
+
+repositories {
+    rubygems('https://rubygems.org')
+}
+----
+
+then change it to
+
+[source,groovy]
+[subs=attributes+]
+----
+plugins {
+    id 'org.asciidoctor.jvm.gems' version '{revnumber}'
+}
+
+repositories {
+    ruby.gems()
+}
+----
+
+=== Reveal.js
+
+Follows the same guidelines as for GEMS above.
 
 === Configurations
 
