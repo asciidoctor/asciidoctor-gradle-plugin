@@ -20,6 +20,7 @@ import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.basedir.BaseDirFollowsProject
 import org.asciidoctor.gradle.base.basedir.BaseDirFollowsRootProject
 import org.asciidoctor.gradle.base.basedir.BaseDirIsFixedPath
+import org.asciidoctor.gradle.base.basedir.BaseDirIsNull
 import org.asciidoctor.gradle.base.internal.Workspace
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
@@ -188,6 +189,9 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
             case BaseDirStrategy:
                 this.baseDir = (BaseDirStrategy) f
                 break
+            case null:
+                this.baseDir = BaseDirIsNull.INSTANCE
+                break
             default:
                 this.baseDir = new BaseDirIsFixedPath(project.providers.provider({
                     project.file(f)
@@ -228,6 +232,14 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         this.baseDir = new BaseDirIsFixedPath(project.providers.provider({ AbstractAsciidoctorBaseTask task ->
             task.withIntermediateWorkDir ? task.intermediateWorkDir : task.sourceDir
         }.curry(this) as Callable<File>))
+    }
+
+    /** Sets the basedir to be the same directory as each individual source file.
+     *
+     * @since 3.0.0
+     */
+    void baseDirFollowsSourceFile() {
+        this.baseDir = BaseDirIsNull.INSTANCE
     }
 
     /** Configures sources.
@@ -1051,16 +1063,18 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
             throw new GradleException("outputDir has not been defined for task '${name}'")
         }
 
-        Path sourceRoot = sourceDir.toPath().root
-        Path baseRoot = languages.empty ? getBaseDir().toPath().root : getBaseDir(languages[0]).toPath().root
-        Path outputRoot = outputDir.toPath().root
+        Path baseRoot = languages.empty ? getBaseDir()?.toPath()?.root : getBaseDir(languages[0])?.toPath()?.root
+        if (baseRoot != null) {
+            Path sourceRoot = sourceDir.toPath().root
+            Path outputRoot = outputDir.toPath().root
 
-        if (sourceRoot != baseRoot || outputRoot != baseRoot) {
-            throw new AsciidoctorExecutionException(
-                "sourceDir, outputDir and baseDir needs to have the same root filesystem for ${engineName} to " +
-                    'function correctly. ' +
-                    'This is typically caused on Windows where everything is not on the same drive letter.'
-            )
+            if (sourceRoot != baseRoot || outputRoot != baseRoot) {
+                throw new AsciidoctorExecutionException(
+                        "sourceDir, outputDir and baseDir needs to have the same root filesystem for ${engineName} " +
+                                'to function correctly. ' +
+                                'This is typically caused on Windows where everything is not on the same drive letter.'
+                )
+            }
         }
     }
 
