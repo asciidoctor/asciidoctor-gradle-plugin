@@ -25,6 +25,7 @@ import org.ysb33r.grolifant.api.FileUtils
 import javax.inject.Inject
 
 import static groovy.lang.Closure.DELEGATE_FIRST
+import static org.asciidoctor.gradle.base.AsciidoctorUtils.setConvention
 
 /** Build using {@code asciidoctor.js}.
  *
@@ -45,8 +46,8 @@ class AsciidoctorTask extends AbstractAsciidoctorNodeJSTask {
             folderName = "asciidoc${name.capitalize()}"
         }
         final String safeFolderName = FileUtils.toSafeFileName(folderName)
-        sourceDir = "src/docs/${folderName}"
-        outputDir = { project.file("${project.buildDir}/docs/${safeFolderName}") }
+        setConvention(project, sourceDirProperty, project.layout.projectDirectory.dir("src/docs/${folderName}"))
+        setConvention(outputDirProperty, project.layout.buildDirectory.dir("docs/${safeFolderName}"))
     }
 
     /** Configures output options for this task.

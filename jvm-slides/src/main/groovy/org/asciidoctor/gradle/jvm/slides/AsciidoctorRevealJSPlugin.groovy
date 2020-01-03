@@ -21,6 +21,8 @@ import org.asciidoctor.gradle.jvm.gems.AsciidoctorGemSupportPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
+import static org.asciidoctor.gradle.base.AsciidoctorUtils.setConvention
+
 /** Adds an extension and task to create Reveal.js slides.
  *
  * @since 2.0
@@ -40,8 +42,8 @@ class AsciidoctorRevealJSPlugin implements Plugin<Project> {
 
         revealTask.with {
             dependsOn gemPrepare
-            outputDir = { "${project.buildDir}/docs/asciidocRevealJs" }
-            sourceDir = 'src/docs/asciidoc'
+            setConvention(project, sourceDirProperty, project.layout.projectDirectory.dir('src/docs/asciidoc'))
+            setConvention(outputDirProperty, project.layout.buildDirectory.dir('docs/asciidocRevealJs'))
         }
     }
 }
