@@ -18,10 +18,14 @@ package org.asciidoctor.gradle.base
 import groovy.transform.CompileStatic
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.file.Directory
 import org.gradle.api.file.FileTree
 import org.gradle.api.file.FileVisitDetails
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.util.PatternSet
+import org.gradle.util.GradleVersion
 import org.ysb33r.grolifant.api.OperatingSystem
 
 import java.nio.file.Path
@@ -40,6 +44,8 @@ class AsciidoctorUtils {
     public static final OperatingSystem OS = OperatingSystem.current()
     public static final String UNDERSCORE_LED_FILES = '**/_*'
     public static final PatternSet UNDERSCORE_LED_PATTERN = new PatternSet().include(UNDERSCORE_LED_FILES)
+    public static final boolean GRADLE_LT_5_0 = GradleVersion.current() < GradleVersion.version('5.0')
+    public static final boolean GRADLE_LT_5_1 = GradleVersion.current() < GradleVersion.version('5.1')
 
     static final Spec<? super File> ACCEPT_ONLY_FILES = new Spec<File>() {
         @Override
@@ -134,4 +140,26 @@ class AsciidoctorUtils {
         new File(aClass.protectionDomain.codeSource.location.toURI()).absoluteFile
     }
 
+    static void setConvention(Project project, Property<Directory> property, Directory value) {
+        Property<Directory> defaultProvider
+        // BuildLayout.directoryProperty was replaced with ObjectFactory.directoryProperty() in Gradle 5.0
+        if (GRADLE_LT_5_0) {
+            defaultProvider = project.layout.directoryProperty()
+        } else {
+            defaultProvider = project.objects.directoryProperty()
+        }
+        defaultProvider.set(value)
+        setConvention(property, defaultProvider)
+    }
+
+    static <T> void setConvention(Property<T> property, Provider<T> value) {
+        // Property.convention() is not available until Gradle 5.1
+        if (GRADLE_LT_5_1) {
+            if (!property.isPresent()) {
+                property.set(value)
+            }
+        } else {
+            property.convention(value)
+        }
+    }
 }
