@@ -23,6 +23,8 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.ysb33r.grolifant.api.TaskProvider
 
+import static org.asciidoctor.gradle.base.AsciidoctorUtils.setConvention
+
 /** Provides additional conventions for creating Leanpub markdown.
  *
  * <ul>
@@ -48,8 +50,10 @@ class AsciidoctorJLeanpubPlugin implements Plugin<Project> {
                 void execute(AsciidoctorLeanpubTask task) {
                     task.group = AsciidoctorJBasePlugin.TASK_GROUP
                     task.description = 'Convert AsciiDoc files to Leanpub-structured Markdown'
-                    task.outputDir = { "${task.project.buildDir}/docs/asciidocLeanpub" }
-                    task.sourceDir = 'src/docs/asciidoc'
+                    setConvention(task.project, task.sourceDirProperty,
+                            project.layout.projectDirectory.dir('src/docs/asciidoc'))
+                    setConvention(task.outputDirProperty,
+                            task.project.layout.buildDirectory.dir('docs/asciidocLeanpub'))
                 }
             }
 

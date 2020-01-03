@@ -26,6 +26,7 @@ import org.ysb33r.grolifant.api.FileUtils
 import javax.inject.Inject
 
 import static groovy.lang.Closure.DELEGATE_FIRST
+import static org.asciidoctor.gradle.base.AsciidoctorUtils.setConvention
 
 /** Standard generic task for converting Asciidoctor documents.
  *
@@ -86,8 +87,8 @@ class AsciidoctorTask extends AbstractAsciidoctorTask {
             folderName = "asciidoc${name.capitalize()}"
         }
         final String safeFolderName = FileUtils.toSafeFileName(folderName)
-        sourceDir = "src/docs/${folderName}"
-        outputDir = { project.file("${project.buildDir}/docs/${safeFolderName}") }
+        setConvention(project, sourceDirProperty, project.layout.projectDirectory.dir("src/docs/${folderName}"))
+        setConvention(outputDirProperty, project.layout.buildDirectory.dir("docs/${safeFolderName}"))
     }
 
     @Override
