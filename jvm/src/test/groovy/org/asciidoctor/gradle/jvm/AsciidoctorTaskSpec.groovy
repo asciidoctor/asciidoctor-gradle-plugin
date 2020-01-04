@@ -122,6 +122,26 @@ class AsciidoctorTaskSpec extends Specification {
         task.baseDir == project.file("${project.buildDir}/tmp/${task.name}.intermediate")
     }
 
+    void 'Base directory can be null to follow source file'() {
+        when:
+        AsciidoctorTask task = asciidoctorTask {
+            baseDirFollowsSourceFile()
+        }
+
+        then:
+        task.baseDir == null
+    }
+
+    void 'Base directory can be set to null'() {
+        when:
+        AsciidoctorTask task = asciidoctorTask {
+            baseDir = null
+        }
+
+        then:
+        task.baseDir == null
+    }
+
     void "Allow setting of options via method"() {
         when:
         AsciidoctorTask task = asciidoctorTask {
