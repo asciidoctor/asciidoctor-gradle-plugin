@@ -10,6 +10,7 @@ attributes:: A shortcut for `asciidoctorj.attributes` and `asciidoctorjs.attribu
 baseDir:: Base directory for asciidoctor document conversion and root document inclusion.
   The base directory will be the project directory by default, but can be set to any other directory.
 baseDirFollowsSourceDir:: The base directory should be the same as the source directory even if the source directory is located within an intermediate working directory.
+baseDirFollowsSourceFile:: The base directory should be the same as the directory of each individual source file.
 baseDirIsProjectDir:: The base directory is always the current project directory.
 baseDirIsRootProjectDir:: The base directory is always the root project directory.
 configurations:: Specify additional configurations
@@ -204,11 +205,13 @@ asciidoctor {
     baseDirIsRootProjectDir() // <1>
     baseDirIsProjectDir() // <2>
     baseDirFollowsSourceDir() // <3>
+    baseDirFollowsSourceFile() // <4>
 }
 ----
 <1> The base directory is the root project directory.
 <2> The base directory is the current subproject directory.
 <3> The base directory will always the the same as the source directory. If an intermediate working directory is being used, the base directory will automatically point to that.
+<4> The base directory will be the same as the directory of each individual source file.
 
 === Docinfo processing
 
