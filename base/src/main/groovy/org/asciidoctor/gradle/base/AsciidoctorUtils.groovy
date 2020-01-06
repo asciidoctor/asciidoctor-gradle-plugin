@@ -19,6 +19,7 @@ import groovy.transform.CompileStatic
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileTree
 import org.gradle.api.file.FileVisitDetails
 import org.gradle.api.provider.Property
@@ -143,11 +144,7 @@ class AsciidoctorUtils {
     static void setConvention(Project project, Property<Directory> property, Directory value) {
         Property<Directory> defaultProvider
         // BuildLayout.directoryProperty was replaced with ObjectFactory.directoryProperty() in Gradle 5.0
-        if (GRADLE_LT_5_0) {
-            defaultProvider = project.layout.directoryProperty()
-        } else {
-            defaultProvider = project.objects.directoryProperty()
-        }
+        defaultProvider = createDirectoryProperty(project)
         defaultProvider.set(value)
         setConvention(property, defaultProvider)
     }
@@ -161,5 +158,25 @@ class AsciidoctorUtils {
         } else {
             property.convention(value)
         }
+    }
+
+    static Provider<Directory> mapToDirectoryProvider(Project project, Object value) {
+        // There's no good way to construct a Directory from a File in Gradle before 6.0
+        // In 6.0, we can use ProjectLayout.dir(Provider<File>) instead.
+        project.providers.provider {
+            DirectoryProperty dir = createDirectoryProperty(project)
+            dir.set(project.file(value))
+            dir.get()
+        }
+    }
+
+    private static DirectoryProperty createDirectoryProperty(Project project) {
+        Property<Directory> defaultProvider
+        if (GRADLE_LT_5_0) {
+            defaultProvider = project.layout.directoryProperty()
+        } else {
+            defaultProvider = project.objects.directoryProperty()
+        }
+        defaultProvider
     }
 }

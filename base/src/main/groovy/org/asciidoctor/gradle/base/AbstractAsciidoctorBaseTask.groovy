@@ -55,6 +55,7 @@ import java.util.concurrent.Callable
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.UNDERSCORE_LED_FILES
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClosure
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.getSourceFileTree
+import static org.asciidoctor.gradle.base.AsciidoctorUtils.mapToDirectoryProvider
 import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 import static org.ysb33r.grolifant.api.FileUtils.filesFromCopySpec
 
@@ -95,7 +96,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * @param f Any object convertible with {@code project.file}.
      */
     void setSourceDir(Object f) {
-        this.srcDir.set(project.file(f))
+        this.srcDir.set(mapToDirectoryProvider(project, f))
     }
 
     /** Sets the new Asciidoctor parent source directory in a declarative style.
@@ -105,7 +106,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * @since 3.0
      */
     void sourceDir(Object f) {
-        this.srcDir.set(project.file(f))
+        this.srcDir.set(mapToDirectoryProvider(project, f))
     }
 
     /** Returns the parent directory for Asciidoctor source.
