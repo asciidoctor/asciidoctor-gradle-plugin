@@ -29,6 +29,7 @@ import spock.lang.Specification
  * @author Stephan Classen
  * @author Marcus Fihlon
  * @author Schalk W. Cronjé
+ * @author Lari Hotari
  */
 class AsciidoctorTaskSpec extends Specification {
     private static final String ASCIIDOCTOR = 'asciidoctor'
