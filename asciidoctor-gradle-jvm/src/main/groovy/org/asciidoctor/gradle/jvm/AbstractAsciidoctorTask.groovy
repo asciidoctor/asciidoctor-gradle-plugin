@@ -66,8 +66,10 @@ import static org.ysb33r.grolifant.api.FileUtils.filesFromCopySpec
 
 /** Base class for all AsciidoctorJ tasks.
  *
- * @since 2.0.0* @author Schalk W. Cronjé
+ * @since 2.0.0
+ * @author Schalk W. Cronjé
  * @author Manuel Prinz
+ * @author Lari Hotari
  */
 @SuppressWarnings(['MethodCount', 'ClassSize'])
 @CompileStatic
@@ -178,13 +180,13 @@ class AbstractAsciidoctorTask extends DefaultTask {
      * @param includePatterns ANT-style patterns for sources to include
      */
     void sources(String... includePatterns) {
-        new Action<PatternSet>() {
+        sources(new Action<PatternSet>() {
 
             @Override
             void execute(PatternSet patternSet) {
                 patternSet.include(includePatterns)
             }
-        }
+        })
     }
 
     /** Set fork options for {@link #JAVA_EXEC} and {@link #OUT_OF_PROCESS} modes.
