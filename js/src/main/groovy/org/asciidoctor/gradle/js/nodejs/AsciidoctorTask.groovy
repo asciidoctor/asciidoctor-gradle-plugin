@@ -29,6 +29,9 @@ import static org.asciidoctor.gradle.base.AsciidoctorUtils.setConvention
 
 /** Build using {@code asciidoctor.js}.
  *
+ * @author Schalk W. Cronjé
+ * @author Gary Hale
+ *
  * @since 3.0
  */
 @CompileStatic
