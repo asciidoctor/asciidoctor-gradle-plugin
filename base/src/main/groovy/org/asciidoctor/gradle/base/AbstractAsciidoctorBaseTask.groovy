@@ -61,6 +61,9 @@ import static org.ysb33r.grolifant.api.FileUtils.filesFromCopySpec
 
 /** Abstract base task for Asciidoctor that can be shared between AsciidoctorJ and Asciidoctor.js.
  *
+ * @author Schalk W. Cronjé
+ * @author Lari Hotari
+ *
  * @since 3.0
  */
 @CompileStatic
@@ -272,13 +275,13 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * @param includePatterns ANT-style patterns for sources to include
      */
     void sources(String... includePatterns) {
-        new Action<PatternSet>() {
+        sources(new Action<PatternSet>() {
 
             @Override
             void execute(PatternSet patternSet) {
                 patternSet.include(includePatterns)
             }
-        }
+        })
     }
 
     /** Clears any of the existing secondary soruces patterns.
