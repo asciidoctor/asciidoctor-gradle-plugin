@@ -28,6 +28,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.CopySpec
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileTree
 import org.gradle.api.file.FileTreeElement
 import org.gradle.api.provider.Provider
@@ -54,6 +55,7 @@ import java.util.concurrent.Callable
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.UNDERSCORE_LED_FILES
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClosure
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.getSourceFileTree
+import static org.asciidoctor.gradle.base.AsciidoctorUtils.mapToDirectoryProvider
 import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 import static org.ysb33r.grolifant.api.FileUtils.filesFromCopySpec
 
@@ -66,9 +68,10 @@ import static org.ysb33r.grolifant.api.FileUtils.filesFromCopySpec
 abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
 
     private static final boolean GRADLE_LT_4_3 = GradleVersion.current() < GradleVersion.version('4.3')
+    private static final boolean GRADLE_LT_5_0 = GradleVersion.current() < GradleVersion.version('5.0')
 
-    private Object srcDir
-    private Object outDir
+    private final DirectoryProperty srcDir
+    private final DirectoryProperty outDir
     private BaseDirStrategy baseDir
     private PatternSet sourceDocumentPattern
     private PatternSet secondarySourceDocumentPattern
@@ -93,7 +96,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * @param f Any object convertible with {@code project.file}.
      */
     void setSourceDir(Object f) {
-        this.srcDir = f
+        this.srcDir.set(mapToDirectoryProvider(project, f))
     }
 
     /** Sets the new Asciidoctor parent source directory in a declarative style.
@@ -103,14 +106,22 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * @since 3.0
      */
     void sourceDir(Object f) {
-        this.srcDir = f
+        this.srcDir.set(mapToDirectoryProvider(project, f))
     }
 
     /** Returns the parent directory for Asciidoctor source.
      */
     @Internal
     File getSourceDir() {
-        project.file(srcDir)
+        srcDir.asFile.get()
+    }
+
+    /**
+     * Returns the parent directory for Asciidoctor source as a property object.
+     */
+    @Internal
+    DirectoryProperty getSourceDirProperty() {
+        this.srcDir
     }
 
     /** Returns the current toplevel output directory
@@ -119,7 +130,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
     @OutputDirectory
     @PathSensitive(PathSensitivity.NAME_ONLY)
     File getOutputDir() {
-        this.outDir != null ? project.file(this.outDir) : null
+        this.outDir.asFile.get()
     }
 
     /** Sets the new Asciidoctor parent output directory.
@@ -127,7 +138,15 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * @param f An object convertible via {@code project.file}
      */
     void setOutputDir(Object f) {
-        this.outDir = f
+        this.outDir.set(project.file(f))
+    }
+
+    /**
+     * Returns the current toplevel output directory as a property object.
+     */
+    @Internal
+    DirectoryProperty getOutputDirProperty() {
+        this.outDir
     }
 
     /** Base directory (current working directory) for a conversion.
@@ -607,6 +626,13 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         super()
         inputs.files { filesFromCopySpec(getResourceCopySpec(Optional.empty())) }
             .withPathSensitivity(RELATIVE)
+        if (GRADLE_LT_5_0) {
+            this.srcDir = project.layout.directoryProperty()
+            this.outDir = project.layout.directoryProperty()
+        } else {
+            this.srcDir = project.objects.directoryProperty()
+            this.outDir = project.objects.directoryProperty()
+        }
     }
 
     /** Gets the CopySpec for additional resources.

@@ -22,6 +22,7 @@ import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
+import static org.asciidoctor.gradle.base.AsciidoctorUtils.setConvention
 import static org.ysb33r.grolifant.api.TaskProvider.registerTask
 
 /** Provides additional conventions for building PDFs.
@@ -37,7 +38,6 @@ import static org.ysb33r.grolifant.api.TaskProvider.registerTask
  */
 @CompileStatic
 class AsciidoctorJPdfPlugin implements Plugin<Project> {
-
     void apply(Project project) {
         project.with {
             apply plugin: AsciidoctorJBasePlugin
@@ -51,8 +51,9 @@ class AsciidoctorJPdfPlugin implements Plugin<Project> {
                     task.with {
                         group = AsciidoctorJBasePlugin.TASK_GROUP
                         description = 'Convert AsciiDoc files to PDF format'
-                        outputDir = { "${project.buildDir}/docs/asciidocPdf" }
-                        sourceDir = 'src/docs/asciidoc'
+                        setConvention(project, sourceDirProperty,
+                                project.layout.projectDirectory.dir('src/docs/asciidoc'))
+                        setConvention(outputDirProperty, project.layout.buildDirectory.dir('docs/asciidocPdf'))
                     }
                 }
             }
