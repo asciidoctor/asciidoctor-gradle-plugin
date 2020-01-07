@@ -32,9 +32,10 @@ import static org.ysb33r.grolifant.api.TaskProvider.registerTask
  *   <li>Sets a default version for asciidoctor-pdf.
  * </ul>
  *
-* @author Schalk W. Cronjé
-*
-* @since 2.0.0
+ * @author Schalk W. Cronjé
+ * @author Gary Hale
+ *
+ * @since 2.0.0
  */
 @CompileStatic
 class AsciidoctorJPdfPlugin implements Plugin<Project> {

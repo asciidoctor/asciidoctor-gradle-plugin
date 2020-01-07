@@ -36,6 +36,7 @@ import static groovy.lang.Closure.DELEGATE_FIRST
 /** Utility methods used internally by Asciidoctor plugins.
  *
  * @author Schalk W. Cronjé
+ * @author Gary Hale
  *
  * @since 2.0.0
  */

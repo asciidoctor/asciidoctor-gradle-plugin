@@ -63,6 +63,7 @@ import static org.ysb33r.grolifant.api.FileUtils.filesFromCopySpec
  *
  * @author Schalk W. Cronjé
  * @author Lari Hotari
+ * @author Gary Hale
  *
  * @since 3.0
  */
