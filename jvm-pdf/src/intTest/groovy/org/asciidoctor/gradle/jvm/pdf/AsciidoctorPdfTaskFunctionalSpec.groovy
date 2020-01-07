@@ -21,6 +21,11 @@ import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Issue
 import spock.lang.Unroll
 
+/**
+ * @author Schalk W. Cronjé
+ * @author Gary Hale
+ *
+ */
 class AsciidoctorPdfTaskFunctionalSpec extends FunctionalSpecification {
 
     static final String DEFAULT_TASK = 'asciidoctorPdf'

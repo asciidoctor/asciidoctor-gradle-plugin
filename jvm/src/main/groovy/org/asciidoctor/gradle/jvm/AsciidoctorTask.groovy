@@ -50,6 +50,7 @@ import static org.asciidoctor.gradle.base.AsciidoctorUtils.setConvention
  * @author Marcus Fihlon
  * @author Schalk W. Cronjé
  * @author Robert Panzer
+ * @author Gary Hale
  */
 @SuppressWarnings(['MethodCount', 'Instanceof'])
 @CompileStatic

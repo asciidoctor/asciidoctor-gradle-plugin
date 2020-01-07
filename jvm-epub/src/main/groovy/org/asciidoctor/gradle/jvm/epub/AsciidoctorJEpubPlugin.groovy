@@ -36,6 +36,7 @@ import static org.asciidoctor.gradle.base.AsciidoctorUtils.setConvention
  * </ul>
  *
  * @author Schalk W. Cronjé
+ * @author Gary Hale
  *
  * @since 2.0.0
  */
