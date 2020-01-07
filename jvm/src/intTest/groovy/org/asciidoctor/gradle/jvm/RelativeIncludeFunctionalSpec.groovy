@@ -18,6 +18,9 @@ package org.asciidoctor.gradle.jvm
 import org.asciidoctor.gradle.internal.FunctionalSpecification
 import spock.lang.Issue
 
+/**
+ * @author Lari Hotari
+ */
 class RelativeIncludeFunctionalSpec extends FunctionalSpecification {
     static final List DEFAULT_ARGS = ['asciidoctor', '-s']
 
