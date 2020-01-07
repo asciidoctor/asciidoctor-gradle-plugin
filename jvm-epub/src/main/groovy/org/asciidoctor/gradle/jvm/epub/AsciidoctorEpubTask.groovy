@@ -33,9 +33,12 @@ import org.ysb33r.grolifant.api.OperatingSystem
 
 import javax.inject.Inject
 
-/**
- * @since 2.0.0
+/** Builds EPUB documents using the epub3 backend.
+ *
  * @author Schalk W. Cronjé
+ * @author Gary Hale
+ *
+ * @since 2.0.0
  */
 @CompileStatic
 @CacheableTask

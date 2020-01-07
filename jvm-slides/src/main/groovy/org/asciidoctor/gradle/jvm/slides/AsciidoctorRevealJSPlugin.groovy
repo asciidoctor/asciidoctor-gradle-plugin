@@ -25,6 +25,9 @@ import static org.asciidoctor.gradle.base.AsciidoctorUtils.setConvention
 
 /** Adds an extension and task to create Reveal.js slides.
  *
+ * @author Schalk W. Cronjé
+ * @author Gary Hale
+ *
  * @since 2.0
  */
 @CompileStatic
