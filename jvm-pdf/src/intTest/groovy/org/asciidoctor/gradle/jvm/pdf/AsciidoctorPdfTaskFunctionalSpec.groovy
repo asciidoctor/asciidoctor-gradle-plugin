@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.jvm.pdf
 import org.asciidoctor.gradle.jvm.pdf.internal.FunctionalSpecification
 import org.asciidoctor.gradle.testfixtures.generators.PdfBackendJRubyAsciidoctorJCombinationGenerator
 import org.gradle.testkit.runner.GradleRunner
+import spock.lang.Issue
 import spock.lang.Unroll
 
 class AsciidoctorPdfTaskFunctionalSpec extends FunctionalSpecification {
@@ -130,6 +131,39 @@ asciidoctorPdf {
         verifyAll {
             new File(testProjectDir.root, DEFAULT_OUTPUT_FILE).exists()
         }
+    }
+
+    @Issue('/https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/478')
+    @Unroll
+    void 'can apply a task configuration rule to set source and output directory (Gradle #gradleVersion)'() {
+        given:
+        File newSourceDir = new File(testProjectDir.root, 'src/asciidoc')
+        assert new File(testProjectDir.root, 'src/docs/asciidoc').renameTo(newSourceDir)
+        testProjectDir.newFile('build.gradle') << """
+            plugins {
+                id 'org.asciidoctor.jvm.pdf' apply false
+            }
+
+            tasks.withType(org.asciidoctor.gradle.jvm.pdf.AsciidoctorPdfTask) {
+                sourceDir = 'src/asciidoc'
+                outputDir = "\${buildDir}/output"
+            }
+
+            apply plugin: 'org.asciidoctor.jvm.pdf'
+            
+            ${offlineRepositories}
+        """
+
+        when:
+        getGradleRunner([DEFAULT_TASK]).build()
+
+        then:
+        verifyAll {
+            new File(testProjectDir.root, 'build/output/sample.pdf').exists()
+        }
+
+        where:
+        gradleVersion << ['4.10.3', '5.6.4', '6.0.1']
     }
 
     File getBuildFile(String extraContent) {

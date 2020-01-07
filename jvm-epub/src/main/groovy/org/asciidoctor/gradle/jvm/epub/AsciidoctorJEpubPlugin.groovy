@@ -26,6 +26,8 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.ysb33r.grolifant.api.TaskProvider
 
+import static org.asciidoctor.gradle.base.AsciidoctorUtils.setConvention
+
 /** Provides additional conventions for building EPUBs.
  *
  * <ul>
@@ -53,8 +55,10 @@ class AsciidoctorJEpubPlugin implements Plugin<Project> {
                 void execute(AsciidoctorEpubTask task) {
                     task.group = AsciidoctorJBasePlugin.TASK_GROUP
                     task.description = 'Convert AsciiDoc files to EPUB3/KF8 formats'
-                    task.outputDir = { "${task.project.buildDir}/docs/asciidocEpub" }
-                    task.sourceDir = 'src/docs/asciidoc'
+                    setConvention(project, task.sourceDirProperty,
+                            project.layout.projectDirectory.dir('src/docs/asciidoc'))
+                    setConvention(task.outputDirProperty,
+                            task.project.layout.buildDirectory.dir('docs/asciidocEpub'))
                 }
             }
 
