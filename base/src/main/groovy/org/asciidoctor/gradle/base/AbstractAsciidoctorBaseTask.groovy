@@ -53,6 +53,7 @@ import java.nio.file.Path
 import java.util.concurrent.Callable
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.UNDERSCORE_LED_FILES
+import static org.asciidoctor.gradle.base.AsciidoctorUtils.createDirectoryProperty
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClosure
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.getSourceFileTree
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.mapToDirectoryProvider
@@ -636,13 +637,8 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         super()
         inputs.files { filesFromCopySpec(getResourceCopySpec(Optional.empty())) }
             .withPathSensitivity(RELATIVE)
-        if (GRADLE_LT_5_0) {
-            this.srcDir = project.layout.directoryProperty()
-            this.outDir = project.layout.directoryProperty()
-        } else {
-            this.srcDir = project.objects.directoryProperty()
-            this.outDir = project.objects.directoryProperty()
-        }
+        this.srcDir = createDirectoryProperty(project)
+        this.outDir = createDirectoryProperty(project)
     }
 
     /** Gets the CopySpec for additional resources.
@@ -1081,9 +1077,9 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
 
             if (sourceRoot != baseRoot || outputRoot != baseRoot) {
                 throw new AsciidoctorExecutionException(
-                        "sourceDir, outputDir and baseDir needs to have the same root filesystem for ${engineName} " +
-                                'to function correctly. ' +
-                                'This is typically caused on Windows where everything is not on the same drive letter.'
+                    "sourceDir, outputDir and baseDir needs to have the same root filesystem for ${engineName} " +
+                        'to function correctly. ' +
+                        'This is typically caused on Windows where everything is not on the same drive letter.'
                 )
             }
         }
