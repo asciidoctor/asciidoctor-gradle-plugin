@@ -70,6 +70,29 @@ class BaseTaskPatternSpec extends Specification {
         task1.internalSourceDocumentPattern.includes == ['myfile.adoc', 'otherfile.adoc'] as Set
     }
 
+    void "Should support clearing configured patterns"() {
+        given:
+        def task = createTask('task') {
+            sources('myfile.adoc', 'otherfile.adoc')
+        }
+        when:
+        task.clearSources()
+        then:
+        task.internalSourceDocumentPattern == null
+    }
+
+    void "Should support replacing the configured patterns"() {
+        given:
+        def task = createTask('task') {
+            sources('myfile.adoc', 'otherfile.adoc')
+        }
+        when:
+        task.clearSources()
+        task.sources('myfile2.adoc', 'myfile3.adoc')
+        then:
+        task.internalSourceDocumentPattern.includes == ['myfile2.adoc', 'myfile3.adoc'] as Set
+    }
+
     private Task createTask(String name, Closure cfg) {
         project.tasks.create(name: name, type: PatternSpecAsciidoctorTask).configure cfg
     }
