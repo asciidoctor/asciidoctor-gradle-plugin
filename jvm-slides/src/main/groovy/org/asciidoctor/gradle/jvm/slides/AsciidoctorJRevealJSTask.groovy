@@ -21,7 +21,6 @@ import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.base.slides.Profile
 import org.asciidoctor.gradle.base.slides.SlidesToExportAware
 import org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask
-import org.asciidoctor.gradle.jvm.AsciidoctorJExtension
 import org.asciidoctor.gradle.jvm.gems.AsciidoctorGemPrepare
 import org.gradle.api.Action
 import org.gradle.api.file.CopySpec
@@ -70,8 +69,6 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
         configuredOutputOptions.backends = [BACKEND_NAME]
         copyAllResources()
         org.ysb33r.grolifant.api.TaskProvider<AsciidoctorGemPrepare> gemPrepare = taskByName(project, GEMPREP_TASK)
-
-        AsciidoctorJExtension asciidoctorj = project.extensions.getByType(AsciidoctorJExtension)
 
         asciidoctorj.with {
             requires(REVEALJS_GEM)
