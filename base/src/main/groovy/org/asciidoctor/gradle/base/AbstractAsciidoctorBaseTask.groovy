@@ -284,6 +284,12 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         })
     }
 
+    /** Clears existing sources patterns.
+     */
+    void clearSources() {
+        sourceDocumentPattern = null
+    }
+
     /** Clears any of the existing secondary soruces patterns.
      *
      * This should be used if none of the default patterns should be monitored.
