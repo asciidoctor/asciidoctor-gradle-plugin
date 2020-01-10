@@ -37,6 +37,7 @@ class AsciidoctorRevealJSTaskSpec extends Specification {
 
             revealjsOptions {
                 progressBar = true
+                slideNumber = 'c'
             }
         }
 
@@ -53,6 +54,7 @@ class AsciidoctorRevealJSTaskSpec extends Specification {
             revealjsTask.theme == 'argon'
             revealjsTask.revealjsOptions.asAttributeMap.revealjs_mouseWheel == 'true'
             revealjsTask.revealjsOptions.asAttributeMap.revealjs_progress == 'true'
+            revealjsTask.revealjsOptions.asAttributeMap.revealjs_slideNumber == 'c'
         }
     }
 }
