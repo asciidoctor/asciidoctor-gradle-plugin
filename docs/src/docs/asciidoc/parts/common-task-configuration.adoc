@@ -26,7 +26,7 @@ outputDir:: where generated docs go.
   Use either `outputDir path`, `setOutputDir path` or `outputDir=path`
   Type: File, but any object convertible with `project.file` can be passed.
   Default: `$buildDir/asciidoc`.
-parallelMode:: Specifies whether each backend or other variant of a converting tasks huodl be run in parallel or sequential.
+parallelMode:: Specifies whether each backend or other variant of a converting tasks should be run in parallel or sequential.
   Sequential conversions might have less initialisation overhead, but may suffer from `gemPath` and extension pollution. Default: `true` (parallel).
 resources:: specify which additional files (image etc.) must be copied to output directory using a
   http://www.gradle.org/docs/current/javadoc/org/gradle/api/file/CopySpec.html[CopySpec].
@@ -40,7 +40,7 @@ sources:: Specify which Asciidoctor source files to include as toplevel document
   http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.html[Ant-style PatternSet].
 useIntermediateWorkDir:: Use an intermediate work directory for sources ances.
   Some extensions such as `ditaa` will write content into the source directory. In order to keep the project source directory pristine an intermediate work directory can be used. All sources and resources will be copied there prior the executing Asciidoctor.
-withIntermediateArtifacts:: Add intermediate artifacts to oputput directory
+withIntermediateArtifacts:: Add intermediate artifacts to output directory.
   If the document conversion process creates intermediate artifacts which needs to be added to the output directory, then the pattern set with a closure or `Action`. This implies `useIntermediateWorkDir`. An example of such a case is the use of `ditaa`.
 
 The `org.asciidoctor.jvm.convert` plugin has a conversion task type of `org.asciidoctor.gradle.jvm.AsciidoctorTask` which, in addition the aforementioned will also have the following properties and methods which are configured via an `outputOptions` closure or action:
