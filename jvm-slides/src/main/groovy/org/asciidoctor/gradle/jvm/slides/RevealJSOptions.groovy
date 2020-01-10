@@ -46,7 +46,7 @@ class RevealJSOptions {
 
     private Optional<Boolean> controls = Optional.empty()
     private Optional<Boolean> progressBar = Optional.empty()
-    private Optional<Boolean> slideNumber = Optional.empty()
+    private Optional<String> slideNumber = Optional.empty()
     private Optional<Boolean> pushToHistory = Optional.empty()
     private Optional<Boolean> keyboardShortcuts = Optional.empty()
     private Optional<Boolean> overviewMode = Optional.empty()
@@ -91,6 +91,55 @@ class RevealJSOptions {
         SLOW
     }
 
+    enum SlideNumber {
+        /**
+         * Hide the slide number.
+         */
+        NONE('false'),
+        /**
+         * h.v: horizontal . vertical slide number (default)
+         */
+        DEFAULT('h.v'),
+        /**
+         * h/v: horizontal / vertical slide number
+         */
+        HORIZONTAL_VERTICAL('h/v'),
+        /**
+         * c: flattened slide number
+         */
+        COUNT('c'),
+        /**
+         * c/t: flattened slide number / total slides
+         */
+        COUNT_TOTAL('c/t')
+
+        final private String value
+
+        private SlideNumber(String value) {
+            this.value = value
+        }
+
+        static SlideNumber slideNumber(String value) {
+            switch (value) {
+                case 'h/v': return HORIZONTAL_VERTICAL
+                case 'c': return COUNT
+                case 'c/t': return COUNT_TOTAL
+                case null:
+                case 'false':
+                case 'none': return NONE
+                default: return DEFAULT
+            }
+        }
+
+        static SlideNumber slideNumber(boolean value) {
+            value ? DEFAULT : NONE
+        }
+
+        String getValue() {
+            this.value
+        }
+    }
+
     RevealJSOptions(Project project) {
         this.project = project
     }
@@ -112,7 +161,29 @@ class RevealJSOptions {
     /** Display the slide number of the current slide.
      *
      */
-    void setSlideNumber(Boolean b) {
+    void setSlideNumber(boolean b) {
+        this.slideNumber = Optional.of(b.toString())
+    }
+
+    /** Display the slide number of the current slide.
+     *
+     */
+    void setSlideNumber(SlideNumber slideNumber) {
+        this.slideNumber = Optional.of(slideNumber.value)
+    }
+
+    /**
+     * Display the slider number of the current slide. <br/>
+     * The String "true" will display the slide number with default formatting. <br/>
+     * Additional formatting is available:
+     * <ul>
+     *     <li>h.v: horizontal . vertical slide number (default)</li>
+     *     <li>h/v: horizontal / vertical slide number</li>
+     *     <li>c: flattened slide number</li>
+     *     <li>c/t: flattened slide number / total slides</li>
+     * </ul>
+     */
+    void setSlideNumber(String b) {
         this.slideNumber = Optional.ofNullable(b)
     }
 
@@ -126,7 +197,6 @@ class RevealJSOptions {
     /** Enable keyboard shortcuts for navigation.
      *
      */
-
     void setKeyboardShortcuts(Boolean b) {
         this.keyboardShortcuts = Optional.ofNullable(b)
     }
