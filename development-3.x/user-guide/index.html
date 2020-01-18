@@ -488,6 +488,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_extra_content_for_html_docbook_backends">Extra content for HTML &amp; Docbook backends</a></li>
 <li><a href="#_upgrading_from_older_versions_of_asciidoctor">Upgrading From Older Versions of Asciidoctor</a>
 <ul class="sectlevel2">
+<li><a href="#_gems">GEMs</a></li>
+<li><a href="#_reveal_js">Reveal.js</a></li>
 <li><a href="#_configurations">Configurations</a></li>
 <li><a href="#_multiple_asciidoctor_tasks">Multiple Asciidoctor tasks</a></li>
 <li><a href="#_extensions">Extensions</a></li>
@@ -2629,8 +2631,46 @@ If you are still on a 1.5/1.6 version of the plugin, upgrade to the latest 2.x v
 <div class="paragraph">
 <p>Substitutable attributes means that the build script author can change those attributes by setting them explicitly.</p>
 </div>
+<div class="sect2">
+<h3 id="_gems">GEMs</h3>
 <div class="paragraph">
 <p>If you used external GEMs via the <a href="http://jruby-gradle.github.io/">JRuby Gradle plugin</a>, you should switch over to using <code>org.asciidoctor.jvm.gems</code> instead. You should also use the <code>asciidoctorGems</code> configuration rather than the <code>gems</code> configuration. Tasks should not depend on <code>JRubyPrepare</code>, but on <code>AsciidoctorGemsPrepare</code> instead.</p>
+</div>
+<div class="paragraph">
+<p>If you have the following in your build</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">plugins</span> <span class="o">{</span>
+    <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.gems'</span> <span class="n">version</span> <span class="s1">'2.4.1'</span>
+    <span class="n">id</span> <span class="s1">'com.github.jruby-gradle.base'</span> <span class="n">version</span> <span class="s1">'1.7.0'</span>
+<span class="o">}</span>
+
+<span class="n">repositories</span> <span class="o">{</span>
+    <span class="n">rubygems</span><span class="o">(</span><span class="s1">'https://rubygems.org'</span><span class="o">)</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>then change it to</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">plugins</span> <span class="o">{</span>
+    <span class="n">id</span> <span class="s1">'org.asciidoctor.jvm.gems'</span> <span class="n">version</span> <span class="s1">'3.0.0-alpha.4'</span>
+<span class="o">}</span>
+
+<span class="n">repositories</span> <span class="o">{</span>
+    <span class="n">ruby</span><span class="o">.</span><span class="na">gems</span><span class="o">()</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_reveal_js">Reveal.js</h3>
+<div class="paragraph">
+<p>Follows the same guidelines as for GEMS above.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_configurations">Configurations</h3>
@@ -2796,7 +2836,7 @@ The <code>master</code> branch represents the code for the latest 2.x release of
 <div id="footer">
 <div id="footer-text">
 Version 3.0.0-alpha.4<br>
-Last updated 2020-01-18 09:13:53 UTC
+Last updated 2020-01-18 11:18:57 UTC
 </div>
 </div>
 <style>
