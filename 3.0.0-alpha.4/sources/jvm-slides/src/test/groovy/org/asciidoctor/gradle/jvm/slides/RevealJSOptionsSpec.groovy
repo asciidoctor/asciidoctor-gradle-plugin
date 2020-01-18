@@ -21,6 +21,9 @@ import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import static org.asciidoctor.gradle.jvm.slides.RevealJSOptions.SlideNumber
+import static org.asciidoctor.gradle.jvm.slides.RevealJSOptions.SlideNumber.slideNumber
+
 class RevealJSOptionsSpec extends Specification {
 
     Project project = ProjectBuilder.builder().build()
@@ -208,6 +211,46 @@ class RevealJSOptionsSpec extends Specification {
         getStringFlag(attribute) == 'def'
     }
 
+    @Unroll
+    void 'Set slide number to #slideNumber == #expectedValue'() {
+        when:
+        String attribute = 'slideNumber'
+
+        then:
+        getStringFlag(attribute) == null
+
+        when:
+        options.slideNumber = slideNumber
+
+        then:
+        getStringFlag(attribute) == expectedValue
+
+        when:
+        options.slideNumber = null
+
+        then:
+        getStringFlag(attribute) == null
+
+        where:
+        slideNumber                        | expectedValue
+        SlideNumber.NONE                   | 'false'
+        SlideNumber.DEFAULT                | 'h.v'
+        SlideNumber.HORIZONTAL_VERTICAL    | 'h/v'
+        SlideNumber.COUNT                  | 'c'
+        SlideNumber.COUNT_TOTAL            | 'c/t'
+        null                               | null
+        ''                                 | ''
+        true                               | 'true'
+        false                              | 'false'
+        'true'                             | 'true'
+        'false'                            | 'false'
+        'c'                                | 'c'
+        'c/t'                              | 'c/t'
+        'h/v'                              | 'h/v'
+        'h.v'                              | 'h.v'
+        'c.t'                              | 'c.t'
+    }
+
     @SuppressWarnings('DuplicateStringLiteral')
     @Unroll
     void 'Set relative path for #method'() {
@@ -288,6 +331,27 @@ class RevealJSOptionsSpec extends Specification {
         'ParallaxBackgroundImage' | 'revealjs_parallaxBackgroundImage' | 'Parallax background image location'
         'CustomTheme'             | 'revealjs_customtheme'             | 'Custom theme location'
         'HighlightJsTheme'        | 'highlightjs-theme'                | 'Highlight.js theme location'
+    }
+
+    @Unroll
+    void 'Map SlideNumber(#value) to #expectedValue'() {
+        expect:
+        slideNumber(value) == expectedValue
+
+        where:
+        value     | expectedValue
+        true      | SlideNumber.DEFAULT
+        false     | SlideNumber.NONE
+        null      | SlideNumber.NONE
+        'false'   | SlideNumber.NONE
+        'none'    | SlideNumber.NONE
+        ''        | SlideNumber.DEFAULT
+        'true'    | SlideNumber.DEFAULT
+        'h.v'     | SlideNumber.DEFAULT
+        'default' | SlideNumber.DEFAULT
+        'c'       | SlideNumber.COUNT
+        'h/v'     | SlideNumber.HORIZONTAL_VERTICAL
+        'c/t'     | SlideNumber.COUNT_TOTAL
     }
 
     Boolean getBoolFlag(final String flagName) {
