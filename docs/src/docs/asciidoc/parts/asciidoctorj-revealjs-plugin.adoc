@@ -112,7 +112,7 @@ pushToHistory:: Push each slide change to the browser history.
 righttoLeft:: Change the presentation direction to be RTL.
   Type is boolean.
 slideNumber:: Display the slide number of the current slide.
-  Type is boolean.
+  Can be a `RevealJSOptions.SlideNumber`, a string value or a boolean.
 touchMode:: Enables touch navigation on devices with touch input.
   Type is boolean.
 transition:: Slide transition mode.
