@@ -73,7 +73,6 @@ import static org.ysb33r.grolifant.api.FileUtils.filesFromCopySpec
 abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
 
     private static final boolean GRADLE_LT_4_3 = GradleVersion.current() < GradleVersion.version('4.3')
-    private static final boolean GRADLE_LT_5_0 = GradleVersion.current() < GradleVersion.version('5.0')
 
     private final DirectoryProperty srcDir
     private final DirectoryProperty outDir
