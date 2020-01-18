@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 the original author or authors.
+ * Copyright 2013-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,9 @@ package org.asciidoctor.gradle.jvm
 import org.asciidoctor.gradle.internal.FunctionalSpecification
 import spock.lang.Issue
 
+/**
+ * @author Lari Hotari
+ */
 class RelativeIncludeFunctionalSpec extends FunctionalSpecification {
     static final List DEFAULT_ARGS = ['asciidoctor', '-s']
 

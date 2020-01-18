@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 the original author or authors.
+ * Copyright 2013-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package org.asciidoctor.gradle.base
 
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -36,6 +37,7 @@ import static groovy.lang.Closure.DELEGATE_FIRST
 /** Utility methods used internally by Asciidoctor plugins.
  *
  * @author Schalk W. Cronjé
+ * @author Gary Hale
  *
  * @since 2.0.0
  */
@@ -73,7 +75,7 @@ class AsciidoctorUtils {
         ft.visit { FileVisitDetails it ->
             if (it.name.startsWith('_')) {
                 throw new GradleException("Sources starting with '_' found. This is not allowed. " +
-                        "Current sources are: ${ft.files}")
+                    "Current sources are: ${ft.files}")
             }
         }
 
@@ -141,6 +143,15 @@ class AsciidoctorUtils {
         new File(aClass.protectionDomain.codeSource.location.toURI()).absoluteFile
     }
 
+    /** Apply convention in way that is backward-comatible to Gradle 4.3, but utilises features
+     * when available in later Gradle releases.
+     *
+     * @param project Current project context.
+     * @param property Directory property to which convention should be applied
+     * @param value Default value of directory.
+     *
+     * @since 3.0
+     */
     static void setConvention(Project project, Property<Directory> property, Directory value) {
         Property<Directory> defaultProvider
         // BuildLayout.directoryProperty was replaced with ObjectFactory.directoryProperty() in Gradle 5.0
@@ -149,17 +160,29 @@ class AsciidoctorUtils {
         setConvention(property, defaultProvider)
     }
 
+    /** Sets a property convention using a provider in a way that is compatible back to Gradle 4.3.
+     *
+     * @param property Property to set
+     * @param value Provider to use
+     *
+     * @since 3.0
+     */
     static <T> void setConvention(Property<T> property, Provider<T> value) {
-        // Property.convention() is not available until Gradle 5.1
         if (GRADLE_LT_5_1) {
-            if (!property.isPresent()) {
-                property.set(value)
-            }
+            doSetPropertyConventionPre51(property, value)
         } else {
-            property.convention(value)
+            doSetPropertyConvention(property, value)
         }
     }
 
+    /** Maps a file object to a directory provider
+     *
+     * @param project Project context
+     * @param value Anything convertible with {@code project.file}
+     * @return {@link Provider} of a {@link Directory}.
+     *
+     * @since 3.0
+     */
     static Provider<Directory> mapToDirectoryProvider(Project project, Object value) {
         // There's no good way to construct a Directory from a File in Gradle before 6.0
         // In 6.0, we can use ProjectLayout.dir(Provider<File>) instead.
@@ -170,13 +193,41 @@ class AsciidoctorUtils {
         }
     }
 
-    private static DirectoryProperty createDirectoryProperty(Project project) {
-        Property<Directory> defaultProvider
+    /** Creates a {@link DirectoryProperty} instance in a way that is backwards-comaptible to
+     * Gradle 4.3.
+     *
+     * @param project Current project context
+     * @return {@code DirectoryProperty} instance
+     *
+     * @since 3.0
+     */
+    static DirectoryProperty createDirectoryProperty(Project project) {
         if (GRADLE_LT_5_0) {
-            defaultProvider = project.layout.directoryProperty()
+            doCreateDirectoryPropertyPre50(project)
         } else {
-            defaultProvider = project.objects.directoryProperty()
+            doCreateDirectoryProperty(project)
         }
-        defaultProvider
+    }
+
+    @CompileDynamic
+    private static DirectoryProperty doCreateDirectoryPropertyPre50(Project project) {
+        project.layout.directoryProperty()
+    }
+
+    @CompileDynamic
+    private static DirectoryProperty doCreateDirectoryProperty(Project project) {
+        project.objects.directoryProperty()
+    }
+
+    @CompileDynamic
+    private static <T> void doSetPropertyConventionPre51(Property<T> property, Provider<T> value) {
+        if (!property.isPresent()) {
+            property.set(value)
+        }
+    }
+
+    @CompileDynamic
+    private static <T> void doSetPropertyConvention(Property<T> property, Provider<T> value) {
+        property.convention(value)
     }
 }

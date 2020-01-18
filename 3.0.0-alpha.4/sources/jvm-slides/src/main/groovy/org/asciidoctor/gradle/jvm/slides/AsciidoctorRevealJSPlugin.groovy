@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 the original author or authors.
+ * Copyright 2013-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,9 @@ import org.gradle.api.Project
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.setConvention
 
 /** Adds an extension and task to create Reveal.js slides.
+ *
+ * @author Schalk W. Cronjé
+ * @author Gary Hale
  *
  * @since 2.0
  */
