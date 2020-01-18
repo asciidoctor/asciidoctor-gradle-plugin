@@ -1,0 +1,5 @@
+org.asciidoctor.gradle
+org.asciidoctor.gradle.compat
+org.asciidoctor.gradle.internal
+org.asciidoctor.gradle.jvm
+org.asciidoctor.gradle.remote
