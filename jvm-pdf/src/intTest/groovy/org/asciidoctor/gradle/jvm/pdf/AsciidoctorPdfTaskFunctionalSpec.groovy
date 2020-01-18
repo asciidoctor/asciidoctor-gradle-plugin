@@ -24,7 +24,6 @@ import spock.lang.Unroll
 /**
  * @author Schalk W. Cronjé
  * @author Gary Hale
- *
  */
 class AsciidoctorPdfTaskFunctionalSpec extends FunctionalSpecification {
 
