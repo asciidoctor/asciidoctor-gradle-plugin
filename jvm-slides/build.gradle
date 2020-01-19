@@ -1,0 +1,28 @@
+generateModuleVersions {
+    basename = 'revealjs-extension'
+    propertyNames ~/^revealjs\./
+}
+
+dependencies {
+    compile project(':asciidoctor-gradle-base')
+    compile project(':asciidoctor-gradle-jvm-gems')
+}
+
+intTest {
+    enabled = !gradle.startParameter.isOffline()
+    systemProperties TEST_PROJECTS_DIR: file('src/intTest/projects')
+}
+
+gradleTest {
+    enabled = !gradle.startParameter.isOffline()
+}
+
+configurePlugin 'org.asciidoctor.jvm.revealjs.base',
+    'AsciidoctorJ Reveal.js Base Plugin',
+    'Base plugin for all AsciidoctorJ Reveal.js tasks & extensions. Provides the revealjs and revealjsPlugins project extensions.',
+    ['asciidoctorj', 'reveal.js', 'slides']
+
+configurePlugin 'org.asciidoctor.jvm.revealjs',
+    'AsciidoctorJ Reveal.js Plugin',
+    'Plugin for generating Reveal.JS based slides from  Asciidoc source using AsciidoctorJ. Provides the ascidoctorRevealJs task.',
+    ['asciidoctorj', 'reveal.js', 'slides']

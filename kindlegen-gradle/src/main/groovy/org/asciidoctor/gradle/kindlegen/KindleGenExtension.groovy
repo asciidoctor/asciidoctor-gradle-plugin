@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 the original author or authors.
+ * Copyright 2013-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,13 +32,15 @@ import static org.asciidoctor.gradle.kindlegen.KindleGenDownloader.KINDLEGEN_BAS
 /** Extension for configuring the path to {@code kindlegen} or a version which will then
  * be bootstrapped by Gradle.
  *
- * @since 2.0.0* @author Schalk W. Cronjé
+ * @author Schalk W. Cronjé
+ *
+ * @since 2.0.0
  */
 @CompileStatic
 class KindleGenExtension extends AbstractToolExtension {
 
-    final static String NAME = 'kindlegen'
-    final static String DEFAULT_KINDLEGEN_VERSION = '2_9'
+    public final static String NAME = 'kindlegen'
+    public final static String DEFAULT_KINDLEGEN_VERSION = '2_9'
 
     KindleGenExtension(Project project) {
         super(project)

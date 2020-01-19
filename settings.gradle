@@ -1,14 +1,23 @@
 rootProject.name = 'asciidoctor-gradle-plugin'
 
-include 'asciidoctor-gradle-base'
-include 'asciidoctor-gradle-jvm'
 include 'kindlegen-gradle'
-include 'asciidoctor-gradle-jvm-epub'
-include 'asciidoctor-gradle-jvm-gems'
-include 'asciidoctor-gradle-jvm-slides'
-// include 'asciidoctor-gradle-js'
 
 ['offline-repo', 'jvm'].each {
     include "testfixtures/${it}"
     project(":testfixtures/${it}").name = "testfixtures-${it}"
+}
+
+[ 'js', 'base', 'slides-export', 'jvm' ].each {
+    include it
+    project(":${it}").name = "asciidoctor-gradle-${it}"
+}
+
+[ 'epub', 'pdf', 'leanpub', 'slides' ].each {
+    include "jvm-${it}"
+    project(":jvm-${it}").name = "asciidoctor-gradle-jvm-${it}"
+}
+
+[ 'gems' ].each {
+    include it
+    project(":${it}").name = "asciidoctor-gradle-jvm-${it}"
 }

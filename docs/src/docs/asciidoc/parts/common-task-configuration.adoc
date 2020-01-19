@@ -6,10 +6,11 @@ All Asciidoctor tasks will have the following methods and properties:
 [horizontal]
 asciidoctorj:: a task extension which allows a task to extend of override global configuration for Asciidoctor tasks.
   This allow extensive flexibility. Any thing that can be configured in the global `asciidoctorj` extension can also be configured here.
-attributes:: A shortcut for `asciidoctorj.attributes`.
+attributes:: A shortcut for `asciidoctorj.attributes` and `asciidoctorjs.attributes`.
 baseDir:: Base directory for asciidoctor document conversion and root document inclusion.
   The base directory will be the project directory by default, but can be set to any other directory.
 baseDirFollowsSourceDir:: The base directory should be the same as the source directory even if the source directory is located within an intermediate working directory.
+baseDirFollowsSourceFile:: The base directory should be the same as the directory of each individual source file.
 baseDirIsProjectDir:: The base directory is always the current project directory.
 baseDirIsRootProjectDir:: The base directory is always the root project directory.
 configurations:: Specify additional configurations
@@ -17,6 +18,7 @@ configurations:: Specify additional configurations
 copyAllResources:: Copy all resources to the output directory
 copyNoResources:: Do not copy any resources to the output directory
 copyResourcesOnlyIf:: Only copy resources if the backend matches the listed backend.
+languages:: Invoke source language support but specifying one or more languages.
 inProcess:: Specifies whether Asciidoctor conversions should be run in-process or out-of-process. Default: `true` (in-process).
 logDocuments:: Specifies if documents being processed should be logged on console. Type: boolean. Default: `false`.
 options:: A shortcut to`asciidoctorj.options`.
@@ -24,7 +26,7 @@ outputDir:: where generated docs go.
   Use either `outputDir path`, `setOutputDir path` or `outputDir=path`
   Type: File, but any object convertible with `project.file` can be passed.
   Default: `$buildDir/asciidoc`.
-parallelMode:: Specifies whether each backend or other variant of a converting tasks huodl be run in parallel or sequential.
+parallelMode:: Specifies whether each backend or other variant of a converting tasks should be run in parallel or sequential.
   Sequential conversions might have less initialisation overhead, but may suffer from `gemPath` and extension pollution. Default: `true` (parallel).
 resources:: specify which additional files (image etc.) must be copied to output directory using a
   http://www.gradle.org/docs/current/javadoc/org/gradle/api/file/CopySpec.html[CopySpec].
@@ -38,7 +40,7 @@ sources:: Specify which Asciidoctor source files to include as toplevel document
   http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.html[Ant-style PatternSet].
 useIntermediateWorkDir:: Use an intermediate work directory for sources ances.
   Some extensions such as `ditaa` will write content into the source directory. In order to keep the project source directory pristine an intermediate work directory can be used. All sources and resources will be copied there prior the executing Asciidoctor.
-withIntermediateArtifacts:: Add intermediate artifacts to oputput directory
+withIntermediateArtifacts:: Add intermediate artifacts to output directory.
   If the document conversion process creates intermediate artifacts which needs to be added to the output directory, then the pattern set with a closure or `Action`. This implies `useIntermediateWorkDir`. An example of such a case is the use of `ditaa`.
 
 The `org.asciidoctor.jvm.convert` plugin has a conversion task type of `org.asciidoctor.gradle.jvm.AsciidoctorTask` which, in addition the aforementioned will also have the following properties and methods which are configured via an `outputOptions` closure or action:
@@ -152,12 +154,42 @@ resources {
 }
 ----
 
+In case of languages the default behaviour is
+
+[source,groovy,role="primary"]
+.build.gradle
+----
+resources {
+  from(new File(sourceDir,"${langName}")) {
+    include 'images/**'
+  }
+}
+----
+
 If you do not want this behaviour, then it can be turned off by doing
 
 [source,groovy,role="primary"]
 .build.gradle
 ----
 copyNoResources()
+----
+
+If you are using multiple languages and you have identical resource patterns for each languages within `sourceDir/${lang}` you need to explictly declare those on a per-language basis:
+
+[source,groovy,role="primary"]
+.build.gradle
+----
+resources 'en', {
+  from("${sourceDir}/en") {
+    include 'images/**'
+  }
+}
+
+resources 'es', {
+  from("${sourceDir}/es") {
+    include 'images/**'
+  }
+}
 ----
 
 === Include directives and base directory
@@ -173,15 +205,59 @@ asciidoctor {
     baseDirIsRootProjectDir() // <1>
     baseDirIsProjectDir() // <2>
     baseDirFollowsSourceDir() // <3>
+    baseDirFollowsSourceFile() // <4>
 }
 ----
 <1> The base directory is the root project directory.
 <2> The base directory is the current subproject directory.
 <3> The base directory will always the the same as the source directory. If an intermediate working directory is being used, the base directory will automatically point to that.
+<4> The base directory will be the same as the directory of each individual source file.
 
 === Docinfo processing
 
 When using the `docinfo` attribute with `html` and `docbook` backends, it is recommended that `baseDirFollowsSourceDir()` is always set. This will ensure that the docinfo files are picked up correctly from the same directory that is the source directory.
+
+=== Source language support
+
+Some scenarios work on a source set of documents in a primary language and then translations of those sources into other languages. The Gradle plugin simplifies this scenario by allowing a structure such as
+
+[source]
+----
+│   └── src
+│       ├── asciidoc
+│       │   └── en
+│       │       └── index.adoc
+│       │   └── es
+│       │       └── index.adoc
+----
+
+This can be enabled in the DSL by doing
+
+[source,groovy]
+----
+asciidoctor {
+    languages 'en', 'es'
+}
+----
+
+Gradle will then process both the `en` and the `es` source set and output to the output directory using the same languages names. Intermediate working directories and multiple backends are also covered. In this case the `lang` attribute will be injected with the specific language as the value.
+
+It is also possible to specify additional attributes that will only be added when a specific language is processed
+
+[source,groovy]
+----
+asciidoctorj { // <1>
+    attributesForLang 'en', langName : 'English'
+    attributesForLang 'ca', langName : 'Catala'
+}
+
+asciidoctorjs { // <2>
+    attributesForLang 'en', langName : 'English'
+    attributesForLang 'ca', langName : 'Catala'
+}
+----
+<1> Configuration when using {asciidoctorj-name}
+<2> Configuration when using {asciidoctorjs-name}
 
 === Choosing a Process Mode for {asciidoctorj-name}
 

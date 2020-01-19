@@ -1,0 +1,23 @@
+generateModuleVersions {
+    basename = 'asciidoctorj-epub'
+    propertyNames ~/^kindlegen$/
+}
+
+dependencies {
+    compile project(':asciidoctor-gradle-jvm')
+    compile project(':kindlegen-gradle')
+
+    intTestOfflineRepo "org.asciidoctor:asciidoctorj:${compileOnlyAsciidoctorJVersion}"
+    intTestOfflineRepo "org.asciidoctor:asciidoctorj-epub3:${downloadOnlyEpubVersion}"
+}
+
+intTest {
+    systemProperties 'org.asciidoctor.gradle.kindlegen.uri': file("${offlineRepoBinariesRoot}/kindlegen").absoluteFile.toURI()
+
+    systemProperties TEST_PROJECTS_DIR: file('src/intTest/projects')
+}
+
+configurePlugin 'org.asciidoctor.jvm.epub',
+        'AsciidoctorJ EPUB Plugin',
+        'Asciidoctor task for creating EPUB3 & KF8 documents',
+        ['asciidoctorj', 'epub', 'epub3', 'kf8']

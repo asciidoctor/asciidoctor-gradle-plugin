@@ -8,10 +8,13 @@ diagramming will be available. If it is not set the `asciidoctorj-diagram` JAR w
 ----
 asciidoctorj {
     modules {
-       diagram.version '1.5.4.1'
+       diagram.use() // <1>
+       diagram.version '1.5.16' // <2>
     }
 }
 ----
+<1> Enables diagram usage with whatever the default version of `asciidoctorj-diagram` is.
+<2> Enables usages, but set a specific version rather than the default suggested by the plugin.
 
 With this enhancement, there is also no longer a need to add `requires 'asciidoctor-diagram'`.
 

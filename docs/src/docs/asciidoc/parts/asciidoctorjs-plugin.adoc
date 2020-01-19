@@ -1,0 +1,12 @@
+[[asciidoctorjs-plugin,{asciidoctorjs-name} plugin]]
+== Working with Asciidoctor.js instead
+
+Instead of {asciidoctorj-name}, {asciidoctorjs-name} can be used as a rendering engine as from 3.0.
+
+The configuration follows much the same as for {asciidoctorj-name}, but will a couple of differences.
+
+* Only HTML is supported out of the box
+* The configurating extension is called `asciidoctorjs` and is available at both task and project level.
+* Docbook must be enabled via `asciidoctorjs.modules.docbook.use()`.
+* The implementation runs node.js under the hood, but the user does not have to install anything. The plugin suite takes care of everything.
+* Additional NPM modules can be added via `asciidoctorj.require`.

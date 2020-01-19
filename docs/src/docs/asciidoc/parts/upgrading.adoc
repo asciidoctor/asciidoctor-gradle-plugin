@@ -1,19 +1,16 @@
 
 == Upgrading From Older Versions of Asciidoctor
 
-NOTE: To help with migration the old plugin will print a number of messages to help with a conversion. The amount of text is controlled via `--warning-mode` in Gradle 4.5+. For Gradle 4.0-4.4 use `--info` to get the full list of recommendations. Use of `--warning-mode=none`  (Gradle 4.5+) or `--quiet` (Gradle 4.0-4.4) will produce migration information.
+NOTE: If you are still on a 1.5/1.6 version of the plugin, upgrade to the latest 2.x version first.
 
-Firstly replace plugin `org.asciidoctor.convert` with `org.asciidoctor.jvm.convert`.
+If you are on 2.x, upgradle to the latest 2.x first and ensure that you have corrected all of the deprecation warnings.
 
-If you used `separateOutputDirs`, yout need to change that to `outputOptions.separateOutputDirs`. If you only use one backend in the task you can delete this and it will default to `false` for single backends and `true` for multiple backends.
+If you have {asciidoctorj-name} binary extensions you'll need to recompile them against {asciidoctorj-name} v2.0+ in order to use them with the v.3x version of the plugins.
 
-The base directory is now set to the directory of the root project. This may influence how your includes are processed. Either set `baseDir` to specific directory or or use the `includedir` which is automatically calculates to be the correct source directory.
-
-Gradle injected a number of attributes into the build. Some of these names have been changed from 1.5/1.6. to indicate that they are injected:
 
 [cols="4*"]
 |===
-| *Old name* | *New name* | Substituable | *Usage*
+| *Old name* | *New name* | *Substituable* | *Usage*
 | `projectdir` | `gradle-projectdir` | No | The Gradle project directory which is running the Asciidoctor task.
 | `rootdir` | `gradle-rootdir` | No | The rootproject directory in a multi-project build.
 | `project-name` | `gradle-project-name` | Yes | The name of the current Gradle subproject. (Or the root project in case of a single project).
@@ -24,8 +21,41 @@ Gradle injected a number of attributes into the build. Some of these names have 
 
 Substitutable attributes means that the build script author can change those attributes by setting them explicitly.
 
+=== GEMs
+
 If you used external GEMs via the http://jruby-gradle.github.io/[JRuby Gradle plugin], you should switch over to using `org.asciidoctor.jvm.gems` instead. You should also use the `asciidoctorGems` configuration rather than the `gems` configuration. Tasks should not depend on `JRubyPrepare`, but on `AsciidoctorGemsPrepare` instead.
 
+If you have the following in your build
+
+[source,groovy]
+----
+plugins {
+    id 'org.asciidoctor.jvm.gems' version '2.4.1'
+    id 'com.github.jruby-gradle.base' version '1.7.0'
+}
+
+repositories {
+    rubygems('https://rubygems.org')
+}
+----
+
+then change it to
+
+[source,groovy]
+[subs=attributes+]
+----
+plugins {
+    id 'org.asciidoctor.jvm.gems' version '{revnumber}'
+}
+
+repositories {
+    ruby.gems()
+}
+----
+
+=== Reveal.js
+
+Follows the same guidelines as for GEMS above.
 
 === Configurations
 

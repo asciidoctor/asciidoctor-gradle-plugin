@@ -1,0 +1,130 @@
+/*
+ * Copyright 2013-2019 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+configurations {
+    intTestOfflineRepo.extendsFrom compileOnly
+    intTestOfflineRepo2
+}
+
+dependencies {
+    compileOnly "org.asciidoctor:asciidoctorj:${compileOnlyAsciidoctorJVersion}"
+    compileOnly "org.asciidoctor:asciidoctorj-groovy-dsl:${compileOnlyGroovyDslVersion}", {
+        exclude module: 'groovy-all'
+    }
+
+    compile project(':asciidoctor-gradle-base')
+
+    // These three are used in the compatibility tests for extensions
+    intTestOfflineRepo "org.codehaus.groovy:groovy:${GroovySystem.version}"
+    intTestOfflineRepo "org.codehaus.groovy:groovy-ant:${GroovySystem.version}"
+    intTestOfflineRepo "org.codehaus.groovy:groovy-groovydoc:${GroovySystem.version}"
+
+    intTestOfflineRepo "org.asciidoctor:asciidoctorj-epub3:${downloadOnlyEpubVersion}"
+
+    // This is here for extension testing on the compatibility plugin. It will be deleted
+    // when compatibility mode is removed.
+    testRuntimeOnly "org.asciidoctor:asciidoctorj-groovy-dsl:${compileOnlyGroovyDslVersion}", {
+        exclude module: 'groovy-all'
+    }
+}
+
+configurePlugin 'org.asciidoctor.jvm.base',
+    'AsciidoctorJ Base Plugin',
+    'Base plugin for all AsciidoctorJ tasks & extensions. Provides the asciidoctorj project extension.',
+    ['asciidoctorj']
+
+configurePlugin 'org.asciidoctor.jvm.convert',
+    'AsciidoctorJ General Purpose Document Conversion Plugin',
+    'Provides asciidoctor task and conventions',
+    ['asciidoctorj', 'html5', 'docbook']
+
+test {
+    systemProperties ROOT_PROJECT_DIR: rootProject.projectDir.absolutePath
+}
+
+intTest {
+    systemProperties TEST_PROJECTS_DIR: file('src/intTest/projects')
+}
+
+// Compile the extensions compatibility test with the same version of
+// AsciidoctorJ & Groovy version that is used in the project
+gradleTest {
+    systemProperties ASCIIDOCTORJ_VERSION: compileOnlyAsciidoctorJVersion
+    systemProperties GROOVY_VERSION: GroovySystem.version
+
+    gradleArguments '-i', '-s'
+}
+
+// Adding a third test set so that remote execution can be tested using a separate classpath
+// and conditions
+sourceSets {
+    remoteTest {
+        compileClasspath = sourceSets.main.output +  configurations.remoteTestCompile
+        runtimeClasspath = output + compileClasspath + configurations.remoteTestRuntime
+    }
+}
+
+generateModuleVersions {
+    basename = 'asciidoctorj-extension'
+    propertyNames ~/^asciidoctorj$/, ~/^asciidoctorj\./
+}
+
+dependencies {
+    remoteTestCompile "org.asciidoctor:asciidoctorj:${compileOnlyAsciidoctorJVersion}"
+    remoteTestCompile project(':testfixtures-jvm')
+    remoteTestRuntime "org.asciidoctor:asciidoctorj-groovy-dsl:${compileOnlyGroovyDslVersion}", {
+        exclude module: 'groovy-all'
+    }
+}
+
+task remoteTest(type: Test) {
+    description = "Run tests for the remote-execution code"
+    group = "verification"
+
+    mustRunAfter "test"
+    inputs.files sourceSets.main.output.classesDirs
+    inputs.files sourceSets.main.output.resourcesDir
+
+    testClassesDirs = sourceSets.remoteTest.output.classesDirs
+    classpath = sourceSets.remoteTest.runtimeClasspath
+
+    dependsOn ':testfixtures-offline-repo:buildOfflineRepositories'
+    systemProperties OFFLINE_REPO: offlineRepoRoot.absolutePath
+}
+
+check {
+    dependsOn remoteTest
+}
+
+pluginManager.withPlugin('jacoco') {
+    jacocoTestReport {
+        executionData remoteTest
+        mustRunAfter remoteTest
+    }
+}
+
+// This makes it easier to edit the projects in IntelliJ
+//sourceSets {
+//    gradleTestProjectExtension {
+//        groovy {
+//            srcDirs = ['src/gradleTest/extension-in-subproject/extension/src/main/groovy']
+//        }
+//    }
+//}
+//
+//configurations {
+//    gradleTestProjectExtensionCompileOnly.extendsFrom compileOnly
+//}
