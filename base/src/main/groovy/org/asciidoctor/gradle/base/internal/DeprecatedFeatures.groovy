@@ -38,7 +38,7 @@ class DeprecatedFeatures implements Plugin<Project> {
     private static final String EXTENSION_NAME = '$$asciidoctor-deprecated-features$$'
     private static final String BASE_MESSAGE = 'You are using one or more deprecated Asciidoctor Gradle plugin features.'
     private static final boolean GRADLE_4_5_OR_LATER = GradleVersion.current() >= GradleVersion.version('4.5')
-    private static final String WARNING_COMMAND_LINE = GRADLE_4_5_OR_LATER ? '--warning-mode=all' : '-i or --info'
+    private static final String COMMAND_LINE = GRADLE_4_5_OR_LATER ? '--warning-mode=all' : '-i or --info'
 
     static void addDeprecationMessage(Project project, String identifier, String message) {
         try {
@@ -70,7 +70,7 @@ class DeprecatedFeatures implements Plugin<Project> {
                         break
                     default:
                         project.logger.lifecycle(
-                            "${BASE_MESSAGE} To help with migration run with ${WARNING_COMMAND_LINE}."
+                            "${BASE_MESSAGE} To help with migration run with ${COMMAND_LINE}."
                         )
                 }
             }
@@ -97,12 +97,12 @@ class DeprecatedFeatures implements Plugin<Project> {
         StringWriter output = new StringWriter()
         output.withCloseable {
             output.println BASE_MESSAGE
-            output.println 'These will be removed in 3.0 of these plugins.'
+            output.println 'These will be removed in 4.0 of these plugins.'
             output.println 'To help you migrate we have compiled some tips for you based upon your current usage.'
 
             msgContainer.each { Messages msgs ->
                 output.println "- ${msgs.name}:"
-                msgs.messages.each { line ->
+                msgs.messages.each { String line ->
                     output.println "  - ${line}"
                 }
             }

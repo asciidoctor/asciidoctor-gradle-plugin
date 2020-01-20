@@ -31,17 +31,18 @@ class LinkedChaptersFunctionalSpec extends FunctionalSpecification {
     void 'Linked chapters should not produce a warning'() {
         given:
         getBuildFile("""
+        
         asciidoctorEpub {
             asciidoctorj {
                 fatalWarnings ~/.*invalid reference to (unknown )?anchor.*/
             }
-
+            
             ebookFormats EPUB3
 
             sources {
                 include 'epub3.adoc'
             }
-
+            
             baseDirFollowsSourceDir()
         }
         """)

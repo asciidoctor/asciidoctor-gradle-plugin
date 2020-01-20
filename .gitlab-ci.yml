@@ -80,7 +80,6 @@ jdk12:
     - gh-pages
     - tags
 
-# $CI_REGISTRY/ysb33rorg/docker-gcc-openjdk/gcc-openjdk-8:latest
 test:integration:
   stage: test
   image: $JDK8_TEST_IMAGE
@@ -92,7 +91,26 @@ test:integration:
   dependencies:
     - testrepo
     - jdk8
-  script: ./gradlew -i -s --console=plain --no-build-cache test intTest remoteTest
+  script: ./gradlew -i -s --console=plain --no-build-cache test intTest remoteTest -x asciidoctor-gradle-slides-export:intTest -x asciidoctor-gradle-jvm-slides:intTest
+  artifacts:
+    paths:
+      - '*/build/reports'
+      - '*/build/jacoco'
+    expire_in: 10 days
+    when: on_failure
+
+test:integration_slides:
+  stage: test
+  image: $JDK8_TEST_IMAGE
+  #  image: openjdk:8
+  except:
+    - pages
+    - gh-pages
+    - tags
+  dependencies:
+    - testrepo
+    - jdk8
+  script: ./gradlew -i -s --console=plain --no-build-cache test asciidoctor-gradle-jvm-slides:intTest asciidoctor-gradle-slides-export:intTest
   artifacts:
     paths:
       - '*/build/reports'
@@ -171,17 +189,6 @@ test:gradle_6.0.1:
       - '*/build/jacoco'
     expire_in: 10 days
     when: on_failure
-
-htmldocs:
-  stage: docs
-  image: openjdk:11
-  dependencies:
-    - testrepo
-    - jdk11
-  script: ./gradlew groovydoc && cd docs && ./gradlew --console=plain asciidoctor
-  artifacts:
-    paths:
-      - '*/build/docs/combined'
 
 htmldocs:
   stage: docs

@@ -31,7 +31,7 @@ class AsciidoctorEpubTaskCachingFunctionalSpec extends FunctionalSpecification i
         createTestProject()
     }
 
-    void "epub task is cacheable and relocatable"() {
+    void "Epub task is cacheable and relocatable"() {
         given:
         getBuildFile(singleFormatConfiguration('EPUB3'))
 
@@ -50,8 +50,8 @@ class AsciidoctorEpubTaskCachingFunctionalSpec extends FunctionalSpecification i
     }
 
     // kindlegen is only available as a 32-bit executable and won't run on MacOS Catalina
-    @IgnoreIf({ FunctionalSpecification.isWindowsOr64bitOnlyMacOS() })
-    void "epub task is not cached when format changes"() {
+    @IgnoreIf({ isWindowsOr64bitOnlyMacOS() })
+    void "Epub task is not cached when format changes"() {
         given:
         getBuildFile(singleFormatConfiguration('EPUB3'))
 
@@ -88,10 +88,10 @@ class AsciidoctorEpubTaskCachingFunctionalSpec extends FunctionalSpecification i
             plugins {
                 id 'org.asciidoctor.jvm.epub'
             }
-
+            
             ${scan ? buildScanConfiguration : ''}
             ${offlineRepositories}
-
+            
             ${extraContent}
         """
         buildFile
@@ -102,15 +102,15 @@ class AsciidoctorEpubTaskCachingFunctionalSpec extends FunctionalSpecification i
             asciidoctorEpub {
                 sourceDir 'src/docs/asciidoc'
                 ebookFormats ${format}
-
+    
                 kindlegen {
                     agreeToTermsOfUse = true
                 }
-
+    
                 asciidoctorj {
                     jrubyVersion = '${JRUBY_TEST_VERSION}'
                 }
-
+    
                 sources {
                     include 'epub3.adoc'
                 }

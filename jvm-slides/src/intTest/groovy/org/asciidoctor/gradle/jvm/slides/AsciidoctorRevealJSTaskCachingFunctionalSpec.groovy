@@ -22,6 +22,7 @@ import spock.lang.PendingFeature
 
 import static org.asciidoctor.gradle.testfixtures.JRubyTestVersions.AJ20_SAFE_MAXIMUM
 
+@SuppressWarnings(['UnnecessaryGetter'])
 class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecification implements CachingTest {
     private static final String DEFAULT_TASK = 'asciidoctorRevealJs'
     private static final String JRUBY_TEST_VERSION = AJ20_SAFE_MAXIMUM
@@ -134,7 +135,7 @@ class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecificati
                     branch = 'master'
                 }
             }
-
+    
             asciidoctorRevealJs {
                 plugins 'rajgoel/chart/Chart.js'
                 pluginConfigurationFile 'src/docs/asciidoc/empty-plugin-configuration.js'
@@ -199,26 +200,26 @@ class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecificati
             plugins {
                 id 'org.asciidoctor.jvm.revealjs'
             }
-
+    
             ${scan ? buildScanConfiguration : ''}
             ${offlineRepositories}
-
+    
             repositories {
                 ruby.gems()
             }
-
+    
             asciidoctorRevealJs {
                 sourceDir 'src/docs/asciidoc'
-
+    
                 asciidoctorj {
                     jrubyVersion = '${JRUBY_TEST_VERSION}'
                 }
-
+    
                 sources {
                     include 'revealjs.adoc'
                 }
             }
-
+    
             ${extraContent}
         """
         buildFile

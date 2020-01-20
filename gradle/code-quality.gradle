@@ -26,13 +26,7 @@ license {
         groovy = 'SLASHSTAR_STYLE'
     }
     ext.year = project.copyrightYear
-    excludes([
-        '**/*.ad',
-        '**/*.asciidoc',
-        '**/*.adoc',
-        '**/fake.txt',
-        '**/*.zip'
-    ])
+    excludes(['**/*.ad', '**/*.asciidoc', '**/*.adoc', '**/fake.txt'])
 }
 
 dependencies {

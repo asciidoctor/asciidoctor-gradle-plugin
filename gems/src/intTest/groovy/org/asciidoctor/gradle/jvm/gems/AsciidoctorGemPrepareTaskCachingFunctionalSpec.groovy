@@ -17,7 +17,9 @@ package org.asciidoctor.gradle.jvm.gems
 
 import org.asciidoctor.gradle.jvm.gems.internal.FunctionalSpecification
 import org.asciidoctor.gradle.testfixtures.CachingTest
+import spock.lang.Issue
 import spock.lang.PendingFeature
+import spock.lang.Timeout
 
 class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecification implements CachingTest {
     private static final String DEFAULT_TASK = 'asciidoctorGemsPrepare'
@@ -29,6 +31,7 @@ class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecifica
         setupCache()
     }
 
+    @Timeout(300)
     void "gemPrepare task is cacheable and relocatable"() {
         given:
         getBuildFile("""
@@ -90,6 +93,7 @@ class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecifica
         fileInRelocatedDirectory("build/asciidoc/gems/${DEFAULT_GEM_NAME}-${DEFAULT_GEM_VERSION}")
     }
 
+    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/481')
     @PendingFeature
     void "gemPrepare task is not cached when gems change"() {
         String alternateGemName = 'json'
@@ -141,7 +145,9 @@ class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecifica
             ${offlineRepositories}
 
             repositories {
-                maven { url 'http://rubygems-proxy.torquebox.org/releases' }
+                ruby {
+                    gems()
+                }
             }
 
            ${extraContent}

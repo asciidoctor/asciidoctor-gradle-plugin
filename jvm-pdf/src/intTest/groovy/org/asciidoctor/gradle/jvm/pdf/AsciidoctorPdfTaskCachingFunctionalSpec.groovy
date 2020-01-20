@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.jvm
+package org.asciidoctor.gradle.jvm.pdf
 
 import org.asciidoctor.gradle.jvm.pdf.internal.FunctionalSpecification
 import org.asciidoctor.gradle.testfixtures.CachingTest
-import spock.lang.PendingFeature
 
+/** AsciidoctorPdfTaskCachingFunctionalSpec
+ *
+ * @author Gary Hale
+ */
 class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification implements CachingTest {
     static final String DEFAULT_TASK = 'asciidoctorPdf'
     static final String DEFAULT_OUTPUT_FILE = 'build/docs/asciidocPdf/sample.pdf'
@@ -50,16 +53,15 @@ class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification im
         outputFileInRelocatedDirectory.exists()
     }
 
-    @PendingFeature
     void "PDF task is not cached when pdf-specific inputs change"() {
         given:
         getBuildFile("""
             pdfThemes {
                 local 'basic', {
-                    styleDir = 'src/docs/asciidoc/pdf-theme'
+                    themeDir = 'src/docs/asciidoc/pdf-theme'
                 }
             }
-
+            
             asciidoctorPdf {
                 sourceDir 'src/docs/asciidoc'
                 fontsDir 'src/docs/asciidoc/pdf-theme'
@@ -74,17 +76,18 @@ class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification im
         outputFile.exists()
 
         when:
-        File original = file('src/docs/asciidoc/pdf-theme/basic-theme.yml')
         file('src/docs/themes/pdf-theme').mkdirs()
-        file('src/docs/themes/pdf-theme/basic-theme.yml').text = original.text.replace('333333', '333334')
+        file('src/docs/themes/pdf-theme/basic-theme.yml').text =
+            file('src/docs/asciidoc/pdf-theme/basic-theme.yml').text
+                .replace('333333', '333334')
 
         changeBuildConfigurationTo("""
             pdfThemes {
                 local 'basic', {
-                    styleDir = 'src/docs/themes/pdf-theme'
+                    themeDir = 'src/docs/themes/pdf-theme'
                 }
             }
-
+            
             asciidoctorPdf {
                 sourceDir 'src/docs/asciidoc'
                 fontsDir 'src/docs/themes/pdf-theme'
@@ -109,10 +112,10 @@ class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification im
             plugins {
                 id 'org.asciidoctor.jvm.pdf'
             }
-
+            
             ${ -> scan ? buildScanConfiguration : '' }
             ${offlineRepositories}
-
+            
             ${extraContent}
         """
         buildFile
