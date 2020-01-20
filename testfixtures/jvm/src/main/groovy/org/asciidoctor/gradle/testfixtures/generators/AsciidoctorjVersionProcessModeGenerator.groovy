@@ -50,7 +50,7 @@ class AsciidoctorjVersionProcessModeGenerator {
     }
 
     static List<VersionProcess> get() {
-        if (System.getenv('APPVEYOR') || System.getenv('TRAVIS')) {
+        if (System.getenv('APPVEYOR') || System.getenv('TRAVIS') || System.getenv('GITHUB_ACTIONS')) {
             [SERIES_20].collect {
                 VersionProcess.of(it, JAVA_EXEC)
             }.toUnique()
