@@ -40,7 +40,6 @@ image:http://img.shields.io/travis/{project-full-path}/{github-branch}.svg[Build
 image:https://ci.appveyor.com/api/projects/status/db102rphsu5lviv6/branch/{github-branch}?svg=true&passingText={github-branch}%20-%20OK&failingText={github-branch}%20-%20Fails&pendingText={github-branch}%20-%20Pending[Build Status, link=https://ci.appveyor.com/project/{project-full-path}/branch/{github-branch}]
 image:http://img.shields.io/coveralls/{project-full-path}/{github-branch}.svg[Coverage Status, link=https://coveralls.io/r/{project-full-path}]
 image:http://img.shields.io/badge/license-ASF2-blue.svg[Apache License 2, link=http://www.apache.org/licenses/LICENSE-2.0.txt]
-image:https://api.bintray.com/packages/asciidoctor/maven/{project-name}/images/download.svg[Download, link=https://bintray.com/asciidoctor/maven/{project-name}]
 image:https://gitlab.com/asciidoctor/asciidoctor-gradle-plugin/badges/master/pipeline.svg[link="https://gitlab.com/asciidoctor/asciidoctor-gradle-plugin/commits/master",title="pipeline status"]
 endif::[]
 
