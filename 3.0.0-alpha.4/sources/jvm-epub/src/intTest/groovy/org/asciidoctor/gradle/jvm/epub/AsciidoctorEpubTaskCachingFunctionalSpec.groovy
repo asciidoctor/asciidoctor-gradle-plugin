@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.jvm.epub.cache
+package org.asciidoctor.gradle.jvm.epub
 
 import org.asciidoctor.gradle.jvm.epub.internal.FunctionalSpecification
-import org.asciidoctor.gradle.testfixtures.jvm.CachingTest
+import org.asciidoctor.gradle.testfixtures.CachingTest
 import spock.lang.IgnoreIf
 
 import static org.asciidoctor.gradle.testfixtures.JRubyTestVersions.AJ20_SAFE_MAXIMUM

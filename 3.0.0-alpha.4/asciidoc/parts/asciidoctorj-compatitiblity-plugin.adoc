@@ -1,0 +1,67 @@
+== Asciidoctor Compatibility Plugin
+
+In order to help people upgrade a compatibility plugin has been kept which mostly behaves in the same way as the {asciidoctorj-name} plugins in the 1.5.x series 
+[source,groovy,role="primary"]
+[subs=attributes+]
+.build.gradle
+----
+plugins {
+    id 'org.asciidoctor.convert' version '{revnumber}'
+}
+----
+
+[source,kotlin,role="secondary"]
+[subs=attributes+]
+.build.gradle.kts
+----
+plugins {
+    id("org.asciidoctor.convert") version "{revnumber}"
+}
+----
+
+The plugin adds a new task named *asciidoctor*.
+You can configure this task using the following configuration properties and methods.
+
+.Properties
+[horizontal]
+logDocuments:: a boolean specifying if documents being processed should be logged on console. Type: boolean. Default: `false`.
+separateOutputDirs:: specifies whether each backend should use a separate subfolder under `outputDir`.
+  Default: `true`
+
+.Methods
+[horizontal]
+attributes:: a Map specifying various document attributes that can be sent to Asciidoctor
+  Use `attributes` to append, Use `setAttributes` or `attributes=` to overwrite.
+backends:: the backends to use.
+  Use `backends` to append. Use `setBackends` or `backends=[]` to overwrite
+  Type: Set<String>, but any type can be converted to String can be used.
+  Default: [`html5`].
+gemPath:: one or more gem installation directories (separated by the system path separator).
+  Use `gemPath` to append. Use `setGemPath` or `gemPath='path` to overwrite.
+  Use `asGemPath` to obtain a path string, separated by platform-specific separator.
+  For backwards-compatibility, `setGemPath` and `gePath='string'` will accept a path string containing the
+  platform-specific separator.
+  Type: FileCollection, but any collection of objects convertible with `project.files` can be passed
+  Default: empty
+legacyAttributes:: Insert legacy `projectdir` and `rootdir` attributes.
+  This is a stop-gap and document authors should use `gradle-rootdir` gradle-projectdir` instead.
+options:: a Map specifying different options that can be sent to Asciidoctor.
+  Use `options` to append, Use `setOptions` or `options=` to overwrite.
+outputDir:: where generated docs go.
+  Use either `outputDir path`, `setOutputDir path` or `outputDir=path`
+  Type: File, but any object convertible with `project.file` can be passed.
+  Default: `$buildDir/asciidoc`.
+resources:: specify which additional files (image etc.) must be copied to output directory using a
+  http://www.gradle.org/docs/current/javadoc/org/gradle/api/file/CopySpec.html[CopySpec].
+requires:: a set of Ruby modules to be included.
+  Use `requires` to append. Use `setRequires` or `requires='name'` to overwrite.
+  Type: Set<String>.
+  Default: empty.
+sourceDir:: where the asciidoc sources are.
+  Use either `sourceDir path`, `setSourceDir path` or `sourceDir=path`
+  Type: File, but any object convertible with `project.file` can be passed.
+  Default: `src/docs/asciidoc`.
+sources:: specify which Asciidoctor source files to include by using an
+  http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.html[Ant-style PatternSet].
+
+NOTE: Even though the DSL remains the same with this task, the internals have been changed to use the same `JAVA_EXEC` mechanism of the `org.asciidoctor.jvm.convert` plugins. The problems which the 1.5.x series suffered with classpaths anions disappearing should now be a thing of the past.

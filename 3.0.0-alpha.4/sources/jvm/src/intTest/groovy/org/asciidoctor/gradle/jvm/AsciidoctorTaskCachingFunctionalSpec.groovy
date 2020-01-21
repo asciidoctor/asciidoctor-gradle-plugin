@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.jvm.cache
+package org.asciidoctor.gradle.jvm
 
 import org.asciidoctor.gradle.internal.FunctionalSpecification
-import org.asciidoctor.gradle.testfixtures.jvm.CachingTest
+import org.asciidoctor.gradle.testfixtures.CachingTest
 
 import static org.asciidoctor.gradle.testfixtures.AsciidoctorjTestVersions.SERIES_20
 import static org.asciidoctor.gradle.testfixtures.JRubyTestVersions.AJ20_ABSOLUTE_MINIMUM

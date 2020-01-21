@@ -16,7 +16,7 @@
 package org.asciidoctor.gradle.jvm.slides
 
 import org.asciidoctor.gradle.jvm.slides.internal.FunctionalSpecification
-import org.asciidoctor.gradle.testfixtures.jvm.CachingTest
+import org.asciidoctor.gradle.testfixtures.CachingTest
 import spock.lang.Issue
 import spock.lang.PendingFeature
 

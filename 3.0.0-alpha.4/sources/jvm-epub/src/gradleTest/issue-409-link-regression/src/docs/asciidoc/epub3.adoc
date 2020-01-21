@@ -1,0 +1,6 @@
+// Taken from https://github.com/slonopotamus/asciidoc-epub3-link-regression/tree/master/src/docs/asciidoc
+= Project Euler
+:doctype: book
+
+include::chapter1.adoc[leveloffset=+1]
+include::chapter2.adoc[leveloffset=+1]

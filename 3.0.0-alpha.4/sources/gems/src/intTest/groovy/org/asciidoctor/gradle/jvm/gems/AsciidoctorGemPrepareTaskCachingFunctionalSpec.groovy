@@ -16,7 +16,7 @@
 package org.asciidoctor.gradle.jvm.gems
 
 import org.asciidoctor.gradle.jvm.gems.internal.FunctionalSpecification
-import org.asciidoctor.gradle.testfixtures.jvm.CachingTest
+import org.asciidoctor.gradle.testfixtures.CachingTest
 import spock.lang.Issue
 import spock.lang.PendingFeature
 import spock.lang.Timeout
