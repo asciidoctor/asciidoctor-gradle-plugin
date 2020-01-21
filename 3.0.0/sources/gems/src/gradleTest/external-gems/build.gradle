@@ -1,0 +1,40 @@
+// tag::use-gems[]
+plugins {
+    id 'org.asciidoctor.jvm.convert'
+    id 'org.asciidoctor.jvm.gems'
+}
+// end::use-gems[]
+
+apply from: "${System.getProperty('OFFLINE_REPO')}/repositories.gradle"
+
+// tag::use-gems[]
+repositories {
+    ruby.gems() // <1>
+}
+
+dependencies {
+    asciidoctorGems 'rubygems:asciidoctor-bibtex:0.3.1'
+    asciidoctorGems 'rubygems:bibtex-ruby:4.4.7', {
+        force = true
+    }
+}
+
+asciidoctorj {
+    requires 'asciidoctor-bibtex'
+}
+
+asciidoctor {
+    dependsOn asciidoctorGemsPrepare
+
+    secondarySources {
+        include 'biblio.bib'
+    }
+
+    attributes 'bibtex-file': file("${sourceDir}/biblio.bib")
+}
+// end::use-gems[]
+
+task runGradleTest {
+    dependsOn asciidoctor
+}
+

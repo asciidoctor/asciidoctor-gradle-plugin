@@ -1,0 +1,125 @@
+[[asciidoctorj-revealjs-plugin,AsciidoctorJ Reveal.js plugin]]
+== The AsciidoctorJ Reveal.js Plugin
+
+[source,groovy,role="primary"]
+[subs=attributes+]
+.build.gradle
+----
+plugins {
+    id 'org.asciidoctor.jvm.revealjs' version '{revnumber}'
+}
+----
+
+[source,kotlin,role="secondary"]
+[subs=attributes+]
+.build.gradle.kts
+----
+plugins {
+    id("org.asciidoctor.jvm.revealjs") version "{revnumber}"
+}
+----
+
+When applying `org.asciidoctor.jvm.revealjs` support is added for creating slides using Asciidoctor & Reveal.js. The plugin configures:
+
+* Create a task called `asciidoctorRevealJs`.
+* Create an extension called `revealjs` which is used for configuring the version of Reveal.js as well as a template.
+* Create an extension called `revealjsPlugins` which will allow for downloading additional Reveal.js plugins.
+* Output source to "${buildDir}/docs/asciidocRevealJs"
+* Copy all resources to the output directory including Reveal.js templates.
+* Apply the `org.asciidoctor.jvm.gems` plugin as GEM support is required.
+
+The `AsciidoctorRevealJSTask` task type has the following additional methods:
+
+[horizontal]
+revealjsOptions:: Configure special Reveal.js options.
+  Can be configured via Closure or Action. See <<RevealJSOptions>> for more details.
+templateDir:: Location where the template directory will be located on disk before Asciidoctor processing starts.
+theme:: The Reveal.js theme to use.
+  The theme must match one from the template.
+
+The version of the Reveal.js GEM and the Reveal.js template is configured via the `revealjs` extension:
+
+[source,groovy]
+----
+revealjs {
+  version = '1.1.3' // <1>
+
+  templateGitHub {  // <2>
+    organisation = 'hakimel'
+    repository = 'reveal.js'
+    tag = '3.7.0'
+  }
+}
+----
+<1> Reveal.js GEM version
+<2> Obtain the Reveal.js template from GitHub.
+
+If not specified, sensible defaults are provided.
+
+=== Reveal.js Options
+[[RevealJsOptions]]
+
+Various options can be configured for Reveal.js. Although these can be set as attributes directly, it is far better to set them on the task as advantage can be taken of Gradle task caching and file resolving.
+
+[source,groovy]
+----
+asciidoctorRevealJs {
+  revealjsOptions { // <1>
+    controls = true
+  }
+}
+----
+<1> Use `revealjsOptions` block for configuration with any of the below options.
+
+[horizontal]
+autoslideInterval:: Delay in milliseconds between automatically proceeding to the next slide.
+  Disabled when set to `0` (the default). This value can still be overwritten on a per-slide basis by setting a `data-autoslide` attribute on a slide.
+  Type is integer.
+autoSlideStoppable:: Stop auto-sliding after user input
+  Type is boolean.
+backgroundTransition:: Transition style for full page slide backgrounds..
+  Can be a `RevealJSOptions.Transition` or string value.
+controls:: Display controls in the bottom right corner.
+  Type is boolean.
+customThemeLocation:: A custom theme that is not in the template.
+  Can be anything convertible to a file or URI.
+hideAddressBarOnMobile:: Hides the address bar on mobile devices.
+  Type is boolean.
+flagEmbedded:: Flags if the presentation is running in an embedded mode ( contained within a limited portion of the screen ).
+  Type is boolean.
+fragments:: Use fragments globally.
+  Type is boolean.
+highlightJsThemeLocation:: Highlight.js theme location.
+  Can be anything convertible to a file or URI.
+keyboardShortcuts:: Enable keyboard shortcuts for navigation.
+  Type is boolean.
+loop:: Loop the presentation..
+  Type is boolean.
+mouseWheel:: Enable slide navigation via mouse wheel.
+  Type is boolean.
+overviewMode:: Enable the slide overview mode.
+  Type is boolean.
+parallaxBackgroundImageLocation:: Parallax background image.
+ Can be anything convertible to a file or URI.
+parallaxBackgroundSize:: Parallax background size.
+  Accepts any CSS syntax. Can be anything convertible to a string.
+previewLinks:: Opens links in an iframe preview overlay.
+  Type is boolean.
+processBar:: Display a presentation progress bar.
+  Type is boolean.
+pushToHistory:: Push each slide change to the browser history.
+  Type is boolean.
+righttoLeft:: Change the presentation direction to be RTL.
+  Type is boolean.
+slideNumber:: Display the slide number of the current slide.
+  Can be a `RevealJSOptions.SlideNumber`, a string value or a boolean.
+touchMode:: Enables touch navigation on devices with touch input.
+  Type is boolean.
+transition:: Slide transition mode.
+  Can be a `RevealJSOptions.Transition` or string value.
+transitionSpeed:: Slide transition speed.
+  Can be a `RevealJSOptions.TransitionSpeed` or string value.
+verticalCenter:: Vertical centering of slides.
+  Type is boolean.
+viewDistance:: Number of slides away from the current that are visible.
+  Type is integer.

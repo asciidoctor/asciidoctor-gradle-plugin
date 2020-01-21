@@ -1,0 +1,37 @@
+// tag::using-multiple-backends-for-js[]
+plugins {
+    id 'org.asciidoctor.js.convert'
+}
+
+repositories {
+    jcenter()
+}
+
+asciidoctorjs {
+    modules {
+        docbook.use()
+    }
+}
+
+asciidoctor {
+
+    outputOptions {
+        backends 'html5', 'docbook'
+    }
+
+    sources {
+        include 'sample.asciidoc'
+    }
+
+    resources {
+        include 'images/**'
+    }
+
+    useIntermediateWorkDir()
+}
+
+// end::using-multiple-backends-for-js[]
+
+task runGradleTest {
+    dependsOn asciidoctor
+}

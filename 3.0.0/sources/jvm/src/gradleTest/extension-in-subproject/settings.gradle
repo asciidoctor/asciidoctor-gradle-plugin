@@ -1,0 +1,5 @@
+rootProject.name = 'extension-in-subproject'
+include 'extension'
+include 'docs-using-configuration'
+include 'docs-using-configuration-in-process'
+include 'docs-using-project-direct'

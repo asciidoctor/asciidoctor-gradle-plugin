@@ -1,0 +1,195 @@
+== AsciidoctorJ Base Plugin
+
+This plugin is automatically applied by all AsciidoctorJ-based plugins.
+
+Adds an extension for configuring which version of {asciidoctorj-name} and various other {asciidoctorj-name} backends.
+
+This is very much similar to the one used in older versions of the {plugin-name}, but now it also offers the ability to add the same functionality to a task thus allowing a task to override the default versions that has been set.
+
+[source,groovy]
+----
+asciidoctorj {
+  version = '1.5.6' // <1>
+  groovyDslVersion = '1.0.0.Alpha2' // <2>
+
+  options doctype: 'book', ruby: 'erubis' // <3>
+
+  attributes toclevel : 2 // <4>
+}
+----
+<1> Set the default version of {asciidoctorj-name} for all Asciidoctor tasks in a project.
+<2> Set the default version of the Groovy extensions DSL for all Asciidoctor tasks in a project.
+<3> Add options for all Asciidoctor tasks
+<4> Add attributes for all Asciidoctor tasks
+
+You can also override or extend select settings within a task using the same extension i.e.
+
+[source,groovy]
+----
+asciidoctor {
+  asciidoctorj {
+      setOptions = [ doctype: 'article' ] // <1>
+
+      attributes toc : left // <2>
+  }
+}
+----
+<1> Override any global options
+<2> Use these attributes in addition to the globally specified ones.
+
+The {asciidoctorj-name}-specific entities that can be set are:
+
+[horizontal]
+include::{plugin-jvm}/main/groovy/org/asciidoctor/gradle/jvm/AsciidoctorJExtension.groovy[indent=0,tags="extension-property"]
+
+The following common entities can also be set:
+
+[horizontal]
+include::{plugin-base}/main/groovy/org/asciidoctor/gradle/base/AbstractImplementationEngineExtension.groovy[indent=0,tags="extension-property"]
+
+// TODO: Split attributes into a standalone section that is not part of base plugin.
+[[attributes,Setting Attributes]]
+[[options,Setting Options]]
+=== Options & Attributes
+
+The following options may be set using the extension's `options` property
+
+ * header_footer - boolean
+ * template_dirs - List<String>
+ * template_engine - String
+ * doctype - String
+
+Any key/values set on `attributes` is sent as is to Asciidoctor. You may use this Map to specify
+a stylesheet for example. The following snippet shows a sample configuration defining attributes.
+
+[source,groovy,role="primary"]
+.build.gradle
+----
+asciidoctorj { // <1>
+    options doctype: 'book', ruby: 'erubis'
+
+    attributes 'source-highlighter': 'coderay',
+                toc                 : '',
+                idprefix            : '',
+                idseparator         : '-'
+}
+----
+<1> This can be globally on the project extension or locally on the task's extension.
+
+Or in the {kotlindsl}:
+
+[source,kotlin,role="secondary"]
+.build.gradle.kts
+----
+tasks {
+  "asciidoctor"(AsciidoctorTask::class) { // <1>
+    options(mapOf("doctype" to "book", "ruby" to "erubis"))
+
+    attributes(
+      mapOf(
+        "source-highlighter" to "coderay",
+        "toc"                to "",
+        "idprefix"           to "",
+        "idseparator"        to "-"
+      )
+    )
+  }
+}
+----
+<1> This is an example of setting it on the task extension in Kotlin.
+
+The following attributes are automatically set by the `asciidoctorj` extension:
+
+ * gradle-project-name : matches `$project.name`
+ * gradle-project-version: matches `$project.version` (if defined). Empty String value if undefined
+ * gradle-project-group: matches `$project.group` (if defined). Empty String value if undefined
+
+These attributes may be overridden by explicit user input.
+
+Refer to the {asciidoctor-docs}[Asciidoctor documentation] to learn more about these options and attributes.
+
+Attribute values defined on the build file will win over values defined on the documents themselves. You can change
+this behavior by appending an `@` at the end of the value when defined in the build file. Please refer to
+link:{asciidoctor-userguide}#attribute-assignment-precedence[Attribute assignment precedence, window="_blank"]
+for more information.
+
+[[asciidoctorj-modules,{asciidoctorj-name} Modules]]
+=== Versions of modules
+
+The modules block currently supports four elements
+
+[source,groovy]
+.build.gradle
+----
+asciidoctorj {
+  modules {
+    pdf { // <1>
+      version '1.2.3'
+    }
+    epub { // <2>
+      version '1.2.3'
+    }
+    diagram { // <3>
+      version '1.2.3'
+    }
+    groovyDsl { // <4>
+      version '1.2.3'
+    }
+    leanpub { // <5>
+      version '1.2.3'
+    }
+  }
+}
+----
+<1> {asciidoctorj-epub-name} version. If not specified asciidoctorj-epub will not be on the classpath. If you plan to use the EPUB backend and not using the EPUB plugin, then you need to set a version here.
+<2> {asciidoctorj-pdf-name} version. If not specified asciidoctorj-pdf will not be on the classpath. If you plan to use the PDF backend and not using the PDF plugin, then you need to set a version here.
+<3> See <<diagram,AsciidoctorJ Diagram>>,
+<4> Version of Groovy Extensions DSL. If not specified and no extensions are specified, Groovy DSL will not be used. However, if any extensions are added without setting an explicit version and default version will be used.
+<5> {asciidoctorj-leanpub-name} version. If not specified asciidoctorj-leanpub will not be on the classpath. If you plan to use the Leanpub backend and not using the Leanpub plugin, then you need to set a version here.
+
+When using the {kotlin-dsl} the same settings can be achieved use something similar `getModules().getPdf().version("1.2.3")`. In a similar fashion shortcuts can be achived in the {groovy-dsl}:
+
+[source,groovy,role="primary"]
+.build.gradle
+----
+asciidoctorj {
+  modules {
+    pdf.version '1.2.3'
+  }
+
+  modules.pdf.version '1.2.3'
+}
+----
+
+[source,kotlin,role="secondary"]
+.build.gradle.kts
+----
+asciidoctorj {
+  getModules().getPdf().version("1.2.3") // <1>
+  getModules().getPdf().use() // <2>
+}
+----
+<1> Set the {asciidoctorj-pdf-name} version to `1.2.3`.
+<2> Use the default version of {asciidoctorj-pdf-name}.
+
+=== Applying the {asciidoctorj-name} Base plugin on its own
+
+If none of the default conventions work for you, the base plugin can be applied on its own.
+
+[source,groovy,role="primary"]
+[subs=attributes+]
+.build.gradle
+----
+plugins {
+    id 'org.asciidoctor.jvm.base' version '{revnumber}'
+}
+----
+
+[source,kotlin,role="secondary"]
+[subs=attributes+]
+.build.gradle.kts
+----
+plugins {
+    id("org.asciidoctor.jvm.base") version "{revnumber}"
+}
+----

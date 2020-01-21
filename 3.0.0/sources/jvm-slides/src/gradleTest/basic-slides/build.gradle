@@ -1,0 +1,49 @@
+import org.asciidoctor.gradle.jvm.slides.RevealJSOptions
+
+// tag::revealjs-basics[]
+plugins {
+    id 'org.asciidoctor.jvm.revealjs' // <1>
+}
+// end::revealjs-basics[]
+
+apply from: "${System.getProperty('OFFLINE_REPO')}/repositories.gradle"
+
+// tag::revealjs-basics[]
+repositories {
+    ruby.gems() // <2>
+}
+
+revealjsPlugins {
+    github 'rajgoel', {
+        organisation = 'rajgoel'
+        repository = 'reveal.js-plugins'
+        branch = 'master'
+    }
+}
+
+asciidoctorRevealJs {
+    sourceDir 'src/docs/asciidoc'
+
+    sources {
+        include 'revealjs.adoc'
+    }
+
+    revealjsOptions {
+        slideNumber = RevealJSOptions.SlideNumber.COUNT
+    }
+
+    plugins 'rajgoel/chart/Chart.js'
+//    pluginConfigurationFile 'src/docs/asciidoc/empty-plugin-configuration.js'
+
+    toggleBuiltinPlugin 'pdf', true
+    toggleBuiltinPlugin 'notes', false
+}
+// end::revealjs-basics[]
+
+task runGradleTest {
+    dependsOn asciidoctorRevealJs
+
+    doLast {
+        assert file("build/docs/asciidocRevealJs/revealjs.html").text.contains('World')
+    }
+}

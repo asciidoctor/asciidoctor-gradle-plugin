@@ -1,0 +1,153 @@
+[[asciidoctorj-extensions,Adding custom {asciidoctorj-name} extensions]]
+== Adding Custom Extensions
+
+Starting with version 1.5.0 you were able to write your own Asciidoctor extensions in Groovy, or any other JVM language
+for that matter. Now with the 2.0.0 you have even more flexibility in that extensions can be applied on a per task basis on globally. There are several options available to make it happen.
+
+=== As External Library
+
+This is the most versatile option, as it allows you to reuse the same extension in different projects. An external library
+is just like any other Java/Groovy project. You simply define a dependency using the `asciidoctor` configuration.
+
+[source,groovy]
+.build.gradle
+----
+configurations {
+    asciidoctorExt
+}
+
+dependencies {
+    asciidoctorExt 'com.acme:asciidoctor-extensions:x.y.z'
+}
+
+asciidoctor {
+    configurations 'asciidoctorExt'
+}
+----
+
+=== As Project Dependency
+
+The next option is to host the extension project in a multi-project build. This allows for a much quicker development cycle
+as you don't have to publish the jar to a repository every time you make adjustments to the code. Take for example the
+following setup:
+
+[source]
+----
+.
+├── build.gradle
+├── core
+│   ├── build.gradle
+│   └── src
+│       ├── asciidoc
+│       │   └── index.adoc
+│       └── main
+│           └── java
+├── extension
+│   ├── build.gradle
+│   └── src
+│       └── main
+│           ├── groovy
+│           │   └── org
+│           │       └── asciidoctor
+│           │           └── example
+│           │               ├── ExampleExtensionRegistry.groovy
+│           │               └── YellBlock.groovy
+│           └── resources
+│               └── META-INF
+│                   └── services
+│                       └── org.asciidoctor.extension.spi.ExtensionRegistry
+└── settings.gradle
+----
+
+The `extension` project is a sibling for `core`. The build file for the latter looks like this:
+
+[source,groovy]
+[subs=attributes+]
+.build.gradle
+----
+plugins {
+   id 'org.asciidoctor.jvm.convert' version '{revnumber}'
+}
+
+repositories {
+    jcenter()
+}
+
+configuration {
+    asciidoctorExtensions
+}
+
+dependencies {
+    asciidoctorExtensions project(':extension')
+}
+
+asciidoctor {
+    configurations 'asciidoctorExtensions'
+}
+----
+
+Alternatively you can add the project to the extension directly
+
+[source,groovy]
+[subs=attributes+]
+.build.gradle
+----
+plugins {
+   id 'org.asciidoctor.jvm.convert' version '{revnumber}'
+}
+
+asciidoctorj {
+    docExtensions project(':extension')
+}
+----
+
+In the less-common case where extension is not supplied via the default configuration, he latter shortcur will not work, and you will need to use the longer method described above.
+
+
+=== As Inline Script
+
+The next option is to define extensions directly in the build script.
+This approach is based on the project asciidoctorj-groovy-dsl that allows to define Asciidoctor extensions in Groovy.
+An extension is registered via the `docExtensions` element.
+
+[source,groovy]
+.build.gradle
+----
+asciidoctorj {
+    docExtensions {
+        block(name: "BIG", contexts: [":paragraph"]) {
+            parent, reader, attributes ->
+            def upperLines = reader.readLines()
+                .collect {it.toUpperCase()}
+                .inject("") {a, b -> a + '\n' + b}
+
+            createBlock(parent, "paragraph", [upperLines], attributes, [:])
+        }
+    }
+}
+----
+
+http://github.com/asciidoctor/asciidoctorj-groovy-dsl contains a description of the DSL itself.
+
+Groovy extensions can also be included as files.
+
+[source,groovy]
+.build.gradle
+----
+asciidoctorj {
+    docExtensions file('big.groovy')
+}
+----
+
+[source,groovy]
+.big.groovy
+----
+block(name: "BIG", contexts: [":paragraph"]) {
+    parent, reader, attributes ->
+    def upperLines = reader.readLines()
+        .collect {it.toUpperCase()}
+        .inject("") {a, b -> a + '\n' + b}
+
+    createBlock(parent, "paragraph", [upperLines], attributes, [:])
+}
+----

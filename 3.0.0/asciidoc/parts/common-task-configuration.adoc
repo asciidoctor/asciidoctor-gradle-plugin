@@ -1,0 +1,269 @@
+== Task Configuration
+
+All Asciidoctor tasks will have the following methods and properties:
+
+.Properties and methods common all {asciidoctorj-name} tasks
+[horizontal]
+asciidoctorj:: a task extension which allows a task to extend of override global configuration for Asciidoctor tasks.
+  This allow extensive flexibility. Any thing that can be configured in the global `asciidoctorj` extension can also be configured here.
+attributes:: A shortcut for `asciidoctorj.attributes` and `asciidoctorjs.attributes`.
+baseDir:: Base directory for asciidoctor document conversion and root document inclusion.
+  The base directory will be the project directory by default, but can be set to any other directory.
+baseDirFollowsSourceDir:: The base directory should be the same as the source directory even if the source directory is located within an intermediate working directory.
+baseDirFollowsSourceFile:: The base directory should be the same as the directory of each individual source file.
+baseDirIsProjectDir:: The base directory is always the current project directory.
+baseDirIsRootProjectDir:: The base directory is always the root project directory.
+configurations:: Specify additional configurations
+  These configurations will be added to the classpath when the task is executed.
+copyAllResources:: Copy all resources to the output directory
+copyNoResources:: Do not copy any resources to the output directory
+copyResourcesOnlyIf:: Only copy resources if the backend matches the listed backend.
+languages:: Invoke source language support but specifying one or more languages.
+inProcess:: Specifies whether Asciidoctor conversions should be run in-process or out-of-process. Default: `true` (in-process).
+logDocuments:: Specifies if documents being processed should be logged on console. Type: boolean. Default: `false`.
+options:: A shortcut to`asciidoctorj.options`.
+outputDir:: where generated docs go.
+  Use either `outputDir path`, `setOutputDir path` or `outputDir=path`
+  Type: File, but any object convertible with `project.file` can be passed.
+  Default: `$buildDir/asciidoc`.
+parallelMode:: Specifies whether each backend or other variant of a converting tasks should be run in parallel or sequential.
+  Sequential conversions might have less initialisation overhead, but may suffer from `gemPath` and extension pollution. Default: `true` (parallel).
+resources:: specify which additional files (image etc.) must be copied to output directory using a
+  http://www.gradle.org/docs/current/javadoc/org/gradle/api/file/CopySpec.html[CopySpec].
+secondarySources: Specify which source files should be monitor for change. These are typically files which are included by top-level files as well as doctype files.
+  Default: All files in sourceDir which matches `getDefaultSourceDocumentPattern()` as well as doctype files.
+sourceDir:: where the asciidoc sources are.
+  Use either `sourceDir path`, `setSourceDir path` or `sourceDir=path`
+  Type: File, but any object convertible with `project.file` can be passed.
+  Default: `src/docs/asciidoc`.
+sources:: Specify which Asciidoctor source files to include as toplevel documents. It uses an
+  http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.html[Ant-style PatternSet].
+useIntermediateWorkDir:: Use an intermediate work directory for sources ances.
+  Some extensions such as `ditaa` will write content into the source directory. In order to keep the project source directory pristine an intermediate work directory can be used. All sources and resources will be copied there prior the executing Asciidoctor.
+withIntermediateArtifacts:: Add intermediate artifacts to output directory.
+  If the document conversion process creates intermediate artifacts which needs to be added to the output directory, then the pattern set with a closure or `Action`. This implies `useIntermediateWorkDir`. An example of such a case is the use of `ditaa`.
+
+The `org.asciidoctor.jvm.convert` plugin has a conversion task type of `org.asciidoctor.gradle.jvm.AsciidoctorTask` which, in addition the aforementioned will also have the following properties and methods which are configured via an `outputOptions` closure or action:
+
+.Properties & methods for configuring generic `AsciidoctorTask`
+[horizontal]
+backends:: the backends to use.
+  Use `backends` to append. Use `setBackends` or `backends=[]` to overwrite
+  Type: Set<String>, but any type can be converted to String can be used.
+  Default: [`html5`].
+separateOutputDirs:: specifies whether each backend should use a separate subfolder under `outputDir`.
+  Default: `true`
+
+=== Defining Sources
+
+The plugin will search for sources under `sourceDir`. Sources may have any of the following extensions in
+order to be discovered:
+
+* .adoc _(preferred)_
+* .asciidoc
+* .ad
+* .asc
+
+To select only certain files, use the `sources` method. This method takes a closure or an `Action` as an argument, which in turn configures an org.asciidoctor.gradle.jvm.epub.internal
+http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.html[PatternSet].
+
+To specify a custom output folder, use the `outputDir` method.
+
+[source,groovy,role="primary"]
+.build.gradle
+----
+asciidoctor {
+  sourceDir  file('docs')
+  sources {
+    include 'toplevel.adoc', 'another.adoc', 'third.adoc'
+  }
+  outputDir  file('build/docs')
+}
+----
+
+[source,kotlin,role="secondary"]
+.build.gradle.kts
+----
+tasks {
+  "asciidoctor"(AsciidoctorTask::class) {
+    sourceDir = file("docs")
+    sources(delegateClosureOf<PatternSet> {
+      include("toplevel.adoc", "another.adoc", "third.adoc")
+    })
+    outputDir = file("build/docs")
+  }
+}
+----
+
+Paths defined in this PatternSet are resolved relative to the `sourceDir`.
+
+=== Processing Auxiliary Files
+
+Some backends require that additional files be copied across. The most common example are images for HTML backends. For
+this the `resources` method is used. It is provided with a closure that configures an org.asciidoctor.gradle.jvm.epub.internal
+http://www.gradle.org/docs/current/javadoc/org/gradle/api/file/CopySpec.html[CopySpec]
+
+[source,groovy,role="primary"]
+.build.gradle
+----
+resources {
+  from('src/resources/images') {
+    include 'images/**/*.png'
+    exclude 'images/**/notThisOne.png'
+  }
+
+  from( "${buildDir}/downloads" ) {
+    include 'deck.js/**'
+  }
+
+  into './images'
+}
+----
+
+[source,kotlin,role="secondary"]
+.build.gradle.kts
+----
+resources(delegateClosureOf<CopySpec> {
+  from("src/resources/images") {
+    include("images/**/*.png")
+    exclude("images/**/notThisOne.png")
+  }
+
+  from("$buildDir/downloads") {
+    include("deck.js/**")
+  }
+
+  into("./images")
+})
+----
+
+Files will be copied to below `+${outputDir}/${backend}+` (or just `+${outputDir}+` if `separateOutputDirs=false`)
+
+Unlike `sourceDir` files can be copied from anywhere in the filesystem.
+
+
+If `resources` is never set, the default behaviour is as if the following was called
+
+[source,groovy,role="primary"]
+.build.gradle
+----
+resources {
+  from(sourceDir) {
+    include 'images/**'
+  }
+}
+----
+
+In case of languages the default behaviour is
+
+[source,groovy,role="primary"]
+.build.gradle
+----
+resources {
+  from(new File(sourceDir,"${langName}")) {
+    include 'images/**'
+  }
+}
+----
+
+If you do not want this behaviour, then it can be turned off by doing
+
+[source,groovy,role="primary"]
+.build.gradle
+----
+copyNoResources()
+----
+
+If you are using multiple languages and you have identical resource patterns for each languages within `sourceDir/${lang}` you need to explictly declare those on a per-language basis:
+
+[source,groovy,role="primary"]
+.build.gradle
+----
+resources 'en', {
+  from("${sourceDir}/en") {
+    include 'images/**'
+  }
+}
+
+resources 'es', {
+  from("${sourceDir}/es") {
+    include 'images/**'
+  }
+}
+----
+
+=== Include directives and base directory
+
+These plugins do not change the way link:https://asciidoctor.org/docs/user-manual/#include-resolution[include::] directive works, but it is important to note how setting `baseDir` will affect top level includes. It is recommended that you always use `\{includedir}` as a prefix for the file path. This attribute is always set to the correct top-level folder where the sources will be located.
+
+However it is not practical for everyone to use `\{includedir}` and as from 2.2.0 it is possible to add a strategy for controlling the base directory:
+
+[source,groovy,role="primary"]
+.build.gradle
+----
+asciidoctor {
+    baseDirIsRootProjectDir() // <1>
+    baseDirIsProjectDir() // <2>
+    baseDirFollowsSourceDir() // <3>
+    baseDirFollowsSourceFile() // <4>
+}
+----
+<1> The base directory is the root project directory.
+<2> The base directory is the current subproject directory.
+<3> The base directory will always the the same as the source directory. If an intermediate working directory is being used, the base directory will automatically point to that.
+<4> The base directory will be the same as the directory of each individual source file.
+
+=== Docinfo processing
+
+When using the `docinfo` attribute with `html` and `docbook` backends, it is recommended that `baseDirFollowsSourceDir()` is always set. This will ensure that the docinfo files are picked up correctly from the same directory that is the source directory.
+
+=== Source language support
+
+Some scenarios work on a source set of documents in a primary language and then translations of those sources into other languages. The Gradle plugin simplifies this scenario by allowing a structure such as
+
+[source]
+----
+│   └── src
+│       ├── asciidoc
+│       │   └── en
+│       │       └── index.adoc
+│       │   └── es
+│       │       └── index.adoc
+----
+
+This can be enabled in the DSL by doing
+
+[source,groovy]
+----
+asciidoctor {
+    languages 'en', 'es'
+}
+----
+
+Gradle will then process both the `en` and the `es` source set and output to the output directory using the same languages names. Intermediate working directories and multiple backends are also covered. In this case the `lang` attribute will be injected with the specific language as the value.
+
+It is also possible to specify additional attributes that will only be added when a specific language is processed
+
+[source,groovy]
+----
+asciidoctorj { // <1>
+    attributesForLang 'en', langName : 'English'
+    attributesForLang 'ca', langName : 'Catala'
+}
+
+asciidoctorjs { // <2>
+    attributesForLang 'en', langName : 'English'
+    attributesForLang 'ca', langName : 'Catala'
+}
+----
+<1> Configuration when using {asciidoctorj-name}
+<2> Configuration when using {asciidoctorjs-name}
+
+=== Choosing a Process Mode for {asciidoctorj-name}
+
+All {asciidoctorj-name}-based tasks can control how Asciidoctor conversions are being run via the `inProcess` property. This is early days, and a choice for your build will depend very much on your context, but the following has already become clear:
+
+* `IN_PROCESS` and `OUT_OF_PROCESS` should theoretically run faster, especially if you continuously rebuild the same documentation. Gradle workers are the underlying implementation for these two options
+* The safe option is always `JAVA_EXEC`. For lower memory consumption this is by far the safer option. (It is also the only way we can get the Windows-based tests for this plugin to complete on Appveyor & Travis CI). It you run a lot of builds the penalty start-up time might become an issue for you.
+
+NOTE: In certain cases the plugin will overrule your choice as it has some built-in rules for special cases. In such cases it will log a warning that it has done that.

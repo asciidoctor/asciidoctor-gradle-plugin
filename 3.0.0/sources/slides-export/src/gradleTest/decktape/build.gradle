@@ -1,0 +1,18 @@
+plugins {
+    id 'org.asciidoctor.jvm.revealjs'
+    id 'org.asciidoctor.decktape'
+}
+
+apply from: "${System.getProperty('OFFLINE_REPO')}/repositories.gradle"
+
+repositories {
+    ruby.gems()
+}
+
+if(System.getenv('GITLAB_CI')) {
+    asciidoctorRevealJsExport.chromeArgs = [ '--no-sandbox']
+}
+
+task runGradleTest {
+    dependsOn 'asciidoctorRevealJsExport'
+}
