@@ -488,6 +488,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_extra_content_for_html_docbook_backends">Extra content for HTML &amp; Docbook backends</a></li>
 <li><a href="#_upgrading_from_older_versions_of_asciidoctor">Upgrading From Older Versions of Asciidoctor</a>
 <ul class="sectlevel2">
+<li><a href="#_asciidoctor_compatibility_tasks">Asciidoctor compatibility tasks</a></li>
 <li><a href="#_gems">GEMs</a></li>
 <li><a href="#_reveal_js">Reveal.js</a></li>
 <li><a href="#_configurations">Configurations</a></li>
@@ -2571,7 +2572,7 @@ If you are still on a 1.5/1.6 version of the plugin, upgrade to the latest 2.x v
 </table>
 </div>
 <div class="paragraph">
-<p>If you are on 2.x, upgradle to the latest 2.x first and ensure that you have corrected all of the deprecation warnings.</p>
+<p>If you are on 2.x version, upgradle to the latest 2.x first and ensure that you have corrected all of the deprecation warnings.</p>
 </div>
 <div class="paragraph">
 <p>If you have AsciidoctorJ binary extensions you&#8217;ll need to recompile them against AsciidoctorJ v2.0+ in order to use them with the v.3x version of the plugins.</p>
@@ -2630,6 +2631,12 @@ If you are still on a 1.5/1.6 version of the plugin, upgrade to the latest 2.x v
 </table>
 <div class="paragraph">
 <p>Substitutable attributes means that the build script author can change those attributes by setting them explicitly.</p>
+</div>
+<div class="sect2">
+<h3 id="_asciidoctor_compatibility_tasks">Asciidoctor compatibility tasks</h3>
+<div class="paragraph">
+<p>The Asciidoctor compatibility task has been removed. You need to use the Asciidoctor task from <code>org.asciidoctor.jvm.convert</code> instead.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_gems">GEMs</h3>
@@ -2836,7 +2843,7 @@ The <code>master</code> branch represents the code for the latest 2.x release of
 <div id="footer">
 <div id="footer-text">
 Version 3.0.0-alpha.4<br>
-Last updated 2020-01-18 11:18:57 UTC
+Last updated 2020-01-21 00:15:09 UTC
 </div>
 </div>
 <style>
