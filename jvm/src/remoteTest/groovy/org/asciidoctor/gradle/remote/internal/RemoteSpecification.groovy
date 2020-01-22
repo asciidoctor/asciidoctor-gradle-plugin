@@ -80,7 +80,7 @@ in a subdirectory
         final String backend, File srcFile, File outputFile, File gemDir
     ) {
         boolean altOptions = gemDir != null
-        Set<String> requires = (altOptions ? [] : []) as Set
+        List<String> requires = []
         List<Object> exts = altOptions ? [{ println 'fake extension' }.dehydrate()] : []
 
         new ExecutorConfiguration(

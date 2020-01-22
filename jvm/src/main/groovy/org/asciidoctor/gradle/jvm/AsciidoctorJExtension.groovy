@@ -449,10 +449,10 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
      *
      * @since 1.5.0
      */
-    Set<String> getRequires() {
+    List<String> getRequires() {
         stringizeList(this.jrubyRequires, onlyTaskRequires) { AsciidoctorJExtension it ->
-            it.requires.toList()
-        }.toSet()
+            it.requires
+        }.toList()
     }
 
     /** Applies a new set of Ruby modules to be included, clearing any previous set.
