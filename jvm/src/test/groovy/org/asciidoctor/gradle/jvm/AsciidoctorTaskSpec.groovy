@@ -516,6 +516,33 @@ class AsciidoctorTaskSpec extends Specification {
         then:
         task.sampleExecutorConfiguration.attributes.'revnumber@' == null
     }
+
+    void "should allow overriding revnumber@ attribute"() {
+        when:
+        project.version = '1.2.3'
+        def task = project.tasks.create(name: ASCIIDOCTOR, type: ExecutorConfigurationInspectingAsciidoctorTask)
+                .configure {
+                    attributes('revnumber@': 'x.y.z')
+                }
+
+        then:
+        task.sampleExecutorConfiguration.attributes.'revnumber@' == 'x.y.z'
+    }
+
+    void "should not set the revnumber@ attribute when revnumber attribute is set"() {
+        when:
+        project.version = '1.2.3'
+        def task = project.tasks.create(name: ASCIIDOCTOR, type: ExecutorConfigurationInspectingAsciidoctorTask)
+                .configure {
+                    attributes('revnumber': 'x.y.z')
+                }
+
+        then:
+        with(task.sampleExecutorConfiguration) {
+            attributes.'revnumber@' == null
+            attributes.'revnumber' == 'x.y.z'
+        }
+    }
 }
 
 class ExecutorConfigurationInspectingAsciidoctorTask extends AsciidoctorTask {
