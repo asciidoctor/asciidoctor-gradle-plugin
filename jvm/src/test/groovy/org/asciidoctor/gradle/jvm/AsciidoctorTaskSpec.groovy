@@ -15,12 +15,16 @@
  */
 package org.asciidoctor.gradle.jvm
 
+import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.gradle.workers.WorkerExecutor
 import org.ysb33r.grolifant.api.JavaForkOptions
 import spock.lang.Specification
+
+import javax.inject.Inject
 
 /**
  * Asciidoctor task specification
@@ -453,7 +457,7 @@ class AsciidoctorTaskSpec extends Specification {
     }
 
     void 'Set processMode via string'() {
-c
+        c
     }
 
     void 'Asciidoctor task with non-default name has different source directory'() {
@@ -494,5 +498,37 @@ c
 
     AsciidoctorTask asciidoctorTask(Closure cfg) {
         project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask).configure cfg
+    }
+
+    void "should set revnumber default attribute when project.version is specified"() {
+        when:
+        project.version = '1.2.3'
+        def task = project.tasks.create(name: ASCIIDOCTOR, type: ExecutorConfigurationInspectingAsciidoctorTask)
+
+        then:
+        task.sampleExecutorConfiguration.attributes.'revnumber@' == '1.2.3'
+    }
+
+    void "should not set revnumber default attribute when project.version is unspecified"() {
+        when:
+        def task = project.tasks.create(name: ASCIIDOCTOR, type: ExecutorConfigurationInspectingAsciidoctorTask)
+
+        then:
+        task.sampleExecutorConfiguration.attributes.'revnumber@' == null
+    }
+}
+
+class ExecutorConfigurationInspectingAsciidoctorTask extends AsciidoctorTask {
+    @Inject
+    ExecutorConfigurationInspectingAsciidoctorTask(WorkerExecutor we) {
+        super(we)
+    }
+
+    // method for unit testing what attributes get passed to execution
+    ExecutorConfiguration getSampleExecutorConfiguration(String backendName = 'html',
+                                                         File workingSourceDir = new File('.'),
+                                                         Set<File> sourceFiles = [] as Set,
+                                                         Optional<String> lang = Optional.empty()) {
+        super.getExecutorConfigurationFor(backendName, workingSourceDir, sourceFiles, lang)
     }
 }

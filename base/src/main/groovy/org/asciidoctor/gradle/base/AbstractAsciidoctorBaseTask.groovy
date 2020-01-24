@@ -26,6 +26,7 @@ import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
+import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.CopySpec
 import org.gradle.api.file.DirectoryProperty
@@ -770,7 +771,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
             'gradle-project-name': (Object) project.name
         ]
 
-        if (project.version != null) {
+        if (project.version != null && project.version.toString() != Project.DEFAULT_VERSION) {
             attrs.put('revnumber', (Object) project.version)
         }
 
