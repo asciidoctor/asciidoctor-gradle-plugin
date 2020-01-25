@@ -501,6 +501,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_issues_with_plugins_that_modify_project_version">Issues with plugins that modify project.version</a></li>
 <li><a href="#_pre_process_and_post_process">Pre-process and post-process</a></li>
 <li><a href="#_using_pygments_source_highlighter">Using Pygments source highlighter</a></li>
+<li><a href="#_resolving_asciidoctorj_dependencies_against_a_specific_repository">Resolving AsciidoctorJ dependencies against a specific repository</a></li>
 </ul>
 </li>
 <li><a href="#_known_issues">Appendix B: Known Issues</a></li>
@@ -1245,6 +1246,15 @@ resolutionStrategy
 AsciidoctorJ dependencies are held in a detached configuration.
 If for some special reason, you need to modify the way the dependency set is resolved, you can modify the
 behaviour by adding one or more strategies.</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+onConfiguration
+</td>
+<td class="hdlist2">
+<p>Additional actions to be performed when the detached configuration for the
+AsciidoctorJ is created.</p>
 </td>
 </tr>
 <tr>
@@ -2795,6 +2805,27 @@ You need to have Python 2.x installed on a system or in a container for Pygments
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_resolving_asciidoctorj_dependencies_against_a_specific_repository">Resolving AsciidoctorJ dependencies against a specific repository</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">repositories</span> <span class="o">{</span>
+    <span class="n">maven</span> <span class="o">{</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s1">'asciidoctorj'</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s1">'https://some.repo.example'</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="n">asciidoctorj</span> <span class="o">{</span>
+    <span class="n">onConfiguration</span> <span class="o">{</span> <span class="n">cfg</span> <span class="o">-&gt;</span>
+        <span class="n">repositories</span><span class="o">.</span><span class="na">getByName</span><span class="o">(</span><span class="s1">'asciidoctorj'</span><span class="o">).</span><span class="na">mavenContent</span> <span class="o">{</span> <span class="n">descriptor</span> <span class="o">-&gt;</span>
+            <span class="n">descriptor</span><span class="o">.</span><span class="na">onlyForConfigurations</span><span class="o">(</span><span class="n">cfg</span><span class="o">.</span><span class="na">name</span><span class="o">)</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -2843,7 +2874,7 @@ The <code>master</code> branch represents the code for the latest 2.x release of
 <div id="footer">
 <div id="footer-text">
 Version 3.0.0<br>
-Last updated 2020-01-25 14:16:51 UTC
+Last updated 2020-01-25 15:38:02 UTC
 </div>
 </div>
 <style>
