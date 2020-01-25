@@ -46,7 +46,7 @@ class ExecutorConfiguration implements Serializable, Cloneable {
 
     int safeModeLevel
 
-    Set<String> requires
+    List<String> requires
     Map<String, Object> options
     Map<String, Object> attributes
 
