@@ -438,7 +438,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
      * @return The final set of '{@code requires}'
      */
     @Internal
-    protected List<String> getRequires() {
+    protected Set<String> getRequires() {
         asciidoctorj.requires
     }
 

@@ -74,11 +74,3 @@ asciidoctorPdf {
   }
 }
 ----
-
-=== Resolving AsciidoctorJ dependencies against a specific repository
-
-
-[source,groovy]
-----
-include::{plugin-jvm}/test/groovy/org/asciidoctor/gradle/jvm/AsciidoctorJExtensionSpec.groovy[tags=restrict-repository,indent=0]
-----

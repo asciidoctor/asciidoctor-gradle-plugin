@@ -337,9 +337,9 @@ class AsciidoctorTaskSpec extends Specification {
 
         then:
         !systemOut.toString().contains('deprecated')
-        task.asciidoctorj.requires[0] == 'asciidoctor-pdf'
-        task.asciidoctorj.requires[1] == 'slim'
-        task.asciidoctorj.requires[2] == 'tilt'
+        task.asciidoctorj.requires.contains('asciidoctor-pdf')
+        task.asciidoctorj.requires.contains('tilt')
+        task.asciidoctorj.requires.contains('slim')
     }
 
     void "Allow setting of requires via assignment"() {
