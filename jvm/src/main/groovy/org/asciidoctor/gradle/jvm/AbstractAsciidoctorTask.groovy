@@ -291,23 +291,19 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
             Workspace workspace = lang.present ? prepareWorkspace(lang.get()) : prepareWorkspace()
             Set<File> sourceFiles = workspace.sourceTree.files
 
-            Map<String, ExecutorConfiguration> executorConfigurations
-
             if (finalProcessMode != JAVA_EXEC) {
-                executorConfigurations = runWithWorkers(
+                runWithWorkers(
                     workspace.workingSourceDir,
                     sourceFiles,
                     lang
                 )
             } else {
-                executorConfigurations = runWithJavaExec(
+                runWithJavaExec(
                     workspace.workingSourceDir,
                     sourceFiles,
                     lang
                 )
             }
-
-            copyResourcesByBackend(executorConfigurations.values(), lang)
         }
     }
 
@@ -483,6 +479,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
 
         if (parallelMode) {
             executorConfigurations.each { String configName, ExecutorConfiguration executorConfiguration ->
+                copyResourcesByBackend(executorConfiguration, lang)
                 worker.submit(AsciidoctorJExecuter) { WorkerConfiguration config ->
                     configureWorker(
                         "Asciidoctor (task=${name}) conversion for ${configName}",
@@ -493,6 +490,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
                 }
             }
         } else {
+            copyResourcesByBackend(executorConfigurations.values(), lang)
             worker.submit(AsciidoctorJExecuter) { WorkerConfiguration config ->
                 configureWorker(
                     "Asciidoctor (task=${name}) conversions for ${executorConfigurations.keySet().join(', ')}",
@@ -536,6 +534,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
             lang
         )
         File execConfigurationData = JavaExecUtils.writeExecConfigurationData(this, executorConfigurations.values())
+        copyResourcesByBackend(executorConfigurations.values(), lang)
 
         logger.debug("Serialised AsciidoctorJ configuration to ${execConfigurationData}")
         logger.info "Running AsciidoctorJ instance with classpath ${javaExecClasspath.files}"
@@ -565,9 +564,16 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         Optional<String> lang
     ) {
         for (ExecutorConfiguration ec : executorConfigurations) {
-            if (ec.copyResources) {
-                copyResourcesByBackend(ec.backendName, ec.sourceDir, ec.outputDir, lang)
-            }
+            copyResourcesByBackend(ec, lang)
+        }
+    }
+
+    private void copyResourcesByBackend(
+        ExecutorConfiguration ec,
+        Optional<String> lang
+    ) {
+        if (ec.copyResources) {
+            copyResourcesByBackend(ec.backendName, ec.sourceDir, ec.outputDir, lang)
         }
     }
 
