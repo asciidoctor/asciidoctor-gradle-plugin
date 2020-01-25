@@ -33,8 +33,7 @@ jobs:
         uses: eskatos/gradle-command-action@v1
         with:
           build-root-directory: docs
-          arguments: |
-            --console=plain --info :antora:publishDocs :gh-pages:publishDocs \
-            -Dorg.ajoberstar.grgit.auth.username=${{ secrets.GITHUB_PUBLISH_USER }} \
-            -Dorg.ajoberstar.grgit.auth.password=${{ secrets.GITHUB_PUBLISH_KEY }} \
-            -Dorg.ajoberstar.grgit.auth.force=hardcoded
+          arguments: "--console=plain --info :antora:publishDocs :gh-pages:publishDocs
+          -Dorg.ajoberstar.grgit.auth.username=${{ secrets.GITHUB_PUBLISH_USER }}
+          -Dorg.ajoberstar.grgit.auth.password=${{ secrets.GITHUB_PUBLISH_KEY }}
+          -Dorg.ajoberstar.grgit.auth.force=hardcoded"
