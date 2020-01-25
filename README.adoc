@@ -41,6 +41,7 @@ image:https://ci.appveyor.com/api/projects/status/db102rphsu5lviv6/branch/{githu
 image:http://img.shields.io/coveralls/{project-full-path}/{github-branch}.svg[Coverage Status, link=https://coveralls.io/r/{project-full-path}]
 image:http://img.shields.io/badge/license-ASF2-blue.svg[Apache License 2, link=http://www.apache.org/licenses/LICENSE-2.0.txt]
 image:https://gitlab.com/asciidoctor/asciidoctor-gradle-plugin/badges/master/pipeline.svg[link="https://gitlab.com/asciidoctor/asciidoctor-gradle-plugin/commits/master",title="pipeline status"]
+image:https://github.com/asciidoctor/asciidoctor-gradle-plugin/workflows/Build/badge.svg[GitHub Actions Status, link=https://github.com/asciidoctor/asciidoctor-gradle-plugin/actions]
 endif::[]
 
 The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to convert all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
