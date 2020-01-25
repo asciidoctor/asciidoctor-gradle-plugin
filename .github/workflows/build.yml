@@ -80,6 +80,11 @@ jobs:
         with:
           build-root-directory: docs
           arguments: asciidoctor
+      # Stop gradlew to avoid locking issues
+      - name: Test
+        uses: eskatos/gradle-command-action@v1
+        with:
+          arguments: --stop
   build:
     strategy:
       matrix:
