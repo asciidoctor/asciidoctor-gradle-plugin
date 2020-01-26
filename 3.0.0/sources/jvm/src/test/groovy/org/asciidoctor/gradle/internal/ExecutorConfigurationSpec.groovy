@@ -37,7 +37,7 @@ class ExecutorConfigurationSpec extends Specification {
             copyResources: true,
             legacyAttributes: true,
             safeModeLevel: 0,
-            requires: ['bibtex'] as Set,
+            requires: ['bibtex'],
             options:[fooOpt: 'barOpt'],
             attributes: [fooAttr: 'barAttr'],
             asciidoctorExtensions: [],
