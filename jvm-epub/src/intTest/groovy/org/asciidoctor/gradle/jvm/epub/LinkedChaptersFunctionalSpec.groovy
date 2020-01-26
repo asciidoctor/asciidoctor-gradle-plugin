@@ -18,7 +18,6 @@ package org.asciidoctor.gradle.jvm.epub
 import org.asciidoctor.gradle.jvm.epub.internal.FunctionalSpecification
 import org.gradle.testkit.runner.BuildResult
 import spock.lang.Issue
-import spock.lang.PendingFeature
 
 class LinkedChaptersFunctionalSpec extends FunctionalSpecification {
 
@@ -26,7 +25,6 @@ class LinkedChaptersFunctionalSpec extends FunctionalSpecification {
         createTestProject('issue-409-link-regression')
     }
 
-    @PendingFeature
     @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/408')
     void 'Linked chapters should not produce a warning'() {
         given:
