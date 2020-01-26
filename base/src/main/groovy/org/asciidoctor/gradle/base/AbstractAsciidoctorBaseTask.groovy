@@ -26,6 +26,7 @@ import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
+import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.CopySpec
 import org.gradle.api.file.DirectoryProperty
@@ -770,7 +771,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
             'gradle-project-name': (Object) project.name
         ]
 
-        if (project.version != null) {
+        if (project.version != null && project.version.toString() != Project.DEFAULT_VERSION) {
             attrs.put('revnumber', (Object) project.version)
         }
 
@@ -1014,7 +1015,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         Map<String, Object> defaultAttributes,
         Optional<String> lang
     ) {
-        Set<String> userDefinedAttrKeys = seedAttributes.keySet()
+        Set<String> userDefinedAttrKeys = trimOverridableAttributeNotation(seedAttributes.keySet())
 
         Map<String, Object> defaultAttrs = defaultAttributes.findAll { k, v ->
             !userDefinedAttrKeys.contains(k)
@@ -1027,6 +1028,12 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         }
 
         defaultAttrs
+    }
+
+    private Set<String> trimOverridableAttributeNotation(Set<String> attributeKeys) {
+        // remove possible trailing '@' character that is used to encode that the attribute can be overridden
+        // in the document itself
+        Transform.toSet(attributeKeys) { k -> k - ~/@$/ }
     }
 
     /** Evaluates a map of items potentially containing providers.
