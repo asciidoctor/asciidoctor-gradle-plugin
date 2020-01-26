@@ -77,7 +77,6 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     private final List<Object> asciidoctorExtensions = []
     private final List<Object> gemPaths = []
     private final List<Action<ResolutionStrategy>> resolutionsStrategies = []
-    private final List<Action<Configuration>> configurationCallbacks = []
     private final List<Object> warningsAsErrors = []
     private final AsciidoctorJModules modules
 
@@ -86,8 +85,6 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     private boolean onlyTaskExtensions = false
     private boolean onlyTaskGems = false
     private boolean onlyTaskWarnings = false
-    private boolean onlyTaskResolutionStrategies = false
-    private boolean onlyTaskConfigurationCallbacks = false
 
     private LogLevel logLevel
 
@@ -452,10 +449,10 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
      *
      * @since 1.5.0
      */
-    List<String> getRequires() {
+    Set<String> getRequires() {
         stringizeList(this.jrubyRequires, onlyTaskRequires) { AsciidoctorJExtension it ->
-            it.requires
-        }.toList()
+            it.requires.toList()
+        }.toSet()
     }
 
     /** Applies a new set of Ruby modules to be included, clearing any previous set.
@@ -490,39 +487,10 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
        end::extension-property[]
        ------------------------- */
 
-    /** List of resolution strategies that will be applied to the Asciidoctorj group of dependencies.
-     *
-     * If called on a task, the project extensions's resolution strategies are returned ahead of the task-specific
-     * resolution strategies.
-     *
-     * If called on a task where {@link #clearResolutionStrategies} was called previously, only the task-specifc
-     * resolution strategies are returned.
-     *
-     * @return List of actions. Can be empty, but never {@code null}.
-     *
-     * @since 3.1.0
-     */
-    Iterable<Action<ResolutionStrategy>> getResolutionStrategies() {
-        if (task) {
-            if (onlyTaskResolutionStrategies) {
-                this.resolutionsStrategies
-            } else {
-                extFromProject.resolutionsStrategies + this.resolutionsStrategies
-            }
-        } else {
-            this.resolutionsStrategies
-        }
-    }
-
     /** Clears the current list of resolution strategies.
      *
-     * If called on a task extension, all subsequent strategies added to the project extension will be ignored
-     * in task context.
      */
     void clearResolutionStrategies() {
-        if (task) {
-            onlyTaskResolutionStrategies = true
-        }
         this.resolutionsStrategies.clear()
     }
 
@@ -540,72 +508,6 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
      */
     void resolutionStrategy(@DelegatesTo(ResolutionStrategy) Closure strategy) {
         this.resolutionsStrategies.add(strategy as Action<ResolutionStrategy>)
-    }
-
-    /* -------------------------
-       tag::extension-property[]
-        onConfiguration:: Additional actions to be performed when the detached configuration for the
-        {asciidoctorj-name} is created.
-       end::extension-property[]
-       ------------------------- */
-
-    /** List of callbacks that will be applied whent he asciidoctorj-related detached configuration is created.
-     *
-     * If called on a task, the project extensions's callbacks are returned ahead of the task-specific
-     * callbacks.
-     *
-     * If called on a task where {@link #clearConfigurationCallbacks} was called previously, only the task-specifc
-     * callbacks are returned.
-     *
-     * @return List of callbacks. Can be empty, but never {@code null}.
-     *
-     * @since 3.1.0
-     */
-    Iterable<Action<Configuration>> getConfigurationCallbacks() {
-        if (task) {
-            if (onlyTaskConfigurationCallbacks) {
-                this.configurationCallbacks
-            } else {
-                extFromProject.configurationCallbacks + this.configurationCallbacks
-            }
-        } else {
-            this.configurationCallbacks
-        }
-    }
-
-    /** Clears the current list of resolution strategies.
-     *
-     * If called on a task extension, all subsequent callbacks added to the project extension will be ignored
-     * in task context.
-     *
-     * @since 3.1.0
-     */
-    void clearConfigurationCallbacks() {
-        if (task) {
-            onlyTaskConfigurationCallbacks = true
-        }
-
-        this.configurationCallbacks.clear()
-    }
-
-    /** Adds a callback for when the asciidoctorj-related detached configuration is created.
-     *
-     * @param callback The detached configuration is passed to this {@code Action}.
-     *
-     * @since 3.1.0
-     */
-    void onConfiguration(Action<Configuration> callback) {
-        this.configurationCallbacks.add(callback)
-    }
-
-    /** Adds a callback for when the asciidoctorj-related detached configuration is created.
-     *
-     * @param callback The detached configuration is passed to this closure}.
-     *
-     * @since 3.1.0
-     */
-    void onConfiguration(@DelegatesTo(Configuration) Closure callback) {
-        this.configurationCallbacks.add(callback as Action<Configuration>)
     }
 
     /* -------------------------
@@ -709,12 +611,8 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
             }
         }
 
-        resolutionStrategies.each {
+        resolutionsStrategies.each {
             configuration.resolutionStrategy(it)
-        }
-
-        configurationCallbacks.each {
-            it.execute(configuration)
         }
 
         configuration
