@@ -1,0 +1,37 @@
+[[diagram]]
+== Using AsciidoctorJ Diagram
+
+The new plugins have built-in support for `asciidoctorj-diagram`. Simply add the following to the project or task extension and
+diagramming will be available. If it is not set the `asciidoctorj-diagram` JAR will nto be added to the classpath.
+
+[source,groovy]
+----
+asciidoctorj {
+    modules {
+       diagram.use() // <1>
+       diagram.version '1.5.16' // <2>
+    }
+}
+----
+<1> Enables diagram usage with whatever the default version of `asciidoctorj-diagram` is.
+<2> Enables usages, but set a specific version rather than the default suggested by the plugin.
+
+With this enhancement, there is also no longer a need to add `requires 'asciidoctor-diagram'`.
+
+NOTE: If you using OpenJDK 9/10 on MacOS you might find an error such as below
+
+----
+Caused by: java.lang.UnsatisfiedLinkError: /path/to/openjdk10/lib/libfontmanager.dylib: dlopen(/path/to/openjdk10/lib/libfontmanager.dylib, 1): Library not loaded: /Users/jenkins/workspace/openjdk10_build_x86-64_macos/openjdk/installedfreetype/lib/libfreetype.6.dylib
+  Referenced from: /path/to/openjdk10/lib/libfontmanager.dylib
+  Reason: image not found
+----
+
+The solution is to install `freetype` via HomeBrew or MacPorts. You might also need to do something (ridiculous) such as
+
+[source,bash]
+----
+$ sudo mkdir -p /Users/jenkins/workspace/openjdk10_build_x86-64_macos/openjdk/installedfreetype
+$ sudo ln -s /opt/local/lib /Users/jenkins/workspace/openjdk10_build_x86-64_macos/openjdk/installedfreetype/lib <1>
+----
+<1> `opt/local/lib` is the location for MacPorts. Change it accordingly for HomeBrew.
+

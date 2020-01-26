@@ -1,0 +1,25 @@
+:asciidoc-url: http://asciidoc.org
+:asciidoctor-docs: http://asciidoctor.org/docs/
+:asciidoctor-userguide: {asciidoctor-docs}user-manual/
+:asciidoctor-userguide-name: Asciidoctor User Manual
+:asciidoctor-maven-plugin: https://github.com/asciidoctor/asciidoctor-maven-plugin[Asciidoctor Maven Plugin]
+:asciidoctor-url: http://asciidoctor.org
+:asciidoctorj: https://github.com/asciidoctor/asciidoctorj
+:asciidoctorj-name: AsciidoctorJ
+:asciidoctorj-epub-name: Asciidoctorj-EPUB
+:asciidoctorj-pdf-name: Asciidoctorj-PDF
+:asciidoctorj-pdf-leanpub: Asciidoctorj Leanpub
+:asciidoctorjs-name: Asciidoctor.js
+:gradle-url: http://gradle.org/
+:icons: font
+:issues: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/
+:issues-asciidoctorj: https://github.com/asciidoctor/asciidoctorj/issues/
+:issues-jruby: https://github.com/asciidoctor/asciidoctorj/issues/
+:jruby-name: JRuby
+:kotlindsl: https://github.com/gradle/kotlin-dsl[Gradle Kotlin DSL]
+:lightguard: https://github.com/LightGuard[Jason Porter]
+:linkattrs:
+:lordofthejars: https://github.com/lordofthejars[Alex Soto]
+:plugin-name: Asciidoctor Gradle plugin
+:project-full-path: asciidoctor/asciidoctor-gradle-plugin
+:project-name: asciidoctor-gradle-plugin

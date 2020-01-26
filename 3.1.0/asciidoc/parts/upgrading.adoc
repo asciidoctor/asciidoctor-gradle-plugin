@@ -1,0 +1,76 @@
+
+== Upgrading From Older Versions of Asciidoctor
+
+NOTE: If you are still on a 1.5/1.6 version of the plugin, upgrade to the latest 2.x version first.
+
+If you are on 2.x version, upgradle to the latest 2.x first and ensure that you have corrected all of the deprecation warnings.
+
+If you have {asciidoctorj-name} binary extensions you'll need to recompile them against {asciidoctorj-name} v2.0+ in order to use them with the v.3x version of the plugins.
+
+
+[cols="4*"]
+|===
+| *Old name* | *New name* | *Substituable* | *Usage*
+| `projectdir` | `gradle-projectdir` | No | The Gradle project directory which is running the Asciidoctor task.
+| `rootdir` | `gradle-rootdir` | No | The rootproject directory in a multi-project build.
+| `project-name` | `gradle-project-name` | Yes | The name of the current Gradle subproject. (Or the root project in case of a single project).
+| `project-group` | `gradle-project-group` | Yes | The project/artifact group if it is defined.
+| `project-version` | `revnumber` | Yes | The project version if it is defined.
+| - | `gradle-relative-srcdir` | No | The relative path from the parent of the current document that is being processed to the source document root. It is calcluated as moving from the current document towards the root. For instance `src/docs/asciidoc/subdir/sample.adoc` will set this attribute to `..` if `sourceDir` == `src/docs/asciidoc`.
+|===
+
+Substitutable attributes means that the build script author can change those attributes by setting them explicitly.
+
+=== Asciidoctor compatibility tasks
+
+The Asciidoctor compatibility task has been removed. You need to use the Asciidoctor task from `org.asciidoctor.jvm.convert` instead.
+
+=== GEMs
+
+If you used external GEMs via the http://jruby-gradle.github.io/[JRuby Gradle plugin], you should switch over to using `org.asciidoctor.jvm.gems` instead. You should also use the `asciidoctorGems` configuration rather than the `gems` configuration. Tasks should not depend on `JRubyPrepare`, but on `AsciidoctorGemsPrepare` instead.
+
+If you have the following in your build
+
+[source,groovy]
+----
+plugins {
+    id 'org.asciidoctor.jvm.gems' version '2.4.1'
+    id 'com.github.jruby-gradle.base' version '1.7.0'
+}
+
+repositories {
+    rubygems('https://rubygems.org')
+}
+----
+
+then change it to
+
+[source,groovy]
+[subs=attributes+]
+----
+plugins {
+    id 'org.asciidoctor.jvm.gems' version '{revnumber}'
+}
+
+repositories {
+    ruby.gems()
+}
+----
+
+=== Reveal.js
+
+Follows the same guidelines as for GEMS above.
+
+=== Configurations
+
+The `asciidoctor` configuration is no longer available. If you used that before to make artifacts available on the classpath you should use the `configurations` method on the task to add them. If you used it to manipulate versions of {asciidoctorj-name} and JRuby then you should rather use the explicit versions settings on `asciidoctorj`.
+
+=== Multiple Asciidoctor tasks
+
+If you have more than one Asciidoctor task, decide which `options`, `attributes` and `requires` should go in the `asciidoctorj` global project extension block and which should be customised within the tasks `asciidoctor` extension block.
+
+Importantly, you probably did `import org.asciidoctor.gradle.AsciidoctorTask`. You will need to change that to `import org.asciidoctor.gradle.jvm.AsciidoctorTask`.
+
+=== Extensions
+
+Extensions on the Gradle classpath are no longer detected. You need to declare them explicitly. This includes any extensions created in `buildSrc`.
