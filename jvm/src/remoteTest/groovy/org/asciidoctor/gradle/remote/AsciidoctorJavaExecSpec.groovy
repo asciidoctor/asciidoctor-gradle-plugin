@@ -15,6 +15,7 @@
  */
 package org.asciidoctor.gradle.remote
 
+import org.asciidoctor.gradle.base.process.LoggerSeverity
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
 import org.asciidoctor.gradle.remote.internal.RemoteSpecification
 
@@ -56,6 +57,21 @@ class AsciidoctorJavaExecSpec extends RemoteSpecification {
     void 'Requires a serialised execution specification'() {
         when:
         AsciidoctorJavaExec.main(new String[0])
+
+        then:
+        thrown(AsciidoctorRemoteExecutionException)
+    }
+
+    void 'Should throw an exception when failure level is reached or exceeded'() {
+        given:
+        Map asciidoc = getProject(testProjectDir.root)
+        AsciidoctorJavaExec aje = new AsciidoctorJavaExec(new ExecutorConfigurationContainer(
+                getExecutorConfiguration(HTML, asciidoc.src, new File(asciidoc.outputDir, OUTPUT_HTML), null,
+                        LoggerSeverity.INFO)
+        ))
+
+        when:
+        aje.run()
 
         then:
         thrown(AsciidoctorRemoteExecutionException)

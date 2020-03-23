@@ -85,6 +85,7 @@ generateModuleVersions {
 dependencies {
     remoteTestCompile "org.asciidoctor:asciidoctorj:${compileOnlyAsciidoctorJVersion}"
     remoteTestCompile project(':testfixtures-jvm')
+    remoteTestCompile project(':asciidoctor-gradle-base')
     remoteTestRuntime "org.asciidoctor:asciidoctorj-groovy-dsl:${compileOnlyGroovyDslVersion}", {
         exclude module: 'groovy-all'
     }
