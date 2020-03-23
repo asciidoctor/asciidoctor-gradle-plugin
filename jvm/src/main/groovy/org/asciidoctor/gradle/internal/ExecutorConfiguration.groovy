@@ -53,6 +53,7 @@ class ExecutorConfiguration implements Serializable, Cloneable {
     List<Object> asciidoctorExtensions
 
     ExecutorLogLevel executorLogLevel
+    int failureLevel
 
     String toString() {
         """backend(s) = ${backendName}

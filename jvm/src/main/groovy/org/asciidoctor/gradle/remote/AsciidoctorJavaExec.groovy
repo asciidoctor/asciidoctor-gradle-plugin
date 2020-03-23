@@ -54,6 +54,7 @@ class AsciidoctorJavaExec extends ExecutorBase {
     }
 
     void run() {
+        failureLevel = findHighestFailureLevel(runConfigurations*.failureLevel.toList())
         Thread.currentThread().contextClassLoader = this.class.classLoader
         Asciidoctor asciidoctor = asciidoctorInstance
         addRequires(asciidoctor)
@@ -71,6 +72,7 @@ class AsciidoctorJavaExec extends ExecutorBase {
             runConfiguration.outputDir.mkdirs()
             convertFiles(asciidoctor, runConfiguration)
             asciidoctor.unregisterLogHandler(lh)
+            failOnFailureLevelReachedOrExceeded()
             failOnWarnings()
         }
     }
