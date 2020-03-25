@@ -30,8 +30,8 @@ import static org.asciidoctor.log.Severity.*
 @CompileStatic
 class LogSeverityMapper {
 
-    static ExecutorLogLevel translateAsciidoctorLogLevel(Severity sev) {
-        switch (sev) {
+    static ExecutorLogLevel translateAsciidoctorLogLevel(Severity severity) {
+        switch (severity) {
             case DEBUG:
                 ExecutorLogLevel.DEBUG
                 break
@@ -47,6 +47,23 @@ class LogSeverityMapper {
             case ERROR:
             default:
                 ExecutorLogLevel.ERROR
+        }
+    }
+
+    static Severity getSeverityOf(int severityLevel) {
+        switch (severityLevel) {
+            case 0:
+                return DEBUG
+            case 1:
+                return INFO
+            case 2:
+                return WARN
+            case 3:
+                return ERROR
+            case 4:
+                return FATAL
+            default:
+                return ERROR
         }
     }
 }

@@ -15,7 +15,6 @@
  */
 package org.asciidoctor.gradle.remote.internal
 
-import org.asciidoctor.gradle.base.process.LoggerSeverity
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
 import org.junit.Rule
@@ -84,8 +83,7 @@ in a subdirectory
 
     @SuppressWarnings('Println')
     ExecutorConfiguration getExecutorConfiguration(
-        final String backend, File srcFile, File outputFile, File gemDir,
-        LoggerSeverity failureLevel = LoggerSeverity.FATAL
+        final String backend, File srcFile, File outputFile, File gemDir, int failureLevel = 4 // FATAL
     ) {
         boolean altOptions = gemDir != null
         List<String> requires = []
@@ -107,7 +105,7 @@ in a subdirectory
             sourceTree: [srcFile, new File(srcFile.parentFile, "subdir/${INPUT_DOC2}")],
             logDocuments: altOptions,
             executorLogLevel: DEBUG,
-            failureLevel: failureLevel.level,
+            failureLevel: failureLevel,
             requires: requires,
             gemPath: (altOptions ? gemDir.absolutePath : '')
         )
