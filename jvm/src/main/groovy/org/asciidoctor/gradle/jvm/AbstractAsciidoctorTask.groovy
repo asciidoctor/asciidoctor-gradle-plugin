@@ -22,7 +22,6 @@ import org.asciidoctor.gradle.base.AbstractAsciidoctorBaseTask
 import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
 import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.base.internal.Workspace
-import org.asciidoctor.gradle.base.process.LoggerSeverity
 import org.asciidoctor.gradle.base.process.ProcessMode
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
@@ -31,6 +30,7 @@ import org.asciidoctor.gradle.internal.JavaExecUtils
 import org.asciidoctor.gradle.remote.AsciidoctorJExecuter
 import org.asciidoctor.gradle.remote.AsciidoctorJavaExec
 import org.asciidoctor.gradle.remote.AsciidoctorRemoteExecutionException
+import org.asciidoctor.log.Severity
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.artifacts.Configuration
@@ -70,16 +70,16 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
     public final static ProcessMode OUT_OF_PROCESS = ProcessMode.OUT_OF_PROCESS
     public final static ProcessMode JAVA_EXEC = ProcessMode.JAVA_EXEC
 
-    public final static LoggerSeverity FATAL = LoggerSeverity.FATAL
-    public final static LoggerSeverity ERROR = LoggerSeverity.ERROR
-    public final static LoggerSeverity WARN = LoggerSeverity.WARN
-    public final static LoggerSeverity INFO = LoggerSeverity.INFO
+    public final static Severity FATAL = Severity.FATAL
+    public final static Severity ERROR = Severity.ERROR
+    public final static Severity WARN = Severity.WARN
+    public final static Severity INFO = Severity.INFO
 
     protected final static GradleVersion LAST_GRADLE_WITH_CLASSPATH_LEAKAGE = GradleVersion.version(('5.99'))
 
     protected final AsciidoctorJExtension asciidoctorj
     private ProcessMode inProcess = JAVA_EXEC
-    private LoggerSeverity failureLevel = LoggerSeverity.FATAL
+    private Severity failureLevel = Severity.FATAL
     private final WorkerExecutor worker
     private final List<Object> asciidocConfigurations = []
 
@@ -118,7 +118,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
      *
      * @param severity {@link #FATAL}, {@link #ERROR} or {@link #WARN} or {@link #INFO}.
      */
-    void setFailureLevel(LoggerSeverity severity) {
+    void setFailureLevel(Severity severity) {
         this.failureLevel = severity
     }
 
@@ -127,7 +127,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
      * @param severity Case-insensitive string from of {@link #FATAL}, {@link #ERROR} or {@link #WARN} or {@link #INFO}.
      */
     void setFailureLevel(String severity) {
-        this.failureLevel = LoggerSeverity.valueOf(severity.toUpperCase(Locale.US))
+        this.failureLevel = Severity.valueOf(severity.toUpperCase(Locale.US))
     }
 
     /** Get the minimum logging level that will fail the task.
@@ -136,7 +136,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
      * The default mode is {@link #FATAL}.
      */
     @Internal
-    LoggerSeverity getFailureLevel() {
+    Severity getFailureLevel() {
         this.failureLevel
     }
 
@@ -426,7 +426,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
             projectDir: project.projectDir,
             rootDir: project.rootProject.projectDir,
             options: evaluateProviders(options),
-            failureLevel: failureLevel.level,
+            failureLevel: getSeverityLevel(),
             attributes: preparePreserialisedAttributes(workingSourceDir, lang),
             backendName: backendName,
             logDocuments: logDocuments,
@@ -439,6 +439,23 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
             executorLogLevel: ExecutorUtils.getExecutorLogLevel(asciidoctorj.logLevel),
             safeModeLevel: asciidoctorj.safeMode.level
         )
+    }
+
+    @Internal
+    private int getSeverityLevel() {
+        switch (failureLevel) {
+            case Severity.DEBUG:
+                return 0
+            case Severity.INFO:
+                return 1
+            case Severity.WARN:
+                return 2
+            case Severity.ERROR:
+            case Severity.UNKNOWN:
+                return 3
+            case Severity.FATAL:
+                return 4
+        }
     }
 
     /** Returns all of the associated extensionRegistry.
