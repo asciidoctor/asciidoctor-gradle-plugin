@@ -22,6 +22,7 @@ import org.asciidoctor.gradle.base.AbstractAsciidoctorBaseTask
 import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
 import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.base.internal.Workspace
+import org.asciidoctor.gradle.base.log.Severity
 import org.asciidoctor.gradle.base.process.ProcessMode
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
@@ -30,7 +31,6 @@ import org.asciidoctor.gradle.internal.JavaExecUtils
 import org.asciidoctor.gradle.remote.AsciidoctorJExecuter
 import org.asciidoctor.gradle.remote.AsciidoctorJavaExec
 import org.asciidoctor.gradle.remote.AsciidoctorRemoteExecutionException
-import org.asciidoctor.log.Severity
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.artifacts.Configuration
@@ -426,7 +426,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
             projectDir: project.projectDir,
             rootDir: project.rootProject.projectDir,
             options: evaluateProviders(options),
-            failureLevel: getSeverityLevel(),
+            failureLevel: failureLevel.level,
             attributes: preparePreserialisedAttributes(workingSourceDir, lang),
             backendName: backendName,
             logDocuments: logDocuments,
@@ -439,23 +439,6 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
             executorLogLevel: ExecutorUtils.getExecutorLogLevel(asciidoctorj.logLevel),
             safeModeLevel: asciidoctorj.safeMode.level
         )
-    }
-
-    @Internal
-    private int getSeverityLevel() {
-        switch (failureLevel) {
-            case Severity.DEBUG:
-                return 0
-            case Severity.INFO:
-                return 1
-            case Severity.WARN:
-                return 2
-            case Severity.ERROR:
-            case Severity.UNKNOWN:
-                return 3
-            case Severity.FATAL:
-                return 4
-        }
     }
 
     /** Returns all of the associated extensionRegistry.
