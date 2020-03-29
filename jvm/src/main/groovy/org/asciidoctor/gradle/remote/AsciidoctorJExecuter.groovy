@@ -50,6 +50,7 @@ class AsciidoctorJExecuter extends ExecutorBase implements Runnable {
     void run() {
         Thread.currentThread().contextClassLoader = asciidoctorClassLoader
         logLevel = findHighestLogLevel(runConfigurations*.executorLogLevel)
+        failureLevel = findHighestFailureLevel(runConfigurations*.failureLevel.toList())
         logClasspath(Thread.currentThread().contextClassLoader)
         if (runConfigurations.size() == 1) {
             runSingle()
@@ -122,6 +123,7 @@ class AsciidoctorJExecuter extends ExecutorBase implements Runnable {
             }
         }
 
+        failOnFailureLevelReachedOrExceeded()
         failOnWarnings()
     }
 
@@ -162,6 +164,7 @@ class AsciidoctorJExecuter extends ExecutorBase implements Runnable {
                 }
             }
 
+            failOnFailureLevelReachedOrExceeded()
             failOnWarnings()
         }
     }

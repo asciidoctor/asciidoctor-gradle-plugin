@@ -22,6 +22,7 @@ import org.asciidoctor.gradle.base.AbstractAsciidoctorBaseTask
 import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
 import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.base.internal.Workspace
+import org.asciidoctor.gradle.base.log.Severity
 import org.asciidoctor.gradle.base.process.ProcessMode
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
@@ -69,10 +70,16 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
     public final static ProcessMode OUT_OF_PROCESS = ProcessMode.OUT_OF_PROCESS
     public final static ProcessMode JAVA_EXEC = ProcessMode.JAVA_EXEC
 
+    public final static Severity FATAL = Severity.FATAL
+    public final static Severity ERROR = Severity.ERROR
+    public final static Severity WARN = Severity.WARN
+    public final static Severity INFO = Severity.INFO
+
     protected final static GradleVersion LAST_GRADLE_WITH_CLASSPATH_LEAKAGE = GradleVersion.version(('5.99'))
 
     protected final AsciidoctorJExtension asciidoctorj
     private ProcessMode inProcess = JAVA_EXEC
+    private Severity failureLevel = Severity.FATAL
     private final WorkerExecutor worker
     private final List<Object> asciidocConfigurations = []
 
@@ -105,6 +112,32 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
     @Internal
     ProcessMode getInProcess() {
         this.inProcess
+    }
+
+    /** Set the minimum logging level that will fail the task.
+     *
+     * @param severity {@link #FATAL}, {@link #ERROR} or {@link #WARN} or {@link #INFO}.
+     */
+    void setFailureLevel(Severity severity) {
+        this.failureLevel = severity
+    }
+
+    /** Set the minimum logging level that will fail the task.
+     *
+     * @param severity Case-insensitive string from of {@link #FATAL}, {@link #ERROR} or {@link #WARN} or {@link #INFO}.
+     */
+    void setFailureLevel(String severity) {
+        this.failureLevel = Severity.valueOf(severity.toUpperCase(Locale.US))
+    }
+
+    /** Get the minimum logging level that will fail the task.
+     *
+     * Valid options are {@link #FATAL}, {@link #ERROR} or {@link #WARN} or {@link #INFO}.
+     * The default mode is {@link #FATAL}.
+     */
+    @Internal
+    Severity getFailureLevel() {
+        this.failureLevel
     }
 
     /** Set the mode for running conversions sequential or in parallel.
@@ -393,6 +426,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
             projectDir: project.projectDir,
             rootDir: project.rootProject.projectDir,
             options: evaluateProviders(options),
+            failureLevel: failureLevel.level,
             attributes: preparePreserialisedAttributes(workingSourceDir, lang),
             backendName: backendName,
             logDocuments: logDocuments,

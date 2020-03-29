@@ -60,4 +60,18 @@ class AsciidoctorJavaExecSpec extends RemoteSpecification {
         then:
         thrown(AsciidoctorRemoteExecutionException)
     }
+
+    void 'Should throw an exception when failure level is reached or exceeded'() {
+        given:
+        Map asciidoc = getProject(testProjectDir.root)
+        AsciidoctorJavaExec aje = new AsciidoctorJavaExec(new ExecutorConfigurationContainer(
+                getExecutorConfiguration(HTML, asciidoc.src, new File(asciidoc.outputDir, OUTPUT_HTML), null, 1)
+        ))
+
+        when:
+        aje.run()
+
+        then:
+        thrown(AsciidoctorRemoteExecutionException)
+    }
 }

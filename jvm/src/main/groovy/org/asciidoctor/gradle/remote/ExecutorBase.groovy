@@ -23,6 +23,7 @@ import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
 import org.asciidoctor.gradle.internal.ExecutorLogLevel
 import org.asciidoctor.log.LogHandler
 import org.asciidoctor.log.LogRecord
+import org.asciidoctor.log.Severity
 
 import java.util.regex.Pattern
 
@@ -38,6 +39,9 @@ abstract class ExecutorBase {
 
     private final List<String> warningMessages = []
     private final List<Pattern> messagePatterns = []
+
+    protected int maxSeverityLevel = 0 // DEBUG
+    protected int failureLevel = 4 // FATAL
 
     /**  List of configurations that are required for execution.
      *
@@ -151,7 +155,9 @@ abstract class ExecutorBase {
             @Override
             void log(LogRecord logRecord) {
                 ExecutorLogLevel logLevel = LogSeverityMapper.translateAsciidoctorLogLevel(logRecord.severity)
-
+                if (logLevel.level > maxSeverityLevel) {
+                    maxSeverityLevel = logLevel.level
+                }
                 if (logLevel.level >= requiredLevel) {
                     String msg = logRecord.message
                     Cursor cursor = logRecord.cursor
@@ -222,5 +228,21 @@ abstract class ExecutorBase {
                 warningMessages.join("\n- ")
             throw new AsciidoctorRemoteExecutionException(msg)
         }
+    }
+
+    /** If failure level is reached or exceed, fail with an exception.
+     *
+     */
+    protected void failOnFailureLevelReachedOrExceeded() {
+        if (maxSeverityLevel >= failureLevel) {
+            Severity maxSeverity = LogSeverityMapper.getSeverityOf(maxSeverityLevel)
+            Severity failureSeverity = LogSeverityMapper.getSeverityOf(failureLevel)
+            throw new AsciidoctorRemoteExecutionException('ERROR: Failure level reached or exceeded: ' +
+                    "${maxSeverity} >= $failureSeverity")
+        }
+    }
+
+    protected int findHighestFailureLevel(Iterable<Integer> levels) {
+        levels.min() as int
     }
 }

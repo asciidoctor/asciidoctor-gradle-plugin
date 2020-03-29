@@ -62,6 +62,12 @@ in a subdirectory
         [src: new File(src, INPUT_DOC), outputDir: output, gemPath: gemDir]
     }
 
+    ExecutorConfigurationContainer getContainerSingleEntryWithFailureLevel(File srcFile, File outputDir) {
+        new ExecutorConfigurationContainer(
+                getExecutorConfiguration(HTML, srcFile, new File(outputDir, OUTPUT_HTML), null)
+        )
+    }
+
     ExecutorConfigurationContainer getContainerSingleEntry(File srcFile, File outputDir) {
         new ExecutorConfigurationContainer(
             getExecutorConfiguration(HTML, srcFile, new File(outputDir, OUTPUT_HTML), null)
@@ -77,7 +83,7 @@ in a subdirectory
 
     @SuppressWarnings('Println')
     ExecutorConfiguration getExecutorConfiguration(
-        final String backend, File srcFile, File outputFile, File gemDir
+        final String backend, File srcFile, File outputFile, File gemDir, int failureLevel = 4 // FATAL
     ) {
         boolean altOptions = gemDir != null
         List<String> requires = []
@@ -99,6 +105,7 @@ in a subdirectory
             sourceTree: [srcFile, new File(srcFile.parentFile, "subdir/${INPUT_DOC2}")],
             logDocuments: altOptions,
             executorLogLevel: DEBUG,
+            failureLevel: failureLevel,
             requires: requires,
             gemPath: (altOptions ? gemDir.absolutePath : '')
         )
