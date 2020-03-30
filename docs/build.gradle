@@ -3,6 +3,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 plugins {
     id 'idea'
     id 'org.asciidoctor.jvm.convert' apply false
+    id 'org.asciidoctor.editorconfig' apply false
     id 'org.ajoberstar.git-publish' version '2.1.1' apply false
 }
 
@@ -15,6 +16,7 @@ ext {
     asciidoctorCombinedDocsDir = file("${buildDir}/docs/combined")
 
     docProjects = [
+        'asciidoctoreditorconfig',
         'base', 'jvm', 'jvm-epub', 'jvm-gems',  'jvm-pdf',
         'jvm-leanpub',
         'jvm-slides', 'slides-export',
@@ -29,8 +31,9 @@ allprojects {
 }
 
 apply plugin: 'org.asciidoctor.jvm.convert'
+apply plugin: 'org.asciidoctor.editorconfig'
 apply from: "${rootDir}/gradle/utilities.gradle"
-apply from: "${rootDir}/gradle/asciidoctor-config.gradle"
+//apply from: "${rootDir}/gradle/asciidoctor-config.gradle"
 
 configurations {
     asciidocExtensions
@@ -131,4 +134,9 @@ task combineDocs (type : Sync) {
     }
 }
 
-
+asciidoctorEditorConfig {
+    attributes revnumber: project.version
+    additionalAttributes 'src/docs/asciidoc/attributes.adoc'
+    additionalAttributes asciidoctor.asciidoctorj
+    dependsOn prepareSources
+}
