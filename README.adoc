@@ -1,7 +1,7 @@
 = Asciidoctor Gradle Plugin
 Andres Almiray <https://github.com/aalmiray[@aalmiray]>
-:version: 3.1.0
-:version-published: 3.1.0
+:version: 3.2.0
+:version-published: 3.2.0
 :asciidoc-url: http://asciidoc.org
 :asciidoctor-url: http://asciidoctor.org
 :issues: https://github.com/asciidoctor/asciidoctor-maven-plugin/issues
