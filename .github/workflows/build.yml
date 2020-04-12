@@ -81,7 +81,7 @@ jobs:
           build-root-directory: docs
           arguments: asciidoctor
       # Stop gradlew to avoid locking issues
-      - name: Test
+      - name: Cleanup
         uses: eskatos/gradle-command-action@v1
         with:
           arguments: --stop
