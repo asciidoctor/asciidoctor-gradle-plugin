@@ -39,7 +39,6 @@ codenarc {
     sourceSets = [project.sourceSets.main]
 }
 
-
 tasks.withType(CodeNarc) { codenarcSourceSetTask ->
     def reportName = (codenarcSourceSetTask.name - 'codenarc').uncapitalize()
     def ideReport = reports.add(org.gradle.api.reporting.internal.TaskGeneratedSingleFileReport, 'ide', reports.task)
@@ -56,7 +55,6 @@ pluginManager.withPlugin('jacoco') {
         mustRunAfter test
     }
 }
-
 
 task codenarcAll {
     group 'verification'

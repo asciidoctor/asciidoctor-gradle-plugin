@@ -31,7 +31,7 @@ jobs:
         uses: eskatos/gradle-command-action@v1
         with:
           arguments: --console=plain -S codenarcAll
-  build-window:
+  build-windows:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v1
@@ -81,7 +81,7 @@ jobs:
           build-root-directory: docs
           arguments: asciidoctor
       # Stop gradlew to avoid locking issues
-      - name: Test
+      - name: Cleanup
         uses: eskatos/gradle-command-action@v1
         with:
           arguments: --stop

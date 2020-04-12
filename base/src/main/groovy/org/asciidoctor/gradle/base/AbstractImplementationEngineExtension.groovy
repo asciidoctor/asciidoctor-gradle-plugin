@@ -29,7 +29,9 @@ import static org.ysb33r.grolifant.api.StringUtils.stringize
  * @since 3.0
  */
 @CompileStatic
-abstract class AbstractImplementationEngineExtension extends AbstractCombinedProjectTaskExtension {
+abstract class AbstractImplementationEngineExtension
+    extends AbstractCombinedProjectTaskExtension
+    implements AsciidoctorAttributeProvider {
 
     private SafeMode safeMode
     private final Map<String, String> defaultVersionMap

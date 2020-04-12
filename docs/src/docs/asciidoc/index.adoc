@@ -39,6 +39,8 @@ include::parts/asciidoctorj-custom-extensions.adoc[]
 
 include::parts/asciidoctorjs-plugin.adoc[]
 
+include::parts/asciidoctoreditorconfig-plugin.adoc[]
+
 include::parts/docinfo.adoc[]
 
 include::parts/upgrading.adoc[]

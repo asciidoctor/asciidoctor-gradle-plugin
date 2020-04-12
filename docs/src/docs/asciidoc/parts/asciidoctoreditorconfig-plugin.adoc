@@ -1,0 +1,47 @@
+== The Asciidoctor Editor Config Plugin
+
+[source,groovy,role="primary"]
+[subs=attributes+]
+.build.gradle
+----
+plugins {
+    id 'org.asciidoctor.editorconfig' version '{revnumber}'
+}
+----
+
+[source,kotlin,role="secondary"]
+[subs=attributes+]
+.build.gradle.kts
+----
+plugins {
+    id("org.asciidoctor.editorconfig") version "{revnumber}"
+}
+----
+
+Writes an `.asciidoctorconfig` file so that supporting IDEs can render Asciidoctor-based documentation correctly.
+
+=== Adding attributes
+
+[source,groovy,role="primary"]
+----
+asciidoctorEditorConfig {
+  attributes foo1: 'bar1', foo2: 'bar2' // <1>
+
+  additionalAttributes asciidoctorj // <2>
+
+  additionalAttributes 'src/docs/asciidoc/attributes.adoc' // <3>
+}
+----
+<1> Adds predefined attributes. These attributes are added first to the generated file.
+<2> Adds all attributes defined on the project extension to the generated file. These attributes are added after the predefined attributes.
+<3> Appends the context of the specified file to the generated file. Context such as this is added last. This method also allows you to definde a number of attributes in your source directory and include them in your main Asciidoc file as well as send them to `.asciidoctorconfig`.
+
+
+=== Changing the output directory
+
+[source,groovy,role="primary"]
+----
+asciidoctorEditorConfig {
+  destinationDir = 'docs'
+}
+----
