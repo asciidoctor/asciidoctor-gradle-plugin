@@ -49,6 +49,6 @@ The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to 
 Documentation:: We are migrating our documentation to the new Asciidoctor Antora-based site when it is ready. In the meantime you can read a snapshot of the new documentation at {asciidoctor-development-docs}{github-branch}
 
 ifdef::env-github[]
-Structure:: `master` now represents the code for the latest 3.x release of these plugins. Development for for 3.x is against the link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/development-3.x[{github-branch}] branch. PRs are preferably taking against this branch. The 2.x & 1.5.x series of the plugin is now in maintenance only mode. PRs for that should be raised against the respective link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/development-2.x[development-2.x] and https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/maintenance-1.5[maintenance-1.5] branches.
+Structure:: `master` now represents the code for the latest 3.x release of these plugins. Development for for 3.x is against the link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/development-3.x[{github-branch}] branch. PRs are preferably taking against this branch. The 2.x & 1.5.x series of the plugin is now in maintenance only mode. PRs for that should be raised against the respective link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/maintenance-2.x[maintenance-2.x] and https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/maintenance-1.5[maintenance-1.5] branches.
 endif::[]
 
