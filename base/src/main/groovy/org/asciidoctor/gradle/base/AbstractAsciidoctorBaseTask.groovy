@@ -135,7 +135,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      *
      */
     @Internal
-    @ReplacedBy("outputDirProperty")
+    @ReplacedBy('outputDirProperty')
     File getOutputDir() {
         this.outDir.asFile.get()
     }
@@ -663,11 +663,11 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
     @CompileDynamic
     @Internal
     protected CopySpec getDefaultResourceCopySpec(Optional<String> lang) {
-        def copySpec = services.get(FileOperations).copySpec()
+        CopySpec copySpec = services.get(FileOperations).copySpec()
         copySpec.from(lang.present ? new File(sourceDir, lang.get()) : sourceDir) {
             include 'images/**'
         }
-        return copySpec
+        copySpec
     }
 
     /**

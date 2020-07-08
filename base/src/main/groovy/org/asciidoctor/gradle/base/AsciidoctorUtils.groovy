@@ -69,7 +69,7 @@ class AsciidoctorUtils {
      * @return A collection of suitable files.
      * @throw {@link GradleException} is files starting with undersocres are detected.
      */
-    static FileTree getSourceFileTree(final FileOperations fileOperations, final File sourceDir, final PatternSet filePatterns) {
+    static FileTree getSourceFileTree(FileOperations fileOperations, File sourceDir, PatternSet filePatterns) {
         FileTree ft = fileOperations.fileTree(sourceDir).
             matching(filePatterns).filter(ACCEPT_ONLY_FILES).asFileTree
 
