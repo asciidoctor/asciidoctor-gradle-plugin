@@ -23,6 +23,7 @@ import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileTree
 import org.gradle.api.file.FileVisitDetails
+import org.gradle.api.internal.file.FileOperations
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.specs.Spec
@@ -68,8 +69,8 @@ class AsciidoctorUtils {
      * @return A collection of suitable files.
      * @throw {@link GradleException} is files starting with undersocres are detected.
      */
-    static FileTree getSourceFileTree(final Project project, final File sourceDir, final PatternSet filePatterns) {
-        FileTree ft = project.fileTree(sourceDir).
+    static FileTree getSourceFileTree(final FileOperations fileOperations, final File sourceDir, final PatternSet filePatterns) {
+        FileTree ft = fileOperations.fileTree(sourceDir).
             matching(filePatterns).filter(ACCEPT_ONLY_FILES).asFileTree
 
         ft.visit { FileVisitDetails it ->
