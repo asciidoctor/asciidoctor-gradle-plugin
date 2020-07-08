@@ -18,7 +18,6 @@ package org.asciidoctor.gradle.base
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.basedir.BaseDirFollowsProject
-import org.asciidoctor.gradle.base.basedir.BaseDirFollowsRootProject
 import org.asciidoctor.gradle.base.basedir.BaseDirIsFixedPath
 import org.asciidoctor.gradle.base.basedir.BaseDirIsNull
 import org.asciidoctor.gradle.base.internal.Workspace
@@ -32,6 +31,7 @@ import org.gradle.api.file.CopySpec
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileTree
 import org.gradle.api.file.FileTreeElement
+import org.gradle.api.file.ProjectLayout
 import org.gradle.api.internal.file.FileOperations
 import org.gradle.api.model.ReplacedBy
 import org.gradle.api.provider.Provider
@@ -47,6 +47,7 @@ import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.api.tasks.util.PatternSet
+import org.gradle.internal.file.PathToFileResolver
 import org.gradle.util.GradleVersion
 import org.ysb33r.grolifant.api.FileUtils
 import org.ysb33r.grolifant.api.StringUtils
@@ -78,7 +79,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
 
     private final DirectoryProperty srcDir
     private final DirectoryProperty outDir
-    private BaseDirStrategy baseDir
+    private BaseDirStrategy baseDir = new BaseDirFollowsProject(project.layout)
     private PatternSet sourceDocumentPattern
     private PatternSet secondarySourceDocumentPattern
     private CopySpec resourceCopy
@@ -167,7 +168,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         if (!languages.empty) {
             throw new AsciidoctorMultiLanguageException('Use getBaseDir(lang) instead')
         }
-        this.baseDir ? this.baseDir.baseDir : project.projectDir
+        this.baseDir.baseDir
     }
 
     /** Base directory (current working directory) for a conversion.
@@ -179,7 +180,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * @return Language-dependent base directory
      */
     File getBaseDir(String lang) {
-        this.baseDir ? this.baseDir.getBaseDir(lang) : project.projectDir
+        this.baseDir.getBaseDir(lang)
     }
 
     /** Sets the base directory for a conversion.
@@ -187,7 +188,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * The base directory is used by AsciidoctorJ to set a current working directory for
      * a conversion.
      *
-     * If never set, then {@code project.projectDir} will be assumed to be the base directory.
+     * If never set, then {@link ProjectLayout#getProjectDirectory()} will be assumed to be the base directory.
      *
      * @param f Base directory
      */
@@ -200,9 +201,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
                 this.baseDir = BaseDirIsNull.INSTANCE
                 break
             default:
-                this.baseDir = new BaseDirIsFixedPath(project.providers.provider({
-                    project.file(f)
-                } as Callable<File>))
+                this.baseDir = new BaseDirIsFixedPath(project.provider { services.get(PathToFileResolver).resolve(f) })
         }
     }
 
@@ -213,7 +212,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * @since 2.2.0
      */
     void baseDirIsRootProjectDir() {
-        this.baseDir = new BaseDirFollowsRootProject(project)
+        this.baseDir = new BaseDirFollowsProject(project.rootProject.layout)
     }
 
     /** Sets the basedir to be the same directory as the current project directory.
@@ -223,7 +222,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * @since 2.2.0
      */
     void baseDirIsProjectDir() {
-        this.baseDir = new BaseDirFollowsProject(project)
+        this.baseDir = new BaseDirFollowsProject(project.layout)
     }
 
     /** The base dir will be the same as the source directory.

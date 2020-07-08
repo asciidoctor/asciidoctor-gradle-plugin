@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.base.basedir
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.BaseDirStrategy
 import org.gradle.api.Project
+import org.gradle.api.file.ProjectLayout
 
 /** Strategy where the project directory is always to be base directory
  * for asciidoctor conversions.
@@ -29,10 +30,10 @@ import org.gradle.api.Project
 @CompileStatic
 class BaseDirFollowsProject implements BaseDirStrategy {
 
-    private final Project project
+    private final ProjectLayout projectLayout
 
-    BaseDirFollowsProject(Project project) {
-        this.project = project
+    BaseDirFollowsProject(ProjectLayout projectLayout) {
+        this.projectLayout = projectLayout
     }
 
     /** Base directory location.
@@ -41,7 +42,7 @@ class BaseDirFollowsProject implements BaseDirStrategy {
      */
     @Override
     File getBaseDir() {
-        project.projectDir
+        projectLayout.projectDirectory.asFile
     }
 
     /** Base directory location.
