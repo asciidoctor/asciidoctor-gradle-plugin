@@ -32,6 +32,7 @@ import org.gradle.api.file.CopySpec
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileTree
 import org.gradle.api.file.FileTreeElement
+import org.gradle.api.internal.file.FileOperations
 import org.gradle.api.model.ReplacedBy
 import org.gradle.api.provider.Provider
 import org.gradle.api.specs.Spec
@@ -663,11 +664,11 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
     @CompileDynamic
     @Internal
     protected CopySpec getDefaultResourceCopySpec(Optional<String> lang) {
-        project.copySpec {
-            from(lang.present ? new File(sourceDir, lang.get()) : sourceDir) {
-                include 'images/**'
-            }
+        def copySpec = services.get(FileOperations).copySpec()
+        copySpec.from(lang.present ? new File(sourceDir, lang.get()) : sourceDir) {
+            include 'images/**'
         }
+        return copySpec
     }
 
     /**
@@ -902,7 +903,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
 
         CopySpec langSpec = includeLang.present ? languageResources[includeLang.get()] : null
 
-        project.copy(new Action<CopySpec>() {
+        services.get(FileOperations).copy(new Action<CopySpec>() {
             @Override
             void execute(CopySpec copySpec) {
                 copySpec.with {
@@ -1124,7 +1125,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
             tmpDir.deleteDir()
         }
         tmpDir.mkdirs()
-        project.copy { CopySpec cs ->
+        services.get(FileOperations).copy { CopySpec cs ->
             cs.with {
                 into tmpDir
                 from mainSourceTree
