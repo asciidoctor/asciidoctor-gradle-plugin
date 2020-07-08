@@ -32,6 +32,7 @@ import org.gradle.api.file.CopySpec
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileTree
 import org.gradle.api.file.FileTreeElement
+import org.gradle.api.model.ReplacedBy
 import org.gradle.api.provider.Provider
 import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.Console
@@ -131,7 +132,8 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
     /** Returns the current toplevel output directory
      *
      */
-    @OutputDirectory
+    @Internal
+    @ReplacedBy("outputDirProperty")
     File getOutputDir() {
         this.outDir.asFile.get()
     }
@@ -147,7 +149,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
     /**
      * Returns the current toplevel output directory as a property object.
      */
-    @Internal
+    @OutputDirectory
     DirectoryProperty getOutputDirProperty() {
         this.outDir
     }
