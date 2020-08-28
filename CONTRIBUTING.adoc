@@ -1,0 +1,39 @@
+= Contributing
+// settings:
+:idprefix:
+:idseparator: -
+:source-language: ruby
+:language: {source-language}
+ifdef::env-github,env-browser[:outfilesuffix: .adoc]
+// URIs:
+:uri-repo: https://github.com/asciidoctor/asciidoctor
+:uri-help-base: https://help.github.com/articles
+:uri-issues: {uri-repo}/issues
+:uri-fork-help: {uri-help-base}/fork-a-repo
+:uri-branch-help: {uri-fork-help}#create-branches
+:uri-pr-help: {uri-help-base}/using-pull-requests
+:uri-gist: https://gist.github.com
+:uri-yard: https://yardoc.org
+:uri-tomdoc: http://tomdoc.org
+
+== License Agreement
+
+By contributing changes to this repository, you agree to license your contributions under the MIT license.
+This ensures your contributions have the same license as the project and that the community is free to use your contributions.
+You also assert that you are the original author of the work that you are contributing unless otherwise stated.
+
+== Submitting an Issue
+
+We use the {uri-issues}[issue tracker on GitHub] associated with this project to track bugs and features.
+Before submitting a bug report or feature request, check to make sure it hasn't already been submitted.
+When submitting a bug report, please include a {uri-gist}[Gist] that includes any details that may help reproduce the bug, including your operating system.
+
+== Submitting a Pull Request
+
+. Fork the repository.
+. Build the project using gradle.
+. After your updates are done run `gradlew -i codenarcAll`
+. Submit the merge request
+. If you made multiple commits make sure you squash the commits
+
+For ideas about how to use pull requests, see the post http://blog.quickpeople.co.uk/2013/07/10/useful-github-patterns[Useful GitHub Patterns].
