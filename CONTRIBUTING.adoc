@@ -7,14 +7,9 @@
 ifdef::env-github,env-browser[:outfilesuffix: .adoc]
 // URIs:
 :uri-repo: https://github.com/asciidoctor/asciidoctor
-:uri-help-base: https://help.github.com/articles
 :uri-issues: {uri-repo}/issues
-:uri-fork-help: {uri-help-base}/fork-a-repo
-:uri-branch-help: {uri-fork-help}#create-branches
-:uri-pr-help: {uri-help-base}/using-pull-requests
+:uri-squash-help: https://chris.beams.io/posts/git-commit/#seven-rules
 :uri-gist: https://gist.github.com
-:uri-yard: https://yardoc.org
-:uri-tomdoc: http://tomdoc.org
 
 == License Agreement
 
@@ -26,14 +21,26 @@ You also assert that you are the original author of the work that you are contri
 
 We use the {uri-issues}[issue tracker on GitHub] associated with this project to track bugs and features.
 Before submitting a bug report or feature request, check to make sure it hasn't already been submitted.
-When submitting a bug report, please include a {uri-gist}[Gist] that includes any details that may help reproduce the bug, including your operating system.
+When submitting a bug report, please include a {uri-gist}[Gist] that includes any details that may help reproduce the bug.
 
 == Submitting a Pull Request
 
 . Fork the repository.
-. Build the project using gradle.
-. After your updates are done run `gradlew -i codenarcAll`
-. Submit the merge request
+. Build the project `gradlew build`.
+. Before commits or pushes run `gradlew -i codenarcAll`
+  - If there are errors fix them
+  - It may be the case where the errors or warnings are necessary. If that is the case, ask before ignoring them
 . If you made multiple commits make sure you squash the commits
+  - See {uri-squash-help}[article about writing commit messages]
+. Submit the merge request
 
 For ideas about how to use pull requests, see the post http://blog.quickpeople.co.uk/2013/07/10/useful-github-patterns[Useful GitHub Patterns].
+
+== Coding Conventions
+
+. Deprecated methods should have updated javadoc indicating which method to use unstead. 
+. Tests using Spock framework should have full sentences without underscores
+. If you are adding a new test that fixes a created issue, add the link to the issue by writing
+  `@Issue(<link-to-the-issue-at-git)`
+. Update the author tag to the files you have created or updated.
+. Add `@Since <version-number>` to the file javadoc. 
