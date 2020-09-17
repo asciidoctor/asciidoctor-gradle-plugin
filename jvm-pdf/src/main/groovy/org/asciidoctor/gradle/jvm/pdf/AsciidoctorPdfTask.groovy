@@ -22,6 +22,7 @@ import org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask
 import org.asciidoctor.gradle.jvm.AsciidoctorJExtension
 import org.gradle.api.Project
 import org.gradle.api.UnknownDomainObjectException
+import org.gradle.api.file.FileCollection
 @java.lang.SuppressWarnings('NoWildcardImports')
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.util.PatternSet
@@ -32,14 +33,18 @@ import javax.inject.Inject
 
 /** Asciidoctor task that is specialises in PDF conversion.
  *
+ * @author Schalk W. Cronjé
+ * @author Gary Hale
+ * @author Halit Anil Dönmez
+ *
  * @since 2.0.0* @author Schalk W. Cronjé
  */
 @CacheableTask
 @CompileStatic
 class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
 
-    private Object fontsDir
     private String theme
+    private final List<Object> fontDirs = []
 
     @Inject
     AsciidoctorPdfTask(WorkerExecutor we) {
@@ -49,26 +54,67 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
         copyNoResources()
     }
 
-    /** The directory where custom are fonts to be found.
+    /** @Deprecated Use {@link #getFontsDirs()} instead
      *
-     * @return Directory or {@code null} is no directory was set.
-     */
-    @InputDirectory
-    @PathSensitive(PathSensitivity.RELATIVE)
-    @Optional
+     * @return Pdf font directory as a file
+     * @throws {@link PdfFontDirException} if there are either multiple directories or no directory for pdf font
+     * */
+    @Deprecated
     File getFontsDir() {
-        this.fontsDir != null ? project.file(this.fontsDir) : null
+        if (this.fontDirs.size() > 1) {
+            throw new PdfFontDirException('There is more than 1 file in the fonts directory')
+        }
+        if (this.fontDirs.empty) {
+            throw new PdfFontDirException('No directory is specified')
+        }
+        this.project.file(this.fontDirs.first())
     }
 
-    /** Specify a directory where to load custom fonts from.
+    /** @Deprecated Use {@link #setFontsDirs(java.lang.Iterable)} instead and specify the single directory
+     *
+     * Specify a directory where to load custom fonts from.
      *
      * This will set the {@code pdf-fontsdir} attribute
      *
      * @param f Directory where custom fonts can be found. anything convertible with {@link Project#file}
      *   can be used.
      */
+    @SuppressWarnings('UnnecessarySetter')
+    @Deprecated
     void setFontsDir(Object f) {
-        this.fontsDir = f
+        setFontsDirs(Arrays.asList(f))
+    }
+
+    /** Returns the directories or single directory for the fonts
+     *
+     * @return Directories for the pdf fonts
+     * */
+    @InputFiles
+    @PathSensitive(PathSensitivity.RELATIVE)
+    @Optional
+    FileCollection getFontsDirs() {
+        this.project.files(this.fontDirs)
+    }
+
+    /** Specify a directory or directories where to load custom fonts from.
+     *
+     * This will set the {@code pdf-fontsdir} attribute
+     *
+     * @param f Directory where custom fonts can be found. anything convertible with {@link Project#file}
+     *   can be used.
+     */
+    void setFontsDirs(Iterable<Object> paths) {
+        this.fontDirs.clear()
+        this.fontDirs.addAll(paths)
+    }
+
+    /** Add files paths for the custom fonts
+     *
+     * @param f List of directories fonts can be found. anything convertible with {@link Project#file} can be used
+     * */
+    @SuppressWarnings('UnnecessarySetter')
+    void fontsDirs(Object... f) {
+        setFontsDirs(f.toList())
     }
 
     /** Set the theme to be used from the {@code pdfThemes} extension.
@@ -115,7 +161,7 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
         if (GradleVersion.current() <= LAST_GRADLE_WITH_CLASSPATH_LEAKAGE) {
             if (inProcess != AbstractAsciidoctorTask.JAVA_EXEC) {
                 logger.warn 'This version of Gradle leaks snakeyaml on to worker classpaths which breaks ' +
-                    'PDF processing. Switching to JAVA_EXEC instead.'
+                        'PDF processing. Switching to JAVA_EXEC instead.'
             }
             AbstractAsciidoctorTask.JAVA_EXEC
         } else {
@@ -144,15 +190,16 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
      *
      * @return A collection of default attributes.
      */
+    @SuppressWarnings('UnnecessaryGetter')
     @Override
     protected Map<String, Object> getTaskSpecificDefaultAttributes(File workingSourceDir) {
         Map<String, Object> attrs = super.getTaskSpecificDefaultAttributes(workingSourceDir)
 
         boolean useOldAttributes = pdfVersion.startsWith('1.5.0-alpha')
 
-        File fonts = getFontsDir()
+        FileCollection fonts = getFontsDirs()
         if (fonts != null) {
-            attrs['pdf-fontsdir'] = fonts.absolutePath
+            attrs['pdf-fontsdir'] = fonts.asPath
         }
 
         File styles = themesDir
