@@ -20,7 +20,7 @@ ext {
         'base', 'jvm', 'jvm-epub', 'jvm-gems',  'jvm-pdf',
         'jvm-leanpub',
         'jvm-slides', 'slides-export',
-        'kindlegen',
+//        'kindlegen',
         'js'
     ]
 }

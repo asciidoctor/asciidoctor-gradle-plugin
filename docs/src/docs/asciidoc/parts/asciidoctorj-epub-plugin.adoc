@@ -1,6 +1,8 @@
 [[asciidoctorj-epub-plugin,{asciidoctorj-name} EPUB plugin]]
 == The AsciidoctorEpub Plugin
 
+INFO: As from version 3.3 suppoer for KindleGen is dropped as Amazon no longer has the binary available for download.
+
 [source,groovy,role="primary"]
 [subs=attributes+]
 .build.gradle
@@ -28,6 +30,4 @@ The `AsciidoctorEpubTask` task type has the following additional methods:
 
 [horizontal]
 ebookFormats:: The epub formats to generate.
-  Specify one of more strings. Anything that is supported by the Asciidoctor EPUB backend can be used. Constants `EPUB3` and `KF8` are available for convenience. To override any previous set fomrats use `setEbookFormats`. To add to the existing list use `eBookFormats`.
-
-NOTE: KF8 formats cannot be generated under Windows at present.
+  Specify one of more strings. Anything that is supported by the Asciidoctor EPUB backend can be used. Constant `EPUB3` is available for convenience. To override any previous set formats use `setEbookFormats`. To add to the existing list use `eBookFormats`.

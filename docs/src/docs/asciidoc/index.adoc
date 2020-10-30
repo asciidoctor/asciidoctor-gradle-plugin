@@ -33,7 +33,7 @@ include::parts/asciidoctor-diagram.adoc[]
 
 include::parts/asciidoctorj-gems-plugin.adoc[]
 
-include::parts/kindlegen-plugin.adoc[]
+//include::parts/kindlegen-plugin.adoc[]
 
 include::parts/asciidoctorj-custom-extensions.adoc[]
 

@@ -17,7 +17,6 @@ package org.asciidoctor.gradle.jvm.epub
 
 import org.asciidoctor.gradle.jvm.epub.internal.FunctionalSpecification
 import org.asciidoctor.gradle.testfixtures.CachingTest
-import spock.lang.IgnoreIf
 
 import static org.asciidoctor.gradle.testfixtures.JRubyTestVersions.AJ20_SAFE_MAXIMUM
 
@@ -47,29 +46,6 @@ class AsciidoctorEpubTaskCachingFunctionalSpec extends FunctionalSpecification i
         then:
         outputFile.exists()
         outputFileInRelocatedDirectory.exists()
-    }
-
-    // kindlegen is only available as a 32-bit executable and won't run on MacOS Catalina
-    @IgnoreIf({ isWindowsOr64bitOnlyMacOS() })
-    void "Epub task is not cached when format changes"() {
-        given:
-        getBuildFile(singleFormatConfiguration('EPUB3'))
-
-        when:
-        assertDefaultTaskExecutes()
-
-        then:
-        outputFile.exists()
-
-        when:
-        changeBuildConfigurationTo(singleFormatConfiguration('KF8'))
-        assertDefaultTaskExecutes()
-
-        then:
-        file('build/docs/asciidocEpub/epub3.mobi').exists()
-
-        and:
-        assertDefaultTaskIsCachedAndRelocatable()
     }
 
     @Override
@@ -102,11 +78,7 @@ class AsciidoctorEpubTaskCachingFunctionalSpec extends FunctionalSpecification i
             asciidoctorEpub {
                 sourceDir 'src/docs/asciidoc'
                 ebookFormats ${format}
-    
-                kindlegen {
-                    agreeToTermsOfUse = true
-                }
-    
+
                 asciidoctorj {
                     jrubyVersion = '${JRUBY_TEST_VERSION}'
                 }

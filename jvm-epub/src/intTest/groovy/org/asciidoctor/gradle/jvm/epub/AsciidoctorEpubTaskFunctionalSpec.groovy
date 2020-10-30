@@ -45,22 +45,6 @@ class AsciidoctorEpubTaskFunctionalSpec extends FunctionalSpecification {
         }
     }
 
-    // kindlegen is only available as a 32-bit executable and won't run on MacOS Catalina
-    @IgnoreIf({ isWindowsOr64bitOnlyMacOS() })
-    void 'Non-Windows: Run a EPUB generator with format KF8 (only in JAVA_EXEC mode on)'() {
-        given:
-        getSingleFormatBuildFile('KF8')
-
-        when:
-        BuildResult result = getGradleRunner(['asciidoctorEpub', '-s', '-i']).build()
-
-        then:
-        verifyAll {
-            new File(testProjectDir.root, 'build/docs/asciidocEpub/epub3.mobi').exists()
-            !result.output.contains('include file not found:')
-        }
-    }
-
     @Issue('https://github.com/asciidoctor/asciidoctorj/issues/659')
     @IgnoreIf({ !FunctionalSpecification.OS.windows })
     @PendingFeature
@@ -78,7 +62,6 @@ class AsciidoctorEpubTaskFunctionalSpec extends FunctionalSpecification {
         }
     }
 
-    @PendingFeature
     @Unroll
     void 'Run a EPUB generator with multiple formats in order #formatOrder (only in JAVA_EXEC mode)'() {
         given:
@@ -87,10 +70,6 @@ class AsciidoctorEpubTaskFunctionalSpec extends FunctionalSpecification {
         asciidoctorEpub {
             sourceDir 'src/docs/asciidoc'
             ebookFormats ${formatOrder}
-
-            kindlegen {
-                agreeToTermsOfUse = true
-            }
 
             asciidoctorj {
                 jrubyVersion = '${JRUBY_TEST_VERSION}'
@@ -107,13 +86,12 @@ class AsciidoctorEpubTaskFunctionalSpec extends FunctionalSpecification {
 
         then:
         verifyAll {
-            new File(testProjectDir.root, 'build/docs/asciidocEpub/epub3.mobi').exists()
             new File(testProjectDir.root, 'build/docs/asciidocEpub/epub3.epub').exists()
             !result.output.contains('include file not found:')
         }
 
         where:
-        formatOrder << ['EPUB3, KF8', 'KF8, EPUB3']
+        formatOrder << ['EPUB3']
     }
 
     void 'eBookFormats may not be empty'() {
@@ -129,22 +107,18 @@ class AsciidoctorEpubTaskFunctionalSpec extends FunctionalSpecification {
         ''')
 
         when:
-        BuildResult result = getGradleRunner(['asciidoctorEpub' , '-i']).buildAndFail()
+        BuildResult result = getGradleRunner(['asciidoctorEpub', '-i']).buildAndFail()
 
         then:
         result.output.contains('No eBook format specified for task')
     }
 
     File getSingleFormatBuildFile(final String format) {
-        getBuildFile( """
+        getBuildFile("""
 
         asciidoctorEpub {
             sourceDir 'src/docs/asciidoc'
             ebookFormats ${format}
-
-            kindlegen {
-                agreeToTermsOfUse = true
-            }
 
             asciidoctorj {
                 jrubyVersion = '${JRUBY_TEST_VERSION}'
