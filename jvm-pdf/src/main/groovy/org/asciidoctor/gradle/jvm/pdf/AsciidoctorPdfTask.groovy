@@ -54,7 +54,7 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
         copyNoResources()
     }
 
-    /** @Deprecated Use {@link #getFontsDirs()} instead
+    /** @Deprecated Use{@link #getFontsDirs()} instead
      *
      * @return Pdf font directory as a file
      * @throws {@link PdfFontDirException} if there are either multiple directories or no directory for pdf font
@@ -70,7 +70,7 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
         this.project.file(this.fontDirs.first())
     }
 
-    /** @Deprecated Use {@link #setFontsDirs(java.lang.Iterable)} instead and specify the single directory
+    /** @Deprecated Use{@link #setFontsDirs(java.lang.Iterable)} instead and specify the single directory
      *
      * Specify a directory where to load custom fonts from.
      *
@@ -82,7 +82,7 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
     @SuppressWarnings('UnnecessarySetter')
     @Deprecated
     void setFontsDir(Object f) {
-        setFontsDirs(Arrays.asList(f))
+        setFontsDirs([f])
     }
 
     /** Returns the directories or single directory for the fonts
@@ -114,7 +114,7 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
      * */
     @SuppressWarnings('UnnecessarySetter')
     void fontsDirs(Object... f) {
-        setFontsDirs(f.toList())
+        this.fontDirs.addAll(f.toList())
     }
 
     /** Set the theme to be used from the {@code pdfThemes} extension.
@@ -133,7 +133,6 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
     @InputDirectory
     @PathSensitive(PathSensitivity.RELATIVE)
     @Optional
-    @SuppressWarnings('LineLength')
     File getThemesDir() {
         themeDescriptor?.themeDir
     }
@@ -142,7 +141,6 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
      *
      * @return Theme name or {@code null} if no theme was set.
      */
-    @SuppressWarnings('LineLength')
     @Input
     @Optional
     String getThemeName() {
@@ -161,7 +159,7 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
         if (GradleVersion.current() <= LAST_GRADLE_WITH_CLASSPATH_LEAKAGE) {
             if (inProcess != AbstractAsciidoctorTask.JAVA_EXEC) {
                 logger.warn 'This version of Gradle leaks snakeyaml on to worker classpaths which breaks ' +
-                        'PDF processing. Switching to JAVA_EXEC instead.'
+                    'PDF processing. Switching to JAVA_EXEC instead.'
             }
             AbstractAsciidoctorTask.JAVA_EXEC
         } else {
@@ -198,7 +196,7 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
         boolean useOldAttributes = pdfVersion.startsWith('1.5.0-alpha')
 
         FileCollection fonts = getFontsDirs()
-        if (fonts != null) {
+        if (!fonts?.empty) {
             attrs['pdf-fontsdir'] = fonts.asPath
         }
 
