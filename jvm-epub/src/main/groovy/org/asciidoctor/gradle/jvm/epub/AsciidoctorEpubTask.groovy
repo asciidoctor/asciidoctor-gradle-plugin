@@ -15,6 +15,7 @@
  */
 package org.asciidoctor.gradle.jvm.epub
 
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AsciidoctorExecutionException
 import org.asciidoctor.gradle.base.Transform
@@ -26,8 +27,10 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.util.GradleVersion
 import org.gradle.workers.WorkerExecutor
+import org.ysb33r.grolifant.api.Version
 
 import javax.inject.Inject
+import java.util.regex.Matcher
 
 /** Builds EPUB documents using the epub3 backend.
  *
@@ -157,9 +160,13 @@ class AsciidoctorEpubTask extends AbstractAsciidoctorTask {
                 logger.warn 'EPUB processing on this version of Gradle will fail due to classpath issues. ' +
                     'Switching to JAVA_EXEC instead.'
             }
-            JAVA_EXEC
-        } else {
-            super.finalProcessMode
+            return JAVA_EXEC
         }
+        super.finalProcessMode
+    }
+
+    @CompileDynamic
+    private Version getVersion(Matcher matcher) {
+        Version.of(matcher[0][1])
     }
 }

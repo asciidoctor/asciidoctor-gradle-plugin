@@ -5,7 +5,7 @@ pluginManager.withPlugin('org.ysb33r.cloudci') {
         travisci {
             gradleTest {
                 if (JavaVersion.current().java11) {
-                    versions '4.9', '5.5.1'
+                    versions '4.9', '6.7'
                 } else {
                     versions '4.9', '6.0.1'
                 }
@@ -13,15 +13,15 @@ pluginManager.withPlugin('org.ysb33r.cloudci') {
         }
         appveyor {
             gradleTest {
-                versions '4.9', '5.0', '5.6.4', '6.0.1'
+                versions '4.9', '5.0', '5.6.4', '6.0.1', '6.7'
             }
         }
         no_ci {
             gradleTest {
                 if (JavaVersion.current().java12) {
-                    versions '5.4.1', '6.0.1'
+                    versions '5.4.1', '6.0.1', '6.7'
                 } else {
-                    versions '4.9', '5.0', '5.5.1', '6.0.1'
+                    versions '4.9', '5.0', '5.5.1', '6.0.1', '6.7'
                 }
             }
         }
@@ -33,7 +33,6 @@ gradleTest {
         mustRunAfter 'intTest'
     }
     enabled = !gradle.startParameter.offline
-
     dependsOn ':testfixtures-offline-repo:buildOfflineRepositories'
     systemProperties OFFLINE_REPO: offlineRepoRoot.absolutePath
 }

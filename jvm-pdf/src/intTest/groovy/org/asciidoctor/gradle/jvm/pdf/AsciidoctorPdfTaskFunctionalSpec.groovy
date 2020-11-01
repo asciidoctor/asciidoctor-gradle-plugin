@@ -124,7 +124,7 @@ asciidoctorPdf {
         asciidoctorPdf {
             theme 'basic'
             sourceDir 'src/docs/asciidoc'
-            fontsDir 'src/docs/asciidoc/pdf-theme'
+            fontsDirs 'src/docs/asciidoc/pdf-theme'
         }
         """)
 
@@ -137,7 +137,7 @@ asciidoctorPdf {
         }
     }
 
-    @Issue('/https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/561')
+    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/561')
     void 'multiple directories for pdf fonts can be specified'() {
         given:
         getBuildFile("""

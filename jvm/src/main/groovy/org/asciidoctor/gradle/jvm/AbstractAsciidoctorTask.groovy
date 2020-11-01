@@ -46,6 +46,7 @@ import org.gradle.process.JavaForkOptions
 import org.gradle.util.GradleVersion
 import org.gradle.workers.WorkerConfiguration
 import org.gradle.workers.WorkerExecutor
+import org.ysb33r.grolifant.api.Version
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClosure
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.getClassLocation
@@ -75,7 +76,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
     public final static Severity WARN = Severity.WARN
     public final static Severity INFO = Severity.INFO
 
-    protected final static GradleVersion LAST_GRADLE_WITH_CLASSPATH_LEAKAGE = GradleVersion.version(('5.99'))
+    protected final static GradleVersion LAST_GRADLE_WITH_CLASSPATH_LEAKAGE = GradleVersion.version(('6.99'))
 
     protected final AsciidoctorJExtension asciidoctorj
     private ProcessMode inProcess = JAVA_EXEC
