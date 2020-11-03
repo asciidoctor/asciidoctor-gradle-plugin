@@ -358,7 +358,7 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     /* -------------------------
        tag::extension-property[]
         modules:: Configuration for version of specific components and converters that can be used.
-          See <<asciidoctorj-modules>> for which moduels are supported.
+          See <<asciidoctorj-modules>> for which modules are supported.
        end::extension-property[]
        ------------------------- */
 
