@@ -1,7 +1,7 @@
 [[asciidoctorj-epub-plugin,{asciidoctorj-name} EPUB plugin]]
 == The AsciidoctorEpub Plugin
 
-INFO: As from version 3.3 suppoer for KindleGen is dropped as Amazon no longer has the binary available for download.
+INFO: As from version 3.3 support for KindleGen is dropped as Amazon no longer has the binary available for download.
 
 [source,groovy,role="primary"]
 [subs=attributes+]
