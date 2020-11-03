@@ -101,7 +101,7 @@ asciidoctorj {
 }
 ----
 
-In the less-common case where extension is not supplied via the default configuration, the latter shortcurt will not work, and you will need to use the longer method described above.
+In the less-common case where extension is not supplied via the default configuration, the latter shortcut will not work, and you will need to use the longer method described above.
 
 
 === As Inline Script
