@@ -16,11 +16,8 @@
 package org.asciidoctor.gradle.jvm.epub
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.base.ModuleVersionLoader
 import org.asciidoctor.gradle.jvm.AsciidoctorJBasePlugin
 import org.asciidoctor.gradle.jvm.AsciidoctorJExtension
-import org.asciidoctor.gradle.kindlegen.KindleGenBasePlugin
-import org.asciidoctor.gradle.kindlegen.KindleGenExtension
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -46,20 +43,17 @@ class AsciidoctorJEpubPlugin implements Plugin<Project> {
     void apply(Project project) {
         project.with {
             apply plugin: AsciidoctorJBasePlugin
-            apply plugin: KindleGenBasePlugin
-            Map modules = ModuleVersionLoader.load('asciidoctorj-epub')
-            extensions.getByType(KindleGenExtension).executable(version: modules['kindlegen'] )
             extensions.getByType(AsciidoctorJExtension).modules.epub.use()
 
             Action epubDefaults = new Action<AsciidoctorEpubTask>() {
                 @Override
                 void execute(AsciidoctorEpubTask task) {
                     task.group = AsciidoctorJBasePlugin.TASK_GROUP
-                    task.description = 'Convert AsciiDoc files to EPUB3/KF8 formats'
+                    task.description = 'Convert AsciiDoc files to EPUB3 formats'
                     setConvention(project, task.sourceDirProperty,
-                            project.layout.projectDirectory.dir('src/docs/asciidoc'))
+                        project.layout.projectDirectory.dir('src/docs/asciidoc'))
                     setConvention(task.outputDirProperty,
-                            task.project.layout.buildDirectory.dir('docs/asciidocEpub'))
+                        task.project.layout.buildDirectory.dir('docs/asciidocEpub'))
                 }
             }
 

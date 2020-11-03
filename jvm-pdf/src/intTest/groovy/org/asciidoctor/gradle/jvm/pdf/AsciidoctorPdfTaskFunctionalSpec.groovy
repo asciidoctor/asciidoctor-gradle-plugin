@@ -124,7 +124,60 @@ asciidoctorPdf {
         asciidoctorPdf {
             theme 'basic'
             sourceDir 'src/docs/asciidoc'
-            fontsDir 'src/docs/asciidoc/pdf-theme'
+            fontsDirs 'src/docs/asciidoc/pdf-theme'
+        }
+        """)
+
+        when:
+        getGradleRunner([DEFAULT_TASK, '-i']).build()
+
+        then:
+        verifyAll {
+            new File(testProjectDir.root, DEFAULT_OUTPUT_FILE).exists()
+        }
+    }
+
+    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/561')
+    void 'multiple directories for pdf fonts can be specified'() {
+        given:
+        getBuildFile("""
+        pdfThemes {
+            local 'basic', {
+                themeDir = 'src/docs/asciidoc/pdf-theme'
+            }
+        }
+
+        asciidoctorPdf {
+            theme 'basic'
+            sourceDir 'src/docs/asciidoc'
+            fontsDirs 'src/docs/asciidoc/pdf-theme', file('src/docs/asciidoc/path')
+            fontsDirs 'src/docs/asciidoc/pdf-theme-path'
+        }
+        """)
+
+        when:
+        getGradleRunner([DEFAULT_TASK, '-i']).build()
+
+        then:
+        verifyAll {
+            new File(testProjectDir.root, DEFAULT_OUTPUT_FILE).exists()
+        }
+    }
+
+    @Issue('/https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/561')
+    void 'single directory for pdf font can be specified'() {
+        given:
+        getBuildFile("""
+        pdfThemes {
+            local 'basic', {
+                themeDir = 'src/docs/asciidoc/pdf-theme'
+            }
+        }
+
+        asciidoctorPdf {
+            theme 'basic'
+            sourceDir 'src/docs/asciidoc'
+            fontsDirs 'src/docs/asciidoc/pdf-theme'
         }
         """)
 

@@ -13,24 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.jvm.epub
+package org.asciidoctor.gradle.jvm.pdf
 
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
-import spock.lang.Specification
+import groovy.transform.CompileStatic
+import groovy.transform.InheritConstructors
 
-class AsciidoctorJEpubPluginSpec extends Specification {
-
-    void 'Kindlegen plugin is required'() {
-        given:
-        Project project = ProjectBuilder.builder().build()
-
-        when:
-        project.allprojects {
-            apply plugin : 'org.asciidoctor.jvm.epub'
-        }
-
-        then:
-        project.pluginManager.hasPlugin('org.asciidoctor.kindlegen.base')
-    }
+/** Exception when a Pdf font dir is not found.
+ *
+ * @author Halit Anil Dönmez
+ *
+ * @since 3.2.0
+ */
+@CompileStatic
+@InheritConstructors
+class PdfFontDirException extends RuntimeException {
 }

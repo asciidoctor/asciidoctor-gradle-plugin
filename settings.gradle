@@ -1,6 +1,6 @@
 rootProject.name = 'asciidoctor-gradle-plugin'
 
-include 'kindlegen-gradle'
+//include 'kindlegen-gradle'
 include 'asciidoctoreditorconfig'
 
 ['offline-repo', 'jvm'].each {
