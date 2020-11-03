@@ -43,8 +43,8 @@ The `pdfThemes` extension allows for themes to be registered from local copies o
 ----
 pdfThemes {
     local 'basic', { // <1>
-        styleDir = file('themes/basic') // <2>
-        styleName = 'very-basic' // <3>
+        themeDir = file('themes/basic') // <2>
+        themeName = 'very-basic' // <3>
     }
 }
 ----
