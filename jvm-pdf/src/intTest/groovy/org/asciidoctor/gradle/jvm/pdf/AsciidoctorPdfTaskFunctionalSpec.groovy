@@ -230,8 +230,7 @@ asciidoctorPdf {
     @Unroll
     void 'there are no deprecation warnings in build output (Gradle #gradleVersion)'() {
         given:
-        getBuildFile()
-
+        getBuildFile('')
 
         when:
         BuildResult result = getGradleRunner([DEFAULT_TASK, '--warning-mode=all'])
