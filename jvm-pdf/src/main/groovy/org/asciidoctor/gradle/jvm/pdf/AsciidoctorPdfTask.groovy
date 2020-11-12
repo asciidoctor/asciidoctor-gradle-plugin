@@ -60,6 +60,7 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
      * @throws {@link PdfFontDirException} if there are either multiple directories or no directory for pdf font
      * */
     @Deprecated
+    @Internal
     File getFontsDir() {
         if (this.fontDirs.size() > 1) {
             throw new PdfFontDirException('There is more than 1 file in the fonts directory')
