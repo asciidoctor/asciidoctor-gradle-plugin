@@ -129,7 +129,7 @@ class JavaExecUtils {
     private static FilenameFilter internalGuavaPattern() {
         Pattern filter
         if (GradleVersion.current() >= GradleVersion.version('5.0')) {
-            filter = ~/guava-([\d.]+)-android.jar/
+            filter = ~/guava-([\d.]+)-[jre|android]+.jar/
         } else {
             filter = ~/guava-jdk5-([\d.]+).jar/
         }

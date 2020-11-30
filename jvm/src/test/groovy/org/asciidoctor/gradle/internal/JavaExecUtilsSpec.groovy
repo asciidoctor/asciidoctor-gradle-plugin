@@ -55,4 +55,20 @@ class JavaExecUtilsSpec extends Specification {
         def e = thrown(JavaExecUtils.InternalGuavaLocationException)
         e.message.contains('Found more than one Guava JAR in the Gradle distribution')
     }
+
+    void 'detect jre variant of guava'() {
+        setup:
+        def gradle = Stub(Gradle)
+        gradle.gradleHomeDir >> temporaryFolder.root
+        new File(temporaryFolder.root, 'lib').mkdirs()
+        new File(temporaryFolder.root, 'lib/guavasomething.jar')
+        def guavaJar = new File(temporaryFolder.root, 'lib/guava-30.0-jre.jar')
+        guavaJar.text = ''
+
+        when:
+        def location = JavaExecUtils.getInternalGuavaLocation(gradle)
+
+        then:
+        location == guavaJar
+    }
 }
