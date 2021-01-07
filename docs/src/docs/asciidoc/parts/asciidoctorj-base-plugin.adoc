@@ -147,7 +147,7 @@ asciidoctorj {
 <4> Version of Groovy Extensions DSL. If not specified and no extensions are specified, Groovy DSL will not be used. However, if any extensions are added without setting an explicit version and default version will be used.
 <5> {asciidoctorj-leanpub-name} version. If not specified asciidoctorj-leanpub will not be on the classpath. If you plan to use the Leanpub backend and not using the Leanpub plugin, then you need to set a version here.
 
-When using the {kotlin-dsl} the same settings can be achieved use something similar `getModules().getPdf().version("1.2.3")`. In a similar fashion shortcuts can be achived in the {groovy-dsl}:
+When using the {kotlin-dsl} the same settings can be achieved use something similar `getModules().getPdf().version("1.2.3")`. In a similar fashion shortcuts can be achieved in the {groovy-dsl}:
 
 [source,groovy,role="primary"]
 .build.gradle

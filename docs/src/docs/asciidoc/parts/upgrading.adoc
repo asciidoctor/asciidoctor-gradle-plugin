@@ -3,7 +3,7 @@
 
 NOTE: If you are still on a 1.5/1.6 version of the plugin, upgrade to the latest 2.x version first.
 
-If you are on 2.x version, upgradle to the latest 2.x first and ensure that you have corrected all of the deprecation warnings.
+If you are on 2.x version, upgrade to the latest 2.x first and ensure that you have corrected all of the deprecation warnings.
 
 If you have {asciidoctorj-name} binary extensions you'll need to recompile them against {asciidoctorj-name} v2.0+ in order to use them with the v.3x version of the plugins.
 
