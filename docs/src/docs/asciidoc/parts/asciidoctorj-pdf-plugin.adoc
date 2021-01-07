@@ -70,12 +70,12 @@ pdfThemes {
 <1> Specify a GitHub repository which contains one or more themes. (For GitLab replace `github` with `gitlab`).
 <2> GitHub/GitLab Organisation (or user).
 <3> Name of repository containing the theme(s).
-<4> Relative path inside the repository to where the theme is located. If not speciified the theme is assumed to be in the root of the repository.
+<4> Relative path inside the repository to where the theme is located. If not specified the theme is assumed to be in the root of the repository.
 <5> Specify the branch
 <6> Instead of a branch a tag can be used.
 <7> Instead of a branch or a tag, a very specific commit can be used.
 
-If a repository contains more than one theme, then the block will need to be repeated for each theme and the `name` and `relativePath` adjusted accordingly. Gradle will however, only downlaod the repository once.
+If a repository contains more than one theme, then the block will need to be repeated for each theme and the `name` and `relativePath` adjusted accordingly. Gradle will however, only download the repository once.
 
 Kotlin users can use equivalent `Action`-based configurations.
 

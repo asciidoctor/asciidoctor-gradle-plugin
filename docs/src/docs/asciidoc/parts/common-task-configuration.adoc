@@ -179,7 +179,7 @@ If you do not want this behaviour, then it can be turned off by doing
 copyNoResources()
 ----
 
-If you are using multiple languages and you have identical resource patterns for each languages within `sourceDir/${lang}` you need to explictly declare those on a per-language basis:
+If you are using multiple languages and you have identical resource patterns for each languages within `sourceDir/${lang}` you need to explicitly declare those on a per-language basis:
 
 [source,groovy,role="primary"]
 .build.gradle
