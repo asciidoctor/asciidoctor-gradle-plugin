@@ -606,7 +606,6 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      *
      * @param m Map with new options
      */
-    @Input
     abstract void attributes(Map<String, Object> m)
 
     /** Shortcut method to access additional providers of attributes.
