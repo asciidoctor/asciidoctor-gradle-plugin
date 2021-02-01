@@ -127,7 +127,6 @@ abstract class AbstractExportBaseTask extends DefaultTask {
      * @return Outpur directory
      */
     @OutputDirectory
-    @PathSensitive(RELATIVE)
     File getOutputDir() {
         project.file(this.outputDir)
     }
