@@ -648,7 +648,6 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * @param lang Language to to apply to or empty for no-language support.
      * @return A{@link CopySpec}. Never {@code null}.
      */
-    @Internal
     protected CopySpec getResourceCopySpec(Optional<String> lang) {
         this.resourceCopy ?: getDefaultResourceCopySpec(lang)
     }
@@ -661,7 +660,6 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * @return A{@link CopySpec}. Never {@code null}.
      */
     @CompileDynamic
-    @Internal
     protected CopySpec getDefaultResourceCopySpec(Optional<String> lang) {
         project.copySpec {
             from(lang.present ? new File(sourceDir, lang.get()) : sourceDir) {
