@@ -85,9 +85,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
     private PatternSet intermediateArtifactPattern
     private final List<String> languages = []
     private final Map<String, CopySpec> languageResources = [:]
-
-    @Nested
-    protected final OutputOptions configuredOutputOptions = new OutputOptions()
+    private final OutputOptions configuredOutputOptions = new OutputOptions()
 
     /** Logs documents as they are converted
      *
@@ -636,6 +634,11 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
             .withPathSensitivity(RELATIVE)
         this.srcDir = createDirectoryProperty(project)
         this.outDir = createDirectoryProperty(project)
+    }
+
+    @Nested
+    protected OutputOptions getConfiguredOutputOptions() {
+        configuredOutputOptions
     }
 
     /** Gets the CopySpec for additional resources.
