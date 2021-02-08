@@ -723,13 +723,11 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * @return Source tree based upon configured pattern.
      */
     protected FileTree getSecondarySourceFileTreeFrom(File dir) {
-        FileTree doNotInclude = getSourceFileTreeFrom(dir)
+        Spec<FileTreeElement> primarySourceSpec = (this.sourceDocumentPattern ?: defaultSourceDocumentPattern).asSpec
         project.fileTree(dir)
             .matching(this.secondarySourceDocumentPattern ?: defaultSecondarySourceDocumentPattern)
             .matching { PatternFilterable target ->
-                target.exclude({ FileTreeElement element ->
-                    doNotInclude.contains(element.file)
-                } as Spec<FileTreeElement>)
+                target.exclude(primarySourceSpec)
             }
     }
 
