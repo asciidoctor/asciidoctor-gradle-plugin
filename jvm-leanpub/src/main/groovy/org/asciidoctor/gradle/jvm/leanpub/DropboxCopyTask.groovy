@@ -23,6 +23,8 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import org.ysb33r.grolifant.api.StringUtils
 
@@ -91,6 +93,7 @@ class DropboxCopyTask extends DefaultTask {
      * @return Directory containing generated Leanpub Markuva or Markdown content.
      */
     @InputDirectory
+    @PathSensitive(PathSensitivity.RELATIVE)
     File getSourceDir() {
         project.file(this.sourceDir)
     }
