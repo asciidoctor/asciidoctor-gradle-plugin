@@ -94,7 +94,6 @@ class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecifica
     }
 
     @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/481')
-    @PendingFeature
     void "gemPrepare task is not cached when gems change"() {
         String alternateGemName = 'json'
         String alternatGemVersion = '1.8.0'
