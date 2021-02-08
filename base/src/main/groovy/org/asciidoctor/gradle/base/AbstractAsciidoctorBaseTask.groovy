@@ -85,9 +85,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
     private PatternSet intermediateArtifactPattern
     private final List<String> languages = []
     private final Map<String, CopySpec> languageResources = [:]
-
-    @Nested
-    protected final OutputOptions configuredOutputOptions = new OutputOptions()
+    private final OutputOptions configuredOutputOptions = new OutputOptions()
 
     /** Logs documents as they are converted
      *
@@ -608,7 +606,6 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      *
      * @param m Map with new options
      */
-    @Input
     abstract void attributes(Map<String, Object> m)
 
     /** Shortcut method to access additional providers of attributes.
@@ -638,6 +635,11 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         this.outDir = createDirectoryProperty(project)
     }
 
+    @Nested
+    protected OutputOptions getConfiguredOutputOptions() {
+        configuredOutputOptions
+    }
+
     /** Gets the CopySpec for additional resources.
      *
      * If {@code resources} was never called, it will return a default CopySpec otherwise it will return the
@@ -646,7 +648,6 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * @param lang Language to to apply to or empty for no-language support.
      * @return A{@link CopySpec}. Never {@code null}.
      */
-    @Internal
     protected CopySpec getResourceCopySpec(Optional<String> lang) {
         this.resourceCopy ?: getDefaultResourceCopySpec(lang)
     }
@@ -659,7 +660,6 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * @return A{@link CopySpec}. Never {@code null}.
      */
     @CompileDynamic
-    @Internal
     protected CopySpec getDefaultResourceCopySpec(Optional<String> lang) {
         project.copySpec {
             from(lang.present ? new File(sourceDir, lang.get()) : sourceDir) {

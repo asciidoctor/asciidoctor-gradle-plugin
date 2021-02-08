@@ -176,6 +176,10 @@ publishing {
     }
 }
 
+tasks.withType(ValidateTaskProperties) { validateTaskProperties ->
+    validateTaskProperties.failOnWarning = true
+    validateTaskProperties.enableStricterValidation = true
+}
 
 //bintray {
 //    user = bintrayUsername

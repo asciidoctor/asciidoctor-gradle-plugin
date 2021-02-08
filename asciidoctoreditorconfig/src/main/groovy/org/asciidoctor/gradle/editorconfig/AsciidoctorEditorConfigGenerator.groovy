@@ -23,6 +23,8 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 
 import java.util.concurrent.Callable
@@ -114,6 +116,7 @@ class AsciidoctorEditorConfigGenerator extends DefaultTask {
      * @return List of file providers
      */
     @InputFiles
+    @PathSensitive(PathSensitivity.NONE)
     List<Provider<File>> getAdditionalFileProviders() {
         this.fileProviders
     }
