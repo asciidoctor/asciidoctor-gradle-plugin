@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.jvm.pdf
 
 import org.asciidoctor.gradle.jvm.pdf.internal.FunctionalSpecification
 import org.asciidoctor.gradle.testfixtures.generators.PdfBackendJRubyAsciidoctorJCombinationGenerator
+import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Issue
 import spock.lang.Unroll
@@ -212,7 +213,9 @@ asciidoctorPdf {
         """
 
         when:
-        getGradleRunner([DEFAULT_TASK]).build()
+        getGradleRunner([DEFAULT_TASK])
+                .withGradleVersion(gradleVersion)
+                .build()
 
         then:
         verifyAll {
@@ -221,6 +224,26 @@ asciidoctorPdf {
 
         where:
         gradleVersion << ['4.10.3', '5.6.4', '6.0.1']
+    }
+
+    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/579')
+    @Unroll
+    void 'there are no deprecation warnings in build output (Gradle #gradleVersion)'() {
+        given:
+        getBuildFile('')
+
+        when:
+        BuildResult result = getGradleRunner([DEFAULT_TASK, '--warning-mode=all'])
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        verifyAll {
+            !result.output.contains('This behaviour has been deprecated and is scheduled to be removed')
+        }
+
+        where:
+        gradleVersion << ['6.7']
     }
 
     File getBuildFile(String extraContent) {

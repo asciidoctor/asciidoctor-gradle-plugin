@@ -23,6 +23,7 @@ import org.asciidoctor.gradle.jvm.AsciidoctorJExtension
 import org.gradle.api.Project
 import org.gradle.api.UnknownDomainObjectException
 import org.gradle.api.file.FileCollection
+import org.gradle.api.model.ReplacedBy
 @java.lang.SuppressWarnings('NoWildcardImports')
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.util.PatternSet
@@ -60,6 +61,7 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
      * @throws {@link PdfFontDirException} if there are either multiple directories or no directory for pdf font
      * */
     @Deprecated
+    @ReplacedBy('getFontsDirs')
     File getFontsDir() {
         if (this.fontDirs.size() > 1) {
             throw new PdfFontDirException('There is more than 1 file in the fonts directory')

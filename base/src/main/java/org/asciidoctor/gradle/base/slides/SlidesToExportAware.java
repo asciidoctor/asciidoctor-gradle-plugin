@@ -15,8 +15,8 @@
  */
 package org.asciidoctor.gradle.base.slides;
 
-import groovy.transform.Internal;
 import org.gradle.api.Task;
+import org.gradle.api.tasks.Internal;
 
 /** For tasks types that creates slides and can be auto-recognised
  * for specific slide-to-pdf converters when such plugins are applied.
@@ -24,5 +24,6 @@ import org.gradle.api.Task;
  * @since 2.2.0
  */
 public interface SlidesToExportAware extends Task {
+    @Internal
     Profile getProfile();
 }

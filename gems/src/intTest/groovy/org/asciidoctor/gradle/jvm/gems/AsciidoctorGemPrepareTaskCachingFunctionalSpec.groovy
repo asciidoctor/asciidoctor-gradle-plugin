@@ -18,7 +18,6 @@ package org.asciidoctor.gradle.jvm.gems
 import org.asciidoctor.gradle.jvm.gems.internal.FunctionalSpecification
 import org.asciidoctor.gradle.testfixtures.CachingTest
 import spock.lang.Issue
-import spock.lang.PendingFeature
 import spock.lang.Timeout
 
 class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecification implements CachingTest {
@@ -94,11 +93,10 @@ class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecifica
     }
 
     @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/481')
-    @PendingFeature
     void "gemPrepare task is not cached when gems change"() {
         String alternateGemName = 'json'
-        String alternatGemVersion = '1.8.0'
-        String alternateGemPath = "${OUTPUT_DIR_PATH}/gems/${alternateGemName}-${alternatGemVersion}-java"
+        String alternateGemVersion = '1.8.0'
+        String alternateGemPath = "${OUTPUT_DIR_PATH}/gems/${alternateGemName}-${alternateGemVersion}-java"
 
         given:
         getBuildFile("""
@@ -118,7 +116,7 @@ class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecifica
         when:
         changeBuildConfigurationTo("""
             dependencies {
-                asciidoctorGems("rubygems:${alternateGemName}:${alternatGemVersion}")
+                asciidoctorGems("rubygems:${alternateGemName}:${alternateGemVersion}")
             }
         """)
 
