@@ -31,10 +31,10 @@ class Transform {
     }
 
     static <I,O> Set<O> toSet(final Collection<I> collection, Function<I,O> tx ) {
-        collection.stream().map(tx).collect(Collectors.toSet())
+        collection.stream().map(tx).collect(Collectors.toCollection { new LinkedHashSet<O>() })
     }
 
     static <I,O> Set<O> toSet(final Iterable<I> collection, Function<I,O> tx ) {
-        collection.toList().stream().map(tx).collect(Collectors.toSet())
+        collection.toList().stream().map(tx).collect(Collectors.toCollection { new LinkedHashSet<O>() })
     }
 }
