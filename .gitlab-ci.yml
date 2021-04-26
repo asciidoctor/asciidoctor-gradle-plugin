@@ -2,7 +2,6 @@ stages:
   - infrastructure
   - build
   - test
-  - docs
 #  - reports
 #  - release
 
@@ -189,17 +188,6 @@ test:gradle_6.0.1:
       - '*/build/jacoco'
     expire_in: 10 days
     when: on_failure
-
-htmldocs:
-  stage: docs
-  image: openjdk:11
-  dependencies:
-    - testrepo
-    - jdk11
-  script: ./gradlew groovydoc && cd docs && ./gradlew --console=plain asciidoctor
-  artifacts:
-    paths:
-      - '*/build/docs/combined'
 
 #jacoco:
 #  stage: reports

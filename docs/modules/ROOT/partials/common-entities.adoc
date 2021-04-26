@@ -1,0 +1,11 @@
+attributes:: Asciidoctor attributes.
+Use `attributes` to append and `setAttributes` to replace any current attributes with a new set.
+Attribute values are lazy-evaluated to strings. See xref:page$asciidoctorj-base-plugin.adoc#options-and-attribues[Setting Attributes] for more detail.
+attributeProviders:: Additional sources where attributes can be obtained from.
+Attribute providers are useful for where changes should not cause a rebuild of the docs.
+attributesForLang:: Language-specific attributes.
+Specify additional attributes which will only be added if a  source set for the specified language
+is being processed.
+safeMode:: Asciidoctor safe mode.
+Set the Safe mode as either `UNSAFE`, `SAFE`, `SERVER`, `SECURE`.
+Can be a number (0, 1, 10, 20), a string, or the entity name

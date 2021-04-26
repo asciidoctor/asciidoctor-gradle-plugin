@@ -1,0 +1,9 @@
+= Asciidoctor Gradle Plugin Suite
+:navtitle: Introduction
+
+The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to convert all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
+
+This started as a port of the {asciidoctor-maven-plugin} project founded by {lightguard} and relies on {asciidoctorj}[{asciidoctorj-name}] which was founded by {lordofthejars}.
+In fact the 1.5.x series of the {plugin-name} can still be considered a port.
+However with 2.x series came a complete departure with functionality far exceeding any lightweight markup plugins for any other build tool.
+With the 3.x serious allows for even more flexibility and options for the creation of a true DocuOps pipeline by bringing together Gradle as a powerful and generic build tool, and Asciidoctor as an agile and lightweight document generator.
