@@ -365,6 +365,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
             .curry(this.asciidoctorj)
 
         inputs.files { asciidoctorj.gemPaths }
+            .withPropertyName('gemPaths')
             .withPathSensitivity(RELATIVE)
     }
 
