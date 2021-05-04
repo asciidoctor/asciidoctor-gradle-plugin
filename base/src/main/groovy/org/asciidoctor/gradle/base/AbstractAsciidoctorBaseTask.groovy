@@ -630,6 +630,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
     protected AbstractAsciidoctorBaseTask() {
         super()
         inputs.files { filesFromCopySpec(getResourceCopySpec(Optional.empty())) }
+            .withPropertyName('resources')
             .withPathSensitivity(RELATIVE)
         this.srcDir = createDirectoryProperty(project)
         this.outDir = createDirectoryProperty(project)

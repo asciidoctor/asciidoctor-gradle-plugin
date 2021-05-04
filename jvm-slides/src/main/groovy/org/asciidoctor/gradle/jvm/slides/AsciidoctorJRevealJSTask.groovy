@@ -75,9 +75,12 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
             gemPaths { gemPrepare.get().outputDir }
         }
 
-        inputs.file( { RevealJSOptions opt -> opt.highlightJsThemeIfFile }.curry(this.revealjsOptions) ).optional()
-        inputs.file( { RevealJSOptions opt -> opt.parallaxBackgroundImageIfFile }.
-                curry(this.revealjsOptions) ).optional()
+        inputs.file( { RevealJSOptions opt -> opt.highlightJsThemeIfFile }.curry(this.revealjsOptions) )
+            .withPropertyName('highlightJsTheme')
+            .optional()
+        inputs.file( { RevealJSOptions opt -> opt.parallaxBackgroundImageIfFile }.curry(this.revealjsOptions) )
+            .withPropertyName('parallaxBackgroundImage')
+            .optional()
     }
 
     /** Options for Reveal.JS slides.
