@@ -1,0 +1,36 @@
+docExtensions:: {groovy-dsl-name} and project-based extensions.
+Use `docExtensions` to add one or more extensions. Use `setDocExtensions` to replace the current set of
+extensions with a new set. Extensions can be any kind of object that is serialisable, although in most cases
+they will be strings or files. If extensions are detached dependencies, they will not be serialised, but
+rather will be placed on the classpath in order that {asciidoctorj-name} can pick them up automatically.
+See xref:page$asciidoctorj-custom-extensions.adoc[] for more details.
+fatalWarnings:: Patterns for {asciidoctorj-name} log messages that should be treated as fatal errors.
+The list is empty be default. Use `setFatalWarnings` to clear any existing patterns or to decouple a task's
+configuration from the global configuration. Use `fatalWarnings` to add more patterns.
+Pass `missingIncludes()` to add the common use-case of missing include files.
+gemPaths:: One or more gem installation directories (separated by the system path separator).
+Use `gemPaths` to append. Use `setGemPaths` or `gemPaths=['path1','path2']` to overwrite.
+Use `asGemPath` to obtain a path string, separated by platform-specific separator.
+Type: `FileCollection`, but any collection of objects convertible with `project.files` can be passed
+Default: empty
+jrubyVersion:: Minimum version of JRuby to be used.
+The exact version that will be used could be higher due to {asciidoctorj-name} having a transitive dependency
+that is newer.
+logLevel:: The log level at which AsciidoctorJ will log.
+This is specified as a Gradle logging level. The plugin will translate it to the appropriate
+{asciidoctorj-name} logging level. Default is whatever `project.logger.level` is at the time of execution.
+modules:: Configuration for version of specific components and converters that can be used.
+See xref:page$asciidoctorj-base-plugin.adoc#asciidoctorj-modules[] for which modules are supported.
+options:: {asciidoctorj-name} options.
+Use `options` to append and `setOptions` to replace any current options with a new set.
+Options are evaluated as late as possible. See xref:page$asciidoctorj-base-plugin.adoc#options-and-attribues[Setting Options] for more details.
+requires:: The set of Ruby modules to be included.
+Use `requires` to append. Use `setRequires` or `requires=['name']` to overwrite.
+Default: empty.
+resolutionStrategy:: Strategies for resolving Asciidoctorj-related dependencies.
+{asciidoctorj-name} dependencies are held in a detached configuration.
+If for some special reason, you need to modify the way the dependency set is resolved, you can modify the
+behaviour by adding one or more strategies.
+onConfiguration:: Additional actions to be performed when the detached configuration for the
+{asciidoctorj-name} is created.
+version:: {asciidoctorj-name} version. If not specified a sane default version will be used.

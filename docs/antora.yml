@@ -1,0 +1,33 @@
+name: gradle-plugin
+title: Gradle Plugin Suite
+version: '3.x-dev'
+asciidoc:
+  attributes:
+    release-version: 3.2.0
+    project-name: asciidoctor-gradle-plugin
+    project-full-path: asciidoctor/asciidoctor-gradle-plugin
+    plugin-name: Asciidoctor Gradle plugin
+    asciidoc-url: https://asciidoc.org
+    asciidoctor-docs: https://docs.asciidoctor.org/
+    asciidoc-userguide: https://docs.asciidoctor.org/asciidoc/latest/
+    asciidoctor-userguide: https://docs.asciidoctor.org/asciidoctor/latest/
+    asciidoctor-maven-plugin: https://github.com/asciidoctor/asciidoctor-maven-plugin[Asciidoctor Maven Plugin]
+    asciidoctor-url: https://asciidoctor.org
+    asciidoctorj: https://github.com/asciidoctor/asciidoctorj
+    asciidoctorj-name: AsciidoctorJ
+    asciidoctorj-epub-name: Asciidoctorj-EPUB
+    asciidoctorj-pdf-name: Asciidoctorj-PDF
+    asciidoctorj-pdf-leanpub: Asciidoctorj Leanpub
+    asciidoctorjs-name: Asciidoctor.js
+    groovy-dsl-name: Groovy DSL
+    gradle-url: https://gradle.org/
+    issues: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/
+    issues-asciidoctorj: https://github.com/asciidoctor/asciidoctorj/issues/
+    issues-jruby: https://github.com/asciidoctor/asciidoctorj/issues/
+    jruby-name: JRuby
+    kotlindsl: https://github.com/gradle/kotlin-dsl[Gradle Kotlin DSL]
+    lightguard: https://github.com/LightGuard[Jason Porter]
+    lordofthejars: https://github.com/lordofthejars[Alex Soto]
+nav:
+  - modules/ROOT/nav.adoc
+  - modules/appendices/nav.adoc
