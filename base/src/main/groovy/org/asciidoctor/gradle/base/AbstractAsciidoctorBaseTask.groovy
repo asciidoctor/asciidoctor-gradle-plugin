@@ -46,8 +46,8 @@ import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.util.GradleVersion
-import org.ysb33r.grolifant.api.FileUtils
-import org.ysb33r.grolifant.api.StringUtils
+import org.ysb33r.grolifant.api.v4.FileUtils
+import org.ysb33r.grolifant.api.v4.StringUtils
 
 import java.nio.file.Path
 import java.util.concurrent.Callable
@@ -58,7 +58,7 @@ import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClos
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.getSourceFileTree
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.mapToDirectoryProvider
 import static org.gradle.api.tasks.PathSensitivity.RELATIVE
-import static org.ysb33r.grolifant.api.FileUtils.filesFromCopySpec
+import static org.ysb33r.grolifant.api.v4.FileUtils.filesFromCopySpec
 
 /** Abstract base task for Asciidoctor that can be shared between AsciidoctorJ and Asciidoctor.js.
  *

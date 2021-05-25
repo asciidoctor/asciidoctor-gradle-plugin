@@ -20,8 +20,8 @@ import org.asciidoctor.gradle.base.AsciidoctorModuleDefinition
 import org.asciidoctor.gradle.base.ModuleNotFoundException
 import org.asciidoctor.gradle.js.base.AsciidoctorJSModules
 
-import static org.ysb33r.grolifant.api.ClosureUtils.configureItem
-import static org.ysb33r.grolifant.api.StringUtils.stringize
+import static org.ysb33r.grolifant.api.v4.ClosureUtils.configureItem
+import static org.ysb33r.grolifant.api.v4.StringUtils.stringize
 
 /** Define versions for standard AsciidoctorJS modules.
  *

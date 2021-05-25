@@ -24,7 +24,7 @@ import org.gradle.api.Task
 import org.gradle.api.UnknownTaskException
 import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.diagnostics.DependencyReportTask
-import org.ysb33r.grolifant.api.TaskProvider
+import org.ysb33r.grolifant.api.v4.TaskProvider
 
 import java.util.regex.Matcher
 import java.util.regex.Pattern

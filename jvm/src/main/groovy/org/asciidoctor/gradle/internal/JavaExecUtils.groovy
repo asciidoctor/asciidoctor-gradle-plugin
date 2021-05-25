@@ -23,7 +23,7 @@ import org.gradle.api.Task
 import org.gradle.api.file.FileCollection
 import org.gradle.api.invocation.Gradle
 import org.gradle.util.GradleVersion
-import org.ysb33r.grolifant.api.FileUtils
+import org.ysb33r.grolifant.api.v4.FileUtils
 
 import java.util.regex.Pattern
 

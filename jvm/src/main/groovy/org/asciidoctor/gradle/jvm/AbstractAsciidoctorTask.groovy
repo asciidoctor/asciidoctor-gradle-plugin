@@ -46,7 +46,6 @@ import org.gradle.process.JavaForkOptions
 import org.gradle.util.GradleVersion
 import org.gradle.workers.WorkerConfiguration
 import org.gradle.workers.WorkerExecutor
-import org.ysb33r.grolifant.api.Version
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClosure
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.getClassLocation
@@ -85,7 +84,8 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
     private final List<Object> asciidocConfigurations = []
 
     @PackageScope
-    final org.ysb33r.grolifant.api.JavaForkOptions javaForkOptions = new org.ysb33r.grolifant.api.JavaForkOptions()
+    final org.ysb33r.grolifant.api.v4.JavaForkOptions javaForkOptions =
+            new org.ysb33r.grolifant.api.v4.JavaForkOptions()
 
     /** Set how AsciidoctorJ should be run.
      *
@@ -165,9 +165,9 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
      *
      * These options are ignored if {@link #inProcess} {@code ==} {@link #IN_PROCESS}.
      *
-     * @param configurator Closure that configures a {@link org.ysb33r.grolifant.api.JavaForkOptions} instance.
+     * @param configurator Closure that configures a {@link org.ysb33r.grolifant.api.v4.JavaForkOptions} instance.
      */
-    void forkOptions(@DelegatesTo(org.ysb33r.grolifant.api.JavaForkOptions) Closure configurator) {
+    void forkOptions(@DelegatesTo(org.ysb33r.grolifant.api.v4.JavaForkOptions) Closure configurator) {
         executeDelegatingClosure(this.javaForkOptions, configurator)
     }
 
@@ -175,9 +175,9 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
      *
      * These options are ignored if {@link #inProcess} {@code ==} {@link #IN_PROCESS}.
      *
-     * @param configurator Action that configures a {@link org.ysb33r.grolifant.api.JavaForkOptions} instance.
+     * @param configurator Action that configures a {@link org.ysb33r.grolifant.api.v4.JavaForkOptions} instance.
      */
-    void forkOptions(Action<org.ysb33r.grolifant.api.JavaForkOptions> configurator) {
+    void forkOptions(Action<org.ysb33r.grolifant.api.v4.JavaForkOptions> configurator) {
         configurator.execute(this.javaForkOptions)
     }
 

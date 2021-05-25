@@ -20,7 +20,7 @@ import org.asciidoctor.gradle.base.OutputOptions
 import org.gradle.api.Action
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.workers.WorkerExecutor
-import org.ysb33r.grolifant.api.FileUtils
+import org.ysb33r.grolifant.api.v4.FileUtils
 
 import javax.inject.Inject
 

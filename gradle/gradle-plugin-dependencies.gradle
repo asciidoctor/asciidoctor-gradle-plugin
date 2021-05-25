@@ -2,7 +2,7 @@ import org.gradle.util.GradleVersion
 
 dependencies {
     compile gradleApi()
-    compile "org.ysb33r.gradle:grolifant:${grolifantVersion}"
+    compile "org.ysb33r.gradle:grolifant60:${grolifantVersion}"
 
     testCompile project(':testfixtures-jvm')
 

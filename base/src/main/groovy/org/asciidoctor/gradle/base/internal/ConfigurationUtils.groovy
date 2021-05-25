@@ -20,7 +20,7 @@ import org.asciidoctor.gradle.base.Transform
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.provider.Provider
-import org.ysb33r.grolifant.api.StringUtils
+import org.ysb33r.grolifant.api.v4.StringUtils
 
 /** Utilities for dealing with Configurations
  *
