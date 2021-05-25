@@ -371,8 +371,9 @@ class RevealJSOptions {
 
     /** Set the Parallax background size.
      *
-     * @param css Anything that can be converted to a String via {@link org.ysb33r.grolifant.api.v4.StringUtils#stringize}.
-     *   Must be in CSS syntax.
+     * @param css Anything that can be converted to a String
+     * via {@link org.ysb33r.grolifant.api.v4.StringUtils#stringize}.
+     * Must be in CSS syntax.
      */
     void setParallaxBackgroundSize(Object css) {
         this.parallaxBackgroundSize = css
