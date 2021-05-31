@@ -19,7 +19,7 @@ import groovy.transform.CompileStatic
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.ysb33r.grolifant.api.AbstractDistributionInstaller
-import org.ysb33r.grolifant.api.OperatingSystem
+import org.ysb33r.grolifant.api.core.OperatingSystem
 import org.ysb33r.grolifant.api.errors.DistributionFailedException
 import org.ysb33r.grolifant.api.os.Linux
 import org.ysb33r.grolifant.api.os.MacOsX

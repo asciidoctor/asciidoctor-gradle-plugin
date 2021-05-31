@@ -27,7 +27,7 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.util.GradleVersion
 import org.gradle.workers.WorkerExecutor
-import org.ysb33r.grolifant.api.Version
+import org.ysb33r.grolifant.api.core.Version
 
 import javax.inject.Inject
 import java.util.regex.Matcher

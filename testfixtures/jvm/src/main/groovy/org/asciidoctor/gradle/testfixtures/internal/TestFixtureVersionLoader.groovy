@@ -16,7 +16,7 @@
 package org.asciidoctor.gradle.testfixtures.internal
 
 import groovy.transform.CompileStatic
-import org.ysb33r.grolifant.api.MapUtils
+import org.ysb33r.grolifant.api.v4.MapUtils
 
 /** Loads AsciidoctorJ(S) versions and associated module versions from the properties map to make them available
  * to tests.

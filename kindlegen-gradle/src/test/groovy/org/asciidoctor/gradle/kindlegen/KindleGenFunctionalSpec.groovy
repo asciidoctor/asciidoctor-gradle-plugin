@@ -19,7 +19,7 @@ import org.asciidoctor.gradle.kindlegen.internal.FunctionalSpecification
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.gradle.testkit.runner.BuildResult
-import org.ysb33r.grolifant.api.OperatingSystem
+import org.ysb33r.grolifant.api.core.OperatingSystem
 
 @SuppressWarnings('MethodName')
 class KindleGenFunctionalSpec extends FunctionalSpecification {

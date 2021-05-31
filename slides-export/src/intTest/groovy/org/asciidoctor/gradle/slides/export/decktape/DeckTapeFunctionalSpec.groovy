@@ -17,7 +17,7 @@ package org.asciidoctor.gradle.slides.export.decktape
 
 import org.asciidoctor.gradle.slides.export.internal.FunctionalSpecification
 import org.gradle.testkit.runner.BuildResult
-import org.ysb33r.grolifant.api.OperatingSystem
+import org.ysb33r.grolifant.api.core.OperatingSystem
 import spock.lang.IgnoreIf
 import spock.lang.Issue
 import spock.lang.Stepwise

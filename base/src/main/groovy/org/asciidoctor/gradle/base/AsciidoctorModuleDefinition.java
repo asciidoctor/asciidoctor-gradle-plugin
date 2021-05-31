@@ -30,14 +30,14 @@ public interface AsciidoctorModuleDefinition extends Named {
     /** Set the version of the component to use.
      *
      * @param o Any object can can be converted to a String using
-     *          {@code org.ysb33r.grolifant.api.StringUtils.stringize}
+     *          {@code org.ysb33r.grolifant.api.v4.StringUtils.stringize}
      */
     void setVersion(Object o);
 
     /** Declarative way in DSL to set the version of the component to use.
      *
      * @param o Any object can can be converted to a String using
-     *          {@code org.ysb33r.grolifant.api.StringUtils.stringize}
+     *          {@code org.ysb33r.grolifant.api.v4.StringUtils.stringize}
      */
     void version(Object o);
 

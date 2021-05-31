@@ -19,7 +19,7 @@ import org.apache.commons.io.FileUtils
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
-import org.ysb33r.grolifant.api.OperatingSystem
+import org.ysb33r.grolifant.api.core.OperatingSystem
 import spock.lang.Specification
 
 class FunctionalSpecification extends Specification {

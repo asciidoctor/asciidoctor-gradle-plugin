@@ -20,7 +20,7 @@ import org.gradle.api.Project
 import org.ysb33r.gradle.nodejs.NodeJSExtension
 import org.ysb33r.gradle.nodejs.NpmExtension
 import org.ysb33r.gradle.nodejs.utils.npm.NpmExecutor
-import org.ysb33r.grolifant.api.StringUtils
+import org.ysb33r.grolifant.api.v4.StringUtils
 
 /** Utilities for dealing with NodeJS in an Asciidoctor-Gradle context
  *

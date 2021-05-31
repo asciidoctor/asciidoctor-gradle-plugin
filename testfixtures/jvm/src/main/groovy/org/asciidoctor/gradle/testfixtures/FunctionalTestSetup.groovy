@@ -18,7 +18,7 @@ package org.asciidoctor.gradle.testfixtures
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.testfixtures.internal.TestFixtureVersionLoader
 import org.gradle.testkit.runner.GradleRunner
-import org.ysb33r.grolifant.api.OperatingSystem
+import org.ysb33r.grolifant.api.core.OperatingSystem
 
 /** Utility methods for setting up functional plugin tests.
  *

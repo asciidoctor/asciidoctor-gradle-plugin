@@ -21,7 +21,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.gradle.workers.WorkerExecutor
-import org.ysb33r.grolifant.api.JavaForkOptions
+import org.ysb33r.grolifant.api.v4.JavaForkOptions
 import spock.lang.Specification
 
 import javax.inject.Inject

@@ -23,9 +23,9 @@ import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
-import org.ysb33r.grolifant.api.TaskProvider
+import org.ysb33r.grolifant.api.v4.TaskProvider
 
-import static org.ysb33r.grolifant.api.TaskProvider.registerTask
+import static org.ysb33r.grolifant.api.v4.TaskProvider.registerTask
 
 /** Plugin that simplifies that management of external GEMs.
  *

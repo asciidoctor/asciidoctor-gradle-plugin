@@ -33,12 +33,12 @@ import org.gradle.api.artifacts.ResolutionStrategy
 import org.gradle.api.file.FileCollection
 import org.gradle.api.logging.LogLevel
 import org.gradle.util.GradleVersion
-import org.ysb33r.grolifant.api.OperatingSystem
+import org.ysb33r.grolifant.api.core.OperatingSystem
 
 import java.util.regex.Pattern
 
-import static org.ysb33r.grolifant.api.ClosureUtils.configureItem
-import static org.ysb33r.grolifant.api.StringUtils.stringize
+import static org.ysb33r.grolifant.api.v4.ClosureUtils.configureItem
+import static org.ysb33r.grolifant.api.v4.StringUtils.stringize
 
 /** Extension for configuring AsciidoctorJ.
  *

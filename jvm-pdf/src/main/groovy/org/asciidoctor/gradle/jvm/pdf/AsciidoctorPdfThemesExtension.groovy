@@ -18,7 +18,7 @@ package org.asciidoctor.gradle.jvm.pdf
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AbstractDownloadableComponent
 import org.gradle.api.Project
-import org.ysb33r.grolifant.api.StringUtils
+import org.ysb33r.grolifant.api.v4.StringUtils
 
 /** Easy way to configure themes for Asciidoctor PDF either as local themes or
  * as downloadable.

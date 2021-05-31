@@ -42,7 +42,7 @@ import static org.asciidoctor.gradle.base.slides.Profile.IMPRESS_JS
 import static org.asciidoctor.gradle.base.slides.Profile.REMARK_JS
 import static org.asciidoctor.gradle.base.slides.Profile.REVEAL_JS
 import static org.asciidoctor.gradle.js.nodejs.core.NodeJSUtils.initPackageJson
-import static org.ysb33r.grolifant.api.ClosureUtils.configureItem
+import static org.ysb33r.grolifant.api.v4.ClosureUtils.configureItem
 
 /** Conversion task that will convert from a set of
  * HTML slides to PDF using <a href="https://github.com/astefanutti/decktape">decktape</a>.

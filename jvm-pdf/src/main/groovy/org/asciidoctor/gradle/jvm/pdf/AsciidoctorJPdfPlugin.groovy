@@ -23,7 +23,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.setConvention
-import static org.ysb33r.grolifant.api.TaskProvider.registerTask
+import static org.ysb33r.grolifant.api.v4.TaskProvider.registerTask
 
 /** Provides additional conventions for building PDFs.
  *

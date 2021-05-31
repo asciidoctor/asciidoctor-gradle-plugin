@@ -18,7 +18,7 @@ package org.asciidoctor.gradle.js.base.internal
 import org.asciidoctor.gradle.base.AsciidoctorModuleDefinition
 import org.gradle.api.Action
 
-import static org.ysb33r.grolifant.api.StringUtils.stringize
+import static org.ysb33r.grolifant.api.v4.StringUtils.stringize
 
 /** A single configurable asciidoctor.js module.
  *

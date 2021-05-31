@@ -16,7 +16,7 @@
 package org.asciidoctor.gradle.base
 
 import groovy.transform.CompileStatic
-import org.ysb33r.grolifant.api.MapUtils
+import org.ysb33r.grolifant.api.v4.MapUtils
 
 /** Loads the versions of Asciidoctor modules that are required for a specific plugin.
  *

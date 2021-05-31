@@ -19,7 +19,7 @@ import groovy.transform.CompileStatic
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.ysb33r.grolifant.api.TaskProvider
+import org.ysb33r.grolifant.api.v4.TaskProvider
 
 /** Adds a task called asciidoctor.
  *
