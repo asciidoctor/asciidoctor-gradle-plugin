@@ -25,7 +25,7 @@ options:: A shortcut to`asciidoctorj.options`.
 outputDir:: where generated docs go.
   Use either `outputDir path`, `setOutputDir path` or `outputDir=path`
   Type: File, but any object convertible with `project.file` can be passed.
-  Default: `$buildDir/asciidoc`.
+  Default: `$buildDir/docs/asciidoc`.
 parallelMode:: Specifies whether each backend or other variant of a converting tasks should be run in parallel or sequential.
   Sequential conversions might have less initialisation overhead, but may suffer from `gemPath` and extension pollution. Default: `true` (parallel).
 resources:: specify which additional files (image etc.) must be copied to output directory using a
