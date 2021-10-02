@@ -4,19 +4,20 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-java@v1
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v2
         with:
+          distribution: temurin
           java-version: 11
       # Cache
       - name: Cache .gradle/caches
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-cache-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle-cache-
       - name: Cache .gradle/wrapper
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/*.gradle') }}
@@ -33,29 +34,33 @@ jobs:
           arguments: --console=plain -S codenarcAll
   build-windows:
     runs-on: windows-latest
+    strategy:
+      matrix:
+        java: [ 11, 17 ]
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
         # use a short path to avoid exceeding the path limit on Windows... sigh
         with:
           path: 'w'
-      - uses: actions/setup-java@v1
+      - uses: actions/setup-java@v2
         with:
-          java-version: 11
+          distribution: temurin
+          java-version: ${{ matrix.java }}
       # Cache
       - name: Cache .gradle/caches
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-cache-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle-cache-
       - name: Cache .gradle/wrapper
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle-wrapper-
       - name: Cache offline repository
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: testfixtures/offline-repo/build/repo
           key: ${{ runner.os }}-offline-repo-${{ hashFiles('module-versions.properties') }}
@@ -89,28 +94,29 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        java: [ 8, 11 ]
+        java: [ 8, 11, 17 ]
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v1
-    - uses: actions/setup-java@v1
+    - uses: actions/checkout@v2
+    - uses: actions/setup-java@v2
       with:
+        distribution: temurin
         java-version: ${{ matrix.java }}
     # Cache
     - name: Cache .gradle/caches
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: ~/.gradle/caches
         key: ${{ runner.os }}-gradle-cache-${{ hashFiles('**/*.gradle') }}
         restore-keys: ${{ runner.os }}-gradle-cache-
     - name: Cache .gradle/wrapper
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: ~/.gradle/wrapper
         key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/*.gradle') }}
         restore-keys: ${{ runner.os }}-gradle-wrapper-
     - name: Cache offline repository
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: testfixtures/offline-repo/build/repo
         key: ${{ runner.os }}-offline-repo-${{ hashFiles('module-versions.properties') }}
