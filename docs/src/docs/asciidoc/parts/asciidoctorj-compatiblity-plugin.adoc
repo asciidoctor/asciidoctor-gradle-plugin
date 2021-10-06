@@ -50,7 +50,7 @@ options:: a Map specifying different options that can be sent to Asciidoctor.
 outputDir:: where generated docs go.
   Use either `outputDir path`, `setOutputDir path` or `outputDir=path`
   Type: File, but any object convertible with `project.file` can be passed.
-  Default: `$buildDir/asciidoc`.
+  Default: `$buildDir/docs/asciidoc`.
 resources:: specify which additional files (image etc.) must be copied to output directory using a
   http://www.gradle.org/docs/current/javadoc/org/gradle/api/file/CopySpec.html[CopySpec].
 requires:: a set of Ruby modules to be included.
