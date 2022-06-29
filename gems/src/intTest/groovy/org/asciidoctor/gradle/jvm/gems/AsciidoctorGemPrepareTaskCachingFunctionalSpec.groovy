@@ -133,7 +133,7 @@ class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecifica
 
     @Override
     File getBuildFile(String extraContent) {
-        File buildFile = testProjectDir.newFile('build.gradle')
+        File buildFile = new File(testProjectDir, 'build.gradle')
         buildFile << """
             plugins {
                 id 'org.asciidoctor.jvm.gems'

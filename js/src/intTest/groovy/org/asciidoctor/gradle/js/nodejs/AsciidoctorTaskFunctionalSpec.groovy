@@ -43,8 +43,8 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         getGroovyGradleRunner(DEFAULT_ARGS).build()
 
         then:
-        new File(testProjectDir.root, 'build/docs/asciidoc/sample.html').exists()
-        new File(testProjectDir.root, 'build/docs/asciidoc/subdir/sample2.html').exists()
+        new File(testProjectDir, 'build/docs/asciidoc/sample.html').exists()
+        new File(testProjectDir, 'build/docs/asciidoc/subdir/sample2.html').exists()
     }
 
     @Unroll
@@ -76,12 +76,12 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
 
         then: 'content is generated as HTML and XML'
         verifyAll {
-            new File(testProjectDir.root, 'build/docs/asciidoc/html5/sample.html').exists()
-            new File(testProjectDir.root, 'build/docs/asciidoc/html5/subdir/sample2.html').exists()
-            new File(testProjectDir.root, 'build/docs/asciidoc/docbook/sample.xml').exists()
-            !new File(testProjectDir.root, 'build/docs/asciidoc/docinfo/docinfo.xml').exists()
-            !new File(testProjectDir.root, 'build/docs/asciidoc/docinfo/sample-docinfo.xml').exists()
-            !new File(testProjectDir.root, 'build/docs/asciidoc/html5/subdir/_include.html').exists()
+            new File(testProjectDir, 'build/docs/asciidoc/html5/sample.html').exists()
+            new File(testProjectDir, 'build/docs/asciidoc/html5/subdir/sample2.html').exists()
+            new File(testProjectDir, 'build/docs/asciidoc/docbook/sample.xml').exists()
+            !new File(testProjectDir, 'build/docs/asciidoc/docinfo/docinfo.xml').exists()
+            !new File(testProjectDir, 'build/docs/asciidoc/docinfo/sample-docinfo.xml').exists()
+            !new File(testProjectDir, 'build/docs/asciidoc/html5/subdir/_include.html').exists()
         }
 
         where:
@@ -115,7 +115,7 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
 
         then: 'content is generated as XML'
         verifyAll {
-            new File(testProjectDir.root, 'build/docs/asciidoc/sample.xml').exists()
+            new File(testProjectDir, 'build/docs/asciidoc/sample.xml').exists()
         }
 
         where:

@@ -22,7 +22,7 @@ class AsciidoctorJExecutorSpec extends RemoteSpecification {
 
     void 'Can execute a worked-based conversion from a single backend'() {
         given:
-        Map asciidoc = getProject(testProjectDir.root)
+        Map asciidoc = getProject(testProjectDir)
         ExecutorConfigurationContainer ecc = getContainerSingleEntry(asciidoc.src, asciidoc.outputDir)
         AsciidoctorJExecuter aje = new AsciidoctorJExecuter(ecc)
 
@@ -35,7 +35,7 @@ class AsciidoctorJExecutorSpec extends RemoteSpecification {
 
     void 'Can execute a worked-based conversion from multiple backends'() {
         given:
-        Map asciidoc = getProject(testProjectDir.root)
+        Map asciidoc = getProject(testProjectDir)
         ExecutorConfigurationContainer ecc = getContainerMultipleEntries(
             asciidoc.src,
             asciidoc.outputDir,

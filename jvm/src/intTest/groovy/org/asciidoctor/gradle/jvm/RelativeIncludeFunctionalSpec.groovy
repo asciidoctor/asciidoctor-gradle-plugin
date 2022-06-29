@@ -41,7 +41,7 @@ class RelativeIncludeFunctionalSpec extends FunctionalSpecification {
         getGradleRunner(DEFAULT_ARGS).withDebug(true).build()
 
         then:
-        new File(testProjectDir.root, 'build/docs/asciidoc/nested/sample.html').text
+        new File(testProjectDir, 'build/docs/asciidoc/nested/sample.html').text
                 .contains('This is from _nested-include.adoc file.')
     }
 }

@@ -29,18 +29,18 @@ class LinkedChaptersFunctionalSpec extends FunctionalSpecification {
     void 'Linked chapters should not produce a warning'() {
         given:
         getBuildFile("""
-        
+
         asciidoctorEpub {
             asciidoctorj {
                 fatalWarnings ~/.*invalid reference to (unknown )?anchor.*/
             }
-            
+
             ebookFormats EPUB3
 
             sources {
                 include 'epub3.adoc'
             }
-            
+
             baseDirFollowsSourceDir()
         }
         """)
@@ -50,14 +50,14 @@ class LinkedChaptersFunctionalSpec extends FunctionalSpecification {
 
         then:
         verifyAll {
-            new File(testProjectDir.root, 'build/docs/asciidocEpub/epub3.epub').exists()
+            new File(testProjectDir, 'build/docs/asciidocEpub/epub3.epub').exists()
             !result.output.contains('invalid reference to anchor')
             !result.output.contains('invalid reference to unknown anchor')
         }
     }
 
     File getBuildFile(String extraContent) {
-        File buildFile = testProjectDir.newFile('build.gradle')
+        File buildFile = new File(testProjectDir, 'build.gradle')
         buildFile << """
 plugins {
     id 'org.asciidoctor.jvm.epub'

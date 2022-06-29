@@ -16,14 +16,12 @@
 package org.asciidoctor.gradle.kindlegen.internal
 
 import org.gradle.testkit.runner.GradleRunner
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Shared
 import spock.lang.Specification
 
 class FunctionalSpecification extends Specification {
-    @Rule
-    TemporaryFolder testProjectDir
+    @TempDir
+    File testProjectDir
 
     @Shared
     List<File> pluginClasspath
@@ -42,7 +40,7 @@ class FunctionalSpecification extends Specification {
 
     GradleRunner getGradleRunner(List<String> taskNames) {
         GradleRunner.create()
-            .withProjectDir(testProjectDir.root)
+            .withProjectDir(testProjectDir)
             .withArguments(taskNames)
             .withPluginClasspath(pluginClasspath)
             .forwardOutput()

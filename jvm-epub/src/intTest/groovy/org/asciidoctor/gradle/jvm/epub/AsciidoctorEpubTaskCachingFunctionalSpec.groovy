@@ -59,15 +59,15 @@ class AsciidoctorEpubTaskCachingFunctionalSpec extends FunctionalSpecification i
     }
 
     File getBuildFile(String extraContent) {
-        File buildFile = testProjectDir.newFile('build.gradle')
+        File buildFile = new File(testProjectDir, 'build.gradle')
         buildFile << """
             plugins {
                 id 'org.asciidoctor.jvm.epub'
             }
-            
+
             ${scan ? buildScanConfiguration : ''}
             ${offlineRepositories}
-            
+
             ${extraContent}
         """
         buildFile
@@ -82,7 +82,7 @@ class AsciidoctorEpubTaskCachingFunctionalSpec extends FunctionalSpecification i
                 asciidoctorj {
                     jrubyVersion = '${JRUBY_TEST_VERSION}'
                 }
-    
+
                 sources {
                     include 'epub3.adoc'
                 }

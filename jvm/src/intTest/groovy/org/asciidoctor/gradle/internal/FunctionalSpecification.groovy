@@ -20,9 +20,8 @@ import org.apache.commons.io.FileUtils
 import org.asciidoctor.gradle.testfixtures.DslType
 import org.asciidoctor.gradle.testfixtures.FunctionalTestSetup
 import org.gradle.testkit.runner.GradleRunner
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
+import spock.lang.TempDir
 
 import static org.asciidoctor.gradle.testfixtures.DslType.GROOVY_DSL
 import static org.asciidoctor.gradle.testfixtures.DslType.KOTLIN_DSL
@@ -38,21 +37,21 @@ class FunctionalSpecification extends Specification {
     public static
     final String TEST_REPO_DIR = FunctionalTestSetup.offlineRepo.absolutePath
 
-    @Rule
-    TemporaryFolder testProjectDir
+    @TempDir
+    File testProjectDir
 
-    @Rule
-    TemporaryFolder alternateProjectDir
+    @TempDir
+    File alternateProjectDir
 
     @CompileStatic
     GradleRunner getGradleRunner(List<String> taskNames = ['asciidoctor']) {
-        FunctionalTestSetup.getGradleRunner(GROOVY_DSL, testProjectDir.root, taskNames)
+        FunctionalTestSetup.getGradleRunner(GROOVY_DSL, testProjectDir, taskNames)
     }
 
     @SuppressWarnings(['BuilderMethodWithSideEffects'])
     void createTestProject(String docGroup = 'normal') {
         File srcDir = new File(TEST_PROJECTS_DIR, docGroup).absoluteFile
-        FileUtils.copyDirectory(srcDir, testProjectDir.root)
+        FileUtils.copyDirectory(srcDir, testProjectDir)
     }
 
     @CompileStatic
@@ -62,7 +61,7 @@ class FunctionalSpecification extends Specification {
     }
 
     File getJvmConvertGroovyBuildFile(String extraContent, String plugin = 'org.asciidoctor.jvm.convert') {
-        File buildFile = testProjectDir.newFile('build.gradle')
+        File buildFile = new File(testProjectDir, 'build.gradle')
         buildFile << """
             plugins {
                 id '${plugin}'
@@ -76,7 +75,7 @@ class FunctionalSpecification extends Specification {
     }
 
     File getJvmConvertKotlinBuildFile(String extraContent, String plugin = 'org.asciidoctor.jvm.convert') {
-        File buildFile = testProjectDir.newFile('build.gradle.kts')
+        File buildFile = new File(testProjectDir, 'build.gradle.kts')
         buildFile << """
             plugins {
                 id ("${plugin}")

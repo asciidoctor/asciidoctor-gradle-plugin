@@ -31,7 +31,7 @@ class AsciidoctorEditorConfigIntegrationSpec extends FunctionalSpecification {
         String groupName = 'the.group'
         String projVer = '1.0.0'
 
-        File attrFile = new File(testProjectDir.root, 'inputs.adoc')
+        File attrFile = new File(testProjectDir, 'inputs.adoc')
         attrFile.text = ":${key3}: ${value3}\n"
 
         getGroovyBuildFile("""
@@ -51,8 +51,8 @@ class AsciidoctorEditorConfigIntegrationSpec extends FunctionalSpecification {
         }
         """)
 
-        File outputFile = new File(testProjectDir.root, '.asciidoctorconfig')
-        new File(testProjectDir.root, 'settings.gradle').text = "rootProject.name='${projName}'"
+        File outputFile = new File(testProjectDir, '.asciidoctorconfig')
+        new File(testProjectDir, 'settings.gradle').text = "rootProject.name='${projName}'"
 
         when:
         getGradleRunner(['asciidoctorEditorConfig']).build()

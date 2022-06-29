@@ -40,7 +40,7 @@ class AsciidoctorEpubTaskFunctionalSpec extends FunctionalSpecification {
 
         then:
         verifyAll {
-            new File(testProjectDir.root, 'build/docs/asciidocEpub/epub3.epub').exists()
+            new File(testProjectDir, 'build/docs/asciidocEpub/epub3.epub').exists()
             !result.output.contains('include file not found:')
         }
     }
@@ -57,7 +57,7 @@ class AsciidoctorEpubTaskFunctionalSpec extends FunctionalSpecification {
 
         then:
         verifyAll {
-            new File(testProjectDir.root, 'build/docs/asciidocEpub/epub3.mobi').exists()
+            new File(testProjectDir, 'build/docs/asciidocEpub/epub3.mobi').exists()
             !result.output.contains('include file not found:')
         }
     }
@@ -86,7 +86,7 @@ class AsciidoctorEpubTaskFunctionalSpec extends FunctionalSpecification {
 
         then:
         verifyAll {
-            new File(testProjectDir.root, 'build/docs/asciidocEpub/epub3.epub').exists()
+            new File(testProjectDir, 'build/docs/asciidocEpub/epub3.epub').exists()
             !result.output.contains('include file not found:')
         }
 
@@ -132,7 +132,7 @@ class AsciidoctorEpubTaskFunctionalSpec extends FunctionalSpecification {
     }
 
     File getBuildFile(String extraContent) {
-        File buildFile = testProjectDir.newFile('build.gradle')
+        File buildFile = new File(testProjectDir, 'build.gradle')
         buildFile << """
 plugins {
     id 'org.asciidoctor.jvm.epub'

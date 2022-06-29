@@ -22,7 +22,7 @@ class AsciidoctorJavaExecSpec extends RemoteSpecification {
 
     void 'Can execute a conversion from execution specification'() {
         given:
-        Map asciidoc = getProject(testProjectDir.root)
+        Map asciidoc = getProject(testProjectDir)
         AsciidoctorJavaExec aje = new AsciidoctorJavaExec(getContainerSingleEntry(asciidoc.src, asciidoc.outputDir))
 
         when:
@@ -35,8 +35,8 @@ class AsciidoctorJavaExecSpec extends RemoteSpecification {
 
     void 'Can execute a conversion using serialised execution specification'() {
         given:
-        File executionData = new File(testProjectDir.root, 'execdata')
-        Map asciidoc = getProject(testProjectDir.root)
+        File executionData = new File(testProjectDir, 'execdata')
+        Map asciidoc = getProject(testProjectDir)
         ExecutorConfigurationContainer ecc = getContainerMultipleEntries(
             asciidoc.src,
             asciidoc.outputDir,
@@ -63,7 +63,7 @@ class AsciidoctorJavaExecSpec extends RemoteSpecification {
 
     void 'Should throw an exception when failure level is reached or exceeded'() {
         given:
-        Map asciidoc = getProject(testProjectDir.root)
+        Map asciidoc = getProject(testProjectDir)
         AsciidoctorJavaExec aje = new AsciidoctorJavaExec(new ExecutorConfigurationContainer(
                 getExecutorConfiguration(HTML, asciidoc.src, new File(asciidoc.outputDir, OUTPUT_HTML), null, 1)
         ))
