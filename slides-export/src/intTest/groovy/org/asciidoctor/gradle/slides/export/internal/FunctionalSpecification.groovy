@@ -18,10 +18,9 @@ package org.asciidoctor.gradle.slides.export.internal
 import org.apache.commons.io.FileUtils
 import org.asciidoctor.gradle.testfixtures.FunctionalTestSetup
 import org.gradle.testkit.runner.GradleRunner
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import org.ysb33r.grolifant.api.OperatingSystem
 import spock.lang.Specification
+import spock.lang.TempDir
 
 @SuppressWarnings('LineLength')
 class FunctionalSpecification extends Specification {
@@ -33,16 +32,16 @@ class FunctionalSpecification extends Specification {
     static final String TEST_REPO_DIR = FunctionalTestSetup.offlineRepo.absolutePath
     static final OperatingSystem OS = OperatingSystem.current()
 
-    @Rule
-    TemporaryFolder testProjectDir
+    @TempDir
+    File testProjectDir
 
     File projectDir
     File testkitDir
     boolean withBuildScan = false
 
     void setup() {
-        projectDir = new File(testProjectDir.root, 'test-project')
-        testkitDir = new File(testProjectDir.root, 'testkit')
+        projectDir = new File(testProjectDir, 'test-project')
+        testkitDir = new File(testProjectDir, 'testkit')
 
         projectDir.mkdirs()
         testkitDir.mkdirs()

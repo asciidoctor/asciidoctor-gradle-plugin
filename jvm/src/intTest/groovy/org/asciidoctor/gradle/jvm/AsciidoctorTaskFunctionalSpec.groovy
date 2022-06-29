@@ -71,12 +71,12 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
 
         then: 'u content is generated as HTML and XML'
         verifyAll {
-            new File(testProjectDir.root, 'build/docs/asciidoc/html5/sample.html').exists() || !compatible
-            new File(testProjectDir.root, 'build/docs/asciidoc/html5/subdir/sample2.html').exists() || !compatible
-            new File(testProjectDir.root, 'build/docs/asciidoc/docbook/sample.xml').exists() || !compatible
-            !new File(testProjectDir.root, 'build/docs/asciidoc/docinfo/docinfo.xml').exists() || !compatible
-            !new File(testProjectDir.root, 'build/docs/asciidoc/docinfo/sample-docinfo.xml').exists() || !compatible
-            !new File(testProjectDir.root, 'build/docs/asciidoc/html5/subdir/_include.html').exists() || !compatible
+            new File(testProjectDir, 'build/docs/asciidoc/html5/sample.html').exists() || !compatible
+            new File(testProjectDir, 'build/docs/asciidoc/html5/subdir/sample2.html').exists() || !compatible
+            new File(testProjectDir, 'build/docs/asciidoc/docbook/sample.xml').exists() || !compatible
+            !new File(testProjectDir, 'build/docs/asciidoc/docinfo/docinfo.xml').exists() || !compatible
+            !new File(testProjectDir, 'build/docs/asciidoc/docinfo/sample-docinfo.xml').exists() || !compatible
+            !new File(testProjectDir, 'build/docs/asciidoc/html5/subdir/_include.html').exists() || !compatible
         }
 
         where:
@@ -168,7 +168,7 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
 
         when:
         getGradleRunner(DEFAULT_ARGS).build()
-        String sample2 = new File(testProjectDir.root, 'build/docs/asciidoc/subdir/sample2.html').text
+        String sample2 = new File(testProjectDir, 'build/docs/asciidoc/subdir/sample2.html').text
 
         then:
         sample2.contains('gradle-relative-srcdir = [..]')
@@ -232,7 +232,7 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         getGradleRunner(DEFAULT_ARGS).withDebug(true).build()
 
         then:
-        new File(testProjectDir.root, 'build/docs/asciidoc/sample.html').text
+        new File(testProjectDir, 'build/docs/asciidoc/sample.html').text
                 .contains('<meta name="asciidoctor-docinfo-test"/>')
     }
 

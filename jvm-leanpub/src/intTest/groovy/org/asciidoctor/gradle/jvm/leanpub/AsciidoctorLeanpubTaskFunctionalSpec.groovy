@@ -36,7 +36,7 @@ class AsciidoctorLeanpubTaskFunctionalSpec extends FunctionalSpecification {
 
         then:
         verifyAll {
-            new File(testProjectDir.root, 'build/docs/asciidocLeanpub/manuscript/Book.txt').exists()
+            new File(testProjectDir, 'build/docs/asciidocLeanpub/manuscript/Book.txt').exists()
         }
 
         where:
@@ -66,7 +66,7 @@ class AsciidoctorLeanpubTaskFunctionalSpec extends FunctionalSpecification {
 //    }
 
     File getBuildFile(String extraContent, boolean withDropbox = false) {
-        File buildFile = testProjectDir.newFile('build.gradle')
+        File buildFile = new File(testProjectDir, 'build.gradle')
         buildFile << """
 plugins {
     id 'org.asciidoctor.jvm.leanpub'

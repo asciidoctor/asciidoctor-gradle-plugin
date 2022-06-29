@@ -35,7 +35,7 @@ class AsciidoctorSlidesAndConvertPluginsCoexistFunctionalSpec extends Functional
 
         then:
         verifyAll {
-            new File(testProjectDir.root, 'build/docs/asciidoc/sample.html').exists()
+            new File(testProjectDir, 'build/docs/asciidoc/sample.html').exists()
         }
     }
 
@@ -44,7 +44,7 @@ class AsciidoctorSlidesAndConvertPluginsCoexistFunctionalSpec extends Functional
     }
 
     File createBuildFile(String extraContent = '') {
-        File buildFile = testProjectDir.newFile('build.gradle')
+        File buildFile = new File(testProjectDir, 'build.gradle')
         buildFile << """
         plugins {
             id 'org.asciidoctor.jvm.revealjs'

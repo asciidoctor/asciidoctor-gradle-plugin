@@ -7,6 +7,7 @@ import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.TaskProvider
+import org.gradle.api.tasks.testing.Test
 import org.gradle.plugins.ide.idea.model.IdeaModel
 import org.ysb33r.gradle.nodejs.NodeJSExtension
 
@@ -26,6 +27,12 @@ class AsciidoctorGradleGroovyProject implements Plugin<Project> {
         project.tasks.named(main.processResourcesTaskName).configure { Copy copy ->
             copy.from generateModuleVersions, { CopySpec cs ->
                 cs.into "${ModuleVersions.INTERMEDIATE_FOLDER_PATH}"
+            }
+        }
+
+        project.tasks.withType(Test).configureEach {
+            if (it.name != 'gradleTest') {
+                it.useJUnitPlatform()
             }
         }
 

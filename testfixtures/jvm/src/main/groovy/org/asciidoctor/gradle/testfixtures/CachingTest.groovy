@@ -19,7 +19,6 @@ import groovy.transform.CompileStatic
 import org.apache.commons.io.FileUtils
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.TaskOutcome
-import org.junit.rules.TemporaryFolder
 
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -85,7 +84,7 @@ trait CachingTest {
     }
 
     void assertTaskRunsWithOutcome(String task, TaskOutcome outcome) {
-        assertTaskRunsWithOutcomeInDir(task, outcome, testProjectDir.root)
+        assertTaskRunsWithOutcomeInDir(task, outcome, testProjectDir)
     }
 
     void assertDefaultTaskExecutes() {
@@ -97,24 +96,24 @@ trait CachingTest {
     }
 
     void assertDefaultTaskIsCachedInRelocatedDirectory() {
-        assertTaskRunsWithOutcomeInDir(defaultTask, FROM_CACHE, alternateProjectDir.root)
+        assertTaskRunsWithOutcomeInDir(defaultTask, FROM_CACHE, alternateProjectDir)
     }
 
     void assertDefaultTaskIsCachedAndRelocatable() {
         assertDefaultTaskIsCached()
-        FileUtils.copyDirectory(testProjectDir.root, alternateProjectDir.root)
+        FileUtils.copyDirectory(testProjectDir, alternateProjectDir)
         assertDefaultTaskIsCachedInRelocatedDirectory()
     }
 
     File getOutputFileInRelocatedDirectory() {
-        Path basePath = Paths.get(testProjectDir.root.toURI())
+        Path basePath = Paths.get(testProjectDir.toURI())
         Path outputFilePath = Paths.get(outputFile.toURI())
         Path relativeOutputFilePath = basePath.relativize(outputFilePath)
         fileInRelocatedDirectory(relativeOutputFilePath.toString())
     }
 
     File fileInRelocatedDirectory(String relativePath) {
-        new File(alternateProjectDir.root, relativePath)
+        new File(alternateProjectDir, relativePath)
     }
 
     void deleteIfExists(File file) {
@@ -124,7 +123,7 @@ trait CachingTest {
     }
 
     File file(String relativePath) {
-        new File(testProjectDir.root, relativePath)
+        new File(testProjectDir, relativePath)
     }
 
     void changeBuildConfigurationTo(String extraContent) {
@@ -138,7 +137,7 @@ trait CachingTest {
 
     abstract String getDefaultTask()
 
-    abstract TemporaryFolder getTestProjectDir()
+    abstract File getTestProjectDir()
 
-    abstract TemporaryFolder getAlternateProjectDir()
+    abstract File getAlternateProjectDir()
 }

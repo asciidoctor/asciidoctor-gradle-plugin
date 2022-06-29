@@ -16,21 +16,20 @@
 package org.asciidoctor.gradle.internal
 
 import org.gradle.api.invocation.Gradle
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
+import spock.lang.TempDir
 
 import static org.asciidoctor.gradle.internal.JavaExecUtils.getInternalGuavaLocation
 
 class JavaExecUtilsSpec extends Specification {
 
-    @Rule
-    TemporaryFolder temporaryFolder
+    @TempDir
+    File temporaryFolder
 
     void 'Throw exception if internal Guava cannot be found'() {
         setup:
         def gradle = Stub(Gradle)
-        gradle.gradleHomeDir >> temporaryFolder.root
+        gradle.gradleHomeDir >> temporaryFolder
 
         when:
         getInternalGuavaLocation(gradle)
@@ -43,10 +42,10 @@ class JavaExecUtilsSpec extends Specification {
     void 'Throw exception if multiple internal Guava JARs are found'() {
         setup:
         def gradle = Stub(Gradle)
-        gradle.gradleHomeDir >> temporaryFolder.root
-        new File(temporaryFolder.root, 'lib').mkdirs()
-        new File(temporaryFolder.root, 'lib/guava-0.0-android.jar').text = ''
-        new File(temporaryFolder.root, 'lib/guava-0.1-android.jar').text = ''
+        gradle.gradleHomeDir >> temporaryFolder
+        new File(temporaryFolder, 'lib').mkdirs()
+        new File(temporaryFolder, 'lib/guava-0.0-android.jar').text = ''
+        new File(temporaryFolder, 'lib/guava-0.1-android.jar').text = ''
 
         when:
         getInternalGuavaLocation(gradle)
@@ -59,10 +58,10 @@ class JavaExecUtilsSpec extends Specification {
     void 'detect jre variant of guava'() {
         setup:
         def gradle = Stub(Gradle)
-        gradle.gradleHomeDir >> temporaryFolder.root
-        new File(temporaryFolder.root, 'lib').mkdirs()
-        new File(temporaryFolder.root, 'lib/guavasomething.jar')
-        def guavaJar = new File(temporaryFolder.root, 'lib/guava-30.0-jre.jar')
+        gradle.gradleHomeDir >> temporaryFolder
+        new File(temporaryFolder, 'lib').mkdirs()
+        new File(temporaryFolder, 'lib/guavasomething.jar').text = ''
+        def guavaJar = new File(temporaryFolder, 'lib/guava-30.0-jre.jar')
         guavaJar.text = ''
 
         when:

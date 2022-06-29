@@ -135,7 +135,7 @@ class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecificati
                     branch = 'master'
                 }
             }
-    
+
             asciidoctorRevealJs {
                 plugins 'rajgoel/chart/Chart.js'
                 pluginConfigurationFile 'src/docs/asciidoc/empty-plugin-configuration.js'
@@ -195,31 +195,31 @@ class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecificati
 
     @Override
     File getBuildFile(String extraContent) {
-        File buildFile = testProjectDir.newFile('build.gradle')
+        File buildFile = new File(testProjectDir, 'build.gradle')
         buildFile << """
             plugins {
                 id 'org.asciidoctor.jvm.revealjs'
             }
-    
+
             ${scan ? buildScanConfiguration : ''}
             ${offlineRepositories}
-    
+
             repositories {
                 ruby.gems()
             }
-    
+
             asciidoctorRevealJs {
                 sourceDir 'src/docs/asciidoc'
-    
+
                 asciidoctorj {
                     jrubyVersion = '${JRUBY_TEST_VERSION}'
                 }
-    
+
                 sources {
                     include 'revealjs.adoc'
                 }
             }
-    
+
             ${extraContent}
         """
         buildFile

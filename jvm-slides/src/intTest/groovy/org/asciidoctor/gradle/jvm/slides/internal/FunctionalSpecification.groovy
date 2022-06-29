@@ -17,10 +17,9 @@ package org.asciidoctor.gradle.jvm.slides.internal
 
 import org.apache.commons.io.FileUtils
 import org.gradle.testkit.runner.GradleRunner
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import org.ysb33r.grolifant.api.OperatingSystem
 import spock.lang.Specification
+import spock.lang.TempDir
 
 class FunctionalSpecification extends Specification {
     public static final String TEST_PROJECTS_DIR = System.getProperty(
@@ -33,15 +32,15 @@ class FunctionalSpecification extends Specification {
     )
     public static final OperatingSystem OS = OperatingSystem.current()
 
-    @Rule
-    TemporaryFolder testProjectDir
+    @TempDir
+    File testProjectDir
 
-    @Rule
-    TemporaryFolder alternateProjectDir
+    @TempDir
+    File alternateProjectDir
 
     GradleRunner getGradleRunner(List<String> taskNames) {
         GradleRunner.create()
-            .withProjectDir(testProjectDir.root)
+            .withProjectDir(testProjectDir)
             .withArguments(taskNames)
             .withPluginClasspath()
             .forwardOutput()
@@ -50,7 +49,7 @@ class FunctionalSpecification extends Specification {
 
     @SuppressWarnings(['BuilderMethodWithSideEffects'])
     void createTestProject(String docGroup) {
-        FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, docGroup), testProjectDir.root)
+        FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, docGroup), testProjectDir)
     }
 
     String getOfflineRepositories() {

@@ -61,7 +61,7 @@ class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification im
                     themeDir = 'src/docs/asciidoc/pdf-theme'
                 }
             }
-            
+
             asciidoctorPdf {
                 sourceDir 'src/docs/asciidoc'
                 fontsDir 'src/docs/asciidoc/pdf-theme'
@@ -87,7 +87,7 @@ class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification im
                     themeDir = 'src/docs/themes/pdf-theme'
                 }
             }
-            
+
             asciidoctorPdf {
                 sourceDir 'src/docs/asciidoc'
                 fontsDir 'src/docs/themes/pdf-theme'
@@ -107,15 +107,15 @@ class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification im
     }
 
     File getBuildFile(String extraContent) {
-        File buildFile = testProjectDir.newFile('build.gradle')
+        File buildFile = new File(testProjectDir, 'build.gradle')
         buildFile << """
             plugins {
                 id 'org.asciidoctor.jvm.pdf'
             }
-            
+
             ${ -> scan ? buildScanConfiguration : '' }
             ${offlineRepositories}
-            
+
             ${extraContent}
         """
         buildFile

@@ -44,7 +44,7 @@ class KindleGenFunctionalSpec extends FunctionalSpecification {
 
     void 'Download and cache kindlegen'() {
         given:
-        new File(testProjectDir.root, 'build.gradle').text = """
+        new File(testProjectDir, 'build.gradle').text = """
 plugins {
     id 'org.asciidoctor.kindlegen.base'
 }

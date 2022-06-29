@@ -15,7 +15,6 @@ dependencies {
     compile gradleApi()
     compile gradleTestKit()
     compile "org.ysb33r.gradle:grolifant:${grolifantVersion}"
-    compile 'junit:junit:4.12'
     compile 'commons-io:commons-io:2.6'
     compile "org.jsoup:jsoup:$jsoupVersion"
     compile "cglib:cglib-nodep:$cglibVersion"

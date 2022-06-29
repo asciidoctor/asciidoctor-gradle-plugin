@@ -19,10 +19,9 @@ import org.apache.commons.io.FileUtils
 import org.asciidoctor.gradle.testfixtures.FunctionalTestSetup
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.util.VersionNumber
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import org.ysb33r.grolifant.api.OperatingSystem
 import spock.lang.Specification
+import spock.lang.TempDir
 
 class FunctionalSpecification extends Specification {
 
@@ -34,15 +33,15 @@ class FunctionalSpecification extends Specification {
     static
     final OperatingSystem OS = OperatingSystem.current()
 
-    @Rule
-    TemporaryFolder testProjectDir
+    @TempDir
+    File testProjectDir
 
-    @Rule
-    TemporaryFolder alternateProjectDir
+    @TempDir
+    File alternateProjectDir
 
     GradleRunner getGradleRunner(List<String> taskNames = ['asciidoctor']) {
         GradleRunner.create()
-            .withProjectDir(testProjectDir.root)
+            .withProjectDir(testProjectDir)
             .withArguments(taskNames)
             .withPluginClasspath()
             .forwardOutput()
@@ -51,7 +50,7 @@ class FunctionalSpecification extends Specification {
 
     @SuppressWarnings(['BuilderMethodWithSideEffects'])
     void createTestProject(String docGroup = 'epub3') {
-        FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, docGroup), testProjectDir.root)
+        FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, docGroup), testProjectDir)
     }
 
     @SuppressWarnings('LineLength')

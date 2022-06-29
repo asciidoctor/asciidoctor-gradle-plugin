@@ -41,7 +41,7 @@ class ResourcesFunctionalSpec extends FunctionalSpecification {
         }
         """)
         GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
-        File buildDir = new File(testProjectDir.root, 'build/docs/asciidoc')
+        File buildDir = new File(testProjectDir, 'build/docs/asciidoc')
         File imagesDir = new File(buildDir, 'images')
 
         when:
@@ -71,7 +71,7 @@ class ResourcesFunctionalSpec extends FunctionalSpecification {
         }
         ''')
         GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
-        File buildDir = new File(testProjectDir.root, 'build/docs/asciidoc')
+        File buildDir = new File(testProjectDir, 'build/docs/asciidoc')
         File imagesDir = new File(buildDir, 'images')
         File extraDir = new File(buildDir, 'images2')
 
@@ -103,7 +103,7 @@ class ResourcesFunctionalSpec extends FunctionalSpecification {
         }
         ''')
         GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
-        File buildDir = new File(testProjectDir.root, 'build/docs/asciidoc')
+        File buildDir = new File(testProjectDir, 'build/docs/asciidoc')
         File imagesDir = new File(buildDir, 'images')
 
         when:
@@ -128,7 +128,7 @@ class ResourcesFunctionalSpec extends FunctionalSpecification {
         }
         ''')
         GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
-        File buildDir = new File(testProjectDir.root, 'build/docs/asciidoc')
+        File buildDir = new File(testProjectDir, 'build/docs/asciidoc')
         File htmlImagesDir = new File(buildDir, 'html5/images')
         File docbookImagesDir = new File(buildDir, 'docbook/images')
 
@@ -155,7 +155,7 @@ class ResourcesFunctionalSpec extends FunctionalSpecification {
         }
         ''')
         GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
-        File buildDir = new File(testProjectDir.root, 'build/docs/asciidoc')
+        File buildDir = new File(testProjectDir, 'build/docs/asciidoc')
         File imagesDir = new File(buildDir, 'images')
 
         when:
@@ -182,7 +182,7 @@ class ResourcesFunctionalSpec extends FunctionalSpecification {
         }
         ''')
         GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
-        File buildDir = new File(testProjectDir.root, 'build/docs/asciidoc')
+        File buildDir = new File(testProjectDir, 'build/docs/asciidoc')
         File htmlImagesDir = new File(buildDir, 'html5/images')
         File docbookImagesDir = new File(buildDir, 'docbook/images')
 

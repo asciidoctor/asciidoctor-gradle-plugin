@@ -73,7 +73,7 @@ asciidoctor {
 
         when:
         runner.build()
-        File resultFile = new File(testProjectDir.root, "build/docs/asciidoc/${ASCIIDOC_INLINE_EXTENSIONS_FILE.replaceFirst('asciidoc', 'html')}")
+        File resultFile = new File(testProjectDir, "build/docs/asciidoc/${ASCIIDOC_INLINE_EXTENSIONS_FILE.replaceFirst('asciidoc', 'html')}")
 
         then: 'content is generated as HTML and XML'
         resultFile.exists()
@@ -121,7 +121,7 @@ block('small') {
 
         when:
         runner.build()
-        File resultFile = new File(testProjectDir.root, "build/docs/asciidoc/${ASCIIDOC_INLINE_EXTENSIONS_FILE.replaceFirst('asciidoc', 'html')}")
+        File resultFile = new File(testProjectDir, "build/docs/asciidoc/${ASCIIDOC_INLINE_EXTENSIONS_FILE.replaceFirst('asciidoc', 'html')}")
 
         then: 'content is generated as HTML and XML'
         resultFile.exists()
@@ -152,7 +152,7 @@ asciidoctor {
 
         when:
         runner.build()
-        File resultFile = new File(testProjectDir.root, "build/docs/asciidoc/${ASCIIDOC_INLINE_EXTENSIONS_FILE.replaceFirst('asciidoc', 'html')}")
+        File resultFile = new File(testProjectDir, "build/docs/asciidoc/${ASCIIDOC_INLINE_EXTENSIONS_FILE.replaceFirst('asciidoc', 'html')}")
 
         then: 'content is generated as HTML and XML'
         resultFile.exists()
@@ -181,7 +181,7 @@ asciidoctor {
         ''')
 
         GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
-        File outputFile = new File(testProjectDir.root, 'build/docs/asciidoc/inlineextensions.html')
+        File outputFile = new File(testProjectDir, 'build/docs/asciidoc/inlineextensions.html')
 
         when:
         BuildResult firstInvocationResult = runner.build()
@@ -192,7 +192,7 @@ asciidoctor {
         outputFile.text.startsWith('Hi, Mom')
 
         when:
-        new File(testProjectDir.root, 'src/docs/asciidoc/inlineextensions.asciidoc') << 'changes'
+        new File(testProjectDir, 'src/docs/asciidoc/inlineextensions.asciidoc') << 'changes'
         final BuildResult secondInvocationResult = getGradleRunner(DEFAULT_ARGS).build()
 
         then:
@@ -255,7 +255,7 @@ asciidoctor {
         when:
         runner.build()
         File resultFile = new File(
-            testProjectDir.root,
+            testProjectDir,
             'build/docs/asciidoc/' + ASCIIDOC_INLINE_EXTENSIONS_FILE.replaceFirst('asciidoc', 'html')
         )
 

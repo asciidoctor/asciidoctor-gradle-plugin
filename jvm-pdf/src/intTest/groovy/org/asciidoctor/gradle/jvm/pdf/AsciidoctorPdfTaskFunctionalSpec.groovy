@@ -52,7 +52,7 @@ asciidoctorPdf {
 
         then:
         verifyAll {
-            new File(testProjectDir.root, DEFAULT_OUTPUT_FILE).exists()
+            new File(testProjectDir, DEFAULT_OUTPUT_FILE).exists()
         }
 
         where:
@@ -88,7 +88,7 @@ asciidoctorPdf {
         combination.compatible ? runner.build() : runner.buildAndFail()
 
         then:
-        combination.compatible && new File(testProjectDir.root, DEFAULT_OUTPUT_FILE).exists() || !combination.compatible
+        combination.compatible && new File(testProjectDir, DEFAULT_OUTPUT_FILE).exists() || !combination.compatible
 
         where:
         combination << PdfBackendJRubyAsciidoctorJCombinationGenerator.get()
@@ -109,7 +109,7 @@ asciidoctorPdf {
 
         then:
         verifyAll {
-            new File(testProjectDir.root, DEFAULT_OUTPUT_FILE).exists()
+            new File(testProjectDir, DEFAULT_OUTPUT_FILE).exists()
         }
     }
 
@@ -134,7 +134,7 @@ asciidoctorPdf {
 
         then:
         verifyAll {
-            new File(testProjectDir.root, DEFAULT_OUTPUT_FILE).exists()
+            new File(testProjectDir, DEFAULT_OUTPUT_FILE).exists()
         }
     }
 
@@ -161,7 +161,7 @@ asciidoctorPdf {
 
         then:
         verifyAll {
-            new File(testProjectDir.root, DEFAULT_OUTPUT_FILE).exists()
+            new File(testProjectDir, DEFAULT_OUTPUT_FILE).exists()
         }
     }
 
@@ -187,7 +187,7 @@ asciidoctorPdf {
 
         then:
         verifyAll {
-            new File(testProjectDir.root, DEFAULT_OUTPUT_FILE).exists()
+            new File(testProjectDir, DEFAULT_OUTPUT_FILE).exists()
         }
     }
 
@@ -195,9 +195,9 @@ asciidoctorPdf {
     @Unroll
     void 'can apply a task configuration rule to set source and output directory (Gradle #gradleVersion)'() {
         given:
-        File newSourceDir = new File(testProjectDir.root, 'src/asciidoc')
-        assert new File(testProjectDir.root, 'src/docs/asciidoc').renameTo(newSourceDir)
-        testProjectDir.newFile('build.gradle') << """
+        File newSourceDir = new File(testProjectDir, 'src/asciidoc')
+        assert new File(testProjectDir, 'src/docs/asciidoc').renameTo(newSourceDir)
+        new File(testProjectDir, 'build.gradle') << """
             plugins {
                 id 'org.asciidoctor.jvm.pdf' apply false
             }
@@ -208,7 +208,7 @@ asciidoctorPdf {
             }
 
             apply plugin: 'org.asciidoctor.jvm.pdf'
-            
+
             ${offlineRepositories}
         """
 
@@ -219,7 +219,7 @@ asciidoctorPdf {
 
         then:
         verifyAll {
-            new File(testProjectDir.root, 'build/output/sample.pdf').exists()
+            new File(testProjectDir, 'build/output/sample.pdf').exists()
         }
 
         where:
@@ -247,7 +247,7 @@ asciidoctorPdf {
     }
 
     File getBuildFile(String extraContent) {
-        File buildFile = testProjectDir.newFile('build.gradle')
+        File buildFile = new File(testProjectDir, 'build.gradle')
         buildFile << """
 plugins {
     id 'org.asciidoctor.jvm.pdf'

@@ -17,9 +17,8 @@ package org.asciidoctor.gradle.remote.internal
 
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
+import spock.lang.TempDir
 
 import static org.asciidoctor.gradle.internal.ExecutorLogLevel.DEBUG
 
@@ -35,8 +34,8 @@ class RemoteSpecification extends Specification {
     static final String INVALID_1 = 'abc'
     static final String INVALID_2 = 'def'
 
-    @Rule
-    TemporaryFolder testProjectDir
+    @TempDir
+    File testProjectDir
 
     Map getProject(File base) {
         File src = new File(base, 'src')
@@ -99,9 +98,9 @@ in a subdirectory
             fatalMessagePatterns: [],
             sourceDir: srcFile.parentFile,
             outputDir: outputFile.parentFile,
-            projectDir: testProjectDir.root,
-            rootDir: testProjectDir.root,
-            baseDir: testProjectDir.root,
+            projectDir: testProjectDir,
+            rootDir: testProjectDir,
+            baseDir: testProjectDir,
             sourceTree: [srcFile, new File(srcFile.parentFile, "subdir/${INPUT_DOC2}")],
             logDocuments: altOptions,
             executorLogLevel: DEBUG,
