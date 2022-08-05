@@ -584,7 +584,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
                 configureForkOptions(jes)
                 logger.debug "Running AsciidoctorJ instance with environment: ${jes.environment}"
                 jes.with {
-                    main = AsciidoctorJavaExec.canonicalName
+                    setExecClass(jes, AsciidoctorJavaExec.canonicalName)
                     classpath = javaExecClasspath
                     args execConfigurationData.absolutePath
                 }
@@ -597,6 +597,19 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         }
 
         executorConfigurations
+    }
+
+    /** The main property will be removed in Gradle 8.0 and replaced by the mainClass property.
+     *
+     * Attempt to use the main property, and if the method doesn't exist try the replacement.
+     */
+    @CompileDynamic
+    private void setExecClass(JavaExecSpec jes, String execClass) {
+        try {
+            jes.main = execClass
+        } catch (NoSuchMethodError e) {
+            jes.mainClass = execClass
+        }
     }
 
     private void copyResourcesByBackend(
