@@ -36,12 +36,10 @@ ifdef::env-github[]
 endif::[]
 
 ifdef::status[]
-image:http://img.shields.io/travis/{project-full-path}/{github-branch}.svg[Build Status, link=https://travis-ci.org/{project-full-path}]
-image:https://ci.appveyor.com/api/projects/status/db102rphsu5lviv6/branch/{github-branch}?svg=true&passingText={github-branch}%20-%20OK&failingText={github-branch}%20-%20Fails&pendingText={github-branch}%20-%20Pending[Build Status, link=https://ci.appveyor.com/project/{project-full-path}/branch/{github-branch}]
+image:https://github.com/asciidoctor/asciidoctor-gradle-plugin/workflows/Build/badge.svg[GitHub Actions Status, link=https://github.com/asciidoctor/asciidoctor-gradle-plugin/actions]
 image:http://img.shields.io/coveralls/{project-full-path}/{github-branch}.svg[Coverage Status, link=https://coveralls.io/r/{project-full-path}]
 image:http://img.shields.io/badge/license-ASF2-blue.svg[Apache License 2, link=http://www.apache.org/licenses/LICENSE-2.0.txt]
 image:https://gitlab.com/asciidoctor/asciidoctor-gradle-plugin/badges/master/pipeline.svg[link="https://gitlab.com/asciidoctor/asciidoctor-gradle-plugin/commits/master",title="pipeline status"]
-image:https://github.com/asciidoctor/asciidoctor-gradle-plugin/workflows/Build/badge.svg[GitHub Actions Status, link=https://github.com/asciidoctor/asciidoctor-gradle-plugin/actions]
 endif::[]
 
 The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to convert all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
@@ -49,6 +47,6 @@ The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to 
 Documentation:: We are migrating our documentation to the new Asciidoctor Antora-based site when it is ready. In the meantime you can read a snapshot of the new documentation at {asciidoctor-development-docs}{github-branch}
 
 ifdef::env-github[]
-Structure:: `master` now represents the code for the latest 3.x release of these plugins. Development for for 3.x is against the link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/development-3.x[{github-branch}] branch. PRs are preferably taking against this branch. The 2.x & 1.5.x series of the plugin is now in maintenance only mode. PRs for that should be raised against the respective link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/maintenance-2.x[maintenance-2.x] and https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/maintenance-1.5[maintenance-1.5] branches.
+Structure:: `master` now represents the code for the latest 3.x release of these plugins. Development for 3.x is against the link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/development-3.x[{github-branch}] branch. PRs are preferably taking against this branch. The 2.x & 1.5.x series of the plugin is now in maintenance only mode. PRs for that should be raised against the respective link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/maintenance-2.x[maintenance-2.x] and https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/maintenance-1.5[maintenance-1.5] branches.
 endif::[]
 
