@@ -19,14 +19,16 @@ import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AsciidoctorModuleDefinition
 import org.asciidoctor.gradle.js.base.AbstractAsciidoctorJSExtension
 import org.asciidoctor.gradle.js.base.AsciidoctorJSModules
-import org.asciidoctor.gradle.js.nodejs.internal.AsciidoctorNodeJSModules
 import org.asciidoctor.gradle.js.nodejs.core.NodeJSDependencyFactory
+import org.asciidoctor.gradle.js.nodejs.internal.AsciidoctorNodeJSModules
 import org.asciidoctor.gradle.js.nodejs.internal.PackageDescriptor
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.ConfigurationContainer
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.SelfResolvingDependency
+import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.ysb33r.gradle.nodejs.NpmDependency
 
 /** Extension for configuring AsciidoctorJS.
@@ -43,7 +45,18 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
     public final static PackageDescriptor PACKAGE_ASCIIDOCTOR = PackageDescriptor.of('asciidoctor')
 
     private final List<NpmDependency> additionalRequires = []
+    private final String projectName
     private boolean onlyTaskRequires = false
+    private final AsciidoctorJSNodeExtension nodejs
+    private final AsciidoctorJSNpmExtension npm
+
+    @Deprecated
+    // We need to find a better solution than the curretn detached configuration usage.
+    private final ConfigurationContainer configurations
+
+    @Deprecated
+    // We need to find a better way than how we are creasting dependencies atm.
+    private final DependencyHandler dependencies
 
     /** Attach extension to project.
      *
@@ -51,6 +64,11 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
      */
     AsciidoctorJSExtension(Project project) {
         super(project)
+        this.configurations = project.configurations
+        this.dependencies = project.dependencies
+        this.projectName = project.name
+        this.nodejs = project.extensions.getByType(AsciidoctorJSNodeExtension)
+        this.npm = project.extensions.getByType(AsciidoctorJSNpmExtension)
     }
 
     /** Attach extension to a task.
@@ -59,6 +77,11 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
      */
     AsciidoctorJSExtension(Task task) {
         super(task, NAME)
+        this.configurations = task.project.configurations
+        this.dependencies = task.project.dependencies
+        this.projectName = task.project.name
+        this.nodejs = task.project.extensions.getByType(AsciidoctorJSNodeExtension)
+        this.npm = task.project.extensions.getByType(AsciidoctorJSNpmExtension)
     }
 
     /** Adds an additional NPM package that is required
@@ -122,7 +145,7 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
             deps.add(factory.createDependency(packageDescriptorFor(modules.docbook), docbook))
         }
 
-        project.configurations.detachedConfiguration(
+        configurations.detachedConfiguration(
                 deps.toArray() as Dependency[]
         )
     }
@@ -138,7 +161,7 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
      */
     File getToolingWorkDir() {
         if (versionsDifferFromGlobal()) {
-            new File(npm.homeDirectory.parentFile, "${project.name}-${task.name}")
+            new File(npm.homeDirectory.parentFile, "${projectName}-${task.name}")
         } else {
             npm.homeDirectory
         }
@@ -186,14 +209,6 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
         } else {
             false
         }
-    }
-
-    private AsciidoctorJSNodeExtension getNodejs() {
-        project.extensions.getByType(AsciidoctorJSNodeExtension)
-    }
-
-    private AsciidoctorJSNpmExtension getNpm() {
-        project.extensions.getByType(AsciidoctorJSNpmExtension)
     }
 
     private PackageDescriptor packageDescriptorFor(final AsciidoctorModuleDefinition module) {

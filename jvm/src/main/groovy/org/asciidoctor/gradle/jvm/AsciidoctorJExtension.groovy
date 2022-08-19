@@ -21,24 +21,20 @@ import org.asciidoctor.gradle.base.AbstractImplementationEngineExtension
 import org.asciidoctor.gradle.base.ModuleNotFoundException
 import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.internal.JavaExecUtils
-import org.gradle.api.Action
-import org.gradle.api.GradleException
-import org.gradle.api.NonExtensible
-import org.gradle.api.Project
-import org.gradle.api.Task
-import org.gradle.api.artifacts.Configuration
-import org.gradle.api.artifacts.Dependency
-import org.gradle.api.artifacts.DependencyResolveDetails
-import org.gradle.api.artifacts.ResolutionStrategy
+@java.lang.SuppressWarnings('NoWildcardImports')
+import org.gradle.api.*
+@java.lang.SuppressWarnings('NoWildcardImports')
+import org.gradle.api.artifacts.*
+import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.file.FileCollection
 import org.gradle.api.logging.LogLevel
 import org.gradle.util.GradleVersion
-import org.ysb33r.grolifant.api.OperatingSystem
+import org.ysb33r.grolifant.api.core.OperatingSystem
 
 import java.util.regex.Pattern
 
-import static org.ysb33r.grolifant.api.ClosureUtils.configureItem
-import static org.ysb33r.grolifant.api.StringUtils.stringize
+import static org.ysb33r.grolifant.api.v4.ClosureUtils.configureItem
+import static org.ysb33r.grolifant.api.v4.StringUtils.stringize
 
 /** Extension for configuring AsciidoctorJ.
  *
@@ -72,6 +68,7 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
 
     private Boolean injectGuavaJar
 
+    private final LogLevel defaultLogLevel
     private final Map<String, Object> options = [:]
     private final List<Object> jrubyRequires = []
     private final List<Object> asciidoctorExtensions = []
@@ -80,6 +77,14 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     private final List<Action<Configuration>> configurationCallbacks = []
     private final List<Object> warningsAsErrors = []
     private final AsciidoctorJModules modules
+
+    @Deprecated
+    // We need to find a better solution than the curretn detached configuration usage.
+    private final ConfigurationContainer configurations
+
+    @Deprecated
+    // We need to find a better way than how we are creasting dependencies atm.
+    private final DependencyHandler dependencies
 
     private boolean onlyTaskOptions = false
     private boolean onlyTaskRequires = false
@@ -100,12 +105,14 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
         super(project, 'asciidoctorj-extension')
         this.version = defaultVersionMap[ASCIIDOCTOR_DEPENDENCY_PROPERTY_NAME]
         this.modules = new AsciidoctorJModules(this, defaultVersionMap)
-
+        this.defaultLogLevel = project.logging.level
         if (this.version == null) {
             throw new ModuleNotFoundException('Default version for AsciidoctorJ must be defined. ' +
-                'Please report a bug at https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues'
+                    'Please report a bug at https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues'
             )
         }
+        this.configurations = project.configurations
+        this.dependencies = project.dependencies
     }
 
     /** Attach extension to a task.
@@ -116,6 +123,8 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     AsciidoctorJExtension(Task task) {
         super(task, NAME)
         this.modules = new AsciidoctorJModules(this, defaultVersionMap)
+        this.configurations = task.project.configurations
+        this.dependencies = task.project.dependencies
     }
 
     /* -------------------------
@@ -241,9 +250,9 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
      */
     FileCollection getGemPaths() {
         if (!task || onlyTaskGems) {
-            project.files(this.gemPaths)
+            projectOperations.files(this.gemPaths)
         } else {
-            project.files(this.gemPaths) + extFromProject.gemPaths
+            projectOperations.files(this.gemPaths) + extFromProject.gemPaths
         }
     }
 
@@ -335,7 +344,7 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
         if (task) {
             this.logLevel == null ? extFromProject.logLevel : this.logLevel
         } else {
-            this.logLevel ?: project.logging.level
+            this.logLevel ?: this.defaultLogLevel
         }
     }
 
@@ -691,16 +700,16 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
 
         if (diagramVer != null) {
             deps.add(createDependency(
-                "${ASCIIDOCTORJ_DIAGRAM_DEPENDENCY}:${diagramVer}", excludeTransitiveAsciidoctorJ()
+                    "${ASCIIDOCTORJ_DIAGRAM_DEPENDENCY}:${diagramVer}", excludeTransitiveAsciidoctorJ()
             ))
         }
 
         deps.add(
-            createDependency(jrubyCompleteDep)
+                createDependency(jrubyCompleteDep)
         )
 
-        Configuration configuration = project.configurations.detachedConfiguration(
-            deps.toArray() as Dependency[]
+        Configuration configuration = configurations.detachedConfiguration(
+                deps.toArray() as Dependency[]
         )
 
         configuration.resolutionStrategy.eachDependency { DependencyResolveDetails dsr ->
@@ -722,9 +731,9 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
 
     private Dependency createDependency(final String notation, final Closure configurator = null) {
         if (configurator) {
-            project.dependencies.create(notation, configurator)
+            dependencies.create(notation, configurator)
         } else {
-            project.dependencies.create(notation)
+            dependencies.create(notation)
         }
     }
 
@@ -770,7 +779,7 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
                     ((Closure) it).dehydrate()
                     break
                 case Project:
-                    project.dependencies.project(path: ((Project) it).path)
+                    dependencies.project(path: ((Project) it).path)
                     break
                 default:
                     it

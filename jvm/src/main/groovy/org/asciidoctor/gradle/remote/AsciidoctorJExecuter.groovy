@@ -94,10 +94,7 @@ class AsciidoctorJExecuter extends ExecutorBase implements Runnable {
         )
 
         runConfiguration.with {
-            for (require in requires) {
-                asciidoctor.requireLibrary(require)
-            }
-
+            asciidoctor.requireLibraries(requires)
             if (asciidoctorExtensions?.size()) {
                 registerExtensions(asciidoctor, asciidoctorExtensions)
             }
@@ -136,10 +133,7 @@ class AsciidoctorJExecuter extends ExecutorBase implements Runnable {
             create(combinedGemPath)
 
         runConfigurations.each { runConfiguration ->
-            for (require in runConfiguration.requires) {
-                asciidoctor.requireLibrary(require)
-            }
-
+            asciidoctor.requireLibraries(runConfiguration.requires)
             if (runConfiguration.asciidoctorExtensions?.size()) {
                 registerExtensions(asciidoctor, runConfiguration.asciidoctorExtensions)
             }

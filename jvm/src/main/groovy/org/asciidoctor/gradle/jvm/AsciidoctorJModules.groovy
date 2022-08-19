@@ -18,9 +18,9 @@ package org.asciidoctor.gradle.jvm
 import org.asciidoctor.gradle.base.AsciidoctorModuleDefinition
 import org.asciidoctor.gradle.base.ModuleNotFoundException
 import org.gradle.api.Action
-import org.ysb33r.grolifant.api.StringUtils
+import org.ysb33r.grolifant.api.v4.StringUtils
 
-import static org.ysb33r.grolifant.api.ClosureUtils.configureItem
+import static org.ysb33r.grolifant.api.v4.ClosureUtils.configureItem
 
 /** Define versions for standard AsciidoctorJ modules.
  *

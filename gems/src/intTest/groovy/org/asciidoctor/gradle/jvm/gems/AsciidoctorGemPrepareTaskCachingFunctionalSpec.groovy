@@ -25,6 +25,8 @@ class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecifica
     private static final String OUTPUT_DIR_PATH = 'build/.asciidoctorGems'
     private static final String DEFAULT_GEM_NAME = 'asciidoctor-revealjs'
     private static final String DEFAULT_GEM_VERSION = '2.0.0'
+    private static final String BIBTEX_GEM_NAME = 'asciidoctor-bibtex'
+    private static final String BIBTEX_GEM_VERSION = '0.8.0'
 
     void setup() {
         setupCache()
@@ -38,6 +40,7 @@ class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecifica
                 asciidoctorGems("rubygems:${DEFAULT_GEM_NAME}:${DEFAULT_GEM_VERSION}") {
                     exclude module: 'asciidoctor'
                 }
+                asciidoctorGems("rubygems:${BIBTEX_GEM_NAME}:${BIBTEX_GEM_VERSION}")
             }
         """)
 

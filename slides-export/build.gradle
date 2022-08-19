@@ -13,8 +13,8 @@ configurations {
 }
 
 dependencies {
-    compile project(':asciidoctor-gradle-base')
-    compile project(':asciidoctor-gradle-js')
+    implementation project(':asciidoctor-gradle-base')
+    implementation project(':asciidoctor-gradle-js')
     additionalPluginClasspath project(':asciidoctor-gradle-jvm-slides')
     additionalPluginClasspath project(':asciidoctor-gradle-js')
 }

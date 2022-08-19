@@ -18,7 +18,7 @@ package org.asciidoctor.gradle.jvm.slides
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AbstractDownloadableComponent
 import org.gradle.api.Project
-import org.ysb33r.grolifant.api.StringUtils
+import org.ysb33r.grolifant.api.v4.StringUtils
 
 /** Reveal.js plugins.
  *

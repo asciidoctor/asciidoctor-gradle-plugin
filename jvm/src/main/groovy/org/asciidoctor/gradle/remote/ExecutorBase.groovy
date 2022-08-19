@@ -29,7 +29,9 @@ import java.util.regex.Pattern
 
 /** Base class for building claspath-isolated executors for Asciidoctor.
  *
- * @since 2.0.0* @author Schalk W. Cronjé
+ * @since 2.0.0
+ *
+ * @author Schalk W. Cronjé
  */
 @CompileStatic
 abstract class ExecutorBase {
@@ -76,11 +78,11 @@ abstract class ExecutorBase {
 
             mergedOptions.putAll(options)
             mergedOptions.putAll([
-                (Options.BACKEND) : backendName,
-                (Options.IN_PLACE): false,
-                (Options.SAFE)    : safeModeLevel,
-                (Options.TO_DIR)  : (srcRelative.empty ? outputDir : new File(outputDir, srcRelative)).absolutePath,
-                (Options.MKDIRS)  : true
+                    (Options.BACKEND) : backendName,
+                    (Options.IN_PLACE): false,
+                    (Options.SAFE)    : safeModeLevel,
+                    (Options.TO_DIR)  : (srcRelative.empty ? outputDir : new File(outputDir, srcRelative)).absolutePath,
+                    (Options.MKDIRS)  : true
             ])
 
             mergedOptions[Options.BASEDIR] = (baseDir ?: file.parentFile).absolutePath
@@ -225,7 +227,7 @@ abstract class ExecutorBase {
     protected void failOnWarnings() {
         if (!warningMessages.empty) {
             final String msg = "ERROR: The following messages from AsciidoctorJ are treated as errors:\n" +
-                warningMessages.join("\n- ")
+                    warningMessages.join("\n- ")
             throw new AsciidoctorRemoteExecutionException(msg)
         }
     }

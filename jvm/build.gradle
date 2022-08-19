@@ -25,7 +25,7 @@ dependencies {
         exclude module: 'groovy-all'
     }
 
-    compile project(':asciidoctor-gradle-base')
+    api project(':asciidoctor-gradle-base')
 
     // These three are used in the compatibility tests for extensions
     intTestOfflineRepo "org.codehaus.groovy:groovy:${GroovySystem.version}"

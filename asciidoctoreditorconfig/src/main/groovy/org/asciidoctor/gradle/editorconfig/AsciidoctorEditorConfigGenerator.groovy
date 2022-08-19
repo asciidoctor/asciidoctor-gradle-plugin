@@ -29,7 +29,7 @@ import org.gradle.api.tasks.TaskAction
 
 import java.util.concurrent.Callable
 
-import static org.ysb33r.grolifant.api.MapUtils.stringizeValues
+import static org.ysb33r.grolifant.api.v4.MapUtils.stringizeValues
 
 /** Generates {@code .asciidoctorconfig} file.
  *

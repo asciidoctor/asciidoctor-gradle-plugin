@@ -23,12 +23,10 @@ syncRemoteRepositories {
     repositories {
         // Put this first as sometimes Ivy hits a hiccup on JCenter()
         mavenCentral()
-        jcenter()
         maven { url 'https://plugins.gradle.org/m2/' }
 
         if (version.endsWith('-SNAPSHOT')) {
             mavenLocal()
-            maven { url "https://dl.bintray.com/jruby-gradle/plugins" }
         }
     }
 

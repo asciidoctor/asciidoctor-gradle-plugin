@@ -28,7 +28,7 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.workers.WorkerExecutor
 import org.ysb33r.gradle.nodejs.NodeJSExtension
 import org.ysb33r.gradle.nodejs.NpmExtension
-import org.ysb33r.grolifant.api.MapUtils
+import org.ysb33r.grolifant.api.v4.MapUtils
 
 import static org.asciidoctor.gradle.js.nodejs.core.NodeJSUtils.initPackageJson
 

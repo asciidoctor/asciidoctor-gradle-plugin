@@ -5,13 +5,14 @@ plugins {
 apply from: 'gradle/load-gradle-properties.gradle'
 
 repositories {
-    jcenter()
+    mavenCentral()
     gradlePluginPortal()
 }
 
 dependencies {
-    compile localGroovy()
-    compile gradleApi()
-    compile "gradle.plugin.org.ysb33r.gradle:nodejs-gradle-plugin:${gradleProperties.nodejsGradleVersion}"
+    implementation localGroovy()
+    implementation gradleApi()
+    api "org.ysb33r.gradle:nodejs-gradle-plugin:${gradleProperties.nodejsGradleVersion}"
+    api "org.ysb33r.gradle:grolifant70:${gradleProperties.grolifantVersion}"
 }
 

@@ -84,7 +84,7 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
         }
 
         asciidoctorRevealJs {
-            plugins 'rajgoel/chart/Chart.js'
+            plugins 'rajgoel/chart/plugin.js'
             pluginConfigurationFile 'src/docs/asciidoc/empty-plugin-configuration.js'
             toggleBuiltinPlugin 'pdf', true
             toggleBuiltinPlugin 'notes', false
@@ -102,9 +102,9 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
             !pluginList.exists()
             !revealjsHtml.contains('plugin/notes/notes')
             revealjsHtml.contains("src: '${REVEALJS_DIR_NAME}/plugin/print-pdf/")
-            revealjsHtml.contains("src: '${REVEALJS_DIR_NAME}/plugin/rajgoel/chart/Chart.js'")
+            revealjsHtml.contains("src: '${REVEALJS_DIR_NAME}/plugin/rajgoel/chart/plugin.js'")
             revealjsHtml.contains(pluginConfig)
-            new File(testProjectDir.root, "${DEFAULT_REVEALJS_PATH}/plugin/rajgoel/chart/Chart.js").exists()
+            new File(testProjectDir.root, "${DEFAULT_REVEALJS_PATH}/plugin/rajgoel/chart/plugin.js").exists()
         }
     }
 

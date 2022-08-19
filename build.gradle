@@ -15,7 +15,7 @@
  */
 
 plugins {
-    id 'com.gradle.build-scan' version '2.0.2'
+//    id 'com.gradle.build-scan' version '3.11.1'
     id 'com.jfrog.bintray' version '1.8.0' apply false
     id 'net.nemerosa.versioning' version '2.6.1' apply false
     id 'com.github.ben-manes.versions' version '0.17.0' apply false
@@ -25,24 +25,24 @@ plugins {
     id 'net.ossindex.audit' version '0.1.1' apply false
     id 'org.kordamp.jdeps' version '0.2.0' apply false
     id 'fi.linuxbox.download.worker' version '0.3' apply false
-    id 'org.ysb33r.ivypot' version '0.11' apply false
+    id 'org.ysb33r.ivypot' version '0.13.3' apply false
     id 'org.ysb33r.os' version '0.9' apply false
     id 'org.ysb33r.cloudci' version '2.5' apply false
     id 'org.ysb33r.cloudci.appveyor.testreporter' version '2.5' apply false
-    id 'org.ysb33r.gradletest' version '2.0-rc.4' apply false
+    id 'org.ysb33r.gradletest' version '2.0' apply false
     id 'idea'
 }
 
-buildScan {
-    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
-    termsOfServiceAgree = 'yes'
-
-    buildFinished { buildResult ->
-        buildScanPublished { scan ->
-            ['curl', '-s', '-d', "message=asciidoctor-gradle-plugin build scan: ${scan.buildScanUri}", 'https://webhooks.gitter.im/e/6ba348eef26407adc22a'].execute()
-        }
-    }
-}
+//buildScan {
+//    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+//    termsOfServiceAgree = 'yes'
+//
+//    buildFinished { buildResult ->
+//        buildScanPublished { scan ->
+//            ['curl', '-s', '-d', "message=asciidoctor-gradle-plugin build scan: ${scan.buildScanUri}", 'https://webhooks.gitter.im/e/6ba348eef26407adc22a'].execute()
+//        }
+//    }
+//}
 
 
 import org.gradle.util.GradleVersion

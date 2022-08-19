@@ -21,7 +21,7 @@ import org.asciidoctor.gradle.jvm.AsciidoctorJExtension
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.ysb33r.grolifant.api.TaskProvider
+import org.ysb33r.grolifant.api.v4.TaskProvider
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.setConvention
 
@@ -40,7 +40,7 @@ import static org.asciidoctor.gradle.base.AsciidoctorUtils.setConvention
 @CompileStatic
 class AsciidoctorJLeanpubPlugin implements Plugin<Project> {
 
-    final static String TASK_NAME = 'asciidoctorLeanpub'
+    public final static String TASK_NAME = 'asciidoctorLeanpub'
 
     void apply(Project project) {
         project.with {

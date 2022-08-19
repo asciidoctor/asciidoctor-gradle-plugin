@@ -4,8 +4,9 @@ generateModuleVersions {
 }
 
 dependencies {
-    compile project(':asciidoctor-gradle-base')
-    compile project(':asciidoctor-gradle-jvm-gems')
+    implementation project(':asciidoctor-gradle-base')
+    implementation project(':asciidoctor-gradle-jvm-gems')
+    implementation "com.github.jruby-gradle:jruby-gradle-core-plugin:${jrubyGradleVersion}"
 }
 
 intTest {
