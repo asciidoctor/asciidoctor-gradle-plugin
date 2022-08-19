@@ -111,49 +111,50 @@ class RevealJSExtensionSpec extends Specification {
     }
 
     Provider<File> getNullProvider() {
-        new Provider<File>() {
-            @Override
-            File get() {
-                null
-            }
-
-            @Override
-            @SuppressWarnings('GetterMethodCouldBeProperty')
-            File getOrNull() {
-                null
-            }
-
-            @Override
-            File getOrElse(File file) {
-                null
-            }
-
-            @Override
-            def <S> Provider<S> map(Transformer<? extends S, ? super File> transformer) {
-                null
-            }
-
-            @Override
-            def <S> Provider<S> flatMap(Transformer<? extends Provider<? extends S>, ? super File> transformer) {
-                null
-            }
-
-            @Override
-            boolean isPresent() {
-                false
-            }
-
-            @SuppressWarnings('UnusedMethodParameter')
+        project.objects.property(File)
+//        new Provider<File>() {
 //            @Override
-            Provider<File> orElse(File value) {
-                null
-            }
-
-            @SuppressWarnings('UnusedMethodParameter')
+//            File get() {
+//                null
+//            }
+//
 //            @Override
-            Provider<File> orElse(Provider<? extends File> provider) {
-                null
-            }
-        }
+//            @SuppressWarnings('GetterMethodCouldBeProperty')
+//            File getOrNull() {
+//                null
+//            }
+//
+//            @Override
+//            File getOrElse(File file) {
+//                null
+//            }
+//
+//            @Override
+//            def <S> Provider<S> map(Transformer<? extends S, ? super File> transformer) {
+//                null
+//            }
+//
+//            @Override
+//            def <S> Provider<S> flatMap(Transformer<? extends Provider<? extends S>, ? super File> transformer) {
+//                null
+//            }
+//
+//            @Override
+//            boolean isPresent() {
+//                false
+//            }
+//
+//            @SuppressWarnings('UnusedMethodParameter')
+////            @Override
+//            Provider<File> orElse(File value) {
+//                null
+//            }
+//
+//            @SuppressWarnings('UnusedMethodParameter')
+////            @Override
+//            Provider<File> orElse(Provider<? extends File> provider) {
+//                null
+//            }
+//        }
     }
 }

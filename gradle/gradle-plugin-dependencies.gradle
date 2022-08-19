@@ -1,27 +1,17 @@
-import org.gradle.util.GradleVersion
-
 dependencies {
-    compile gradleApi()
-    compile "org.ysb33r.gradle:grolifant:${grolifantVersion}"
-
-    testCompile project(':testfixtures-jvm')
+    implementation gradleApi()
+    api "org.ysb33r.gradle:grolifant70:${grolifantVersion}"
+    testImplementation project(':testfixtures-jvm')
+    testImplementation("org.spockframework:spock-core:$spockVersion") {
+        exclude group: 'org.codehaus.groovy'
+        exclude group: 'org.hamcrest', module: 'hamcrest-core'
+    }
 
     if(configurations.findByName('intTestCompile')) {
-        intTestCompile project(':testfixtures-jvm')
-    }
-}
-
-// works around an issue with Gradle 4.9 and the version of Groovy
-if (GradleVersion.current() < GradleVersion.version('4.9')) {
-    configurations {
-        fixedGroovyCompiler
-    }
-
-    dependencies {
-        fixedGroovyCompiler 'org.codehaus.groovy:groovy-all:2.4.15'
-    }
-
-    tasks.withType(GroovyCompile) {
-        groovyClasspath = configurations.fixedGroovyCompiler
+        intTestImplementation project(':testfixtures-jvm')
+        intTestImplementation("org.spockframework:spock-core:$spockVersion") {
+            exclude group: 'org.codehaus.groovy'
+            exclude group: 'org.hamcrest', module: 'hamcrest-core'
+        }
     }
 }

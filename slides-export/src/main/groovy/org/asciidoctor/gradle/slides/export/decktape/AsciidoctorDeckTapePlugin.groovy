@@ -23,7 +23,7 @@ import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.ysb33r.grolifant.api.TaskProvider
+import org.ysb33r.grolifant.api.v4.TaskProvider
 
 import java.util.concurrent.Callable
 import java.util.regex.Pattern

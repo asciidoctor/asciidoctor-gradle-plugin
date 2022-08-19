@@ -20,7 +20,7 @@ package org.asciidoctor.gradle.base
  * @since 2.0
  */
 @SuppressWarnings('ClassNameSameAsSuperclass')
-class GitLabArchive extends org.ysb33r.grolifant.api.git.GitLabArchive {
+class GitLabArchive extends org.ysb33r.grolifant.api.v4.git.GitLabArchive {
 
     /** Relative path to locate the them inside the GitLab archive.
      *

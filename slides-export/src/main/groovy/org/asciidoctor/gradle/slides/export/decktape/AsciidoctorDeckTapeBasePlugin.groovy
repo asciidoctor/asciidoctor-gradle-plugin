@@ -17,9 +17,11 @@ package org.asciidoctor.gradle.slides.export.decktape
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AsciidoctorBasePlugin
+import org.asciidoctor.gradle.js.nodejs.AsciidoctorJSNodeExtension
 import org.asciidoctor.gradle.js.nodejs.core.NodeJSBasePlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.ysb33r.grolifant.api.core.ProjectOperations
 
 /** Plugin that will create an extension for configuring decktape
  * globally.
@@ -31,8 +33,10 @@ import org.gradle.api.Project
 class AsciidoctorDeckTapeBasePlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
+        ProjectOperations.maybeCreateExtension(project)
         project.apply plugin: AsciidoctorBasePlugin
         project.apply plugin: NodeJSBasePlugin
         project.extensions.create(DeckTapeExtension.NAME, DeckTapeExtension, project)
+        project.extensions.getByType(AsciidoctorJSNodeExtension).useSystemPath()
     }
 }

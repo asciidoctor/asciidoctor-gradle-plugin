@@ -18,7 +18,7 @@ package org.asciidoctor.gradle.jvm.pdf
 import org.gradle.api.Project
 import org.gradle.api.UnknownDomainObjectException
 import org.gradle.testfixtures.ProjectBuilder
-import org.ysb33r.grolifant.api.FileUtils
+import org.ysb33r.grolifant.api.v4.FileUtils
 import spock.lang.Specification
 
 /**

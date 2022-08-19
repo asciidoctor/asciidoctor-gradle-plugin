@@ -1,7 +1,7 @@
 repositories {
-    jcenter()
     mavenCentral()
     if(version.endsWith('-SNAPSHOT')) {
         mavenLocal()
     }
+    gradlePluginPortal()
 }

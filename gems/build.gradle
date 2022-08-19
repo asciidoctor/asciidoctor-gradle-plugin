@@ -1,7 +1,7 @@
 
 dependencies {
-    compile "com.github.jruby-gradle:jruby-gradle-core-plugin:${jrubyGradleVersion}"
-    compile project(':asciidoctor-gradle-jvm')
+    implementation "com.github.jruby-gradle:jruby-gradle-core-plugin:${jrubyGradleVersion}"
+    api project(':asciidoctor-gradle-jvm')
 }
 
 test {
@@ -15,6 +15,9 @@ gradleTest {
         // Expecting external-gems to fail due to JRuby issue
         expectFailure ~/external-gems/
     }
+
+    gradleArguments '-d'
+
 }
 
 configurePlugin 'org.asciidoctor.jvm.gems',

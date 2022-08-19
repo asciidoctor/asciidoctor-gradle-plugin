@@ -13,24 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.js.nodejs
+package org.asciidoctor.gradle.testfixtures
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.js.nodejs.core.NodeJSBasePlugin
-import org.gradle.api.Plugin
-import org.gradle.api.Project
-import org.ysb33r.grolifant.api.core.ProjectOperations
+import org.gradle.util.GradleVersion
 
-/** Base plugin for AsciidoctorJS implementations.
+/**
+ * Verions of Gradle that can be used for testing with TestKit.
  *
- * @since 3.0
+ * @author Schalk W. Cronjé
+ *
+ * @since 4.0.0
  */
 @CompileStatic
-class AsciidoctorNodeJSBasePlugin implements Plugin<Project> {
-    @Override
-    void apply(Project project) {
-        ProjectOperations.maybeCreateExtension(project)
-        project.apply plugin: NodeJSBasePlugin
-        project.extensions.create( AsciidoctorJSExtension.NAME, AsciidoctorJSExtension, project )
+class GradleTestVersions {
+    public final static String MIN_VERSION = '6.0.1'
+    public final static String MAX_VERSION = '7.5.1'
+
+    static String latestMinimumOrThis(final String ver) {
+        [GradleVersion.version(MIN_VERSION), GradleVersion.version(ver)].max().version
     }
 }

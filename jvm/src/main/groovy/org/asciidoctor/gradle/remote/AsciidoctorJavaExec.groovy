@@ -103,9 +103,7 @@ class AsciidoctorJavaExec extends ExecutorBase {
 
     private void addRequires(Asciidoctor asciidoctor) {
         runConfigurations.each { runConfiguration ->
-            for (require in runConfiguration.requires) {
-                asciidoctor.requireLibrary(require)
-            }
+            asciidoctor.requireLibraries(runConfiguration.requires)
         }
     }
 

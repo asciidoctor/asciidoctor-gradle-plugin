@@ -17,13 +17,14 @@ package org.asciidoctor.gradle.internal
 
 import groovy.transform.CompileStatic
 import groovy.transform.InheritConstructors
+import groovy.util.logging.Slf4j
 import org.asciidoctor.gradle.remote.AsciidoctorJavaExec
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.FileCollection
 import org.gradle.api.invocation.Gradle
 import org.gradle.util.GradleVersion
-import org.ysb33r.grolifant.api.FileUtils
+import org.ysb33r.grolifant.api.v4.FileUtils
 
 import java.util.regex.Pattern
 
@@ -36,6 +37,7 @@ import static org.asciidoctor.gradle.base.AsciidoctorUtils.getClassLocation
  * @since 2.0
  */
 @CompileStatic
+@Slf4j
 class JavaExecUtils {
 
     /** The {@code jruby-complete} dependency without a version.
@@ -83,8 +85,8 @@ class JavaExecUtils {
      * @param executorConfigurations Executor configuration to be serialised
      * @return File that the execution data was written to.
      */
-
     static File writeExecConfigurationData(final Task task, Iterable<ExecutorConfiguration> executorConfigurations) {
+        log.debug("Executor configurations: ${executorConfigurations}")
         File execConfigurationData = getExecConfigurationDataFile(task)
         execConfigurationData.parentFile.mkdirs()
         ExecutorConfigurationContainer.toFile(execConfigurationData, executorConfigurations)

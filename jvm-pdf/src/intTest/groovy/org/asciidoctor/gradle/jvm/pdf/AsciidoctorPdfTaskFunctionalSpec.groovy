@@ -16,11 +16,14 @@
 package org.asciidoctor.gradle.jvm.pdf
 
 import org.asciidoctor.gradle.jvm.pdf.internal.FunctionalSpecification
+import org.asciidoctor.gradle.testfixtures.GradleTestVersions
 import org.asciidoctor.gradle.testfixtures.generators.PdfBackendJRubyAsciidoctorJCombinationGenerator
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Issue
 import spock.lang.Unroll
+
+import static org.asciidoctor.gradle.testfixtures.GradleTestVersions.latestMinimumOrThis
 
 /**
  * @author Schalk W. Cronjé
@@ -223,7 +226,7 @@ asciidoctorPdf {
         }
 
         where:
-        gradleVersion << ['4.10.3', '5.6.4', '6.0.1']
+        gradleVersion << [latestMinimumOrThis('6.0.1'), latestMinimumOrThis('6.9.1'), GradleTestVersions.MAX_VERSION]
     }
 
     @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/579')
@@ -243,7 +246,7 @@ asciidoctorPdf {
         }
 
         where:
-        gradleVersion << ['6.7']
+        gradleVersion << [GradleTestVersions.MAX_VERSION]
     }
 
     File getBuildFile(String extraContent) {

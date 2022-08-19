@@ -23,8 +23,8 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
 
-import static org.ysb33r.grolifant.api.ClosureUtils.configureItem
-import static org.ysb33r.grolifant.api.StringUtils.stringize
+import static org.ysb33r.grolifant.api.v4.ClosureUtils.configureItem
+import static org.ysb33r.grolifant.api.v4.StringUtils.stringize
 
 /**
  * @author Schalk W. Cronjé
@@ -51,7 +51,7 @@ abstract class AbstractAsciidoctorJSExtension extends AbstractImplementationEngi
     /** Set a new version to use.
      *
      * @param v New version to be used. Can be of anything that be resolved by
-     * {@link org.ysb33r.grolifant.api.StringUtils.stringize}.
+     * {@link org.ysb33r.grolifant.api.v4.StringUtils.stringize}.
      */
     void setVersion(Object v) {
         this.version = v

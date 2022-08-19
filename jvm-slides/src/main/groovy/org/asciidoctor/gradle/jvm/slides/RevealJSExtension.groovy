@@ -21,8 +21,8 @@ import org.asciidoctor.gradle.base.ModuleVersionLoader
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
-import org.ysb33r.grolifant.api.Version
-import org.ysb33r.grolifant.api.git.GitRepoArchiveDownloader
+import org.ysb33r.grolifant.api.core.Version
+import org.ysb33r.grolifant.api.v4.git.GitRepoArchiveDownloader
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClosure
 
