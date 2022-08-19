@@ -4,32 +4,56 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v1
+      - uses: actions/setup-java@v1
         with:
-          fetch-depth: 1
-      - uses: ./.github/actions/setup-jdks
+          java-version: 11
+      # Cache
+      - name: Cache .gradle/caches
+        uses: actions/cache@v1
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-cache-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle-cache-
+      - name: Cache .gradle/wrapper
+        uses: actions/cache@v1
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle-wrapper-
       # Licensing
       - name: Licensing
-        uses: gradle/gradle-build-action@v2
+        uses: eskatos/gradle-command-action@v1
         with:
-          # cache options only count for the first invocation
-          cache-read-only: ${{ github.ref != 'refs/heads/master' }}
           arguments: --console=plain -S license
       # Coding style
       - name: Coding style
-        uses: gradle/gradle-build-action@v2
+        uses: eskatos/gradle-command-action@v1
         with:
           arguments: --console=plain -S codenarcAll
   build-windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v1
+        # use a short path to avoid exceeding the path limit on Windows... sigh
         with:
-          # Codecov needs fetch-depth > 1
-          fetch-depth: 2
-          # use a short path to avoid exceeding the path limit on Windows... sigh
           path: 'w'
-      - uses: ./.github/actions/setup-jdks
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      # Cache
+      - name: Cache .gradle/caches
+        uses: actions/cache@v1
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-cache-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle-cache-
+      - name: Cache .gradle/wrapper
+        uses: actions/cache@v1
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle-wrapper-
       - name: Cache offline repository
         uses: actions/cache@v1
         with:
@@ -38,26 +62,23 @@ jobs:
           restore-keys: ${{ runner.os }}-offline-repo-
       # Build
       - name: Build offline repository
-        uses: gradle/gradle-build-action@v2
+        uses: eskatos/gradle-command-action@v1
         with:
-          # cache options only count for the first invocation
-          cache-read-only: ${{ github.ref != 'refs/heads/master' }}
           arguments: --console=plain --no-build-cache :testfixtures-offline-repo:buildOfflineRepositories
       - name: Build
-        uses: gradle/gradle-build-action@v2
+        uses: eskatos/gradle-command-action@v1
         with:
           arguments: --console=plain --warning-mode=all -s clean assemble
       # Test
       - name: Test
-        uses: gradle/gradle-build-action@v2
+        uses: eskatos/gradle-command-action@v1
         with:
           arguments: --console=plain --warning-mode=all -s check --no-parallel -Djava.net.preferIPv4Stack=true -x gradleTest --scan
-      # Documentation
-      - name: Documentation
-        uses: gradle/gradle-build-action@v2
+      # Stop gradlew to avoid locking issues
+      - name: Cleanup
+        uses: eskatos/gradle-command-action@v1
         with:
-          build-root-directory: docs
-          arguments: asciidoctor
+          arguments: --stop
   build:
     strategy:
       matrix:
@@ -65,14 +86,23 @@ jobs:
         java: [ 8, 11 ]
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2
-      with:
-        # Codecov needs fetch-depth > 1
-        fetch-depth: 2
-    - uses: ./.github/actions/setup-jdks
+    - uses: actions/checkout@v1
+    - uses: actions/setup-java@v1
       with:
         java-version: ${{ matrix.java }}
     # Cache
+    - name: Cache .gradle/caches
+      uses: actions/cache@v1
+      with:
+        path: ~/.gradle/caches
+        key: ${{ runner.os }}-gradle-cache-${{ hashFiles('**/*.gradle') }}
+        restore-keys: ${{ runner.os }}-gradle-cache-
+    - name: Cache .gradle/wrapper
+      uses: actions/cache@v1
+      with:
+        path: ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/*.gradle') }}
+        restore-keys: ${{ runner.os }}-gradle-wrapper-
     - name: Cache offline repository
       uses: actions/cache@v1
       with:
@@ -80,27 +110,26 @@ jobs:
         key: ${{ runner.os }}-offline-repo-${{ hashFiles('module-versions.properties') }}
         restore-keys: ${{ runner.os }}-offline-repo-
     - name: Build offline repository
-      uses: gradle/gradle-build-action@v2
+      uses: eskatos/gradle-command-action@v1
       with:
-        # cache options only count for the first invocation
-        cache-read-only: ${{ github.ref != 'refs/heads/master' }}
         arguments: --console=plain --no-build-cache :testfixtures-offline-repo:buildOfflineRepositories
     # Build
     - name: Build
-      uses: gradle/gradle-build-action@v2
+      uses: eskatos/gradle-command-action@v1
       with:
         arguments: -i -S --console=plain --no-build-cache assemble
     # Integration tests
     - name: Integration tests (without slides)
-      uses: gradle/gradle-build-action@v2
+      uses: eskatos/gradle-command-action@v1
       with:
         arguments: -i -s --console=plain --no-build-cache test intTest remoteTest -x asciidoctor-gradle-slides-export:intTest -x asciidoctor-gradle-jvm-slides:intTest
     - name: Integration tests (slides only)
-      uses: gradle/gradle-build-action@v2
+      uses: eskatos/gradle-command-action@v1
       with:
         arguments: -i -s --console=plain --no-build-cache test asciidoctor-gradle-jvm-slides:intTest asciidoctor-gradle-slides-export:intTest
     # Gradle tests
     - name: Gradle tests
-      uses: gradle/gradle-build-action@v2
+      uses: eskatos/gradle-command-action@v1
       with:
         arguments: -i -s --console=plain --no-build-cache gradleTest
+
