@@ -92,6 +92,7 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
      * @return Directories for the pdf fonts
      * */
     @InputFiles
+    @IgnoreEmptyDirectories
     @PathSensitive(PathSensitivity.RELATIVE)
     @Optional
     FileCollection getFontsDirs() {
