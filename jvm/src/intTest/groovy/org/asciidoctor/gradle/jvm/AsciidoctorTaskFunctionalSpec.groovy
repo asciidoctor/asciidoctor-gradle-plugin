@@ -133,28 +133,32 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         noExceptionThrown()
     }
 
-    void 'Can run in JAVA_EXEC process mode (Groovy DSL)'() {
+    @Unroll
+    void "Can run in #processMode process mode (Groovy DSL)"() {
         given:
-        getBuildFile('''
+        getBuildFile("""
             asciidoctorj {
                 logLevel = 'INFO'
             }
 
             asciidoctor {
-                inProcess = JAVA_EXEC
+                inProcess = ${processMode}
 
                 outputOptions {
                     backends 'html5'
                 }
                 sourceDir 'src/docs/asciidoc'
             }
-        ''')
+        """)
 
         when:
         getGradleRunner(DEFAULT_ARGS).build()
 
         then:
         noExceptionThrown()
+
+        where:
+        processMode << ['IN_PROCESS', 'OUT_OF_PROCESS', 'JAVA_EXEC']
     }
 
     @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/292')
