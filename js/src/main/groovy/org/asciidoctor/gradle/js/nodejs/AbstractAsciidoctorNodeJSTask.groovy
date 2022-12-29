@@ -30,6 +30,7 @@ import org.ysb33r.gradle.nodejs.NodeJSExtension
 import org.ysb33r.gradle.nodejs.NpmExtension
 import org.ysb33r.grolifant.api.v4.MapUtils
 
+import static org.asciidoctor.gradle.base.internal.AsciidoctorAttributes.resolveAsCacheable
 import static org.asciidoctor.gradle.js.nodejs.core.NodeJSUtils.initPackageJson
 
 /** Base class for all Asciidoctor tasks using Asciidoctor.js as rendering engine.
@@ -52,8 +53,8 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
      *
      */
     @Input
-    Map getAttributes() {
-        asciidoctorjs.attributes
+    Map<String, Object> getAttributes() {
+        resolveAsCacheable(asciidoctorjs.attributes, projectOperations)
     }
 
     /** Apply a new set of Asciidoctor attributes, clearing any attributes previously set.
@@ -131,50 +132,50 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
     @CompileDynamic
     private Map<String, String> prepareAttributesForSerialisation(final File workingSourceDir, Optional<String> lang) {
         MapUtils.stringizeValues(prepareAttributes(
-            workingSourceDir,
-            asciidoctorjs.attributes,
-            lang.present ? asciidoctorjs.getAttributesForLang(lang.get()) : [:],
-            asciidoctorjs.attributeProviders,
-            lang
+                workingSourceDir,
+                asciidoctorjs.attributes,
+                lang.present ? asciidoctorjs.getAttributesForLang(lang.get()) : [:],
+                asciidoctorjs.attributeProviders,
+                lang
         ))
     }
 
     @SuppressWarnings('UnnecessaryGetter')
     private AsciidoctorJSRunner getAsciidoctorJSRunnerFor(
-        final AsciidoctorJSRunner.FileLocations asciidoctorjsExe,
-        final String backend,
-        final Map<String, String> attributes,
-        Optional<String> lang
+            final AsciidoctorJSRunner.FileLocations asciidoctorjsExe,
+            final String backend,
+            final Map<String, String> attributes,
+            Optional<String> lang
     ) {
         new AsciidoctorJSRunner(
-            nodejs.resolvableNodeExecutable.executable,
-            project,
-            asciidoctorjsExe,
-            backend,
-            asciidoctorjs.safeMode,
-            lang.present ? getBaseDir(lang.get()) : getBaseDir(),
-            lang.present ? getOutputDirFor(backend, lang.get()) : getOutputDirFor(backend),
-            attributes,
-            asciidoctorjs.requires,
-            Optional.empty(),
-            logDocuments
+                nodejs.resolvableNodeExecutable.executable,
+                project,
+                asciidoctorjsExe,
+                backend,
+                asciidoctorjs.safeMode,
+                lang.present ? getBaseDir(lang.get()) : getBaseDir(),
+                lang.present ? getOutputDirFor(backend, lang.get()) : getOutputDirFor(backend),
+                attributes,
+                asciidoctorjs.requires,
+                Optional.empty(),
+                logDocuments
         )
     }
 
     private AsciidoctorJSRunner.FileLocations resolveAsciidoctorjsEnvironment() {
         File home = asciidoctorjs.toolingWorkDir
         initPackageJson(
-            home,
-            "${project.name}-${name}",
-            project,
-            nodejs,
-            npm
+                home,
+                "${project.name}-${name}",
+                project,
+                nodejs,
+                npm
         )
 
         asciidoctorjs.configuration.resolve()
         new AsciidoctorJSRunner.FileLocations(
-            executable: new File(home, 'node_modules/asciidoctor/bin/asciidoctor'),
-            workingDir: home
+                executable: new File(home, 'node_modules/asciidoctor/bin/asciidoctor'),
+                workingDir: home
         )
     }
 
@@ -190,10 +191,10 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
         for (String backend : configuredOutputOptions.backends) {
             conversionGroups.each { String relativePath, List<File> sourceGroup ->
                 getAsciidoctorJSRunnerFor(
-                    asciidoctorjsEnv,
-                    backend,
-                    finalAttributes,
-                    lang
+                        asciidoctorjsEnv,
+                        backend,
+                        finalAttributes,
+                        lang
                 ).convert(sourceGroup.toSet(), relativePath)
             }
             if (copyResources.present && (copyResources.get().empty || backend in copyResources.get())) {

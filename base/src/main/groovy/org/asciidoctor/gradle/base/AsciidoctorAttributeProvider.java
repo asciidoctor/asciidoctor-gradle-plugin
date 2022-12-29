@@ -23,7 +23,7 @@ import java.util.Map;
  */
 public interface AsciidoctorAttributeProvider {
 
-    /** Map of (potenitally unresolved) Asciidoctor attributes.
+    /** Map of (potentially unresolved) Asciidoctor attributes.
      *
      * @return Returns a map of Asciidoctor attributes
      */

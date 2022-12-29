@@ -49,6 +49,8 @@ import org.gradle.workers.WorkerExecutor
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClosure
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.getClassLocation
+import static org.asciidoctor.gradle.base.internal.AsciidoctorAttributes.resolveAsCacheable
+import static org.asciidoctor.gradle.base.internal.AsciidoctorAttributes.resolveAsSerializable
 import static org.asciidoctor.gradle.base.internal.ConfigurationUtils.asConfiguration
 import static org.asciidoctor.gradle.base.internal.ConfigurationUtils.asConfigurations
 import static org.gradle.api.tasks.PathSensitivity.RELATIVE
@@ -187,8 +189,8 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
      *
      */
     @Input
-    Map getOptions() {
-        asciidoctorj.options
+    Map<String, Object> getOptions() {
+        resolveAsCacheable(asciidoctorj.options, projectOperations)
     }
 
     /** Apply a new set of Asciidoctor options, clearing any options previously set.
@@ -221,8 +223,8 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
      *
      */
     @Input
-    Map getAttributes() {
-        asciidoctorj.attributes
+    Map<String, Object> getAttributes() {
+        resolveAsCacheable(asciidoctorj.attributes, projectOperations)
     }
 
     /** Apply a new set of Asciidoctor options, clearing any options previously set.
@@ -426,9 +428,12 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
                 baseDir: lang.present ? getBaseDir(lang.get()) : getBaseDir(),
                 projectDir: project.projectDir,
                 rootDir: project.rootProject.projectDir,
-                options: evaluateProviders(options),
+                options: resolveAsSerializable(evaluateProviders(options), projectOperations.stringTools),
                 failureLevel: failureLevel.level,
-                attributes: preparePreserialisedAttributes(workingSourceDir, lang),
+                attributes: resolveAsSerializable(
+                        preparePreserialisedAttributes(workingSourceDir, lang),
+                        projectOperations.stringTools
+                ),
                 backendName: backendName,
                 logDocuments: logDocuments,
                 gemPath: gemPath,
