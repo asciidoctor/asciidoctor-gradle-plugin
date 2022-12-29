@@ -1,6 +1,6 @@
 dependencies {
     implementation gradleApi()
-    api "org.ysb33r.gradle:grolifant70:${grolifantVersion}"
+    api "org.ysb33r.gradle:grolifant-herd:${grolifantVersion}"
     testImplementation project(':testfixtures-jvm')
     testImplementation("org.spockframework:spock-core:$spockVersion") {
         exclude group: 'org.codehaus.groovy'

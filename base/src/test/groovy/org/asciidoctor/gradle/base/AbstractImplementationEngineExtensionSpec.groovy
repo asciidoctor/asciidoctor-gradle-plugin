@@ -52,8 +52,8 @@ class AbstractImplementationEngineExtensionSpec extends Specification {
 
         then:
         taskExtension.getAttributesForLang(ES).isEmpty()
-        taskExtension.getAttributesForLang(EN).foo == 'bar'
-        taskExtension.getAttributesForLang(EN).foo2 == 'bar2'
+        taskExtension.getAttributesForLang(EN).foo.call() == 'bar'
+        taskExtension.getAttributesForLang(EN).foo2.call() == 'bar2'
         !projectExtension.getAttributesForLang(EN).foo2
     }
 
@@ -65,7 +65,7 @@ class AbstractImplementationEngineExtensionSpec extends Specification {
         then:
         taskExtension.getAttributesForLang(ES).isEmpty()
         !taskExtension.getAttributesForLang(EN).foo
-        taskExtension.getAttributesForLang(EN).foo2 == 'bar2'
+        taskExtension.getAttributesForLang(EN).foo2.call() == 'bar2'
         !projectExtension.getAttributesForLang(EN).foo2
     }
 
@@ -74,7 +74,7 @@ class AbstractImplementationEngineExtensionSpec extends Specification {
         projectExtension.attribute('name', 'value')
 
         then:
-        projectExtension.attributes['name'] == 'value'
+        projectExtension.attributes['name'].call() == 'value'
     }
 
     static class TestExtension extends AbstractImplementationEngineExtension {

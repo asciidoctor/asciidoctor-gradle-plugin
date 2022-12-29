@@ -15,16 +15,21 @@
  */
 package org.asciidoctor.gradle.jvm
 
+
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.gradle.workers.WorkerExecutor
+import org.ysb33r.grolifant.api.core.ProjectOperations
+import org.ysb33r.grolifant.api.core.StringTools
 import org.ysb33r.grolifant.api.v4.JavaForkOptions
 import spock.lang.Specification
 
 import javax.inject.Inject
+
+import static org.asciidoctor.gradle.base.internal.AsciidoctorAttributes.resolveAsSerializable
 
 /**
  * Asciidoctor task specification
@@ -41,7 +46,7 @@ class AsciidoctorTaskSpec extends Specification {
     private static final String ASCIIDOC_BUILD_DIR = 'build/asciidoc'
 
     Project project = ProjectBuilder.builder().withName('test').build()
-
+    StringTools strTools
     File testRootDir
     File srcDir
     File outDir
@@ -60,6 +65,7 @@ class AsciidoctorTaskSpec extends Specification {
         systemOut = new ByteArrayOutputStream()
         originSystemOut = System.out
         System.out = new PrintStream(systemOut)
+        strTools = ProjectOperations.find(project).stringTools
     }
 
     void cleanup() {
@@ -154,12 +160,13 @@ class AsciidoctorTaskSpec extends Specification {
             options eruby: 'erubis'
             options doctype: 'book', toc: 'right'
         }
+        final opts = resolveAsSerializable(task.options, strTools)
 
         then:
         !systemOut.toString().contains('deprecated')
-        task.options['eruby'] == 'erubis'
-        task.options['doctype'] == 'book'
-        task.options['toc'] == 'right'
+        opts['eruby'] == 'erubis'
+        opts['doctype'] == 'book'
+        opts['toc'] == 'right'
     }
 
     void "Allow setting of options via assignment"() {
@@ -168,12 +175,13 @@ class AsciidoctorTaskSpec extends Specification {
             options = [eruby: 'erb', toc: 'right']
             options = [eruby: 'erubis', doctype: 'book']
         }
+        final opts = resolveAsSerializable(task.options, strTools)
 
         then:
         !systemOut.toString().contains('deprecated')
-        task.options['eruby'] == 'erubis'
-        task.options['doctype'] == 'book'
-        !task.options.containsKey('toc')
+        opts['eruby'] == 'erubis'
+        opts['doctype'] == 'book'
+        !opts.containsKey('toc')
     }
 
     void "Allow setting of attributes via method (Map variant)"() {
@@ -183,12 +191,13 @@ class AsciidoctorTaskSpec extends Specification {
             attributes 'source-highlighter': 'coderay'
             attributes idprefix: '$', idseparator: '-'
         }
+        final attrs = resolveAsSerializable(task.attributes, strTools)
 
         then:
         !systemOut.toString().contains('deprecated')
-        task.attributes['source-highlighter'] == 'coderay'
-        task.attributes['idprefix'] == '$'
-        task.attributes['idseparator'] == '-'
+        attrs['source-highlighter'] == 'coderay'
+        attrs['idprefix'] == '$'
+        attrs['idseparator'] == '-'
     }
 
     void "Do not allow setting of attributes via legacy key=value list"() {
@@ -217,12 +226,13 @@ class AsciidoctorTaskSpec extends Specification {
             attributes = ['source-highlighter': 'foo', idprefix: '$']
             attributes = ['source-highlighter': 'coderay', idseparator: '-']
         }
+        final attrs = resolveAsSerializable(task.attributes, strTools)
 
         then:
         !systemOut.toString().contains('deprecated')
-        task.attributes['source-highlighter'] == 'coderay'
-        task.attributes['idseparator'] == '-'
-        !task.attributes.containsKey('idprefix')
+        attrs['source-highlighter'] == 'coderay'
+        attrs['idseparator'] == '-'
+        !attrs.containsKey('idprefix')
     }
 
     void "Mixing attributes with options, produces an exception"() {
@@ -500,49 +510,7 @@ class AsciidoctorTaskSpec extends Specification {
         project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask).configure cfg
     }
 
-    void "should set revnumber default attribute when project.version is specified"() {
-        when:
-        project.version = '1.2.3'
-        def task = project.tasks.create(name: ASCIIDOCTOR, type: ExecutorConfigurationInspectingAsciidoctorTask)
 
-        then:
-        task.sampleExecutorConfiguration.attributes.'revnumber@' == '1.2.3'
-    }
-
-    void "should not set revnumber default attribute when project.version is unspecified"() {
-        when:
-        def task = project.tasks.create(name: ASCIIDOCTOR, type: ExecutorConfigurationInspectingAsciidoctorTask)
-
-        then:
-        task.sampleExecutorConfiguration.attributes.'revnumber@' == null
-    }
-
-    void "should allow overriding revnumber@ attribute"() {
-        when:
-        project.version = '1.2.3'
-        def task = project.tasks.create(name: ASCIIDOCTOR, type: ExecutorConfigurationInspectingAsciidoctorTask)
-                .configure {
-                    attributes('revnumber@': 'x.y.z')
-                }
-
-        then:
-        task.sampleExecutorConfiguration.attributes.'revnumber@' == 'x.y.z'
-    }
-
-    void "should not set the revnumber@ attribute when revnumber attribute is set"() {
-        when:
-        project.version = '1.2.3'
-        def task = project.tasks.create(name: ASCIIDOCTOR, type: ExecutorConfigurationInspectingAsciidoctorTask)
-                .configure {
-                    attributes('revnumber': 'x.y.z')
-                }
-
-        then:
-        with(task.sampleExecutorConfiguration) {
-            attributes.'revnumber@' == null
-            attributes.'revnumber' == 'x.y.z'
-        }
-    }
 }
 
 class ExecutorConfigurationInspectingAsciidoctorTask extends AsciidoctorTask {

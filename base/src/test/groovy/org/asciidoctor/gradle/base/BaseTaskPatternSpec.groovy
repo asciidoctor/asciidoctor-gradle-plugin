@@ -20,6 +20,7 @@ import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.testfixtures.ProjectBuilder
+import org.ysb33r.grolifant.api.core.ProjectOperations
 import spock.lang.Specification
 
 /**
@@ -27,6 +28,10 @@ import spock.lang.Specification
  */
 class BaseTaskPatternSpec extends Specification {
     Project project = ProjectBuilder.builder().build()
+
+    void setup() {
+        ProjectOperations.maybeCreateExtension(project)
+    }
 
     static class PatternSpecAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         // method for accessing internal field "sourceDocumentPattern"

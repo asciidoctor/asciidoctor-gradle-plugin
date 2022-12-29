@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.jvm.slides
 import org.asciidoctor.gradle.base.ModuleVersionLoader
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.ysb33r.grolifant.api.core.ProjectOperations
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -30,6 +31,7 @@ class RevealJSPluginExtensionSpec extends Specification {
     RevealJSPluginExtension ext
 
     void setup() {
+        ProjectOperations.maybeCreateExtension(project)
         ext = new RevealJSPluginExtension(project)
     }
 
