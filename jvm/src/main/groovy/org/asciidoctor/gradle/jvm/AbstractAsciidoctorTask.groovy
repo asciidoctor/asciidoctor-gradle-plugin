@@ -56,6 +56,7 @@ import static org.asciidoctor.gradle.base.internal.ConfigurationUtils.asConfigur
 import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 import static org.gradle.workers.IsolationMode.CLASSLOADER
 import static org.gradle.workers.IsolationMode.PROCESS
+import static org.ysb33r.grolifant.api.core.LegacyLevel.PRE_6_4
 
 /** Base class for all AsciidoctorJ tasks.
  *
@@ -584,7 +585,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
                 configureForkOptions(jes)
                 logger.debug "Running AsciidoctorJ instance with environment: ${jes.environment}"
                 jes.with {
-                    setExecClass(jes, AsciidoctorJavaExec.canonicalName, project.gradle.gradleVersion)
+                    setExecClass(jes, AsciidoctorJavaExec.canonicalName)
                     classpath = javaExecClasspath
                     args execConfigurationData.absolutePath
                 }
@@ -606,11 +607,11 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
      * the mainClass property that was added in 6.4.
      */
     @CompileDynamic
-    private void setExecClass(JavaExecSpec jes, String execClass, String gradleVersion) {
-        if (gradleVersion >= GradleVersion.version(('6.4'))) {
-            jes.mainClass = execClass
-        } else {
+    private void setExecClass(JavaExecSpec jes, String execClass) {
+        if (PRE_6_4) {
             jes.main = execClass
+        } else {
+            jes.mainClass = execClass
         }
     }
 
