@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2022 the original author or authors.
+ * Copyright 2013-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,28 +133,32 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         noExceptionThrown()
     }
 
-    void 'Can run in JAVA_EXEC process mode (Groovy DSL)'() {
+    @Unroll
+    void "Can run in #processMode process mode (Groovy DSL)"() {
         given:
-        getBuildFile('''
+        getBuildFile("""
             asciidoctorj {
                 logLevel = 'INFO'
             }
 
             asciidoctor {
-                inProcess = JAVA_EXEC
+                inProcess = ${processMode}
 
                 outputOptions {
                     backends 'html5'
                 }
                 sourceDir 'src/docs/asciidoc'
             }
-        ''')
+        """)
 
         when:
         getGradleRunner(DEFAULT_ARGS).build()
 
         then:
         noExceptionThrown()
+
+        where:
+        processMode << ['IN_PROCESS', 'OUT_OF_PROCESS', 'JAVA_EXEC']
     }
 
     @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/292')
@@ -221,7 +225,7 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
     @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/368')
     void 'Docinfo files are processed'() {
         given:
-        getBuildFile( '''
+        getBuildFile('''
         asciidoctor {
             attributes docinfo: 'shared'
             baseDirFollowsSourceDir()

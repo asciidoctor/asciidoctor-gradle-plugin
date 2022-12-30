@@ -74,12 +74,6 @@ jobs:
         uses: eskatos/gradle-command-action@v1
         with:
           arguments: --console=plain --warning-mode=all -s check --no-parallel -Djava.net.preferIPv4Stack=true -x gradleTest --scan
-      # Documentation
-      - name: Documentation
-        uses: eskatos/gradle-command-action@v1
-        with:
-          build-root-directory: docs
-          arguments: asciidoctor
       # Stop gradlew to avoid locking issues
       - name: Cleanup
         uses: eskatos/gradle-command-action@v1
@@ -129,10 +123,10 @@ jobs:
       uses: eskatos/gradle-command-action@v1
       with:
         arguments: -i -s --console=plain --no-build-cache test intTest remoteTest -x asciidoctor-gradle-slides-export:intTest -x asciidoctor-gradle-jvm-slides:intTest
-    - name: Integration tests (slides only)
-      uses: eskatos/gradle-command-action@v1
-      with:
-        arguments: -i -s --console=plain --no-build-cache test asciidoctor-gradle-jvm-slides:intTest asciidoctor-gradle-slides-export:intTest
+#    - name: Integration tests (slides only)
+#      uses: eskatos/gradle-command-action@v1
+#      with:
+#        arguments: -i -s --console=plain --no-build-cache test asciidoctor-gradle-jvm-slides:intTest asciidoctor-gradle-slides-export:intTest
     # Gradle tests
     - name: Gradle tests
       uses: eskatos/gradle-command-action@v1

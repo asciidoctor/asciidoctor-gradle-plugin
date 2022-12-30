@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2022 the original author or authors.
+ * Copyright 2013-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.testfixtures.ProjectBuilder
+import org.ysb33r.grolifant.api.core.ProjectOperations
 import spock.lang.Specification
 
 /**
@@ -27,6 +28,10 @@ import spock.lang.Specification
  */
 class BaseTaskPatternSpec extends Specification {
     Project project = ProjectBuilder.builder().build()
+
+    void setup() {
+        ProjectOperations.maybeCreateExtension(project)
+    }
 
     static class PatternSpecAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         // method for accessing internal field "sourceDocumentPattern"

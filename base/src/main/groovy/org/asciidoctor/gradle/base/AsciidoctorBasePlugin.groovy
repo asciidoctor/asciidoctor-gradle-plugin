@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2022 the original author or authors.
+ * Copyright 2013-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.gradle.api.Task
 import org.gradle.api.UnknownTaskException
 import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.diagnostics.DependencyReportTask
+import org.ysb33r.grolifant.api.core.ProjectOperations
 import org.ysb33r.grolifant.api.v4.TaskProvider
 
 import java.util.regex.Matcher
@@ -41,6 +42,7 @@ class AsciidoctorBasePlugin implements Plugin<Project> {
 
     void apply(Project project) {
         project.apply plugin: 'base'
+        ProjectOperations.maybeCreateExtension(project)
         registerDependencyReportRules(project)
     }
 

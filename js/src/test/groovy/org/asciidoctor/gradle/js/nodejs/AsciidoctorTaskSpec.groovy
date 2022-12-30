@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2022 the original author or authors.
+ * Copyright 2013-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,11 @@ package org.asciidoctor.gradle.js.nodejs
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
 import org.gradle.testfixtures.ProjectBuilder
+import org.ysb33r.grolifant.api.core.ProjectOperations
+import org.ysb33r.grolifant.api.core.StringTools
 import spock.lang.Specification
+
+import static org.asciidoctor.gradle.base.internal.AsciidoctorAttributes.resolveAsSerializable
 
 /**
  * Asciidoctor task specification
@@ -28,11 +32,14 @@ import spock.lang.Specification
 class AsciidoctorTaskSpec extends Specification {
     private static final String ASCIIDOCTOR = 'asciidoctor'
     Project project = ProjectBuilder.builder().withName('test').build()
+    StringTools strTools
 
     void setup() {
         project.allprojects {
             apply plugin: 'org.asciidoctor.js.base'
         }
+
+        strTools = ProjectOperations.find(project).stringTools
     }
 
     void 'Can log documents when processed'() {
@@ -54,12 +61,13 @@ class AsciidoctorTaskSpec extends Specification {
                 attributes idprefix: '$', idseparator: '-'
             }
         }
+        final attrs = resolveAsSerializable(task.attributes, strTools)
 
         then:
         verifyAll {
-            task.attributes['source-highlighter'] == 'coderay'
-            task.attributes['idprefix'] == '$'
-            task.attributes['idseparator'] == '-'
+            attrs['source-highlighter'] == 'coderay'
+            attrs['idprefix'] == '$'
+            attrs['idseparator'] == '-'
         }
     }
 
@@ -69,11 +77,12 @@ class AsciidoctorTaskSpec extends Specification {
             attributes = ['source-highlighter': 'foo', idprefix: '$']
             attributes = ['source-highlighter': 'coderay', idseparator: '-']
         }
+        final attrs = resolveAsSerializable(task.attributes, strTools)
 
         then:
-        task.attributes['source-highlighter'] == 'coderay'
-        task.attributes['idseparator'] == '-'
-        !task.attributes.containsKey('idprefix')
+        attrs['source-highlighter'] == 'coderay'
+        attrs['idseparator'] == '-'
+        !attrs.containsKey('idprefix')
     }
 
     void "Allow setting of backends via method"() {

@@ -7,12 +7,16 @@ apply from: 'gradle/load-gradle-properties.gradle'
 repositories {
     mavenCentral()
     gradlePluginPortal()
+
+    if(gradleProperties['version'].endsWith('-SNAPSHOT')) {
+        mavenLocal()
+    }
 }
 
 dependencies {
     implementation localGroovy()
     implementation gradleApi()
     api "org.ysb33r.gradle:nodejs-gradle-plugin:${gradleProperties.nodejsGradleVersion}"
-    api "org.ysb33r.gradle:grolifant70:${gradleProperties.grolifantVersion}"
+    api "org.ysb33r.gradle:grolifant-herd:${gradleProperties.grolifantVersion}"
 }
 

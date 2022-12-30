@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2022 the original author or authors.
+ * Copyright 2013-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,16 +44,21 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.process.JavaExecSpec
 import org.gradle.process.JavaForkOptions
 import org.gradle.util.GradleVersion
-import org.gradle.workers.WorkerConfiguration
+import org.gradle.workers.ClassLoaderWorkerSpec
+import org.gradle.workers.ProcessWorkerSpec
+import org.gradle.workers.WorkAction
+import org.gradle.workers.WorkParameters
+import org.gradle.workers.WorkQueue
 import org.gradle.workers.WorkerExecutor
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClosure
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.getClassLocation
+import static org.asciidoctor.gradle.base.internal.AsciidoctorAttributes.resolveAsCacheable
+import static org.asciidoctor.gradle.base.internal.AsciidoctorAttributes.resolveAsSerializable
 import static org.asciidoctor.gradle.base.internal.ConfigurationUtils.asConfiguration
 import static org.asciidoctor.gradle.base.internal.ConfigurationUtils.asConfigurations
 import static org.gradle.api.tasks.PathSensitivity.RELATIVE
-import static org.gradle.workers.IsolationMode.CLASSLOADER
-import static org.gradle.workers.IsolationMode.PROCESS
+import static org.ysb33r.grolifant.api.core.LegacyLevel.PRE_6_4
 
 /** Base class for all AsciidoctorJ tasks.
  *
@@ -187,8 +192,8 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
      *
      */
     @Input
-    Map getOptions() {
-        asciidoctorj.options
+    Map<String, Object> getOptions() {
+        resolveAsCacheable(asciidoctorj.options, projectOperations)
     }
 
     /** Apply a new set of Asciidoctor options, clearing any options previously set.
@@ -221,8 +226,8 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
      *
      */
     @Input
-    Map getAttributes() {
-        asciidoctorj.attributes
+    Map<String, Object> getAttributes() {
+        resolveAsCacheable(asciidoctorj.attributes, projectOperations)
     }
 
     /** Apply a new set of Asciidoctor options, clearing any options previously set.
@@ -426,9 +431,12 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
                 baseDir: lang.present ? getBaseDir(lang.get()) : getBaseDir(),
                 projectDir: project.projectDir,
                 rootDir: project.rootProject.projectDir,
-                options: evaluateProviders(options),
+                options: resolveAsSerializable(evaluateProviders(options), projectOperations.stringTools),
                 failureLevel: failureLevel.level,
-                attributes: preparePreserialisedAttributes(workingSourceDir, lang),
+                attributes: resolveAsSerializable(
+                        preparePreserialisedAttributes(workingSourceDir, lang),
+                        projectOperations.stringTools
+                ),
                 backendName: backendName,
                 logDocuments: logDocuments,
                 gemPath: gemPath,
@@ -513,44 +521,41 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         )
 
         if (parallelMode) {
+            WorkQueue queue = getWorkQueue(asciidoctorClasspath)
             executorConfigurations.each { String configName, ExecutorConfiguration executorConfiguration ->
                 copyResourcesByBackend(executorConfiguration, lang)
-                worker.submit(AsciidoctorJExecuter) { WorkerConfiguration config ->
-                    configureWorker(
-                            "Asciidoctor (task=${name}) conversion for ${configName}",
-                            config,
-                            asciidoctorClasspath,
-                            new ExecutorConfigurationContainer(executorConfiguration)
-                    )
+                queue.submit(AsciidoctorJExecuterWorker) { params ->
+                    params.extensionConfigurationContainer =
+                        new ExecutorConfigurationContainer(executorConfiguration)
                 }
             }
         } else {
             copyResourcesByBackend(executorConfigurations.values(), lang)
-            worker.submit(AsciidoctorJExecuter) { WorkerConfiguration config ->
-                configureWorker(
-                        "Asciidoctor (task=${name}) conversions for ${executorConfigurations.keySet().join(', ')}",
-                        config,
-                        asciidoctorClasspath,
-                        new ExecutorConfigurationContainer(executorConfigurations.values())
-                )
+            getWorkQueue(asciidoctorClasspath).submit(AsciidoctorJExecuterWorker) { params ->
+                params.extensionConfigurationContainer =
+                    new ExecutorConfigurationContainer(executorConfigurations.values())
             }
         }
         executorConfigurations
     }
 
-    private void configureWorker(
-            final String displayName,
-            final WorkerConfiguration config,
-            final FileCollection asciidoctorClasspath,
-            final ExecutorConfigurationContainer ecContainer
-    ) {
-        config.isolationMode = inProcess == IN_PROCESS ? CLASSLOADER : PROCESS
-        config.classpath = asciidoctorClasspath
-        config.displayName = displayName
-        config.params(
-                ecContainer
-        )
-        configureForkOptions(config.forkOptions)
+    private WorkQueue getWorkQueue(FileCollection asciidoctorClasspath) {
+        IN_PROCESS ?
+            worker.classLoaderIsolation(configureClassloaderIsolatedWorker(asciidoctorClasspath)) :
+            worker.processIsolation(configureProcessIsolatedWorker(asciidoctorClasspath))
+    }
+
+    private Closure configureClassloaderIsolatedWorker(FileCollection asciidoctorClasspath) {
+        return { ClassLoaderWorkerSpec spec ->
+            spec.classpath.from(asciidoctorClasspath)
+        }
+    }
+
+    private Closure configureProcessIsolatedWorker(FileCollection asciidoctorClasspath) {
+        return { ProcessWorkerSpec spec ->
+            spec.classpath.from(asciidoctorClasspath)
+            configureForkOptions(spec.forkOptions)
+        }
     }
 
     private Map<String, ExecutorConfiguration> runWithJavaExec(
@@ -579,7 +584,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
                 configureForkOptions(jes)
                 logger.debug "Running AsciidoctorJ instance with environment: ${jes.environment}"
                 jes.with {
-                    main = AsciidoctorJavaExec.canonicalName
+                    setExecClass(jes, AsciidoctorJavaExec.canonicalName)
                     classpath = javaExecClasspath
                     args execConfigurationData.absolutePath
                 }
@@ -592,6 +597,21 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         }
 
         executorConfigurations
+    }
+
+    /** Attempt to use the mainClass property if we're running a recent enough Gradle version,
+     * else revert to the old property.
+     *
+     * The main property will be removed from JavaExecSpec in Gradle 8.0 and replaced by
+     * the mainClass property that was added in 6.4.
+     */
+    @CompileDynamic
+    private void setExecClass(JavaExecSpec jes, String execClass) {
+        if (PRE_6_4) {
+            jes.main = execClass
+        } else {
+            jes.mainClass = execClass
+        }
     }
 
     private void copyResourcesByBackend(
@@ -676,5 +696,18 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         asciidoctorj.docExtensions.findAll {
             it instanceof Closure
         } as List<Closure>
+    }
+
+    @SuppressWarnings('AbstractClassWithoutAbstractMethod')
+    abstract static class AsciidoctorJExecuterWorker implements WorkAction<Params> {
+        static interface Params extends WorkParameters {
+            ExecutorConfigurationContainer getExtensionConfigurationContainer()
+            void setExtensionConfigurationContainer(ExecutorConfigurationContainer container)
+        }
+
+        @Override
+        void execute() {
+            new AsciidoctorJExecuter(parameters.extensionConfigurationContainer).run()
+        }
     }
 }

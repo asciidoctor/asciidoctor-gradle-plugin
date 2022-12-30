@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2022 the original author or authors.
+ * Copyright 2013-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,10 @@ package org.asciidoctor.gradle.base
 import groovy.transform.CompileStatic
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.provider.Provider
 import org.ysb33r.grolifant.api.v4.AbstractCombinedProjectTaskExtension
+
+import java.util.concurrent.Callable
 
 import static org.ysb33r.grolifant.api.v4.StringUtils.stringize
 
@@ -30,8 +33,8 @@ import static org.ysb33r.grolifant.api.v4.StringUtils.stringize
  */
 @CompileStatic
 abstract class AbstractImplementationEngineExtension
-    extends AbstractCombinedProjectTaskExtension
-    implements AsciidoctorAttributeProvider {
+        extends AbstractCombinedProjectTaskExtension
+        implements AsciidoctorAttributeProvider {
 
     private SafeMode safeMode
     private final Map<String, String> defaultVersionMap
@@ -53,8 +56,10 @@ abstract class AbstractImplementationEngineExtension
        end::extension-property[]
        ------------------------- */
 
-    /** Returns all of the Asciidoctor options.
+    /**
+     * Resolves all of the Asciidoctor options.
      *
+     * @return A map of resovled attributes
      */
     Map<String, Object> getAttributes() {
         stringizeMapRecursive(this.attributes, onlyTaskAttributes) { AbstractImplementationEngineExtension it ->
@@ -154,8 +159,8 @@ abstract class AbstractImplementationEngineExtension
 
         if (task && langAttrs) {
             stringizeMapRecursive(
-                langAttrs.attributes,
-                langAttrs.onlyTask
+                    langAttrs.attributes,
+                    langAttrs.onlyTask
             ) { AbstractImplementationEngineExtension it ->
                 it.getAttributesForLang(lang)
             }
@@ -249,8 +254,8 @@ abstract class AbstractImplementationEngineExtension
         super(project)
         this.safeMode = SafeMode.UNSAFE
         this.attributes['gradle-project-name'] = project.name
-        this.attributes['gradle-project-group'] = projectOperations.groupProvider.orElse('')
-        this.attributes['gradle-project-version'] = projectOperations.versionProvider.orElse('')
+        this.attributes['gradle-project-group'] = projectOperations.projectTools.groupProvider.orElse('')
+        this.attributes['gradle-project-version'] = projectOperations.projectTools.versionProvider.orElse('')
         this.defaultVersionMap = ModuleVersionLoader.load(moduleResourceName)
     }
 
@@ -267,9 +272,9 @@ abstract class AbstractImplementationEngineExtension
     }
 
     protected Map<String, Object> stringizeMapRecursive(
-        Map<String, Object> map,
-        boolean fromTaskOnly,
-        Closure<Map<String, Object>> other
+            Map<String, Object> map,
+            boolean fromTaskOnly,
+            Closure<Map<String, Object>> other
     ) {
         if (!task || fromTaskOnly) {
             stringizeScalarMapItems(map)
@@ -284,9 +289,9 @@ abstract class AbstractImplementationEngineExtension
     }
 
     protected Collection<String> stringizeList(
-        Collection<Object> list,
-        boolean fromTaskOnly,
-        Closure<Collection<String>> other
+            Collection<Object> list,
+            boolean fromTaskOnly,
+            Closure<Collection<String>> other
     ) {
         if (!task || fromTaskOnly) {
             stringize(list)
@@ -312,8 +317,11 @@ abstract class AbstractImplementationEngineExtension
                     return (Boolean) item
                 case File:
                     return ((File) item).absolutePath
+                case Provider:
+                case Callable:
+                    return item
                 default:
-                    return stringize(item)
+                    return { -> stringize(item) } as Callable<String>
             }
         }
     }
@@ -330,8 +338,11 @@ abstract class AbstractImplementationEngineExtension
                     return [key, ((Boolean) item)]
                 case File:
                     return [key, ((File) item).absolutePath]
+                case Provider:
+                case Callable:
+                    return [key, item]
                 default:
-                    return [key, stringize(item)]
+                    return [key, { -> stringize(item) } as Callable<String>]
             }
         } as Map<String, Object>
     }

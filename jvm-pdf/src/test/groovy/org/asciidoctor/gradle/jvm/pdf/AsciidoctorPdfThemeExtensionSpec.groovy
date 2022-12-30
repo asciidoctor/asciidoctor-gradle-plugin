@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2022 the original author or authors.
+ * Copyright 2013-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.jvm.pdf
 import org.gradle.api.Project
 import org.gradle.api.UnknownDomainObjectException
 import org.gradle.testfixtures.ProjectBuilder
+import org.ysb33r.grolifant.api.core.ProjectOperations
 import org.ysb33r.grolifant.api.v4.FileUtils
 import spock.lang.Specification
 
@@ -27,20 +28,22 @@ import spock.lang.Specification
 class AsciidoctorPdfThemeExtensionSpec extends Specification {
 
     final static File TEST_THEMES_DIR = new File(
-        System.getProperty(
-            'TEST_THEMES_DIR',
-            'asciidoctor-gradle-jvm/src/test/resources/themes'
-        )
+            System.getProperty(
+                    'TEST_THEMES_DIR',
+                    'asciidoctor-gradle-jvm/src/test/resources/themes'
+            )
     ).absoluteFile
 
     Project project = ProjectBuilder.builder().build()
+    ProjectOperations projectOperations
     AsciidoctorPdfThemesExtension pdfThemes
 
     void setup() {
+        projectOperations = ProjectOperations.maybeCreateExtension(project)
         pdfThemes = project.extensions.create(
-            AsciidoctorPdfThemesExtension.NAME,
-            AsciidoctorPdfThemesExtension,
-            project
+                AsciidoctorPdfThemesExtension.NAME,
+                AsciidoctorPdfThemesExtension,
+                project
         )
     }
 
