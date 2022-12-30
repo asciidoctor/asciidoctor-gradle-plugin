@@ -35,6 +35,7 @@ import org.gradle.api.file.FileTreeElement
 import org.gradle.api.provider.Provider
 import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.Console
+import org.gradle.api.tasks.IgnoreEmptyDirectories
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
@@ -334,6 +335,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      */
     @InputFiles
     @SkipWhenEmpty
+    @IgnoreEmptyDirectories
     @PathSensitive(RELATIVE)
     FileTree getSourceFileTree() {
         if (languages.empty) {
@@ -355,6 +357,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      *
      */
     @InputFiles
+    @IgnoreEmptyDirectories
     @PathSensitive(RELATIVE)
     FileTree getSecondarySourceFileTree() {
         if (languages.empty) {
@@ -635,6 +638,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         this.projectOperations = ProjectOperations.find(project)
         inputs.files { filesFromCopySpec(getResourceCopySpec(Optional.empty())) }
                 .withPathSensitivity(RELATIVE)
+                .ignoreEmptyDirectories()
         this.srcDir = createDirectoryProperty(project)
         this.outDir = createDirectoryProperty(project)
         this.defaultRevNumber  = projectOperations.projectTools.versionProvider.orElse(Project.DEFAULT_VERSION)
