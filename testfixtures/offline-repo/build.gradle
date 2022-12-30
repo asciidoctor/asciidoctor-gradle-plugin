@@ -6,7 +6,7 @@ apply plugin: 'org.ysb33r.os'
 apply plugin: 'org.ysb33r.ivypot'
 
 repositories {
-	jcenter()
+    mavenCentral()
 }
 
 syncRemoteRepositories {
@@ -21,7 +21,6 @@ syncRemoteRepositories {
     outputs.files file("${project.ext.offlineRepoDescriptionFile}.kts")
 
     repositories {
-        // Put this first as sometimes Ivy hits a hiccup on JCenter()
         mavenCentral()
         maven { url 'https://plugins.gradle.org/m2/' }
 

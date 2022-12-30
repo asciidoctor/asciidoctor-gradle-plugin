@@ -1,7 +1,7 @@
 apply plugin : 'org.asciidoctor.jvm.convert'
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 asciidoctorj {
