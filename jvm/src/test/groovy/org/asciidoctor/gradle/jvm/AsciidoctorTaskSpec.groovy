@@ -15,7 +15,6 @@
  */
 package org.asciidoctor.gradle.jvm
 
-
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.gradle.api.Action
 import org.gradle.api.GradleException
@@ -509,8 +508,6 @@ class AsciidoctorTaskSpec extends Specification {
     AsciidoctorTask asciidoctorTask(Closure cfg) {
         project.tasks.create(name: ASCIIDOCTOR, type: AsciidoctorTask).configure cfg
     }
-
-
 }
 
 class ExecutorConfigurationInspectingAsciidoctorTask extends AsciidoctorTask {

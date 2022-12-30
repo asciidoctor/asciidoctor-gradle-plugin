@@ -17,7 +17,6 @@ package org.asciidoctor.gradle.jvm
 
 import org.asciidoctor.gradle.internal.FunctionalSpecification
 import org.gradle.testkit.runner.GradleRunner
-import org.gradle.testkit.runner.TaskOutcome
 import spock.lang.Issue
 import spock.lang.Timeout
 import spock.lang.Unroll
@@ -25,7 +24,6 @@ import spock.lang.Unroll
 import static org.asciidoctor.gradle.testfixtures.AsciidoctorjTestVersions.SERIES_20
 @java.lang.SuppressWarnings('NoWildcardImports')
 import static org.asciidoctor.gradle.testfixtures.JRubyTestVersions.*
-import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 
 class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
 
@@ -223,7 +221,7 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
     @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/368')
     void 'Docinfo files are processed'() {
         given:
-        getBuildFile( '''
+        getBuildFile('''
         asciidoctor {
             attributes docinfo: 'shared'
             baseDirFollowsSourceDir()
