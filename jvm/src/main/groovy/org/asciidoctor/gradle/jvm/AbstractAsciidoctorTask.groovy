@@ -584,7 +584,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
                 configureForkOptions(jes)
                 logger.debug "Running AsciidoctorJ instance with environment: ${jes.environment}"
                 jes.with {
-                    main = AsciidoctorJavaExec.canonicalName
+                    setExecClass(jes, AsciidoctorJavaExec.canonicalName, project.gradle.gradleVersion)
                     classpath = javaExecClasspath
                     args execConfigurationData.absolutePath
                 }
@@ -597,6 +597,21 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         }
 
         executorConfigurations
+    }
+
+    /** Attempt to use the mainClass property if we're running a recent enough Gradle version,
+     * else revert to the old property.
+     *
+     * The main property will be removed from JavaExecSpec in Gradle 8.0 and replaced by
+     * the mainClass property that was added in 6.4.
+     */
+    @CompileDynamic
+    private void setExecClass(JavaExecSpec jes, String execClass, String gradleVersion) {
+        if (gradleVersion >= GradleVersion.version(('6.4'))) {
+            jes.mainClass = execClass
+        } else {
+            jes.main = execClass
+        }
     }
 
     private void copyResourcesByBackend(
