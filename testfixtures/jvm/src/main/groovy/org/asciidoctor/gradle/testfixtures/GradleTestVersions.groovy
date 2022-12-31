@@ -28,7 +28,7 @@ import org.gradle.util.GradleVersion
 @CompileStatic
 class GradleTestVersions {
     public final static String MIN_VERSION = '6.0.1'
-    public final static String MAX_VERSION = '7.5.1'
+    public final static String MAX_VERSION = '7.6'
 
     static String latestMinimumOrThis(final String ver) {
         [GradleVersion.version(MIN_VERSION), GradleVersion.version(ver)].max().version

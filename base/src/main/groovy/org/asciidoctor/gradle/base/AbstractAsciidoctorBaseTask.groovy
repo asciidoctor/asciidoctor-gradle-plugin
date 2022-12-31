@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2022 the original author or authors.
+ * Copyright 2013-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.util.GradleVersion
+import org.ysb33r.grolifant.api.core.ProjectOperations
 import org.ysb33r.grolifant.api.v4.FileUtils
 import org.ysb33r.grolifant.api.v4.StringUtils
 
@@ -56,10 +57,9 @@ import java.util.concurrent.Callable
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.UNDERSCORE_LED_FILES
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.createDirectoryProperty
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClosure
-import static org.asciidoctor.gradle.base.AsciidoctorUtils.getSourceFileTree
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.mapToDirectoryProvider
 import static org.gradle.api.tasks.PathSensitivity.RELATIVE
-import static org.ysb33r.grolifant.api.v4.FileUtils.filesFromCopySpec
+import static org.ysb33r.grolifant.api.core.TaskInputFileOptions.IGNORE_EMPTY_DIRECTORIES
 
 /** Abstract base task for Asciidoctor that can be shared between AsciidoctorJ and Asciidoctor.js.
  *
@@ -77,6 +77,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
 
     private final DirectoryProperty srcDir
     private final DirectoryProperty outDir
+    private final ProjectOperations projectOperations
     private BaseDirStrategy baseDir
     private PatternSet sourceDocumentPattern
     private PatternSet secondarySourceDocumentPattern
@@ -87,6 +88,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
     private final List<String> languages = []
     private final Map<String, CopySpec> languageResources = [:]
     private final OutputOptions configuredOutputOptions = new OutputOptions()
+    private final Provider<String> defaultRevNumber
 
     /** Logs documents as they are converted
      *
@@ -632,11 +634,16 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
 
     protected AbstractAsciidoctorBaseTask() {
         super()
-        inputs.files { filesFromCopySpec(getResourceCopySpec(Optional.empty())) }
-            .withPathSensitivity(RELATIVE)
-            .ignoreEmptyDirectories()
+        this.projectOperations = ProjectOperations.find(project)
+        projectOperations.tasks.inputFiles(
+                inputs,
+                { projectOperations.fsOperations.resolveFilesFromCopySpec(getResourceCopySpec(Optional.empty())) },
+                RELATIVE,
+                IGNORE_EMPTY_DIRECTORIES
+        )
         this.srcDir = createDirectoryProperty(project)
         this.outDir = createDirectoryProperty(project)
+        this.defaultRevNumber = projectOperations.projectTools.versionProvider.orElse(Project.DEFAULT_VERSION)
     }
 
     @Nested
@@ -718,7 +725,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * @return Source tree based upon configured pattern.
      */
     protected FileTree getSourceFileTreeFrom(File dir) {
-        getSourceFileTree(project, dir, this.sourceDocumentPattern ?: defaultSourceDocumentPattern)
+        AsciidoctorUtils.getSourceFileTree(project, dir, this.sourceDocumentPattern ?: defaultSourceDocumentPattern)
     }
 
     /** Obtains a secondary source tree based on patterns.
@@ -729,10 +736,10 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
     protected FileTree getSecondarySourceFileTreeFrom(File dir) {
         Spec<FileTreeElement> primarySourceSpec = (this.sourceDocumentPattern ?: defaultSourceDocumentPattern).asSpec
         project.fileTree(dir)
-            .matching(this.secondarySourceDocumentPattern ?: defaultSecondarySourceDocumentPattern)
-            .matching { PatternFilterable target ->
-                target.exclude(primarySourceSpec)
-            }
+                .matching(this.secondarySourceDocumentPattern ?: defaultSecondarySourceDocumentPattern)
+                .matching { PatternFilterable target ->
+                    target.exclude(primarySourceSpec)
+                }
     }
 
     /** The default PatternSet that will be used if {@code sources} was never called
@@ -756,7 +763,8 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         asciidocPatterns
     }
 
-    /** A task may add some default attributes.
+    /**
+     * A task may add some default attributes.
      *
      * If the user specifies any of these attributes, then those attributes will not be utilised.
      *
@@ -769,17 +777,18 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      */
     protected Map<String, Object> getTaskSpecificDefaultAttributes(File workingSourceDir) {
         Map<String, Object> attrs = [
-            includedir           : (Object) workingSourceDir.absolutePath,
-            'gradle-project-name': (Object) project.name
+                includedir: (Object) workingSourceDir.absolutePath
+//                'gradle-project-name': (Object) project.name
         ]
 
-        if (project.version != null && project.version.toString() != Project.DEFAULT_VERSION) {
-            attrs.put('revnumber', (Object) project.version)
+        String revNumber = defaultRevNumber.get()
+        if (!revNumber.empty && revNumber != Project.DEFAULT_VERSION) {
+            attrs.put('revnumber', revNumber)
         }
 
-        if (project.group != null) {
-            attrs.put('gradle-project-group', (Object) project.group)
-        }
+//        if (project.group != null) {
+//            attrs.put('gradle-project-group', (Object) project.group)
+//        }
 
         attrs
     }
@@ -812,8 +821,8 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
             throw new GradleException("outputDir has not been defined for task '${name}'")
         }
         configuredOutputOptions.separateOutputDirs ?
-            new File(outputDir, "${language}/${backendName}") :
-            new File(outputDir, language)
+                new File(outputDir, "${language}/${backendName}") :
+                new File(outputDir, language)
     }
 
     /** Adds an input property.
@@ -874,9 +883,9 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         } else {
             File srcDir = new File(sourceDir, language)
             Workspace.builder()
-                .workingSourceDir(srcDir)
-                .sourceTree(getSourceFileTreeFrom(srcDir))
-                .build()
+                    .workingSourceDir(srcDir)
+                    .sourceTree(getSourceFileTreeFrom(srcDir))
+                    .build()
         }
     }
 
@@ -888,17 +897,17 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * @param includeLang If set also copy resources for this specified language
      */
     protected void copyResourcesByBackend(
-        final String backendName,
-        final File sourceDir,
-        final File outputDir,
-        Optional<String> includeLang
+            final String backendName,
+            final File sourceDir,
+            final File outputDir,
+            Optional<String> includeLang
     ) {
         CopySpec rcs = getResourceCopySpec(includeLang)
         logger.info "Copy resources for '${backendName}' to ${outputDir}"
 
         FileTree ps = this.intermediateArtifactPattern ?
-            project.fileTree(sourceDir).matching(this.intermediateArtifactPattern) :
-            null
+                project.fileTree(sourceDir).matching(this.intermediateArtifactPattern) :
+                null
 
         CopySpec langSpec = includeLang.present ? languageResources[includeLang.get()] : null
 
@@ -919,6 +928,16 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
                 }
             }
         })
+    }
+
+    /**
+     * Instance of {@link ProjectOperations} that is attached to this task.
+     *
+     * @return {@link ProjectOperations} instance.
+     */
+    @Internal
+    protected ProjectOperations getProjectOperations() {
+        this.projectOperations
     }
 
     /** Gets the language-specific source tree
@@ -990,11 +1009,11 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * @since 3.0.0
      */
     protected Map<String, Object> prepareAttributes(
-        final File workingSourceDir,
-        Map<String, Object> seedAttributes,
-        Map<String, Object> langAttributes,
-        List<AsciidoctorAttributeProvider> attributeProviders,
-        Optional<String> lang
+            final File workingSourceDir,
+            Map<String, Object> seedAttributes,
+            Map<String, Object> langAttributes,
+            List<AsciidoctorAttributeProvider> attributeProviders,
+            Optional<String> lang
     ) {
         Map<String, Object> attrs = [:]
         attrs.putAll(seedAttributes)
@@ -1004,18 +1023,18 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         }
 
         Map<String, Object> defaultAttrs = prepareDefaultAttributes(
-            attrs,
-            getTaskSpecificDefaultAttributes(workingSourceDir),
-            lang
+                attrs,
+                getTaskSpecificDefaultAttributes(workingSourceDir),
+                lang
         )
         attrs.putAll(defaultAttrs)
         evaluateProviders(attrs)
     }
 
     private Map<String, Object> prepareDefaultAttributes(
-        Map<String, Object> seedAttributes,
-        Map<String, Object> defaultAttributes,
-        Optional<String> lang
+            Map<String, Object> seedAttributes,
+            Map<String, Object> defaultAttributes,
+            Optional<String> lang
     ) {
         Set<String> userDefinedAttrKeys = trimOverridableAttributeNotation(seedAttributes.keySet())
 
@@ -1082,9 +1101,9 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
 
             if (sourceRoot != baseRoot || outputRoot != baseRoot) {
                 throw new AsciidoctorExecutionException(
-                    "sourceDir, outputDir and baseDir needs to have the same root filesystem for ${engineName} " +
-                        'to function correctly. ' +
-                        'This is typically caused on Windows where everything is not on the same drive letter.'
+                        "sourceDir, outputDir and baseDir needs to have the same root filesystem for ${engineName} " +
+                                'to function correctly. ' +
+                                'This is typically caused on Windows where everything is not on the same drive letter.'
                 )
             }
         }
@@ -1095,30 +1114,30 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
             throw new AsciidoctorMultiLanguageException('Use prepareTempWorkspace(tmpDir,lang) instead')
         }
         prepareTempWorkspace(
-            tmpDir,
-            sourceFileTree,
-            secondarySourceFileTree,
-            getResourceCopySpec(Optional.empty()),
-            Optional.empty()
+                tmpDir,
+                sourceFileTree,
+                secondarySourceFileTree,
+                getResourceCopySpec(Optional.empty()),
+                Optional.empty()
         )
     }
 
     private void prepareTempWorkspace(final File tmpDir, final String lang) {
         prepareTempWorkspace(
-            tmpDir,
-            getLanguageSourceFileTree(lang),
-            getLanguageSecondarySourceFileTree(lang),
-            getResourceCopySpec(Optional.of(lang)),
-            Optional.ofNullable(this.languageResources[lang])
+                tmpDir,
+                getLanguageSourceFileTree(lang),
+                getLanguageSecondarySourceFileTree(lang),
+                getResourceCopySpec(Optional.of(lang)),
+                Optional.ofNullable(this.languageResources[lang])
         )
     }
 
     private void prepareTempWorkspace(
-        final File tmpDir,
-        final FileTree mainSourceTree,
-        final FileTree secondarySourceTree,
-        final CopySpec resourceTree,
-        final Optional<CopySpec> langResourcesTree
+            final File tmpDir,
+            final FileTree mainSourceTree,
+            final FileTree secondarySourceTree,
+            final CopySpec resourceTree,
+            final Optional<CopySpec> langResourcesTree
     ) {
         if (tmpDir.exists()) {
             tmpDir.deleteDir()
