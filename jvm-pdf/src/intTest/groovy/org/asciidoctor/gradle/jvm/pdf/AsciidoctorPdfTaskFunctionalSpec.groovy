@@ -216,7 +216,7 @@ asciidoctorPdf {
         """
 
         when:
-        getGradleRunner([DEFAULT_TASK])
+        getGradleRunner([DEFAULT_TASK, '-s'])
                 .withGradleVersion(gradleVersion)
                 .build()
 

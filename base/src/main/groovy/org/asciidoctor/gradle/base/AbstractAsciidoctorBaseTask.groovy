@@ -57,10 +57,9 @@ import java.util.concurrent.Callable
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.UNDERSCORE_LED_FILES
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.createDirectoryProperty
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClosure
-import static org.asciidoctor.gradle.base.AsciidoctorUtils.getSourceFileTree
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.mapToDirectoryProvider
 import static org.gradle.api.tasks.PathSensitivity.RELATIVE
-import static org.ysb33r.grolifant.api.v4.FileUtils.filesFromCopySpec
+import static org.ysb33r.grolifant.api.core.TaskInputFileOptions.IGNORE_EMPTY_DIRECTORIES
 
 /** Abstract base task for Asciidoctor that can be shared between AsciidoctorJ and Asciidoctor.js.
  *
@@ -636,12 +635,15 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
     protected AbstractAsciidoctorBaseTask() {
         super()
         this.projectOperations = ProjectOperations.find(project)
-        inputs.files { filesFromCopySpec(getResourceCopySpec(Optional.empty())) }
-                .withPathSensitivity(RELATIVE)
-                .ignoreEmptyDirectories()
+        projectOperations.tasks.inputFiles(
+                inputs,
+                { projectOperations.fsOperations.resolveFilesFromCopySpec(getResourceCopySpec(Optional.empty())) },
+                RELATIVE,
+                IGNORE_EMPTY_DIRECTORIES
+        )
         this.srcDir = createDirectoryProperty(project)
         this.outDir = createDirectoryProperty(project)
-        this.defaultRevNumber  = projectOperations.projectTools.versionProvider.orElse(Project.DEFAULT_VERSION)
+        this.defaultRevNumber = projectOperations.projectTools.versionProvider.orElse(Project.DEFAULT_VERSION)
     }
 
     @Nested
@@ -775,7 +777,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      */
     protected Map<String, Object> getTaskSpecificDefaultAttributes(File workingSourceDir) {
         Map<String, Object> attrs = [
-                includedir           : (Object) workingSourceDir.absolutePath
+                includedir: (Object) workingSourceDir.absolutePath
 //                'gradle-project-name': (Object) project.name
         ]
 

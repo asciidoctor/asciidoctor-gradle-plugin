@@ -32,6 +32,9 @@ import org.gradle.workers.WorkerExecutor
 
 import javax.inject.Inject
 
+import static org.ysb33r.grolifant.api.core.TaskInputFileOptions.IGNORE_EMPTY_DIRECTORIES
+import static org.ysb33r.grolifant.api.core.TaskInputFileOptions.OPTIONAL
+
 /** Asciidoctor task that is specialises in PDF conversion.
  *
  * @author Schalk W. Cronjé
@@ -53,6 +56,12 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
 
         configuredOutputOptions.backends = ['pdf']
         copyNoResources()
+        projectOperations.tasks.inputFiles(
+                inputs,
+                { -> fontDirs },
+                PathSensitivity.RELATIVE,
+                IGNORE_EMPTY_DIRECTORIES, OPTIONAL
+        )
     }
 
     /** @Deprecated Use{@link #getFontsDirs()} instead
@@ -91,12 +100,9 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
      *
      * @return Directories for the pdf fonts
      * */
-    @InputFiles
-    @IgnoreEmptyDirectories
-    @PathSensitive(PathSensitivity.RELATIVE)
-    @Optional
+    @Internal
     FileCollection getFontsDirs() {
-        this.project.files(this.fontDirs)
+        projectOperations.fsOperations.files(this.fontDirs)
     }
 
     /** Specify a directory or directories where to load custom fonts from.
@@ -162,7 +168,7 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
         if (GradleVersion.current() <= LAST_GRADLE_WITH_CLASSPATH_LEAKAGE) {
             if (inProcess != AbstractAsciidoctorTask.JAVA_EXEC) {
                 logger.warn 'This version of Gradle leaks snakeyaml on to worker classpaths which breaks ' +
-                    'PDF processing. Switching to JAVA_EXEC instead.'
+                        'PDF processing. Switching to JAVA_EXEC instead.'
             }
             AbstractAsciidoctorTask.JAVA_EXEC
         } else {

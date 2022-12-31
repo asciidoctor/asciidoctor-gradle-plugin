@@ -18,3 +18,5 @@ configurePlugin 'org.asciidoctor.jvm.pdf',
     'Simplifies conversion of asciidoc documents to PDF',
     ['asciidoctorj', 'pdf']
 
+
+gradleTest.gradleArguments '-s'
