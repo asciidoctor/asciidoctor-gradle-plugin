@@ -16,7 +16,6 @@
 
 apply plugin: 'java-gradle-plugin'
 apply plugin: 'com.gradle.plugin-publish'
-//apply plugin: 'com.jfrog.bintray'
 
 ext {
     pluginIdPrefix = 'org.asciidoctor'
@@ -181,28 +180,6 @@ publishing {
 //    validateTaskProperties.enableStricterValidation = true
 //}
 
-//bintray {
-//    user = bintrayUsername
-//    key = bintrayKey
-//    publications = ['mavenJava']
-//    dryRun = bintrayDryRun.toBoolean()
-//    pkg {
-//        userOrg = bintrayOrg
-//        repo = bintrayRepo
-//        name = project.name
-//        desc = project.project_description
-//        licenses = ['Apache-2.0']
-////        labels = ['asciidoctor', 'gradle', 'plugin']
-//        websiteUrl = project.project_website
-//        issueTrackerUrl = project.project_issues
-//        vcsUrl = project.project_vcs
-//        publicDownloadNumbers = true
-////        version {
-////            attributes = ['gradle-plugin': 'org.asciidoctor.convert:org.asciidoctor:asciidoctor-gradle-plugin']
-////        }
-//    }
-//}
-
 pluginBundle {
     website = project.project_website
     vcsUrl = project.project_vcs
@@ -215,6 +192,4 @@ pluginBundle {
         version = project.version
     }
 }
-
-// task publishRelease(dependsOn: [bintrayUpload, publishPlugins]) {}
 
