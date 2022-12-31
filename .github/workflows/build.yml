@@ -4,79 +4,55 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-java@v1
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
         with:
           java-version: 11
-      # Cache
-      - name: Cache .gradle/caches
-        uses: actions/cache@v1
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-cache-${{ hashFiles('**/*.gradle') }}
-          restore-keys: ${{ runner.os }}-gradle-cache-
-      - name: Cache .gradle/wrapper
-        uses: actions/cache@v1
-        with:
-          path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/*.gradle') }}
-          restore-keys: ${{ runner.os }}-gradle-wrapper-
+          distribution: zulu
       # Licensing
       - name: Licensing
-        uses: eskatos/gradle-command-action@v1
+        uses: gradle/gradle-build-action@v2
         with:
           arguments: --console=plain -S license
       # Coding style
       - name: Coding style
-        uses: eskatos/gradle-command-action@v1
+        uses: gradle/gradle-build-action@v2
         with:
           arguments: --console=plain -S codenarcAll
   build-windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
         # use a short path to avoid exceeding the path limit on Windows... sigh
         with:
           path: 'w'
-      - uses: actions/setup-java@v1
+      - uses: actions/setup-java@v3
         with:
           java-version: 11
-      # Cache
-      - name: Cache .gradle/caches
-        uses: actions/cache@v1
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-cache-${{ hashFiles('**/*.gradle') }}
-          restore-keys: ${{ runner.os }}-gradle-cache-
-      - name: Cache .gradle/wrapper
-        uses: actions/cache@v1
-        with:
-          path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/*.gradle') }}
-          restore-keys: ${{ runner.os }}-gradle-wrapper-
+          distribution: zulu
       - name: Cache offline repository
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: testfixtures/offline-repo/build/repo
           key: ${{ runner.os }}-offline-repo-${{ hashFiles('module-versions.properties') }}
           restore-keys: ${{ runner.os }}-offline-repo-
       # Build
       - name: Build offline repository
-        uses: eskatos/gradle-command-action@v1
+        uses: gradle/gradle-build-action@v2
         with:
           arguments: --console=plain --no-build-cache :testfixtures-offline-repo:buildOfflineRepositories
       - name: Build
-        uses: eskatos/gradle-command-action@v1
+        uses: gradle/gradle-build-action@v2
         with:
           arguments: --console=plain --warning-mode=all -s clean assemble
       # Test
       - name: Test
-        uses: eskatos/gradle-command-action@v1
+        uses: gradle/gradle-build-action@v2
         with:
           arguments: --console=plain --warning-mode=all -s check --no-parallel -Djava.net.preferIPv4Stack=true -x gradleTest --scan
       # Stop gradlew to avoid locking issues
       - name: Cleanup
-        uses: eskatos/gradle-command-action@v1
+        uses: gradle/gradle-build-action@v2
         with:
           arguments: --stop
   build:
@@ -88,41 +64,29 @@ jobs:
         # java: [ 8, 11 ]
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v1
-    - uses: actions/setup-java@v1
+    - uses: actions/checkout@v3
+    - uses: actions/setup-java@v3
       with:
         java-version: ${{ matrix.java }}
-    # Cache
-    - name: Cache .gradle/caches
-      uses: actions/cache@v1
-      with:
-        path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-cache-${{ hashFiles('**/*.gradle') }}
-        restore-keys: ${{ runner.os }}-gradle-cache-
-    - name: Cache .gradle/wrapper
-      uses: actions/cache@v1
-      with:
-        path: ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/*.gradle') }}
-        restore-keys: ${{ runner.os }}-gradle-wrapper-
+        distribution: zulu
     - name: Cache offline repository
-      uses: actions/cache@v1
+      uses: actions/cache@v3
       with:
         path: testfixtures/offline-repo/build/repo
         key: ${{ runner.os }}-offline-repo-${{ hashFiles('module-versions.properties') }}
         restore-keys: ${{ runner.os }}-offline-repo-
     - name: Build offline repository
-      uses: eskatos/gradle-command-action@v1
+      uses: gradle/gradle-build-action@v2
       with:
         arguments: --console=plain --no-build-cache :testfixtures-offline-repo:buildOfflineRepositories
     # Build
     - name: Build
-      uses: eskatos/gradle-command-action@v1
+      uses: gradle/gradle-build-action@v2
       with:
         arguments: -i -S --console=plain --no-build-cache assemble
     # Integration tests
     - name: Integration tests (without slides)
-      uses: eskatos/gradle-command-action@v1
+      uses: gradle/gradle-build-action@v2
       with:
         arguments: -i -s --console=plain --no-build-cache test intTest remoteTest -x asciidoctor-gradle-slides-export:intTest -x asciidoctor-gradle-jvm-slides:intTest
 #    - name: Integration tests (slides only)
@@ -131,6 +95,6 @@ jobs:
 #        arguments: -i -s --console=plain --no-build-cache test asciidoctor-gradle-jvm-slides:intTest asciidoctor-gradle-slides-export:intTest
     # Gradle tests
     - name: Gradle tests
-      uses: eskatos/gradle-command-action@v1
+      uses: gradle/gradle-build-action@v2
       with:
         arguments: -i -s --console=plain --no-build-cache gradleTest
