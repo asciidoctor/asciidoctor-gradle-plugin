@@ -59,6 +59,8 @@ class DeckTapeFunctionalSpec extends FunctionalSpecification {
 
     @Unroll
     @Timeout(240)
+    // TODO: Check and re-enable on windows.
+    @IgnoreIf({ OperatingSystem.current().windows })
     void 'Standalone asciidoctor slide task can be exported with #profile profile'() {
         setup:
         withBuildScan = true
@@ -166,13 +168,13 @@ class DeckTapeFunctionalSpec extends FunctionalSpecification {
 
         when:
         BuildResult result = getGradleRunner([
-            '-i',
-            'standalonePdfConverter',
-            '--width=1024',
-            '--height=768',
-            '--range=2-3',
-            '--pause=1000',
-            '--load-pause=500'
+                '-i',
+                'standalonePdfConverter',
+                '--width=1024',
+                '--height=768',
+                '--range=2-3',
+                '--pause=1000',
+                '--load-pause=500'
         ]).build()
 
         then:
