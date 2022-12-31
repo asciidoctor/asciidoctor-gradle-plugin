@@ -16,7 +16,6 @@
 
 plugins {
 //    id 'com.gradle.build-scan' version '3.11.1'
-    id 'com.jfrog.bintray' version '1.8.0' apply false
     id 'net.nemerosa.versioning' version '2.6.1' apply false
     id 'com.github.ben-manes.versions' version '0.17.0' apply false
     id 'com.gradle.plugin-publish' version '0.11.0' apply false
@@ -116,7 +115,6 @@ subprojects {
                 apply from: "${rootProject.projectDir}/gradle/integration-tests.gradle"
             }
 
-            apply from: "${rootProject.projectDir}/gradle/credentials.gradle"
             apply from: "${rootProject.projectDir}/gradle/publishing.gradle"
             apply from: "${rootProject.projectDir}/gradle/gradle-plugin-dependencies.gradle"
             apply from: "${rootProject.projectDir}/gradle/gradle-plugin-documentation.gradle"
