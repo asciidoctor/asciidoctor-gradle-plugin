@@ -50,7 +50,7 @@ ifdef::env-github[]
 Structure:: `master` now represents the code for the latest 3.x release of these plugins.
 Development for 4.x is against the link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/development-4.x[{github-branch}] branch.
 PRs are preferably taking against this branch.
-The 3.5.x series of the plugin is now in maintenance only mode.
-PRs for that should be raised against the link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/maintenance-3.x[maintenance-3.x]branche.
+The 3.x series of the plugin is now in maintenance only mode.
+PRs for that should be raised against the link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/maintenance-3.x[maintenance-3.x]branches.
 endif::[]
 
