@@ -2,7 +2,7 @@
 == Using AsciidoctorJ Diagram
 
 The new plugins have built-in support for `asciidoctorj-diagram`. Simply add the following to the project or task extension and
-diagramming will be available. If it is not set the `asciidoctorj-diagram` JAR will nto be added to the classpath.
+diagramming will be available. If it is not set the `asciidoctorj-diagram` JAR will not be added to the classpath.
 
 [source,groovy]
 ----
