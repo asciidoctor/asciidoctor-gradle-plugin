@@ -321,6 +321,18 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         ([asciidoctorj.configuration] + asConfigurations(project, asciidocConfigurations)).toSet()
     }
 
+    /**
+     * Additional locations to consider when GEMs are loaded by AsciidoctorJ or JRuby.
+     *
+     * @return The additional GEM locations.
+     *
+     * @since 4.0
+     */
+    @Internal
+    String getGemPath() {
+        asciidoctorj.asGemPath()
+    }
+
     @SuppressWarnings('UnnecessaryGetter')
     @TaskAction
     void processAsciidocSources() {
@@ -356,9 +368,6 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         super()
         this.worker = we
         this.asciidoctorj = extensions.create(AsciidoctorJExtension.NAME, AsciidoctorJExtension, this)
-
-        addInputProperty 'gemPath', { AsciidoctorJExtension aj -> aj.asGemPath() }
-                .curry(this.asciidoctorj)
 
         addInputProperty 'required-ruby-modules', { AsciidoctorJExtension aj -> aj.requires }
                 .curry(this.asciidoctorj)
@@ -500,10 +509,6 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         } else {
             this.inProcess
         }
-    }
-
-    private String getGemPath() {
-        asciidoctorj.asGemPath()
     }
 
     private Map<String, ExecutorConfiguration> runWithWorkers(
