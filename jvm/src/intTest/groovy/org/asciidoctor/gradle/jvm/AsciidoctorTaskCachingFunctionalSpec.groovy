@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.jvm
 
 import org.asciidoctor.gradle.internal.FunctionalSpecification
 import org.asciidoctor.gradle.testfixtures.CachingTest
+import spock.lang.Issue
 
 import static org.asciidoctor.gradle.testfixtures.AsciidoctorjTestVersions.SERIES_20
 import static org.asciidoctor.gradle.testfixtures.JRubyTestVersions.AJ20_ABSOLUTE_MINIMUM
@@ -24,6 +25,7 @@ import static org.asciidoctor.gradle.testfixtures.JRubyTestVersions.AJ20_SAFE_MA
 
 /** AsciidoctorTaskCachingFunctionalSpec
  *
+ * @author Eric Haag
  * @author Gary Hale
  */
 class AsciidoctorTaskCachingFunctionalSpec extends FunctionalSpecification implements CachingTest {
@@ -63,6 +65,37 @@ class AsciidoctorTaskCachingFunctionalSpec extends FunctionalSpecification imple
         file(DOCBOOK_OUTPUT_FILE).exists()
         outputFileInRelocatedDirectory.exists()
         fileInRelocatedDirectory(DOCBOOK_OUTPUT_FILE).exists()
+    }
+
+    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/671')
+    void "asciidoctor task is cacheable and relocatable when gemPaths is configured"() {
+        given:
+        getBuildFile("""
+            asciidoctorj {
+                gemPaths 'gems1', 'gems2'
+            }
+
+            asciidoctor {
+                sourceDir 'src/docs/asciidoc'
+                
+                outputOptions {
+                    backends 'html5', 'docbook'
+                }
+            }
+        """)
+
+        when:
+        assertDefaultTaskExecutes()
+
+        then:
+        outputFile.exists()
+
+        when:
+        assertDefaultTaskIsCachedAndRelocatable()
+
+        then:
+        outputFile.exists()
+        outputFileInRelocatedDirectory.exists()
     }
 
     void "Asciidoctor task is cached when only output directory is changed"() {
