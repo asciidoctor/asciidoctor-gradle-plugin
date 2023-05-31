@@ -2,6 +2,7 @@ apply plugin: 'org.ysb33r.gradletest'
 
 pluginManager.withPlugin('org.ysb33r.cloudci') {
     ci {
+<<<<<<< Updated upstream
         travisci {
             gradleTest {
                 if (JavaVersion.current().java11) {
@@ -23,6 +24,11 @@ pluginManager.withPlugin('org.ysb33r.cloudci') {
                 } else {
                     versions '4.9', '5.0', '5.5.1', '6.0.1', '6.7'
                 }
+=======
+        no_ci {
+            gradleTest {
+                versions '7.0.2', '7.6', '8.1.1'
+>>>>>>> Stashed changes
             }
         }
     }
