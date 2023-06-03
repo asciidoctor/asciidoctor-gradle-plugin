@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,16 @@
  */
 package org.asciidoctor.gradle.base.internal
 
-import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.gradle.api.Named
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.logging.LogLevel
 import org.gradle.api.plugins.ExtraPropertiesExtension
 import org.gradle.util.GradleVersion
 
-/** A simplified way of grouping deprecation messages.
+/**
+ * A simplified way of grouping deprecation messages.
  *
  * @author Schalk W. Cronjé
  *
@@ -43,7 +42,7 @@ class DeprecatedFeatures implements Plugin<Project> {
     static void addDeprecationMessage(Project project, String identifier, String message) {
         try {
             NamedDomainObjectContainer<Messages> msgContainer =
-                (NamedDomainObjectContainer<Messages>) project.extensions.extraProperties.get(EXTENSION_NAME)
+                    (NamedDomainObjectContainer<Messages>) project.extensions.extraProperties.get(EXTENSION_NAME)
             Messages msgs = msgContainer.findByName(identifier)
 
             if (msgs) {
@@ -70,27 +69,15 @@ class DeprecatedFeatures implements Plugin<Project> {
                         break
                     default:
                         project.logger.lifecycle(
-                            "${BASE_MESSAGE} To help with migration run with ${COMMAND_LINE}."
+                                "${BASE_MESSAGE} To help with migration run with ${COMMAND_LINE}."
                         )
                 }
             }
         }
     }
 
-    @CompileDynamic
     private static String getWarningMode(Project project) {
-        if (GRADLE_4_5_OR_LATER) {
-            project.gradle.startParameter.warningMode.toString().toLowerCase()
-        } else {
-            switch (project.gradle.startParameter.logLevel) {
-                case LogLevel.QUIET:
-                    return 'none'
-                case LogLevel.INFO:
-                    return 'all'
-                default:
-                    ''
-            }
-        }
+        project.gradle.startParameter.warningMode.toString().toLowerCase()
     }
 
     private static String createOutputMessage(NamedDomainObjectContainer<Messages> msgContainer) {

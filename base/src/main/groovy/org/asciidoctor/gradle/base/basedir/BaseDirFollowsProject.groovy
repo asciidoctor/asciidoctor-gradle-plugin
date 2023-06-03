@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,10 +29,22 @@ import org.gradle.api.Project
 @CompileStatic
 class BaseDirFollowsProject implements BaseDirStrategy {
 
-    private final Project project
+    private final File projectDir
 
+    @Deprecated
     BaseDirFollowsProject(Project project) {
-        this.project = project
+        this.projectDir = project.projectDir
+    }
+
+    /**
+     * Sets the project by the project directory.
+     *
+     * @param projectDir Project directory.
+     *
+     * @since 4.0
+     */
+    BaseDirFollowsProject(final File projectDir) {
+        this.projectDir = projectDir
     }
 
     /** Base directory location.
@@ -41,7 +53,7 @@ class BaseDirFollowsProject implements BaseDirStrategy {
      */
     @Override
     File getBaseDir() {
-        project.projectDir
+        this.projectDir
     }
 
     /** Base directory location.

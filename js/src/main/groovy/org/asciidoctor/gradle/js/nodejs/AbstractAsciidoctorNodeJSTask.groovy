@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,17 +20,17 @@ import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
 import org.asciidoctor.gradle.base.internal.Workspace
 import org.asciidoctor.gradle.js.base.AbstractAsciidoctorTask
+import org.asciidoctor.gradle.js.nodejs.core.AsciidoctorJSNodeExtension
+import org.asciidoctor.gradle.js.nodejs.core.AsciidoctorJSNpmExtension
 import org.asciidoctor.gradle.js.nodejs.internal.AsciidoctorJSRunner
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.gradle.workers.WorkerExecutor
-import org.ysb33r.gradle.nodejs.NodeJSExtension
-import org.ysb33r.gradle.nodejs.NpmExtension
-import org.ysb33r.grolifant.api.v4.MapUtils
 
 import static org.asciidoctor.gradle.base.internal.AsciidoctorAttributes.resolveAsCacheable
+import static org.asciidoctor.gradle.js.nodejs.core.AsciidoctorNodeJSBasePlugin.NPM_EXTENSION_NAME
 import static org.asciidoctor.gradle.js.nodejs.core.NodeJSUtils.initPackageJson
 
 /** Base class for all Asciidoctor tasks using Asciidoctor.js as rendering engine.
@@ -44,8 +44,11 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
 
     private final WorkerExecutor worker
     private final AsciidoctorJSExtension asciidoctorjs
-    private final NodeJSExtension nodejs
-    private final NpmExtension npm
+    private final AsciidoctorJSNodeExtension nodejs
+    private final AsciidoctorJSNpmExtension npm
+    private final String projectAlias
+
+    final String engineName = 'Asciidoctor.js'
 
     /** Returns all of the Asciidoctor options.
      *
@@ -118,20 +121,15 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
     @SuppressWarnings('ThisReferenceEscapesConstructor')
     protected AbstractAsciidoctorNodeJSTask(WorkerExecutor we) {
         this.worker = we
+        this.nodejs = this.extensions.create(AsciidoctorJSNodeExtension.NAME, AsciidoctorJSNodeExtension, this)
+        this.npm = this.extensions.create(NPM_EXTENSION_NAME, AsciidoctorJSNpmExtension, this)
         this.asciidoctorjs = this.extensions.create(AsciidoctorJSExtension.NAME, AsciidoctorJSExtension, this)
-        this.nodejs = project.extensions.getByType(AsciidoctorJSNodeExtension)
-        this.npm = project.extensions.getByType(AsciidoctorJSNpmExtension)
-    }
-
-    @Override
-    @Internal
-    protected String getEngineName() {
-        'Asciidoctor.js'
+        this.projectAlias = "${project.name}-${name}"
     }
 
     @CompileDynamic
     private Map<String, String> prepareAttributesForSerialisation(final File workingSourceDir, Optional<String> lang) {
-        MapUtils.stringizeValues(prepareAttributes(
+        projectOperations.stringTools.stringizeValues(prepareAttributes(
                 workingSourceDir,
                 asciidoctorjs.attributes,
                 lang.present ? asciidoctorjs.getAttributesForLang(lang.get()) : [:],
@@ -148,8 +146,8 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
             Optional<String> lang
     ) {
         new AsciidoctorJSRunner(
-                nodejs.resolvableNodeExecutable.executable,
-                project,
+                nodejs.executable.get(),
+                projectOperations,
                 asciidoctorjsExe,
                 backend,
                 asciidoctorjs.safeMode,
@@ -163,18 +161,17 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
     }
 
     private AsciidoctorJSRunner.FileLocations resolveAsciidoctorjsEnvironment() {
-        File home = asciidoctorjs.toolingWorkDir
+        File home = asciidoctorjs.toolingWorkDir.get()
         initPackageJson(
                 home,
-                "${project.name}-${name}",
-                project,
+                projectAlias,
+                projectOperations,
                 nodejs,
                 npm
         )
-
         asciidoctorjs.configuration.resolve()
         new AsciidoctorJSRunner.FileLocations(
-                executable: new File(home, 'node_modules/asciidoctor/bin/asciidoctor'),
+                executable: new File(home, 'node_modules/@asciidoctor/cli/bin/asciidoctor'),
                 workingDir: home
         )
     }

@@ -15,34 +15,20 @@
  */
 
 plugins {
-//    id 'com.gradle.build-scan' version '3.11.1'
     id 'net.nemerosa.versioning' version '2.6.1' apply false
     id 'com.github.ben-manes.versions' version '0.17.0' apply false
-    id 'com.gradle.plugin-publish' version '0.11.0' apply false
-    id 'com.github.hierynomus.license' version '0.14.0' apply false
+    id 'com.github.hierynomus.license' version '0.16.1' apply false
     id 'com.github.kt3k.coveralls' version '2.8.2' apply false
     id 'net.ossindex.audit' version '0.1.1' apply false
     id 'org.kordamp.jdeps' version '0.2.0' apply false
     id 'fi.linuxbox.download.worker' version '0.3' apply false
-    id 'org.ysb33r.ivypot' version '0.13.3' apply false
+    id 'org.ysb33r.ivypot' version '1.0.0' apply false
     id 'org.ysb33r.os' version '0.9' apply false
     id 'org.ysb33r.cloudci' version '2.5' apply false
     id 'org.ysb33r.cloudci.appveyor.testreporter' version '2.5' apply false
-    id 'org.ysb33r.gradletest' version '2.0' apply false
+    id 'org.ysb33r.gradletest' version '3.0.0-alpha.3' apply false
     id 'idea'
 }
-
-//buildScan {
-//    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
-//    termsOfServiceAgree = 'yes'
-//
-//    buildFinished { buildResult ->
-//        buildScanPublished { scan ->
-//            ['curl', '-s', '-d', "message=asciidoctor-gradle-plugin build scan: ${scan.buildScanUri}", 'https://webhooks.gitter.im/e/6ba348eef26407adc22a'].execute()
-//        }
-//    }
-//}
-
 
 import org.gradle.util.GradleVersion
 import java.text.SimpleDateFormat
@@ -84,12 +70,10 @@ subprojects {
     if (project.name != 'testfixtures-offline-repo') {
         apply plugin: 'groovy'
         apply plugin: 'idea'
-        apply plugin: 'org.ysb33r.cloudci.appveyor.testreporter'
 
         if (!project.name.startsWith('testfixture')) {
 
             apply plugin: AsciidoctorGradlePluginProject
-            apply plugin: 'maven-publish'
             apply plugin: 'com.github.ben-manes.versions'
             apply plugin: 'net.ossindex.audit'
             apply plugin: 'org.kordamp.jdeps'
@@ -106,23 +90,22 @@ subprojects {
             }
         }
 
-        apply from: "${rootProject.projectDir}/gradle/standard-repositories.gradle"
-        apply from: "${rootProject.projectDir}/gradle/code-quality.gradle"
+        apply from: "${rootDir}/gradle/standard-repositories.gradle"
+        apply from: "${rootDir}/gradle/code-quality.gradle"
 
         if (!project.name.startsWith('testfixture')) {
 
             if (!(project.name in withoutIntegrationTests)) {
-                apply from: "${rootProject.projectDir}/gradle/integration-tests.gradle"
+                apply from: "${rootDir}/gradle/integration-tests.gradle"
             }
 
-            apply from: "${rootProject.projectDir}/gradle/publishing.gradle"
-            apply from: "${rootProject.projectDir}/gradle/gradle-plugin-dependencies.gradle"
-            apply from: "${rootProject.projectDir}/gradle/gradle-plugin-documentation.gradle"
-            apply from: "${rootProject.projectDir}/gradle/ci.gradle"
+            apply from: "${rootDir}/gradle/publishing.gradle"
+            apply from: "${rootDir}/gradle/gradle-plugin-documentation.gradle"
+            apply from: "${rootDir}/gradle/ci.gradle"
 
             if (project.name.startsWith('asciidoctor-gradle-jvm')) {
-                apply from: "${rootProject.projectDir}/gradle/asciidoctorj-versions.gradle"
-                apply from: "${rootProject.projectDir}/gradle/jruby-versions.gradle"
+                apply from: "${rootDir}/gradle/asciidoctorj-versions.gradle"
+                apply from: "${rootDir}/gradle/jruby-versions.gradle"
             }
 
             dependencyUpdates.resolutionStrategy = {
@@ -138,12 +121,27 @@ subprojects {
                 }
             }
 
+            configurations.all {
+                resolutionStrategy {
+                    eachDependency { DependencyResolveDetails details ->
+                        if (details.requested.group == 'org.codehaus.groovy') {
+                            details.useVersion GroovySystem.version
+                            details.because 'THe same version as Grodale Groovy is required'
+                        }
+                    }
+                }
+            }
+
             audit {
                 failOnError = false
             }
 
             if (!(project.name in withoutCompatibilityTests)) {
-                apply from: "${rootProject.projectDir}/gradle/compatibility-tests.gradle"
+                apply from: "${rootDir}/gradle/compatibility-tests.gradle"
+            }
+
+            tasks.withType(Test).configureEach {
+                useJUnitPlatform()
             }
         }
 

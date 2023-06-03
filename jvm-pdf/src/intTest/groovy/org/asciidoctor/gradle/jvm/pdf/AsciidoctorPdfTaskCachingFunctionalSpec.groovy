@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,16 @@
 package org.asciidoctor.gradle.jvm.pdf
 
 import org.asciidoctor.gradle.jvm.pdf.internal.FunctionalSpecification
-import org.asciidoctor.gradle.testfixtures.CachingTest
+import org.asciidoctor.gradle.testfixtures.BuildScanFixture
+import org.asciidoctor.gradle.testfixtures.CachingTestFixture
 import spock.lang.PendingFeature
 
 /** AsciidoctorPdfTaskCachingFunctionalSpec
  *
  * @author Gary Hale
  */
-class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification implements CachingTest {
+class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification
+        implements CachingTestFixture, BuildScanFixture {
     static final String DEFAULT_TASK = 'asciidoctorPdf'
     static final String DEFAULT_OUTPUT_FILE = 'build/docs/asciidocPdf/sample.pdf'
 
@@ -54,7 +56,8 @@ class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification im
         outputFileInRelocatedDirectory.exists()
     }
 
-    @PendingFeature // TODO: Come back and fix caching
+    @PendingFeature
+    // TODO: Come back and fix caching
     void "PDF task is not cached when pdf-specific inputs change"() {
         given:
         getBuildFile("""
@@ -80,8 +83,8 @@ class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification im
         when:
         file('src/docs/themes/pdf-theme').mkdirs()
         file('src/docs/themes/pdf-theme/basic-theme.yml').text =
-            file('src/docs/asciidoc/pdf-theme/basic-theme.yml').text
-                .replace('333333', '333334')
+                file('src/docs/asciidoc/pdf-theme/basic-theme.yml').text
+                        .replace('333333', '333334')
 
         changeBuildConfigurationTo("""
             pdfThemes {
@@ -109,18 +112,9 @@ class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification im
     }
 
     File getBuildFile(String extraContent) {
-        File buildFile = testProjectDir.newFile('build.gradle')
-        buildFile << """
-            plugins {
-                id 'org.asciidoctor.jvm.pdf'
-            }
-            
-            ${ -> scan ? buildScanConfiguration : '' }
-            ${offlineRepositories}
-            
-            ${extraContent}
-        """
-        buildFile
+        writeGroovyBuildFile('org.asciidoctor.jvm.pdf', extraContent).withWriterAppend { w ->
+            w.println(performBuildScan ? buildScanConfiguration : '')
+        }
     }
 
     String getDefaultTask() {

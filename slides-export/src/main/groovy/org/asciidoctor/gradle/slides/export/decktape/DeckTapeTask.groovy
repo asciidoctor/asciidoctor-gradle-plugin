@@ -23,6 +23,7 @@ import org.asciidoctor.gradle.js.nodejs.AsciidoctorJSNodeExtension
 import org.asciidoctor.gradle.js.nodejs.AsciidoctorJSNpmExtension
 import org.asciidoctor.gradle.slides.export.base.AbstractExportBaseTask
 import org.gradle.api.Action
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
@@ -32,6 +33,8 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 import org.gradle.process.ExecSpec
 import org.ysb33r.gradle.nodejs.utils.NodeJSExecutor
+import org.ysb33r.gradle.nodejs.utils.npm.NpmExecutor
+import org.ysb33r.grolifant.api.core.ProjectOperations
 
 import static org.asciidoctor.gradle.base.slides.Profile.BESPOKE
 import static org.asciidoctor.gradle.base.slides.Profile.DECK_JS
@@ -41,7 +44,6 @@ import static org.asciidoctor.gradle.base.slides.Profile.GENERIC
 import static org.asciidoctor.gradle.base.slides.Profile.IMPRESS_JS
 import static org.asciidoctor.gradle.base.slides.Profile.REMARK_JS
 import static org.asciidoctor.gradle.base.slides.Profile.REVEAL_JS
-import static org.asciidoctor.gradle.js.nodejs.core.NodeJSUtils.initPackageJson
 import static org.ysb33r.grolifant.api.v4.ClosureUtils.configureItem
 
 /** Conversion task that will convert from a set of
@@ -73,6 +75,8 @@ class DeckTapeTask extends AbstractExportBaseTask {
     private String range
     private Integer interSlidePause
     private Integer loadPause
+    private final NpmExecutor npmExecutor
+    private final Provider<String> versionProvider
 
     static class ScreenShots {
 
@@ -158,7 +162,14 @@ class DeckTapeTask extends AbstractExportBaseTask {
 
     DeckTapeTask() {
         super()
+        ProjectOperations po = ProjectOperations.find(project)
         decktape = project.extensions.getByType(DeckTapeExtension)
+        npmExecutor = new NpmExecutor(
+                po,
+                project.extensions.getByType(AsciidoctorJSNodeExtension),
+                project.extensions.getByType(AsciidoctorJSNpmExtension)
+        )
+        this.versionProvider = po.projectTools.versionProvider
     }
 
     /** Use a generic profile.
@@ -316,9 +327,9 @@ class DeckTapeTask extends AbstractExportBaseTask {
             profileToUse.addAll('--key', genericKeyStroke)
         }
 
-        File home = decktape.toolingWorkDir
+        File home = project.extensions.getByType(AsciidoctorJSNpmExtension).homeDirectory
         File decktapeExecutable = new File(home, 'node_modules/decktape/decktape.js')
-        File nodejs = project.extensions.getByType(AsciidoctorJSNodeExtension).resolvableNodeExecutable.executable
+        File nodejs = project.extensions.getByType(AsciidoctorJSNodeExtension).executable.get()
 
         Closure configurator = { File sourceFile, File destFile, ExecSpec spec ->
             spec.with {
@@ -333,13 +344,7 @@ class DeckTapeTask extends AbstractExportBaseTask {
             }
         }
 
-        initPackageJson(
-                home,
-                "${project.name}-${name}",
-                project,
-                project.extensions.getByType(AsciidoctorJSNodeExtension),
-                project.extensions.getByType(AsciidoctorJSNpmExtension)
-        )
+        npmExecutor.initPkgJson("${project.name}-${name}", versionProvider)
 
         decktape.configuration.resolve()
         Set<File> convertibles = slides.get()
@@ -371,6 +376,7 @@ class DeckTapeTask extends AbstractExportBaseTask {
      */
     @SuppressWarnings('DuplicateStringLiteral')
     private List<String> buildOptions() {
+        File wd = project.extensions.getByType(AsciidoctorJSNpmExtension).homeDirectory
         if (height && !width || !height && width) {
             throw new IllegalArgumentException('Must specify both height and width, not just one.')
         }
@@ -391,7 +397,7 @@ class DeckTapeTask extends AbstractExportBaseTask {
         if (screenshots.format != NONE) {
             args.addAll(
                     '--screenshots',
-                    '--screenshots-directory', AsciidoctorUtils.getRelativePathToFsRoot(decktape.toolingWorkDir),
+                    '--screenshots-directory', AsciidoctorUtils.getRelativePathToFsRoot(wd),
                     '--screenshots-format', screenshots.format
             )
 

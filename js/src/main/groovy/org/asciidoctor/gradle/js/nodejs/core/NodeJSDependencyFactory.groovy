@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,13 @@
 package org.asciidoctor.gradle.js.nodejs.core
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.js.nodejs.AsciidoctorJSNodeExtension
-import org.asciidoctor.gradle.js.nodejs.AsciidoctorJSNpmExtension
 import org.asciidoctor.gradle.js.nodejs.internal.PackageDescriptor
-import org.gradle.api.Project
 import org.gradle.api.artifacts.SelfResolvingDependency
-import org.ysb33r.gradle.nodejs.dependencies.npm.NpmSelfResolvingDependency
+import org.ysb33r.gradle.nodejs.dependencies.npm.BaseNpmSelfResolvingDependency
+import org.ysb33r.grolifant.api.core.ProjectOperations
 
-/** A factory class for creating NPM self resolving dependencies in a Gradle context.
+/**
+ * A factory class for creating NPM self resolving dependencies in a Gradle context.
  *
  * @author Schalk W. Cronjé
  *
@@ -31,22 +30,24 @@ import org.ysb33r.gradle.nodejs.dependencies.npm.NpmSelfResolvingDependency
  */
 @CompileStatic
 class NodeJSDependencyFactory {
-    private final Project project
+    private final ProjectOperations projectOperations
     private final AsciidoctorJSNodeExtension nodejs
     private final AsciidoctorJSNpmExtension npm
 
     /** Instantiates a factory for a specific context.
      *
-     * @param project The GRadle project for which is is done.
+     * @param po The Gradle project for which is is done.
      * @param nodejs The NodeJS extension which is being used for this operation.
      * @param npm The NPM extension that is being used for this operation.
+     *
+     * @since 4.0
      */
     NodeJSDependencyFactory(
-            Project project,
+            ProjectOperations po,
             AsciidoctorJSNodeExtension nodejs,
             AsciidoctorJSNpmExtension npm
     ) {
-        this.project = project
+        this.projectOperations = po
         this.nodejs = nodejs
         this.npm = npm
     }
@@ -86,7 +87,7 @@ class NodeJSDependencyFactory {
      * @param name Name of NPM package.
      * @param version Version (tag) of NPM package.
      * @param scope Scope of NPM package.
-     * @param withPaths A set paths to be added to the system search path.
+     * @param withPaths A set of paths to be added to the system search path.
      * @return A Gradle-style resolvable dependency.
      */
     @SuppressWarnings('FactoryMethodName')
@@ -108,9 +109,14 @@ class NodeJSDependencyFactory {
         }
 
         if (withPaths) {
-            description.put('path', project.files(withPaths).asPath)
+            description.put('path', projectOperations.fsOperations.files(withPaths).asPath)
         }
 
-        new NpmSelfResolvingDependency(project, nodejs, npm, description)
+        new BaseNpmSelfResolvingDependency(
+                projectOperations,
+                nodejs,
+                npm,
+                description
+        )
     }
 }

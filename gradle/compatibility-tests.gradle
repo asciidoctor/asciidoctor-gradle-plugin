@@ -2,14 +2,9 @@ apply plugin: 'org.ysb33r.gradletest'
 
 pluginManager.withPlugin('org.ysb33r.cloudci') {
     ci {
-        appveyor {
-            gradleTest {
-                versions '7.0.2', '7.6'
-            }
-        }
         no_ci {
             gradleTest {
-                versions '7.0.2', '7.6'
+                versions '7.0.2', '7.6.1', '8.5'
             }
         }
     }

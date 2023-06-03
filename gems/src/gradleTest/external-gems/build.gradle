@@ -18,12 +18,8 @@ dependencies {
     }
 }
 
-asciidoctorj {
-    requires 'asciidoctor-bibtex'
-}
-
 asciidoctor {
-    dependsOn asciidoctorGemsPrepare
+    withGemJar 'asciidoctorGemsJar'
 
     secondarySources {
         include 'biblio.bib'
@@ -34,6 +30,6 @@ asciidoctor {
 // end::use-gems[]
 
 task runGradleTest {
-    dependsOn asciidoctor
+    dependsOn 'asciidoctor'
 }
 

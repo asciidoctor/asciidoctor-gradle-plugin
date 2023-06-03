@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ class AsciidoctorEditorConfigIntegrationSpec extends FunctionalSpecification {
         String groupName = 'the.group'
         String projVer = '1.0.0'
 
-        File attrFile = new File(testProjectDir.root, 'inputs.adoc')
+        File attrFile = new File(projectDir, 'inputs.adoc')
         attrFile.text = ":${key3}: ${value3}\n"
 
         getGroovyBuildFile("""
@@ -51,18 +51,18 @@ class AsciidoctorEditorConfigIntegrationSpec extends FunctionalSpecification {
         }
         """)
 
-        File outputFile = new File(testProjectDir.root, '.asciidoctorconfig')
-        new File(testProjectDir.root, 'settings.gradle').text = "rootProject.name='${projName}'"
+        File outputFile = new File(projectDir, '.asciidoctorconfig')
+        settingsFile.text = "rootProject.name='${projName}'"
 
         when:
         getGradleRunner(['asciidoctorEditorConfig']).build()
 
         then:
         normalisedLineEndings(outputFile.text) == """:${key1}: ${value1}
-:gradle-project-name: ${projName}
-:gradle-project-group: ${groupName}
 :gradle-project-version: ${projVer}
+:gradle-project-name: ${projName}
 :${key2}: ${value2}
+:gradle-project-group: ${groupName}
 :${key3}: ${value3}
 """
     }

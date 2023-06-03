@@ -4,11 +4,10 @@ import org.asciidoctor.gradle.base.process.ProcessMode
 // tag::using-two-plugins-three-backends[]
 plugins {
     id("org.asciidoctor.jvm.pdf")
-//    id("com.gradle.build-scan") version "1.16"
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 asciidoctorj {
@@ -17,7 +16,7 @@ asciidoctorj {
 }
 
 tasks.named<AsciidoctorPdfTask>("asciidoctorPdf") {
-    inProcess = ProcessMode.OUT_OF_PROCESS
+    setExecutionMode("OUT_OF_PROCESS")
     logDocuments = true
     setSourceDir("src/docs/asciidoc")
 

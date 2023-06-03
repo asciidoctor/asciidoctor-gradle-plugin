@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,10 @@ import org.gradle.api.Project
 import org.gradle.api.UnknownDomainObjectException
 import org.gradle.testfixtures.ProjectBuilder
 import org.ysb33r.grolifant.api.core.ProjectOperations
-import org.ysb33r.grolifant.api.v4.FileUtils
 import spock.lang.Specification
 
 /**
- * @uathor Schalk W.Cronjé
+ * @author Schalk W.Cronjé
  */
 class AsciidoctorPdfThemeExtensionSpec extends Specification {
 
@@ -106,7 +105,8 @@ class AsciidoctorPdfThemeExtensionSpec extends Specification {
     }
 
     File determineUnpackedDir(String cacheSubDir, String pattern) {
-        File baseDir = project.file("${project.buildDir}/${cacheSubDir}/foo/bar/${pattern}")
-        FileUtils.listDirs(baseDir)[0]
+        File baseDir = project.file("${project.buildDir}/cloud-archives/${cacheSubDir}/foo/bar/${pattern}")
+        final x = projectOperations.fsOperations.listDirs(baseDir)[0]
+        x
     }
 }

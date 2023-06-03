@@ -1,4 +1,6 @@
-apply plugin : 'org.asciidoctor.jvm.convert'
+plugins {
+    id 'org.asciidoctor.jvm.convert'
+}
 
 repositories {
     mavenCentral()
@@ -9,5 +11,5 @@ asciidoctorj {
 }
 
 asciidoctor {
-    inProcess JAVA_EXEC
+    executionMode = 'JAVA_EXEC'
 }

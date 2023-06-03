@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-repositories {
-    gradlePluginPortal()
-}
+agProject {
+    withOfflineTestConfigurations()
+    configurePlugin(
+            'org.asciidoctor.js.base',
+            'Asciidoctor.js Base Plugin',
+            'Base plugin for all Asciidoctor.js tasks & extensions. Provides the asciidoctorjs project extension',
+            'org.asciidoctor.gradle.js.nodejs.core.AsciidoctorNodeJSBasePlugin',
+            ['asciidoctor.js']
+    )
 
-configurations {
-    intTestOfflineRepo.extendsFrom compileOnly
-    intTestOfflineRepo2
-}
-
-generateModuleVersions {
-    basename = 'asciidoctorjs-extension'
-    propertyNames ~/^asciidoctorjs$/, ~/^asciidoctorjs\./
+    configurePlugin(
+            'org.asciidoctor.js.convert',
+            'Asciidoctor.js General Purpose Document Conversion Plugin',
+            'Provides asciidoctor task and convention using the asciidoctor.js erngine',
+            'org.asciidoctor.gradle.js.nodejs.AsciidoctorNodeJSPlugin',
+            ['asciidoctor.js', 'html5', 'docbook']
+    )
 }
 
 ext {
     nodejsCacheDir = "${offlineRepoBinariesRoot}/nodejs"
-}
 
-ext {
     if (OS.windows) {
         nodejsExt = 'zip'
         if (System.getProperty('os.arch').contains('64')) {
@@ -61,26 +64,21 @@ dependencies {
     cachedBinaries.add "nodejs:node:${project.ext.defaultNodeJsVersion}:${nodejsArch}@${nodejsExt}"
 }
 
-configurePlugin 'org.asciidoctor.js.base',
-        'Asciidoctor.js Base Plugin',
-        'Base plugin for all Asciidoctor.js tasks & extensions. Provides the asciidoctorjs project extension.',
-        ['asciidoctor', 'asciidoctor.js']
+generateModuleVersions {
+    basename = 'asciidoctorjs-extension'
+    propertyNames ~/^asciidoctorjs$/, ~/^asciidoctorjs\./
+}
 
-configurePlugin 'org.asciidoctor.js.convert',
-        'Asciidoctor.js General Purpose Document Conversion Plugin',
-        'Provides asciidoctor task and conventions',
-        ['asciidoctor', 'asciidoctor.js', 'html5', 'docbook']
-
-test {
+tasks.named('test', Test) {
     systemProperties ROOT_PROJECT_DIR: rootProject.projectDir.absolutePath
 }
 
-intTest {
+tasks.named('intTest', Test) {
     systemProperties TEST_PROJECTS_DIR: file('src/intTest/projects')
 }
 
-// Saves testing time and bandwidth, but pointing the tests to the locally cached
-// Nodejs. distribution
-[tasks.test,tasks.intTest,tasks.gradleTest].each {
-    it.systemProperties 'org.ysb33r.gradle.nodejs.uri'  : file(nodejsCacheDir).absoluteFile.toURI()
+tasks.withType(Test).configureEach {
+    // Save testing time and bandwidth, but pointing the tests to the locally cached Nodejs. distribution
+    systemProperties 'org.ysb33r.gradle.nodejs.uri': file(nodejsCacheDir).absoluteFile.toURI()
 }
+

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,12 @@ import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
+import org.ysb33r.grolifant.api.core.ProjectOperations
 
 import java.util.concurrent.Callable
 
-import static org.ysb33r.grolifant.api.v4.MapUtils.stringizeValues
-
-/** Generates {@code .asciidoctorconfig} file.
+/**
+ * Generates {@code .asciidoctorconfig} file.
  *
  * When the file is generated attributes are applied in the following order.
  * <ol>
@@ -51,16 +51,19 @@ class AsciidoctorEditorConfigGenerator extends DefaultTask {
     private final List<Provider<File>> fileProviders = []
     private final List<Provider<Map<String, String>>> attributeProviders = []
     private final Provider<File> outputFile
+    private final ProjectOperations projectOperations
     private Object outputDir
 
     AsciidoctorEditorConfigGenerator() {
+        this.projectOperations = ProjectOperations.find(project)
         this.outputDir = project.projectDir
         this.outputFile = project.provider({
             new File(destinationDir, '.asciidoctorconfig')
         } as Callable<File>)
     }
 
-    /** Replace existing attributes with a new set.
+    /**
+     * Replace existing attributes with a new set.
      *
      * @param attrs Replacement attributes
      */
@@ -69,7 +72,8 @@ class AsciidoctorEditorConfigGenerator extends DefaultTask {
         this.attributes.putAll(attrs)
     }
 
-    /** Add more attributes to the existing set
+    /**
+     * Add more attributes to the existing set
      *
      * @param attrs Additional attributes.
      */
@@ -83,14 +87,14 @@ class AsciidoctorEditorConfigGenerator extends DefaultTask {
      */
     @Input
     Map<String, String> getAttributes() {
-        stringizeValues(this.attributes)
+        projectOperations.stringTools.stringizeValues(this.attributes)
     }
 
-    /** Add an additional attribute provider.
+    /**
+     * Add an additional attribute provider.
      *
      * A provider can be a file of something that implements {@link AsciidoctorAttributeProvider} (such as
      * an {@code asciidoctorj} or {@code asciidoctorjs extension}).
-     *
      *
      * @param attrs Anything convertible to a file using {@code project.file} or that implements
      * {@link AsciidoctorAttributeProvider}.
@@ -98,8 +102,8 @@ class AsciidoctorEditorConfigGenerator extends DefaultTask {
     void additionalAttributes(Object attrs) {
         switch (attrs) {
             case AsciidoctorAttributeProvider:
-                this.attributeProviders.add(project.provider({
-                    stringizeValues(((AsciidoctorAttributeProvider) attrs).attributes)
+                this.attributeProviders.add(projectOperations.provider({
+                    projectOperations.stringTools.stringizeValues(((AsciidoctorAttributeProvider) attrs).attributes)
                 } as Callable<Map<String, String>>))
                 break
             default:
@@ -109,7 +113,8 @@ class AsciidoctorEditorConfigGenerator extends DefaultTask {
         }
     }
 
-    /** Returns list of file providers.
+    /**
+     * Returns list of file providers.
      *
      * Content of these files will simply be appended to the genrated content.
      *
@@ -121,7 +126,8 @@ class AsciidoctorEditorConfigGenerator extends DefaultTask {
         this.fileProviders
     }
 
-    /** Returns list of attribute providers. THese providers will return attributes as key-value pairs.
+    /**
+     * Returns list of attribute providers. THese providers will return attributes as key-value pairs.
      *
      * @return List of attribute providers
      */
@@ -130,16 +136,18 @@ class AsciidoctorEditorConfigGenerator extends DefaultTask {
         this.attributeProviders
     }
 
-    /** Destination directory.  Defaults to the project directory.
+    /**
+     * Destination directory.  Defaults to the project directory.
      *
      * @return Directory
      */
     @Internal
     File getDestinationDir() {
-        project.file(this.outputDir)
+        projectOperations.fsOperations.file(this.outputDir)
     }
 
-    /** Sets destination directory.
+    /**
+     * Sets destination directory.
      *
      * @param dir Anything convertible to a directory using {@code project.file}.
      */
@@ -147,7 +155,8 @@ class AsciidoctorEditorConfigGenerator extends DefaultTask {
         this.outputDir = dir
     }
 
-    /** Location of generated {@code .asciidoctorconfig} file.
+    /**
+     * Location of generated {@code .asciidoctorconfig} file.
      *
      * @return File location.
      */
@@ -159,8 +168,9 @@ class AsciidoctorEditorConfigGenerator extends DefaultTask {
     @TaskAction
     void exec() {
         outputFile.get().withWriter { w ->
-            getAttributes().each { k, v ->
-                w.println ":${k}: ${v}"
+            Map<String,String> attrs = getAttributes()
+            attrs.keySet().sort().each { String k ->
+                w.println ":${k}: ${attrs[k]}"
             }
 
             additionalAttributeProviders.each { prov ->

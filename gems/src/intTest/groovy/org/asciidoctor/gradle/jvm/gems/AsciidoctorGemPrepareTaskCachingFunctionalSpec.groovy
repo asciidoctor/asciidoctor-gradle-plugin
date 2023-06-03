@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,14 @@
 package org.asciidoctor.gradle.jvm.gems
 
 import org.asciidoctor.gradle.jvm.gems.internal.FunctionalSpecification
-import org.asciidoctor.gradle.testfixtures.CachingTest
+import org.asciidoctor.gradle.testfixtures.BuildScanFixture
+import org.asciidoctor.gradle.testfixtures.CachingTestFixture
 import spock.lang.Issue
 import spock.lang.Timeout
 
-class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecification implements CachingTest {
+class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecification
+        implements CachingTestFixture, BuildScanFixture {
+
     private static final String DEFAULT_TASK = 'asciidoctorGemsPrepare'
     private static final String OUTPUT_DIR_PATH = 'build/.asciidoctorGems'
     private static final String DEFAULT_GEM_NAME = 'asciidoctor-revealjs'
@@ -136,23 +139,22 @@ class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecifica
 
     @Override
     File getBuildFile(String extraContent) {
-        File buildFile = testProjectDir.newFile('build.gradle')
-        buildFile << """
-            plugins {
-                id 'org.asciidoctor.jvm.gems'
+        writeGroovyBuildFile(
+                'org.asciidoctor.jvm.gems',
+                extraContent
+        ).withWriterAppend { w ->
+            if (performBuildScan) {
+                w.println(buildScanConfiguration)
             }
 
-            ${ -> scan ? buildScanConfiguration : '' }
-            ${offlineRepositories}
-
+            w.println '''
             repositories {
                 ruby {
                     gems()
                 }
             }
-
-           ${extraContent}
-        """
+            '''.stripIndent()
+        }
         buildFile
     }
 

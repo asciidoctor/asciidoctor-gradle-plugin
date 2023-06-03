@@ -15,11 +15,15 @@
  * limitations under the License.
  */
 
-configurePlugin 'org.asciidoctor.base',
-    'Asciidoctor Base Plugin',
-    'Base plugin for all asciidoctor document conversion plugins (AsciidoctorJ & AsciidoctorJS)',
-    [ ]
-
+agProject {
+    configurePlugin(
+            'org.asciidoctor.base',
+            'Asciidoctor Base Plugin',
+            'Base plugin for all asciidoctor document conversion plugins (AsciidoctorJ & AsciidoctorJS)',
+            'org.asciidoctor.gradle.base.AsciidoctorBasePlugin',
+            []
+    )
+}
 
 pluginManager.withPlugin('jacoco') {
     jacocoTestReport {
@@ -29,6 +33,7 @@ pluginManager.withPlugin('jacoco') {
     }
 }
 
-configurations.gradleTestCompile.transitive = false
+configurations {
+    gradleTestCompile.transitive = false
+}
 
-validateTaskProperties.enabled = false

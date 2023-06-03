@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 package org.asciidoctor.gradle.base.internal
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
+import org.asciidoctor.gradle.base.Transform
 import org.gradle.api.provider.Provider
 import org.ysb33r.grolifant.api.core.ProjectOperations
 import org.ysb33r.grolifant.api.core.StringTools
@@ -61,6 +63,91 @@ class AsciidoctorAttributes {
             resolvedAs[key] = resolveItemAsBasicType(value, stringTools)
         }
         resolvedAs
+    }
+
+    /**
+     * Resolves all provider into the underlying type.
+     *
+     * @param initialMap Map possible containing Providers as values.
+     * @return Map with top-layer of providers stripped out.
+     *
+     * @since 4.0
+     */
+    static Map<String, Object> evaluateProviders(final Map<String, Object> initialMap) {
+        initialMap.collectEntries { String k, Object v ->
+            if (v instanceof Provider) {
+                [k, v.get()]
+            } else {
+                [k, v]
+            }
+        } as Map<String, Object>
+    }
+
+    /**
+     * Prepare attributes to be serialisable
+     *
+     * @param stringTools {@link StringTools} instance to use for stringification.
+     * @param workingSourceDir Working source directory from which source documents will be made available.
+     * @param seedAttributes Initial attributes set on the task.
+     * @param langAttributes Any language specific attributes.
+     * @param tdsAttributes Task-specific default attributes.
+     * @param attributeProviders Additional attribute providers.
+     * @param lang Language being processed. Can be unset if multi-language feature is not used.
+     * @return Attributes ready for serialisation.
+     *
+     * @since 3.0.0
+     */
+    @SuppressWarnings('ParameterCount')
+    static Map<String, Object> prepareAttributes(
+            final StringTools stringTools,
+            Map<String, ?> seedAttributes,
+            Map<String, ?> langAttributes,
+            Map<String, ?> tsdAttributes,
+            List<AsciidoctorAttributeProvider> attributeProviders,
+            Optional<String> lang
+    ) {
+        Map<String, Object> attrs = [:]
+        attrs.putAll(seedAttributes)
+        attrs.putAll(langAttributes)
+        attributeProviders.each {
+            attrs.putAll(it.attributes)
+        }
+
+        Map<String, Object> defaultAttrs = prepareDefaultAttributes(
+                stringTools,
+                attrs,
+                tsdAttributes,
+                lang
+        )
+        attrs.putAll(defaultAttrs)
+        evaluateProviders(attrs)
+    }
+
+    private static Map<String, Object> prepareDefaultAttributes(
+            final StringTools stringTools,
+            Map<String, ?> seedAttributes,
+            Map<String, ?> defaultAttributes,
+            Optional<String> lang
+    ) {
+        Set<String> userDefinedAttrKeys = trimOverridableAttributeNotation(seedAttributes.keySet())
+
+        Map<String, Object> defaultAttrs = defaultAttributes.findAll { k, v ->
+            !userDefinedAttrKeys.contains(k)
+        }.collectEntries { k, v ->
+            ["${k}@".toString(), v instanceof Serializable ? v : stringTools.stringize(v)]
+        } as Map<String, Object>
+
+        if (lang.present) {
+            defaultAttrs.put('lang@', lang.get())
+        }
+
+        defaultAttrs
+    }
+
+    private static Set<String> trimOverridableAttributeNotation(Set<String> attributeKeys) {
+        // remove possible trailing '@' character that is used to encode that the attribute can be overridden
+        // in the document itself
+        Transform.toSet(attributeKeys) { k -> k - ~/@$/ }
     }
 
     private static Object resolveItemAsBasicType(Object value, StringTools stringTools) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,12 @@ package org.asciidoctor.gradle.remote.internal
 
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
+import org.asciidoctor.gradle.internal.ExecutorLogLevel
+import org.asciidoctor.gradle.testfixtures.FunctionalTestFixture
 import spock.lang.Specification
+import spock.lang.TempDir
 
-import static org.asciidoctor.gradle.internal.ExecutorLogLevel.DEBUG
-
-class RemoteSpecification extends Specification {
+class RemoteSpecification extends Specification implements FunctionalTestFixture {
 
     static final String INPUT_DOC = 'index.adoc'
     static final String INPUT_DOC2 = 'index2.adoc'
@@ -35,8 +34,8 @@ class RemoteSpecification extends Specification {
     static final String INVALID_1 = 'abc'
     static final String INVALID_2 = 'def'
 
-    @Rule
-    TemporaryFolder testProjectDir
+    @TempDir
+    File testProjectDir
 
     Map getProject(File base) {
         File src = new File(base, 'src')
@@ -70,44 +69,44 @@ in a subdirectory
 
     ExecutorConfigurationContainer getContainerSingleEntry(File srcFile, File outputDir) {
         new ExecutorConfigurationContainer(
-            getExecutorConfiguration(HTML, srcFile, new File(outputDir, OUTPUT_HTML), null)
+                getExecutorConfiguration(HTML, srcFile, new File(outputDir, OUTPUT_HTML), null)
         )
     }
 
     ExecutorConfigurationContainer getContainerMultipleEntries(File srcFile, File outputDir, File gemDir) {
         new ExecutorConfigurationContainer([
-            getExecutorConfiguration(HTML, srcFile, new File(outputDir, OUTPUT_HTML), null),
-            getExecutorConfiguration(DOCBOOK, srcFile, new File(outputDir, OUTPUT_DOCBOOK), gemDir)
+                getExecutorConfiguration(HTML, srcFile, new File(outputDir, OUTPUT_HTML), null),
+                getExecutorConfiguration(DOCBOOK, srcFile, new File(outputDir, OUTPUT_DOCBOOK), gemDir)
         ])
     }
 
     @SuppressWarnings('Println')
     ExecutorConfiguration getExecutorConfiguration(
-        final String backend, File srcFile, File outputFile, File gemDir, int failureLevel = 4 // FATAL
+            final String backend, File srcFile, File outputFile, File gemDir, int failureLevel = 4 // FATAL
     ) {
         boolean altOptions = gemDir != null
         List<String> requires = []
         List<Object> exts = altOptions ? [{ println 'fake extension' }.dehydrate()] : []
 
         new ExecutorConfiguration(
-            options: [:],
-            attributes: [:],
-            asciidoctorExtensions: exts,
-            copyResources: false,
-            safeModeLevel: 0,
-            backendName: backend,
-            fatalMessagePatterns: [],
-            sourceDir: srcFile.parentFile,
-            outputDir: outputFile.parentFile,
-            projectDir: testProjectDir.root,
-            rootDir: testProjectDir.root,
-            baseDir: testProjectDir.root,
-            sourceTree: [srcFile, new File(srcFile.parentFile, "subdir/${INPUT_DOC2}")],
-            logDocuments: altOptions,
-            executorLogLevel: DEBUG,
-            failureLevel: failureLevel,
-            requires: requires,
-            gemPath: (altOptions ? gemDir.absolutePath : '')
+                options: [:],
+                attributes: [:],
+                asciidoctorExtensions: exts,
+                copyResources: false,
+                safeModeLevel: 0,
+                backendName: backend,
+                fatalMessagePatterns: [],
+                sourceDir: srcFile.parentFile,
+                outputDir: outputFile.parentFile,
+                projectDir: projectDir,
+                rootDir: projectDir,
+                baseDir: projectDir,
+                sourceTree: [srcFile, new File(srcFile.parentFile, "subdir/${INPUT_DOC2}")],
+                logDocuments: altOptions,
+                executorLogLevel: ExecutorLogLevel.DEBUG,
+                failureLevel: failureLevel,
+                requires: requires,
+//                gemPath: (altOptions ? gemDir.absolutePath : '')
         )
     }
 }

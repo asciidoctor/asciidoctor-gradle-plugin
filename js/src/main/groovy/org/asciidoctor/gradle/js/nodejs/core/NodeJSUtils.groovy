@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,8 @@
 package org.asciidoctor.gradle.js.nodejs.core
 
 import groovy.transform.CompileStatic
-import org.gradle.api.Project
-import org.ysb33r.gradle.nodejs.NodeJSExtension
-import org.ysb33r.gradle.nodejs.NpmExtension
 import org.ysb33r.gradle.nodejs.utils.npm.NpmExecutor
-import org.ysb33r.grolifant.api.v4.StringUtils
+import org.ysb33r.grolifant.api.core.ProjectOperations
 
 /** Utilities for dealing with NodeJS in an Asciidoctor-Gradle context
  *
@@ -30,35 +27,32 @@ import org.ysb33r.grolifant.api.v4.StringUtils
  */
 @CompileStatic
 class NodeJSUtils {
-
-    /** Creaes a skeleton {@code package.json} file.
+    /**
+     * Creates a skeleton {@code package.json} file.
      *
      * Primarily used to keep NPM from complaining.
      *
      * @param npmHome Working home directory for NPM.
      *   This is the directory in which {@code node_modules} will be created.
      * @param projectAlias An name for the project than can be used inside {@code package.json}.
-     * @param project The GRadle project for which is is done.
+     * @param po The {@link ProjectOperations} instance to use to resolve the version.
      * @param nodejs The NodeJS extension which is being used for this operation.
      * @param npm The NPM extension that is being used for this operation.
+     *
+     * @since 4.0
      */
     static void initPackageJson(
             File npmHome,
             String projectAlias,
-            Project project,
-            NodeJSExtension nodejs,
-            NpmExtension npm
+            ProjectOperations po,
+            AsciidoctorJSNodeExtension nodejs,
+            AsciidoctorJSNpmExtension npm
     ) {
         File packageJson = new File(npmHome, 'package.json')
         if (!packageJson.exists()) {
             npmHome.mkdirs()
-            NpmExecutor.initPkgJson(
-                    projectAlias,
-                    project.version ? StringUtils.stringize(project.version) : 'UNDEFINED',
-                    project,
-                    nodejs,
-                    npm
-            )
+            new NpmExecutor(po, nodejs, npm)
+                    .initPkgJson(projectAlias, po.projectTools.versionProvider.orElse('UNDEFINED'))
         }
     }
 }

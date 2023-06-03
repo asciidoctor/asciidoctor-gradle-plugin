@@ -14,73 +14,28 @@
  * limitations under the License.
  */
 
-apply plugin: 'java-gradle-plugin'
-apply plugin: 'com.gradle.plugin-publish'
-
 ext {
     pluginIdPrefix = 'org.asciidoctor'
 
     pluginExtraText = (version.contains('-alpha') || version.contains('-beta')) ?
-        " (If you need a production-ready version of the AsciidoctorJ plugin for Gradle use a 3.x release of this plugin instead)"
-        : ''
-
-
-    configurePlugin = { String providedId, String providedDisplayName, String providedDescription, List<String> providedTags ->
-        final String providedName = providedId.replaceAll(~/\./, '')
-        final File props = file("src/main/resources/META-INF/gradle-plugins/${providedId}.properties")
-        if (!props.exists()) {
-            throw new GradleException("${props} does not exist")
-        }
-        String className
-        for (String line : props.readLines()) {
-            def match = line =~ /^implementation-class\s*=\s*(.+?)$/
-
-            if (match.matches()) {
-                className = match[0][1]
-                break
-            }
-        }
-
-        if (className == null) {
-            throw new GradleException("${props} does not contain implemention-class")
-        }
-
-        gradlePlugin {
-            plugins {
-                "${providedName}Plugin" {
-                    id = providedId
-                    implementationClass = className
-                }
-            }
-        }
-
-        pluginBundle {
-            plugins {
-                "${providedName}Plugin" {
-                    id = providedId
-                    displayName = providedDisplayName
-                    description = "${providedDescription}${pluginExtraText}"
-                    tags = (['asciidoctor'] + providedTags)
-                }
-            }
-        }
-    }
+            ". (If you need a production-ready version of the AsciidoctorJ plugin for Gradle use a 3.x release of this plugin instead)."
+            : ''
 }
 
-jar {
+tasks.named('jar', Jar) {
     manifest {
         attributes(
-            'Built-By': System.properties['user.name'],
-            'Created-By': buildCreatedBy,
+                'Built-By': System.properties['user.name'],
+                'Created-By': buildCreatedBy,
 //            'Build-Date': buildDate,
 //            'Build-Time': buildTime,
-            'Build-Revision': buildRevision,
-            'Specification-Title': project.name,
-            'Specification-Version': project.version,
-            'Specification-Vendor': project.name,
-            'Implementation-Title': project.name,
-            'Implementation-Version': project.version,
-            'Implementation-Vendor': project.name
+                'Build-Revision': buildRevision,
+                'Specification-Title': project.name,
+                'Specification-Version': project.version,
+                'Specification-Vendor': project.name,
+                'Implementation-Title': project.name,
+                'Implementation-Version': project.version,
+                'Implementation-Vendor': project.name
         )
     }
 
@@ -116,8 +71,8 @@ ext {
                 }
             }
             [
-                aalmiray: 'Andres Almiray',
-                ysb33r  : 'Schalk W. Cronjé'
+                    aalmiray: 'Andres Almiray',
+                    ysb33r  : 'Schalk W. Cronjé'
             ].each { devId, devName ->
                 developer {
                     id devId
@@ -130,23 +85,23 @@ ext {
         }
         contributors {
             [
-                afolmert   : 'Adam Folmert',
-                anschmi    : 'Andreas Schmidt',
-                bmuschko   : 'Benjamin Muschko',
-                bobbytank42: 'Robert Panzer',
-                dvyazelenko: 'Dmitri Vyazelenko',
-                jlupi      : 'Lukasz Pielak',
-                lhotari    : 'Lari Hotari',
-                McPringle  : 'Marcus Fihlon',
-                Mogztter   : 'Guillaume Grossetie',
-                mrhaki     : 'Hubert Klein Ikkink',
-                msgilligan : 'Sean Gilligan',
-                noamt      : 'Noam Tenne',
-                oti        : 'Otmar Humbel',
-                rwinch     : 'Rob Winch',
-                sclassen   : 'Stephan Classen',
-                Skyr       : 'Stefan Schlott',
-                tombujok   : 'Tom Bujok'
+                    afolmert   : 'Adam Folmert',
+                    anschmi    : 'Andreas Schmidt',
+                    bmuschko   : 'Benjamin Muschko',
+                    bobbytank42: 'Robert Panzer',
+                    dvyazelenko: 'Dmitri Vyazelenko',
+                    jlupi      : 'Lukasz Pielak',
+                    lhotari    : 'Lari Hotari',
+                    McPringle  : 'Marcus Fihlon',
+                    Mogztter   : 'Guillaume Grossetie',
+                    mrhaki     : 'Hubert Klein Ikkink',
+                    msgilligan : 'Sean Gilligan',
+                    noamt      : 'Noam Tenne',
+                    oti        : 'Otmar Humbel',
+                    rwinch     : 'Rob Winch',
+                    sclassen   : 'Stephan Classen',
+                    Skyr       : 'Stefan Schlott',
+                    tombujok   : 'Tom Bujok'
             ].each { devId, devName ->
                 contributor {
                     name devName
@@ -159,37 +114,14 @@ ext {
     }
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-            afterEvaluate {
-                artifact sourcesJar.baseName
-                artifact javadocJar.baseName
-            }
-            pom.withXml {
-                asNode().children().last() + pomConfig
-                asNode().appendNode('description', project.project_description)
-            }
-        }
+publishing.publications.withType(MavenPublication).configureEach {
+    pom.withXml {
+        asNode().appendNode('description', project.project_description)
     }
 }
-
-//tasks.withType(ValidateTaskProperties) { validateTaskProperties ->
-//    validateTaskProperties.failOnWarning = true
-//    validateTaskProperties.enableStricterValidation = true
-//}
 
 pluginBundle {
     website = project.project_website
     vcsUrl = project.project_vcs
-    description = project.project_description
-    tags = ['asciidoctor']
-
-    mavenCoordinates {
-        groupId = project.group
-        artifactId = project.name
-        version = project.version
-    }
 }
 

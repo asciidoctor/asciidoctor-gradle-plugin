@@ -9,6 +9,7 @@ import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.plugins.ide.idea.model.IdeaModel
 import org.ysb33r.gradle.nodejs.NodeJSExtension
+import org.ysb33r.grolifant.api.core.ProjectOperations
 
 @CompileStatic
 class AsciidoctorGradleGroovyProject implements Plugin<Project> {
@@ -16,7 +17,12 @@ class AsciidoctorGradleGroovyProject implements Plugin<Project> {
     public final static String GENERATOR_NAME = 'generateModuleVersions'
 
     void apply(Project project) {
-        project.apply plugin: 'groovy'
+        project.pluginManager.identity {
+            apply 'java-library'
+            apply 'groovy'
+        }
+        ProjectOperations.maybeCreateExtension(project)
+        project.extensions.create('agProject',AsciidoctorGradleProjectExtension,project)
 
         TaskProvider generateModuleVersions = project.tasks.register(GENERATOR_NAME, ModuleVersions)
 

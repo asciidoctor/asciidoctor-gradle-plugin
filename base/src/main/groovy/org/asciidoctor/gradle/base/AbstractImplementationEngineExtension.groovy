@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@ import groovy.transform.CompileStatic
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.provider.Provider
-import org.ysb33r.grolifant.api.v4.AbstractCombinedProjectTaskExtension
+import org.ysb33r.grolifant.api.core.ProjectOperations
+import org.ysb33r.grolifant.api.core.runnable.CombinedProjectTaskExtensionBase
 
 import java.util.concurrent.Callable
-
-import static org.ysb33r.grolifant.api.v4.StringUtils.stringize
+import java.util.function.Function
 
 /** Base class for implementing extensions in the Asciidoctor Gradle suite.
  *
@@ -32,8 +32,8 @@ import static org.ysb33r.grolifant.api.v4.StringUtils.stringize
  * @since 3.0
  */
 @CompileStatic
-abstract class AbstractImplementationEngineExtension
-        extends AbstractCombinedProjectTaskExtension
+class AbstractImplementationEngineExtension
+        extends CombinedProjectTaskExtensionBase
         implements AsciidoctorAttributeProvider {
 
     private SafeMode safeMode
@@ -251,7 +251,7 @@ abstract class AbstractImplementationEngineExtension
     }
 
     protected AbstractImplementationEngineExtension(Project project, String moduleResourceName) {
-        super(project)
+        super(ProjectOperations.find(project))
         this.safeMode = SafeMode.UNSAFE
         this.attributes['gradle-project-name'] = project.name
         this.attributes['gradle-project-group'] = projectOperations.projectTools.groupProvider.orElse('')
@@ -260,7 +260,11 @@ abstract class AbstractImplementationEngineExtension
     }
 
     protected AbstractImplementationEngineExtension(Task task, final String name) {
-        super(task, name)
+        super(
+                task,
+                ProjectOperations.find(task.project),
+                (AbstractImplementationEngineExtension) task.project.extensions.getByName(name)
+        )
     }
 
     protected Map<String, String> getDefaultVersionMap() {
@@ -291,15 +295,15 @@ abstract class AbstractImplementationEngineExtension
     protected Collection<String> stringizeList(
             Collection<Object> list,
             boolean fromTaskOnly,
-            Closure<Collection<String>> other
+            Function<AbstractImplementationEngineExtension,Collection<String>> other
     ) {
         if (!task || fromTaskOnly) {
             stringize(list)
-        } else if (list.isEmpty()) {
-            other.call(extFromProject)
+        } else if (list.empty) {
+            other.apply(extFromProject)
         } else {
             List<Object> newOptions = []
-            newOptions.addAll(other.call(extFromProject))
+            newOptions.addAll(other.apply(extFromProject))
             newOptions.addAll(list)
             stringize(newOptions)
         }
@@ -321,7 +325,7 @@ abstract class AbstractImplementationEngineExtension
                 case Callable:
                     return item
                 default:
-                    return { -> stringize(item) } as Callable<String>
+                    return { -> projectOperations.stringTools.stringize(item) } as Callable<String>
             }
         }
     }
@@ -342,12 +346,16 @@ abstract class AbstractImplementationEngineExtension
                 case Callable:
                     return [key, item]
                 default:
-                    return [key, { -> stringize(item) } as Callable<String>]
+                    return [key, { -> projectOperations.stringTools.stringize(item) } as Callable<String>]
             }
         } as Map<String, Object>
     }
 
     private AbstractImplementationEngineExtension getExtFromProject() {
         task ? (AbstractImplementationEngineExtension) projectExtension : this
+    }
+
+    private List<String> stringize(Collection<?> stringyThings) {
+        projectOperations.stringTools.stringize(stringyThings)
     }
 }

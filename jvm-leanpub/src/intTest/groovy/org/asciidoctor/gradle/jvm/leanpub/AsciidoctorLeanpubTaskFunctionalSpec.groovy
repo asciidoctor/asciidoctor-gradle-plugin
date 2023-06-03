@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,49 +36,22 @@ class AsciidoctorLeanpubTaskFunctionalSpec extends FunctionalSpecification {
 
         then:
         verifyAll {
-            new File(testProjectDir.root, 'build/docs/asciidocLeanpub/manuscript/Book.txt').exists()
+            new File(projectDir, 'build/docs/asciidocLeanpub/manuscript/Book.txt').exists()
         }
 
         where:
         processMode << ProcessGenerator.get()
     }
 
-//    File getSingleFormatBuildFile(final String format) {
-//        getBuildFile( """
-//
-//        asciidoctorEpub {
-//            sourceDir 'src/docs/asciidoc'
-//            ebookFormats ${format}
-//
-//            kindlegen {
-//                agreeToTermsOfUse = true
-//            }
-//
-//            asciidoctorj {
-//                jrubyVersion = '${JRUBY_TEST_VERSION}'
-//            }
-//
-//            sources {
-//                include 'epub3.adoc'
-//            }
-//        }
-//        """)
-//    }
-
     File getBuildFile(String extraContent, boolean withDropbox = false) {
-        File buildFile = testProjectDir.newFile('build.gradle')
-        buildFile << """
-plugins {
-    id 'org.asciidoctor.jvm.leanpub'
-
-    ${withDropbox ? "id 'org.asciidoctor.jvm.leanpub.dropbox-copy'" : ''}
-}
-
-${offlineRepositories}
-
-${extraContent}
-"""
-        buildFile
+        if (withDropbox) {
+            writeGroovyBuildFile(
+                    ['org.asciidoctor.jvm.leanpub', 'org.asciidoctor.jvm.leanpub.dropbox-copy'],
+                    extraContent
+            )
+        } else {
+            getJvmConvertGroovyBuildFile(extraContent)
+        }
     }
 
 }

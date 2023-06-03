@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 package org.asciidoctor.gradle.js.nodejs
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.js.nodejs.core.AsciidoctorNodeJSBasePlugin
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.ysb33r.grolifant.api.v4.TaskProvider
 
 /** Adds a task called asciidoctor.
  *
@@ -29,24 +29,21 @@ import org.ysb33r.grolifant.api.v4.TaskProvider
 class AsciidoctorNodeJSPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
-        project.with {
-            apply plugin: AsciidoctorNodeJSBasePlugin
+        project.pluginManager.apply(AsciidoctorNodeJSBasePlugin)
 
-            Action<AsciidoctorTask> asciidoctorDefaults = new Action<AsciidoctorTask>() {
-                @Override
-                void execute(AsciidoctorTask asciidoctorTask) {
-                    asciidoctorTask.with {
-                        group = TASK_GROUP
-                        description = 'Generic task to convert AsciiDoc files and copy related resources'
-                    }
+        Action<AsciidoctorTask> asciidoctorDefaults = new Action<AsciidoctorTask>() {
+            @Override
+            void execute(AsciidoctorTask asciidoctorTask) {
+                asciidoctorTask.with {
+                    group = TASK_GROUP
+                    description = 'Generic task to convert AsciiDoc files and copy related resources'
                 }
             }
+        }
 
-            TaskProvider.registerTask(
-                project,
+        project.tasks.register(
                 'asciidoctor',
                 AsciidoctorTask
-            ).configure((Action) asciidoctorDefaults)
-        }
+        ).configure((Action) asciidoctorDefaults)
     }
 }

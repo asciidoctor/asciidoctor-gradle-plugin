@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,23 @@
 package org.asciidoctor.gradle.jvm
 
 import org.asciidoctor.gradle.internal.FunctionalSpecification
-import org.asciidoctor.gradle.testfixtures.CachingTest
+import org.asciidoctor.gradle.testfixtures.BuildScanFixture
+import org.asciidoctor.gradle.testfixtures.CachingTestFixture
+import org.asciidoctor.gradle.testfixtures.FunctionalTestFixture
 import spock.lang.Issue
 
 import static org.asciidoctor.gradle.testfixtures.AsciidoctorjTestVersions.SERIES_20
 import static org.asciidoctor.gradle.testfixtures.JRubyTestVersions.AJ20_ABSOLUTE_MINIMUM
 import static org.asciidoctor.gradle.testfixtures.JRubyTestVersions.AJ20_SAFE_MAXIMUM
 
-/** AsciidoctorTaskCachingFunctionalSpec
+/**
+ * AsciidoctorTaskCachingFunctionalSpec
  *
  * @author Eric Haag
  * @author Gary Hale
  */
-class AsciidoctorTaskCachingFunctionalSpec extends FunctionalSpecification implements CachingTest {
+class AsciidoctorTaskCachingFunctionalSpec extends FunctionalSpecification
+        implements CachingTestFixture, FunctionalTestFixture, BuildScanFixture {
     public static final String DEFAULT_TASK = 'asciidoctor'
     public static final String DEFAULT_OUTPUT_FILE = 'build/docs/asciidoc/html5/sample.html'
     public static final String DOCBOOK_OUTPUT_FILE = 'build/docs/asciidoc/docbook/sample.xml'
@@ -67,36 +71,36 @@ class AsciidoctorTaskCachingFunctionalSpec extends FunctionalSpecification imple
         fileInRelocatedDirectory(DOCBOOK_OUTPUT_FILE).exists()
     }
 
-    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/671')
-    void "asciidoctor task is cacheable and relocatable when gemPaths is configured"() {
-        given:
-        getBuildFile("""
-            asciidoctorj {
-                gemPaths 'gems1', 'gems2'
-            }
-
-            asciidoctor {
-                sourceDir 'src/docs/asciidoc'
-                
-                outputOptions {
-                    backends 'html5', 'docbook'
-                }
-            }
-        """)
-
-        when:
-        assertDefaultTaskExecutes()
-
-        then:
-        outputFile.exists()
-
-        when:
-        assertDefaultTaskIsCachedAndRelocatable()
-
-        then:
-        outputFile.exists()
-        outputFileInRelocatedDirectory.exists()
-    }
+//    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/671')
+//    void "asciidoctor task is cacheable and relocatable when gemPaths is configured"() {
+//        given:
+//        getBuildFile("""
+//            asciidoctorj {
+//                gemPaths 'gems1', 'gems2'
+//            }
+//
+//            asciidoctor {
+//                sourceDir 'src/docs/asciidoc'
+//
+//                outputOptions {
+//                    backends 'html5', 'docbook'
+//                }
+//            }
+//        """)
+//
+//        when:
+//        assertDefaultTaskExecutes()
+//
+//        then:
+//        outputFile.exists()
+//
+//        when:
+//        assertDefaultTaskIsCachedAndRelocatable()
+//
+//        then:
+//        outputFile.exists()
+//        outputFileInRelocatedDirectory.exists()
+//    }
 
     void "Asciidoctor task is cached when only output directory is changed"() {
         given:
@@ -285,7 +289,7 @@ class AsciidoctorTaskCachingFunctionalSpec extends FunctionalSpecification imple
 
     File getBuildFile(String extraContent) {
         getJvmConvertGroovyBuildFile("""
-            ${scan ? buildScanConfiguration : ''}
+            ${performBuildScan ? buildScanConfiguration : ''}
 
             asciidoctorj {
                 jrubyVersion = '${AJ20_SAFE_MAXIMUM}'

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,33 +47,33 @@ class ExtensionsFunctionalSpec extends FunctionalSpecification {
         given:
         getBuildFile(
             model.processMode, model.version, """
-asciidoctor {
-    asciidoctorj {
-         docExtensions {
-            block(name: "BIG", contexts: [":paragraph"]) {
-                parent, reader, attributes ->
-                def upperLines = reader.readLines()*.toUpperCase()
-                .inject("") {a, b -> a + '\\\\n' + b}
-
-                createBlock(parent, "paragraph", [upperLines], attributes, [:])
+            asciidoctor {
+                asciidoctorj {
+                     docExtensions {
+                        block(name: "BIG", contexts: [":paragraph"]) {
+                            parent, reader, attributes ->
+                            def upperLines = reader.readLines()*.toUpperCase()
+                            .inject("") {a, b -> a + '\\\\n' + b}
+            
+                            createBlock(parent, "paragraph", [upperLines], attributes, [:])
+                        }
+                        block("small") {
+                            parent, reader, attributes ->
+                            def lowerLines = reader.readLines()*.toLowerCase()
+                            .inject("") {a, b -> a + '\\\\n' + b}
+            
+                            createBlock(parent, "paragraph", [lowerLines], attributes, [:])
+                        }
+                     }
+                }
             }
-            block("small") {
-                parent, reader, attributes ->
-                def lowerLines = reader.readLines()*.toLowerCase()
-                .inject("") {a, b -> a + '\\\\n' + b}
-
-                createBlock(parent, "paragraph", [lowerLines], attributes, [:])
-            }
-         }
-    }
-}
-""")
+            """.stripIndent())
 
         GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
 
         when:
         runner.build()
-        File resultFile = new File(testProjectDir.root, "build/docs/asciidoc/${ASCIIDOC_INLINE_EXTENSIONS_FILE.replaceFirst('asciidoc', 'html')}")
+        File resultFile = new File(buildDir, "docs/asciidoc/${ASCIIDOC_INLINE_EXTENSIONS_FILE.replaceFirst('asciidoc', 'html')}")
 
         then: 'content is generated as HTML and XML'
         resultFile.exists()
@@ -121,7 +121,7 @@ block('small') {
 
         when:
         runner.build()
-        File resultFile = new File(testProjectDir.root, "build/docs/asciidoc/${ASCIIDOC_INLINE_EXTENSIONS_FILE.replaceFirst('asciidoc', 'html')}")
+        File resultFile = new File(buildDir, "docs/asciidoc/${ASCIIDOC_INLINE_EXTENSIONS_FILE.replaceFirst('asciidoc', 'html')}")
 
         then: 'content is generated as HTML and XML'
         resultFile.exists()
@@ -152,7 +152,7 @@ asciidoctor {
 
         when:
         runner.build()
-        File resultFile = new File(testProjectDir.root, "build/docs/asciidoc/${ASCIIDOC_INLINE_EXTENSIONS_FILE.replaceFirst('asciidoc', 'html')}")
+        File resultFile = new File(buildDir, "docs/asciidoc/${ASCIIDOC_INLINE_EXTENSIONS_FILE.replaceFirst('asciidoc', 'html')}")
 
         then: 'content is generated as HTML and XML'
         resultFile.exists()
@@ -181,7 +181,7 @@ asciidoctor {
         ''')
 
         GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
-        File outputFile = new File(testProjectDir.root, 'build/docs/asciidoc/inlineextensions.html')
+        File outputFile = new File(buildDir, 'docs/asciidoc/inlineextensions.html')
 
         when:
         BuildResult firstInvocationResult = runner.build()
@@ -192,7 +192,7 @@ asciidoctor {
         outputFile.text.startsWith('Hi, Mom')
 
         when:
-        new File(testProjectDir.root, 'src/docs/asciidoc/inlineextensions.asciidoc') << 'changes'
+        new File(projectDir, 'src/docs/asciidoc/inlineextensions.asciidoc') << 'changes'
         final BuildResult secondInvocationResult = getGradleRunner(DEFAULT_ARGS).build()
 
         then:
@@ -255,8 +255,8 @@ asciidoctor {
         when:
         runner.build()
         File resultFile = new File(
-            testProjectDir.root,
-            'build/docs/asciidoc/' + ASCIIDOC_INLINE_EXTENSIONS_FILE.replaceFirst('asciidoc', 'html')
+            buildDir,
+            'docs/asciidoc/' + ASCIIDOC_INLINE_EXTENSIONS_FILE.replaceFirst('asciidoc', 'html')
         )
 
         then: 'content is generated as HTML and XML'
@@ -290,7 +290,7 @@ asciidoctor {
             ${configureGlobally ? versionConfig : ''}
 
             asciidoctor {
-                inProcess ${processMode}
+                executionMode ${processMode}
                 sourceDir 'src/docs/asciidoc'
                 sources {
                     include '${ASCIIDOC_INLINE_EXTENSIONS_FILE}'
