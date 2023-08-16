@@ -127,7 +127,7 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
             reqs.add(packageDescriptorFor(modules.docbook).toString())
         }
 
-        reqs as Set
+        (reqs as Set).asImmutable()
     }
 
     /** A configuration containing all required NPM packages.
