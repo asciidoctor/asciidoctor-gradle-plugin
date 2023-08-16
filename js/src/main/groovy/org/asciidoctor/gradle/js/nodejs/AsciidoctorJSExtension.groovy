@@ -150,7 +150,7 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
             deps.add(factory.createDependency(packageDescriptorFor(modules.docbook), docbook))
         }
 
-        project.configurations.detachedConfiguration(
+        configurations.detachedConfiguration(
                 deps.toArray() as Dependency[]
         )
     }

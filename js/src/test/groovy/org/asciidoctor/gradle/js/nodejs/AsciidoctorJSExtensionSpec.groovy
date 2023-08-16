@@ -34,7 +34,7 @@ class AsciidoctorJSExtensionSpec extends Specification {
         asciidoctorjs = project.extensions.getByType(AsciidoctorJSExtension)
     }
 
-    void 'Can set a default docbook version'() {        
+    void 'Can set a default docbook version'() {
         when:
         asciidoctorjs.modules.docbook.use()
 
@@ -52,7 +52,7 @@ class AsciidoctorJSExtensionSpec extends Specification {
         asciidoctorjs.requires.find {it.equals('@my_scope2/my_module2@my_tag2')}
     }
 
-    void 'docbook-converter added as requires'() {        
+    void 'docbook-converter added as requires'() { 
         when:
         asciidoctorjs.require 'my_module1', 'my_tag1'
         asciidoctorjs.modules.docbook.use()
