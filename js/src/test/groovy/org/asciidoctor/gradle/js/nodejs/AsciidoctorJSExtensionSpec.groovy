@@ -40,6 +40,26 @@ class AsciidoctorJSExtensionSpec extends Specification {
 
         then:
         asciidoctorjs.modules.docbook.version == versionMap['asciidoctorjs.docbook']
+    }
+
+    void 'requires property contains npm modules added with require'() {
+        when:
+        asciidoctorjs.require 'my_module1', 'my_tag1'
+        asciidoctorjs.require 'my_scope2', 'my_module2', 'my_tag2'
+
+        then:
+        asciidoctorjs.requires.find {it.equals('my_module1@my_tag1')}
+        asciidoctorjs.requires.find {it.equals('@my_scope2/my_module2@my_tag2')}
+    }
+
+    void 'docbook-converter added as requires'() { 
+        when:
+        asciidoctorjs.require 'my_module1', 'my_tag1'
+        asciidoctorjs.modules.docbook.use()
+
+        then:
+        asciidoctorjs.requires.find {it.equals('my_module1@my_tag1')}
         asciidoctorjs.requires.find { it.contains('docbook-converter') }
     }
+
 }

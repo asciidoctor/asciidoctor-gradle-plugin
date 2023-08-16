@@ -119,14 +119,15 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
      * @Return Set of strings in a format suitable for {@code npm --require}.
      */
     Set<String> getRequires() {
-        Set<String> reqs = [].toSet()
+        @SuppressWarnings('UnnecessaryGetter')
+        List<String> reqs = getAllAdditionalRequires().collect { asModuleVersionString(it) }
 
         final String docbook = moduleVersion(modules.docbook)
         if (docbook) {
             reqs.add(packageDescriptorFor(modules.docbook).toString())
         }
 
-        reqs
+        (reqs as Set).asImmutable()
     }
 
     /** A configuration containing all required NPM packages.
@@ -140,6 +141,10 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
         final String docbook = moduleVersion(modules.docbook)
         final NodeJSDependencyFactory factory = new NodeJSDependencyFactory(project, nodejs, npm)
         final List<SelfResolvingDependency> deps = [factory.createDependency(PACKAGE_ASCIIDOCTOR, getVersion())]
+
+        deps.addAll( getAllAdditionalRequires().collect {
+            factory.createDependency( it.packageName, it.tagName, it.scope )
+        })
 
         if (docbook) {
             deps.add(factory.createDependency(packageDescriptorFor(modules.docbook), docbook))
@@ -217,5 +222,19 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
 
     private AsciidoctorJSExtension getExtFromProject() {
         task ? (AsciidoctorJSExtension) projectExtension : this
+    }
+
+    private String asModuleVersionString(NpmDependency it) {
+        final String scope = it.scope
+        final String name = it.packageName
+        final String version = it.tagName
+
+        final String r = (scope != null && !scope.isEmpty()) ? ("@${scope}/${name}") : name
+
+        if (version != null && !version.isEmpty()) {
+            r + "@${version}"
+        } else {
+            r
+        }
     }
 }
