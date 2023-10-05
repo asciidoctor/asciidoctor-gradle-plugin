@@ -115,7 +115,7 @@ abstract class AbstractAsciidoctorJSExtension extends AbstractImplementationEngi
      *
      * @param mod Module to interrogate
      *
-     * @return Module version or {@code null} if the componenet is not required.
+     * @return Module version or {@code null} if the component is not required.
      */
     protected String moduleVersion(final AsciidoctorModuleDefinition mod) {
         if (task) {
