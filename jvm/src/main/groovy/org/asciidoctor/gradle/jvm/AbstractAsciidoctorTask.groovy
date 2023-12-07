@@ -579,7 +579,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
                 configureForkOptions(jes)
                 logger.debug "Running AsciidoctorJ instance with environment: ${jes.environment}"
                 jes.with {
-                    main = AsciidoctorJavaExec.canonicalName
+                    mainClass = AsciidoctorJavaExec.canonicalName
                     classpath = javaExecClasspath
                     args execConfigurationData.absolutePath
                 }
