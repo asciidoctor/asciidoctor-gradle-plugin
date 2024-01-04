@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,17 +19,19 @@ import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AsciidoctorModuleDefinition
 import org.asciidoctor.gradle.js.base.AbstractAsciidoctorJSExtension
 import org.asciidoctor.gradle.js.base.AsciidoctorJSModules
+import org.asciidoctor.gradle.js.nodejs.core.AsciidoctorJSNodeExtension
+import org.asciidoctor.gradle.js.nodejs.core.AsciidoctorJSNpmExtension
 import org.asciidoctor.gradle.js.nodejs.core.NodeJSDependencyFactory
 import org.asciidoctor.gradle.js.nodejs.internal.AsciidoctorNodeJSModules
 import org.asciidoctor.gradle.js.nodejs.internal.PackageDescriptor
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
-import org.gradle.api.artifacts.ConfigurationContainer
-import org.gradle.api.artifacts.Dependency
-import org.gradle.api.artifacts.SelfResolvingDependency
-import org.gradle.api.artifacts.dsl.DependencyHandler
+import org.gradle.api.artifacts.ResolutionStrategy
+import org.gradle.api.provider.Provider
 import org.ysb33r.gradle.nodejs.NpmDependency
+import org.ysb33r.gradle.nodejs.dependencies.npm.BaseNpmSelfResolvingDependency
+
+import static org.asciidoctor.gradle.js.nodejs.internal.AsciidoctorNodeJSModules.SCOPE_ASCIIDOCTOR
 
 /** Extension for configuring AsciidoctorJS.
  *
@@ -42,21 +44,17 @@ import org.ysb33r.gradle.nodejs.NpmDependency
 @CompileStatic
 class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
     public final static String NAME = 'asciidoctorjs'
-    public final static PackageDescriptor PACKAGE_ASCIIDOCTOR = PackageDescriptor.of('asciidoctor')
+    public final static PackageDescriptor PACKAGE_ASCIIDOCTOR = PackageDescriptor.of(SCOPE_ASCIIDOCTOR, 'cli')
+    private final static String CONFIGURATION_NAME = "__\$\$${NAME}\$\$__"
 
     private final List<NpmDependency> additionalRequires = []
     private final String projectName
     private boolean onlyTaskRequires = false
     private final AsciidoctorJSNodeExtension nodejs
     private final AsciidoctorJSNpmExtension npm
-
-    @Deprecated
-    // We need to find a better solution than the curretn detached configuration usage.
-    private final ConfigurationContainer configurations
-
-    @Deprecated
-    // We need to find a better way than how we are creasting dependencies atm.
-    private final DependencyHandler dependencies
+    private final NodeJSDependencyFactory dependencyFactory
+    private final Configuration publicConfiguration
+    private final Configuration privateConfiguration
 
     /** Attach extension to project.
      *
@@ -64,24 +62,64 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
      */
     AsciidoctorJSExtension(Project project) {
         super(project)
-        this.configurations = project.configurations
-        this.dependencies = project.dependencies
+
+        String privateName = "${CONFIGURATION_NAME}_d"
+        String publicName = "${CONFIGURATION_NAME}_r"
+        projectOperations.configurations.createLocalRoleFocusedConfiguration(privateName, publicName)
+        this.privateConfiguration = project.configurations.getByName(privateName)
+        this.publicConfiguration = project.configurations.getByName(publicName)
         this.projectName = project.name
         this.nodejs = project.extensions.getByType(AsciidoctorJSNodeExtension)
         this.npm = project.extensions.getByType(AsciidoctorJSNpmExtension)
+        this.dependencyFactory = new NodeJSDependencyFactory(
+                projectOperations,
+                this.nodejs,
+                this.npm
+        )
+        loadDependencies()
     }
 
     /** Attach extension to a task.
      *
      * @param task Task to attach to
      */
-    AsciidoctorJSExtension(Task task) {
+    AsciidoctorJSExtension(AbstractAsciidoctorNodeJSTask task) {
         super(task, NAME)
-        this.configurations = task.project.configurations
-        this.dependencies = task.project.dependencies
+        this.publicConfiguration = task.project.configurations.create("__\$\$${NAME}_${task.name}\$\$__")
+
+        String privateName = "__\$\$${NAME}_${task.name}\$\$__d"
+        String publicName = "__\$\$${NAME}_${task.name}\$\$__r"
+        projectOperations.configurations.createLocalRoleFocusedConfiguration(privateName, publicName)
+        this.privateConfiguration = task.project.configurations.getByName(privateName)
+        this.publicConfiguration = task.project.configurations.getByName(publicName)
         this.projectName = task.project.name
-        this.nodejs = task.project.extensions.getByType(AsciidoctorJSNodeExtension)
-        this.npm = task.project.extensions.getByType(AsciidoctorJSNpmExtension)
+        this.nodejs = task.extensions.getByType(AsciidoctorJSNodeExtension)
+        this.npm = task.extensions.getByType(AsciidoctorJSNpmExtension)
+        this.dependencyFactory = new NodeJSDependencyFactory(
+                projectOperations,
+                this.nodejs,
+                this.npm
+        )
+
+        Configuration projectConfiguration = task.project.configurations.findByName("${CONFIGURATION_NAME}_d")
+        if (projectConfiguration) {
+            this.publicConfiguration.extendsFrom(projectConfiguration)
+        }
+
+        npm.homeDirectory = projectOperations.provider { ->
+            if (versionsDifferFromGlobal()) {
+                new File(npm.projectExtension.homeDirectory.parentFile, "${projectName}-${task.name}")
+            } else {
+                npm.projectExtension.homeDirectory
+            }
+        }
+    }
+
+    @SuppressWarnings('UnnecessarySetter')
+    @Override
+    void setVersion(Object v) {
+        super.setVersion(v)
+        setResolutionStrategy()
     }
 
     /** Adds an additional NPM package that is required
@@ -119,7 +157,7 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
      * @Return Set of strings in a format suitable for {@code npm --require}.
      */
     Set<String> getRequires() {
-        Set<String> reqs = [].toSet()
+        Set<String> reqs = (Set) [].toSet()
 
         final String docbook = moduleVersion(modules.docbook)
         if (docbook) {
@@ -129,25 +167,15 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
         reqs
     }
 
-    /** A configuration containing all required NPM packages.
+    /**
+     * A configuration containing all required NPM packages.
      * The configuration will differ between global state and task state if the task has set
      * different requires or different docbook versions.
      *
      * @return All resolvable NPM dependencies including {@code asciidoctor.js}.
      */
-    @SuppressWarnings('UnnecessaryGetter')
     Configuration getConfiguration() {
-        final String docbook = moduleVersion(modules.docbook)
-        final NodeJSDependencyFactory factory = new NodeJSDependencyFactory(project, nodejs, npm)
-        final List<SelfResolvingDependency> deps = [factory.createDependency(PACKAGE_ASCIIDOCTOR, getVersion())]
-
-        if (docbook) {
-            deps.add(factory.createDependency(packageDescriptorFor(modules.docbook), docbook))
-        }
-
-        configurations.detachedConfiguration(
-                deps.toArray() as Dependency[]
-        )
+        this.publicConfiguration
     }
 
     /** The suggested working directory that the implementation tool should use.
@@ -159,12 +187,8 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
      *
      * @return Suggested working directory.
      */
-    File getToolingWorkDir() {
-        if (versionsDifferFromGlobal()) {
-            new File(npm.homeDirectory.parentFile, "${projectName}-${task.name}")
-        } else {
-            npm.homeDirectory
-        }
+    Provider<File> getToolingWorkDir() {
+        npm.homeDirectoryProvider
     }
 
     /** Creates a new modules block.
@@ -173,7 +197,12 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
      */
     @Override
     protected AsciidoctorJSModules createModulesConfiguration() {
-        new AsciidoctorNodeJSModules(this, defaultVersionMap)
+        final newModules = new AsciidoctorNodeJSModules(projectOperations, defaultVersionMap)
+        newModules.onUpdate {
+            owner.loadDependencies()
+            owner.setResolutionStrategy()
+        }
+        newModules
     }
 
     private List<NpmDependency> getAllAdditionalRequires() {
@@ -217,5 +246,41 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
 
     private AsciidoctorJSExtension getExtFromProject() {
         task ? (AsciidoctorJSExtension) projectExtension : this
+    }
+
+    private void loadDependencies() {
+        this.privateConfiguration.dependencies.add(
+                dependencyFactory.createDependency(PACKAGE_ASCIIDOCTOR, version)
+        )
+
+        if (moduleVersion(modules.docbook)) {
+            this.privateConfiguration.dependencies.add(
+                    dependencyFactory.createDependency(
+                            packageDescriptorFor(modules.docbook),
+                            moduleVersion(modules.docbook)
+                    )
+            )
+        }
+    }
+
+    private void setResolutionStrategy() {
+        final String docbook = moduleVersion(modules.docbook)
+        this.publicConfiguration.resolutionStrategy { ResolutionStrategy rs ->
+            rs.eachDependency { drd ->
+                if (drd.requested.group.startsWith(BaseNpmSelfResolvingDependency.NPM_MAVEN_GROUP_PREFIX)) {
+                    if (drd.requested.group.endsWith(PACKAGE_ASCIIDOCTOR.scope) &&
+                            drd.requested.name == PACKAGE_ASCIIDOCTOR.name) {
+                        drd.useVersion(version)
+                    }
+                    if (docbook) {
+                        final pd = packageDescriptorFor(modules.docbook)
+                        if (drd.requested.group.endsWith(pd.scope) &&
+                                drd.requested.name == pd.name) {
+                            drd.useVersion(docbook)
+                        }
+                    }
+                }
+            }
+        }
     }
 }

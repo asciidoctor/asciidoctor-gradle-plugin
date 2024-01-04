@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,24 +50,14 @@ class LinkedChaptersFunctionalSpec extends FunctionalSpecification {
 
         then:
         verifyAll {
-            new File(testProjectDir.root, 'build/docs/asciidocEpub/epub3.epub').exists()
+            new File(projectDir, 'build/docs/asciidocEpub/epub3.epub').exists()
             !result.output.contains('invalid reference to anchor')
             !result.output.contains('invalid reference to unknown anchor')
         }
     }
 
     File getBuildFile(String extraContent) {
-        File buildFile = testProjectDir.newFile('build.gradle')
-        buildFile << """
-plugins {
-    id 'org.asciidoctor.jvm.epub'
-}
-
-${offlineRepositories}
-
-${extraContent}
-"""
-        buildFile
+        writeGroovyBuildFile('org.asciidoctor.jvm.epub', extraContent)
     }
 
 }

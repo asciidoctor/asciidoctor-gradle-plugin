@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.js.base.AsciidoctorJSModules
 import org.asciidoctor.gradle.js.base.internal.AsciidoctorJSModule
 import org.asciidoctor.gradle.js.base.internal.BaseAsciidoctorJSModules
-import org.asciidoctor.gradle.js.nodejs.AsciidoctorJSExtension
 import org.gradle.api.Action
+import org.ysb33r.grolifant.api.core.ProjectOperations
 
 /** Define versions for standard AsciidoctorJS modules.
  *
@@ -34,48 +34,62 @@ class AsciidoctorNodeJSModules extends BaseAsciidoctorJSModules implements Ascii
 
     public final static String SCOPE_ASCIIDOCTOR = 'asciidoctor'
 
-    /** Creates a module definition that is attached to a specific asciidoctorjs
-     * extension.
+    /**
+     * Standard modules that support asciidoctor.js development.
      *
-     * @param asciidoctorjs Extension that this module is attached to.
+     * @param po {@link ProjectOperations} instance
+     * @param versionMap Map containing Asciidoctor.js versions.
+     * @since 4.0
      */
-    AsciidoctorNodeJSModules(AsciidoctorJSExtension asciidoctorjs, Map<String, String> versionMap) {
+    AsciidoctorNodeJSModules(
+            ProjectOperations po,
+            Map<String, String> versionMap
+    ) {
         super(
-            Module.of(
-                'docbook',
-                versionMap['asciidoctorjs.docbook'],
-                PackageDescriptor.of(SCOPE_ASCIIDOCTOR, 'docbook-converter')
-            )
+                po,
+                Module.of(
+                        po,
+                        'docbook',
+                        versionMap['asciidoctorjs.docbook'],
+                        PackageDescriptor.of(SCOPE_ASCIIDOCTOR, 'docbook-converter'),
+                )
         )
     }
 
-    /** Adds a package descriptor for a module
-     *
+    /**
+     * Adds a package descriptor for a module.
      */
     static class Module extends AsciidoctorJSModule {
 
         private final PackageDescriptor packageIdentifier
 
-        static Module of(final String name, final Object defaultVersion, final PackageDescriptor packageIdentifier) {
-            new Module(name, defaultVersion, packageIdentifier)
+        static Module of(
+                final ProjectOperations po,
+                final String name,
+                final Object defaultVersion,
+                final PackageDescriptor packageIdentifier
+        ) {
+            new Module(po, name, defaultVersion, packageIdentifier)
         }
 
         static Module of(
-            final String name,
-            final Object defaultVersion,
-            final PackageDescriptor packageIdentifier,
-            Closure setAction
+                ProjectOperations po,
+                final String name,
+                final Object defaultVersion,
+                final PackageDescriptor packageIdentifier,
+                Closure setAction
         ) {
-            new Module(name, defaultVersion, packageIdentifier, setAction as Action<Object>)
+            new Module(po, name, defaultVersion, packageIdentifier, setAction as Action<Object>)
         }
 
         private Module(
-            final String name,
-            final Object defaultVersion,
-            final PackageDescriptor packageIdentifier,
-            Action<Object> setAction = null
+                final ProjectOperations po,
+                final String name,
+                final Object defaultVersion,
+                final PackageDescriptor packageIdentifier,
+                Action<Object> setAction = null
         ) {
-            super(name, defaultVersion, setAction)
+            super(po, name, defaultVersion, setAction)
             this.packageIdentifier = packageIdentifier
         }
 

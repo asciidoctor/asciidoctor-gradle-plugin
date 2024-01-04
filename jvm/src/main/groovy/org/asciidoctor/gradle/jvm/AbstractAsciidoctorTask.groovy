@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,89 +15,115 @@
  */
 package org.asciidoctor.gradle.jvm
 
-import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import groovy.transform.PackageScope
-import org.asciidoctor.gradle.base.AbstractAsciidoctorBaseTask
 import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
+import org.asciidoctor.gradle.base.AsciidoctorTaskBaseDirConfiguration
+import org.asciidoctor.gradle.base.AsciidoctorTaskFileOperations
+import org.asciidoctor.gradle.base.AsciidoctorTaskMethods
+import org.asciidoctor.gradle.base.AsciidoctorTaskOutputOptions
+import org.asciidoctor.gradle.base.AsciidoctorTaskWorkspacePreparation
 import org.asciidoctor.gradle.base.Transform
+import org.asciidoctor.gradle.base.internal.DefaultAsciidoctorBaseDirConfiguration
+import org.asciidoctor.gradle.base.internal.DefaultAsciidoctorFileOperations
+import org.asciidoctor.gradle.base.internal.DefaultAsciidoctorOutputOptions
+import org.asciidoctor.gradle.base.internal.DefaultAsciidoctorWorkspacePreparation
 import org.asciidoctor.gradle.base.internal.Workspace
 import org.asciidoctor.gradle.base.log.Severity
 import org.asciidoctor.gradle.base.process.ProcessMode
+import org.asciidoctor.gradle.internal.AsciidoctorExecutorFactory
+import org.asciidoctor.gradle.internal.AsciidoctorWorkerParameterFactory
+import org.asciidoctor.gradle.internal.AsciidoctorWorkerParameters
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
-import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
 import org.asciidoctor.gradle.internal.ExecutorUtils
 import org.asciidoctor.gradle.internal.JavaExecUtils
-import org.asciidoctor.gradle.remote.AsciidoctorJExecuter
 import org.asciidoctor.gradle.remote.AsciidoctorJavaExec
-import org.asciidoctor.gradle.remote.AsciidoctorRemoteExecutionException
 import org.gradle.api.Action
-import org.gradle.api.GradleException
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.ConfigurationContainer
 import org.gradle.api.artifacts.Dependency
-import org.gradle.api.artifacts.DependencyResolveDetails
 import org.gradle.api.file.FileCollection
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.TaskAction
-import org.gradle.process.JavaExecSpec
+import org.gradle.api.tasks.Nested
+import org.gradle.api.tasks.TaskProvider
+import org.gradle.api.tasks.bundling.Jar
 import org.gradle.process.JavaForkOptions
-import org.gradle.util.GradleVersion
-import org.gradle.workers.ClassLoaderWorkerSpec
-import org.gradle.workers.ProcessWorkerSpec
-import org.gradle.workers.WorkAction
-import org.gradle.workers.WorkParameters
-import org.gradle.workers.WorkQueue
 import org.gradle.workers.WorkerExecutor
+import org.ysb33r.grolifant.api.core.jvm.ExecutionMode
+import org.ysb33r.grolifant.api.core.jvm.JavaForkOptionsWithEnvProvider
+import org.ysb33r.grolifant.api.core.jvm.worker.WorkerAppParameterFactory
+import org.ysb33r.grolifant.api.core.runnable.AbstractJvmModelExecTask
+import org.ysb33r.grolifant.api.remote.worker.WorkerAppExecutorFactory
 
-import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClosure
+import java.util.function.Function
+
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.getClassLocation
+import static org.asciidoctor.gradle.base.internal.AsciidoctorAttributes.evaluateProviders
+import static org.asciidoctor.gradle.base.internal.AsciidoctorAttributes.prepareAttributes
 import static org.asciidoctor.gradle.base.internal.AsciidoctorAttributes.resolveAsCacheable
 import static org.asciidoctor.gradle.base.internal.AsciidoctorAttributes.resolveAsSerializable
-import static org.asciidoctor.gradle.base.internal.ConfigurationUtils.asConfiguration
-import static org.asciidoctor.gradle.base.internal.ConfigurationUtils.asConfigurations
+import static org.asciidoctor.gradle.internal.JavaExecUtils.getExecConfigurationDataFile
 import static org.gradle.api.tasks.PathSensitivity.RELATIVE
-import static org.ysb33r.grolifant.api.core.LegacyLevel.PRE_6_4
 
-/** Base class for all AsciidoctorJ tasks.
+/**
+ * Base class for all AsciidoctorJ tasks.
  *
  * @author Schalk W. Cronjé
  * @author Manuel Prinz
  *
  * @since 2.0.0
  */
-@SuppressWarnings('MethodCount')
 @CompileStatic
-class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
+@SuppressWarnings('MethodCount')
+class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExecSpec, AsciidoctorWorkerParameters>
+        implements AsciidoctorTaskMethods {
 
-    public final static ProcessMode IN_PROCESS = ProcessMode.IN_PROCESS
-    public final static ProcessMode OUT_OF_PROCESS = ProcessMode.OUT_OF_PROCESS
-    public final static ProcessMode JAVA_EXEC = ProcessMode.JAVA_EXEC
+    public final static ExecutionMode CLASSPATH = ExecutionMode.CLASSPATH
+    public final static ExecutionMode IN_PROCESS = ExecutionMode.CLASSPATH
+    public final static ExecutionMode OUT_OF_PROCESS = ExecutionMode.OUT_OF_PROCESS
+    public final static ExecutionMode JAVA_EXEC = ExecutionMode.JAVA_EXEC
 
     public final static Severity FATAL = Severity.FATAL
     public final static Severity ERROR = Severity.ERROR
     public final static Severity WARN = Severity.WARN
     public final static Severity INFO = Severity.INFO
 
-    protected final static GradleVersion LAST_GRADLE_WITH_CLASSPATH_LEAKAGE = GradleVersion.version(('6.99'))
-
     protected final AsciidoctorJExtension asciidoctorj
-    private ProcessMode inProcess = JAVA_EXEC
+    private ExecutionMode inProcess
     private Severity failureLevel = Severity.FATAL
-    private final WorkerExecutor worker
     private final List<Object> asciidocConfigurations = []
+    private final File rootDir
+    private final File projectDir
+    private final File execConfigurationDataFile
+    private final Function<List<Dependency>, Configuration> detachedConfigurationCreator
+    private final Property<FileCollection> jvmClasspath
+    private final List<Provider<File>> gemJarProviders = []
 
-    @PackageScope
-    final org.ysb33r.grolifant.api.v4.JavaForkOptions javaForkOptions =
-            new org.ysb33r.grolifant.api.v4.JavaForkOptions()
+    @Delegate
+    private final DefaultAsciidoctorFileOperations asciidoctorTaskFileOperations
+
+    @Delegate
+    private final AsciidoctorTaskWorkspacePreparation workspacePreparation
+
+    @Delegate
+    private final DefaultAsciidoctorOutputOptions asciidoctorOutputOptions
+
+    @Delegate
+    private final AsciidoctorTaskBaseDirConfiguration baseDirConfiguration
 
     /** Set how AsciidoctorJ should be run.
      *
      * @param mode {@link #IN_PROCESS}, {@link #OUT_OF_PROCESS} or {@link #JAVA_EXEC}.
+     *
+     * @deprecated Use {@link #setExecutionMode} instead.
      */
+    @Deprecated
     void setInProcess(ProcessMode mode) {
-        this.inProcess = mode
+        logger.warn "Use 'setExecutionMode' instead of 'setInProcess(ProcessMode)'"
+        executionMode = mode.executionMode
     }
 
     /** Set how AsciidoctorJ should be run.
@@ -105,19 +131,13 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
      * @param mode Case-insensitive string from of {@link #IN_PROCESS}, {@link #OUT_OF_PROCESS} or {@link #JAVA_EXEC}.
      *
      * @since 3.0
-     */
-    void setInProcess(String mode) {
-        this.inProcess = ProcessMode.valueOf(mode.toUpperCase(Locale.US))
-    }
-
-    /** Run Asciidoctor conversions in or out of process
      *
-     * Valid options are {@link #IN_PROCESS}, {@link #OUT_OF_PROCESS} and {@link #JAVA_EXEC}.
-     * The default mode is {@link #JAVA_EXEC}.
+     * @deprecated Use {@link #setExecutionMode} instead.
      */
-    @Internal
-    ProcessMode getInProcess() {
-        this.inProcess
+    @Deprecated
+    void setInProcess(String mode) {
+        logger.warn "Use 'setExecutionMode' instead of 'setInProcess(String)'"
+        executionMode = ProcessMode.valueOf(mode.toUpperCase(Locale.US)).executionMode
     }
 
     /** Set the minimum logging level that will fail the task.
@@ -163,6 +183,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
      *
      * When {@link #inProcess} {@code ==} {@link #JAVA_EXEC} this option is ignored.
      */
+    // TODO: parallelMode is currently ignored in 4.0
     @Internal
     boolean parallelMode = true
 
@@ -170,20 +191,26 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
      *
      * These options are ignored if {@link #inProcess} {@code ==} {@link #IN_PROCESS}.
      *
-     * @param configurator Closure that configures a {@link org.ysb33r.grolifant.api.v4.JavaForkOptions} instance.
+     * @param configurator Closure that configures a {@link JavaForkOptions} instance.
+     *
+     * @deprecated Use {@link #jvm} instead.
      */
-    void forkOptions(@DelegatesTo(org.ysb33r.grolifant.api.v4.JavaForkOptions) Closure configurator) {
-        executeDelegatingClosure(this.javaForkOptions, configurator)
+    @Deprecated
+    void forkOptions(@DelegatesTo(JavaForkOptionsWithEnvProvider) Closure configurator) {
+        jvm(configurator)
     }
 
     /** Set fork options for {@link #JAVA_EXEC} and {@link #OUT_OF_PROCESS} modes.
      *
      * These options are ignored if {@link #inProcess} {@code ==} {@link #IN_PROCESS}.
      *
-     * @param configurator Action that configures a {@link org.ysb33r.grolifant.api.v4.JavaForkOptions} instance.
+     * @param configurator Action that configures a {@link JavaForkOptions} instance.
+     *
+     * @deprecated Use {@link #jvm} instead.
      */
-    void forkOptions(Action<org.ysb33r.grolifant.api.v4.JavaForkOptions> configurator) {
-        configurator.execute(this.javaForkOptions)
+    @Deprecated
+    void forkOptions(Action<JavaForkOptionsWithEnvProvider> configurator) {
+        jvm(configurator)
     }
 
     /** Returns all of the Asciidoctor options.
@@ -275,12 +302,13 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
     @Classpath
     @SuppressWarnings('Instanceof')
     FileCollection getConfigurations() {
-        FileCollection precompiledExtensions = findDependenciesInExtensions()
+        final precompiledExtensions = findDependenciesInExtensions()
         FileCollection fc = this.asciidocConfigurations.inject(asciidoctorj.configuration) {
             FileCollection seed, Object it ->
-                seed + asConfiguration(project, it)
+                seed + projectOperations.configurations.asConfiguration(it)
         }
-        precompiledExtensions ? fc + precompiledExtensions : fc
+        final gjp = projectOperations.fsOperations.files([gemJarProviders, fc])
+        precompiledExtensions ? gjp + precompiledExtensions : gjp
     }
 
     /** Override any existing configurations except the ones available via the {@code asciidoctorj} task extension.
@@ -318,44 +346,103 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
      */
     @Override
     Set<Configuration> getReportableConfigurations() {
-        ([asciidoctorj.configuration] + asConfigurations(project, asciidocConfigurations)).toSet()
+        ([asciidoctorj.configuration] + projectOperations.configurations.asConfigurations(asciidocConfigurations))
+                .toSet()
     }
 
     /**
-     * Additional locations to consider when GEMs are loaded by AsciidoctorJ or JRuby.
+     * Adds a Jar of GEMs to the classpath.
      *
-     * @return The additional GEM locations.
+     * @param gemJar Provider to a {@link Jar} task which contain GEMs
      *
      * @since 4.0
      */
-    @Internal
-    String getGemPath() {
-        asciidoctorj.asGemPath()
+    void withGemJar(TaskProvider<Jar> gemJar) {
+        dependsOn(gemJar)
+        this.gemJarProviders.add(gemJar.map { it.archiveFile.get().asFile })
     }
 
-    @SuppressWarnings('UnnecessaryGetter')
-    @TaskAction
-    void processAsciidocSources() {
-        validateConditions()
+    /**
+     * Adds a Jar of GEMs to the classpath.
+     *
+     * @param gemJar name of a {@link Jar} task which contain GEMs.
+     *
+     * @since 4.0
+     */
+    void withGemJar(String taskName) {
+        dependsOn(taskName)
+        final gemJar = project.tasks.named(taskName, Jar)
+        this.gemJarProviders.add(gemJar.map { it.archiveFile.get().asFile })
+    }
 
-        languagesAsOptionals.each { Optional<String> lang ->
-            Workspace workspace = lang.present ? prepareWorkspace(lang.get()) : prepareWorkspace()
-            Set<File> sourceFiles = workspace.sourceTree.files
+    /**
+     * Adds a directory to the classpath. THe directory will contain unpacked GEMs.
+     *
+     * @param gemPath A provider to a directory containing unpakcing GEMs.
+     *
+     * @param builtBy THe name of the task that prepares this directory.
+     *
+     * @since 4.0
+     */
+    void withGemPath(Provider<File> gemPath, String builtBy) {
+        dependsOn(builtBy)
+        this.gemJarProviders.add(gemPath)
+    }
 
-            if (finalProcessMode != JAVA_EXEC) {
-                runWithWorkers(
-                        workspace.workingSourceDir,
-                        sourceFiles,
-                        lang
-                )
-            } else {
-                runWithJavaExec(
-                        workspace.workingSourceDir,
-                        sourceFiles,
-                        lang
-                )
+    /**
+     * Sets the execution mode.
+     * <p>
+     * This allows for JVM tasks to be executed either on a worker queue inside the JVM using an isolated classpath,
+     * ouside the JVM in a separate process, OR using a classic {@code javaexec}.
+     *
+     * <p>
+     * If nothing is set, the default is {@link ExecutionMode#JAVA_EXEC}.
+     *
+     * @param em Execution mode.
+     * @throw UnsupportedConfigurationException is mode is illegal within context.
+     */
+    @Override
+    void setExecutionMode(ExecutionMode em) {
+        super.setExecutionMode(em)
+        inProcess = em
+
+        if (em == JAVA_EXEC) {
+            runnerSpec {
+                setArgs([getExecConfigurationDataFile(this).absolutePath])
             }
         }
+    }
+
+    void setExecutionMode(String s) {
+        executionMode = ExecutionMode.valueOf(s.toUpperCase(Locale.US))
+    }
+
+    @Override
+    void exec() {
+        checkForInvalidSourceDocuments()
+        checkForIncompatiblePathRoots(baseDirStrategy)
+
+        if (executionMode == JAVA_EXEC) {
+            entrypoint {
+                classpath(JavaExecUtils.getJavaExecClasspath(
+                        projectOperations,
+                        configurations,
+                        false // asciidoctorj.injectInternalGuavaJar
+                ))
+            }
+
+            final mapping = prepareWorkspaceAndLoadExecutorConfigurations()
+
+            JavaExecUtils.writeExecConfigurationData(
+                    execConfigurationDataFile,
+                    mapping.values().flatten() as List<ExecutorConfiguration>
+            )
+        } else {
+            entrypoint {
+                classpath(configurations)
+            }
+        }
+        super.exec()
     }
 
     /** Initialises the core an Asciidoctor task
@@ -365,31 +452,81 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
      */
     @SuppressWarnings('ThisReferenceEscapesConstructor')
     protected AbstractAsciidoctorTask(WorkerExecutor we) {
-        super()
-        this.worker = we
+        super(we)
+
+        this.asciidoctorTaskFileOperations = new DefaultAsciidoctorFileOperations(this, 'AsciidoctorJ')
+        this.workspacePreparation = new DefaultAsciidoctorWorkspacePreparation(
+                projectOperations,
+                this.asciidoctorTaskFileOperations,
+                this.asciidoctorTaskFileOperations
+        )
+        this.asciidoctorOutputOptions = new DefaultAsciidoctorOutputOptions(
+                projectOperations,
+                name,
+                asciidoctorTaskFileOperations
+        )
+        this.baseDirConfiguration = new DefaultAsciidoctorBaseDirConfiguration(project, this)
         this.asciidoctorj = extensions.create(AsciidoctorJExtension.NAME, AsciidoctorJExtension, this)
+        this.projectDir = project.projectDir
+        this.rootDir = project.rootDir
+        this.jvmClasspath = project.objects.property(FileCollection)
+        this.execConfigurationDataFile = getExecConfigurationDataFile(this)
+        this.detachedConfigurationCreator = { ConfigurationContainer c, List<Dependency> deps ->
+            final cfg = c.detachedConfiguration(deps.toArray() as Dependency[])
+            cfg.canBeConsumed = false
+            cfg.canBeResolved = true
+            cfg
+        }.curry(project.configurations) as Function<List<Dependency>, Configuration>
 
-        addInputProperty 'required-ruby-modules', { AsciidoctorJExtension aj -> aj.requires }
-                .curry(this.asciidoctorj)
+        inputs.files(this.asciidoctorj.configuration)
+        inputs.files { gemJarProviders }.withPathSensitivity(RELATIVE)
+        inputs.property 'backends', { -> backends() }
+        inputs.property 'asciidoctorj-version', { -> asciidoctorj.version }
+        inputs.property 'jruby-version', { -> asciidoctorj.jrubyVersion ?: '' }
+        execSpec = new AsciidoctorJvmExecSpec(projectOperations)
+        entrypoint {
+            mainClass = AsciidoctorJavaExec.canonicalName
+        }
 
-        addInputProperty 'asciidoctor-version', { AsciidoctorJExtension aj -> aj.version }
-                .curry(this.asciidoctorj)
-
-        addOptionalInputProperty 'jruby-version', { AsciidoctorJExtension aj -> aj.jrubyVersion }
-                .curry(this.asciidoctorj)
-
-        inputs.files { asciidoctorj.gemPaths }
-                .withPathSensitivity(RELATIVE)
+        executionMode = IN_PROCESS
     }
 
-    /** Name of implementation engine.
+    /**
+     * The Ascidoctor execution mode on the JVM.
      *
-     * @return Always{@code AsciidoctorJ}
+     * @return THe configured execution mode.
+     *
+     * @since 4.0
+     */
+    @Internal
+    protected ExecutionMode getExecutionMode() {
+        this.inProcess
+    }
+
+    /**
+     * Create a worker app executor factory.
+     *
+     * @return Instance of an execution factory.
+     *
+     * @since 4.0
      */
     @Override
-    @Internal
-    protected String getEngineName() {
-        'AsciidoctorJ'
+    protected WorkerAppExecutorFactory<AsciidoctorWorkerParameters> createExecutorFactory() {
+        new AsciidoctorExecutorFactory()
+    }
+
+    /**
+     * Create a worker app parameter factory.
+     *
+     * @return Instance of a parameter factory.
+     *
+     * @since 4.0
+     */
+    @Override
+    protected WorkerAppParameterFactory<AsciidoctorWorkerParameters> createParameterFactory() {
+        new AsciidoctorWorkerParameterFactory({ ->
+            owner.prepareWorkspaceAndLoadExecutorConfigurations()
+        })
     }
 
     /**
@@ -407,7 +544,7 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
             final Set<File> sourceFiles,
             Optional<String> lang
     ) {
-        configuredOutputOptions.backends.collectEntries { String activeBackend ->
+        backends().collectEntries { String activeBackend ->
             [
                     "backend=${activeBackend}".toString(),
                     getExecutorConfigurationFor(activeBackend, workingSourceDir, sourceFiles, lang)
@@ -424,22 +561,21 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
      *   for generating documentation.
      * @return Executor configuration
      */
-    @SuppressWarnings('UnnecessaryGetter')
+    @SuppressWarnings(['UnnecessaryGetter', 'LineLength'])
     protected ExecutorConfiguration getExecutorConfigurationFor(
             final String backendName,
             final File workingSourceDir,
             final Set<File> sourceFiles,
             Optional<String> lang
     ) {
-
         Optional<List<String>> copyResources = getCopyResourcesForBackends()
         new ExecutorConfiguration(
                 sourceDir: workingSourceDir,
                 sourceTree: sourceFiles,
-                outputDir: lang.present ? getOutputDirFor(backendName, lang.get()) : getOutputDirFor(backendName),
+                outputDir: lang.present ? getOutputDirForBackend(backendName, lang.get()) : getOutputDirForBackend(backendName),
                 baseDir: lang.present ? getBaseDir(lang.get()) : getBaseDir(),
-                projectDir: project.projectDir,
-                rootDir: project.rootProject.projectDir,
+                projectDir: this.projectDir,
+                rootDir: this.rootDir,
                 options: resolveAsSerializable(evaluateProviders(options), projectOperations.stringTools),
                 failureLevel: failureLevel.level,
                 attributes: resolveAsSerializable(
@@ -448,10 +584,9 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
                 ),
                 backendName: backendName,
                 logDocuments: logDocuments,
-                gemPath: gemPath,
                 fatalMessagePatterns: asciidoctorj.fatalWarnings,
                 asciidoctorExtensions: (asciidoctorJExtensions.findAll { !(it instanceof Dependency) }),
-                requires: requires,
+                requires: asciidoctorj.requires,
                 copyResources: copyResources.present &&
                         (copyResources.get().empty || backendName in copyResources.get()),
                 executorLogLevel: ExecutorUtils.getExecutorLogLevel(asciidoctorj.logLevel),
@@ -468,167 +603,79 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         asciidoctorj.docExtensions
     }
 
-    /** Configure Java fork options prior to execution.
-     *
-     * The default method will copy anything configured via {@link #forkOptions(Closure c)} or
-     * {@link #forkOptions(Action c)} to the provided {@link JavaForkOptions}.
-     *
-     * @param pfo Fork options to be configured.
-     */
-    protected void configureForkOptions(JavaForkOptions pfo) {
-        this.javaForkOptions.copyTo(pfo)
+    @Nested
+    protected AsciidoctorTaskFileOperations getAsciidoctorTaskFileOperations() {
+        this.asciidoctorTaskFileOperations
     }
 
-    /** Allow a task to enhance additional '{@code requires}'
-     *
-     * The default implementation will add a special script to deal with verbose mode.
-     *
-     * @return The final set of '{@code requires}'
-     */
-    @Internal
-    protected List<String> getRequires() {
-        asciidoctorj.requires
+    @Nested
+    protected AsciidoctorTaskWorkspacePreparation getWorkspacePreparation() {
+        this.workspacePreparation
     }
 
-    /** Selects a final process mode.
-     *
-     * Some incompatibilities can cause certain process mode to fail given a combination of factors.
-     *
-     * Task implementations can override this method to select a safe process mode, than the one provided by the
-     * build script author. The default implementation will simply return whatever what was configured, except in the
-     * case for Gradle 4.3 or older in which case it will always return {@link #JAVA_EXEC}.
-     *
-     * @return Process mode to use for execution.
-     */
-    @Internal
-    protected ProcessMode getFinalProcessMode() {
-        if (inProcess != JAVA_EXEC && GradleVersion.current() < GradleVersion.version(('4.3'))) {
-            logger.warn('Gradle API classpath leakage will cause issues with Gradle < 4.3. ' +
-                    'Switching to JAVA_EXEC instead.')
-            JAVA_EXEC
+    @Nested
+    protected AsciidoctorTaskOutputOptions getAsciidoctorOutputOptions() {
+        this.asciidoctorOutputOptions
+    }
+
+    @Nested
+    protected AsciidoctorTaskBaseDirConfiguration getBaseDirConfiguration() {
+        this.baseDirConfiguration
+    }
+
+    private static List<File> ifNoGroovyAddLocal(final List<Dependency> deps) {
+        if (deps.find {
+            it.name == 'groovy-all' || it.name == 'groovy'
+        }) {
+            []
         } else {
-            this.inProcess
+            [JavaExecUtils.localGroovy]
         }
     }
 
-    private Map<String, ExecutorConfiguration> runWithWorkers(
-            final File workingSourceDir,
-            final Set<File> sourceFiles,
-            Optional<String> lang
-    ) {
-        FileCollection asciidoctorClasspath = configurations
-        logger.info "Running AsciidoctorJ with workers. Classpath = ${asciidoctorClasspath.files}"
+    private Map<String, Workspace> prepareWorkspacesByLanguage() {
+        languagesAsOptionals.collectEntries { Optional<String> lang ->
+            Workspace workspace = prepareWorkspace(lang)
+            [lang.orElse(''), workspace]
+        }
+    }
 
-        Map<String, ExecutorConfiguration> executorConfigurations = getExecutorConfigurations(
-                workingSourceDir,
-                sourceFiles,
-                lang
-        )
+    private Map<String, List<ExecutorConfiguration>> prepareWorkspaceAndLoadExecutorConfigurations() {
+        final sourcesByLang = prepareWorkspacesByLanguage()
+        final mapping = sourcesByLang.collectEntries { lang, workspace ->
+            final byLang = Optional.ofNullable(lang)
+            List<ExecutorConfiguration> loadedConfigurations = getExecutorConfigurations(
+                    workspace.workingSourceDir,
+                    workspace.sourceTree.files,
+                    byLang
+            ).values().toList()
+            copyResourcesByExecutorConfiguration(loadedConfigurations, byLang)
+            [lang, loadedConfigurations]
+        } as Map<String, List<ExecutorConfiguration>>
 
-        if (parallelMode) {
-            WorkQueue queue = getWorkQueue(asciidoctorClasspath)
-            executorConfigurations.each { String configName, ExecutorConfiguration executorConfiguration ->
-                copyResourcesByBackend(executorConfiguration, lang)
-                queue.submit(AsciidoctorJExecuterWorker) { params ->
-                    params.extensionConfigurationContainer =
-                        new ExecutorConfigurationContainer(executorConfiguration)
-                }
-            }
+        mapping
+    }
+
+    private List<Optional<String>> getLanguagesAsOptionals() {
+        if (this.languages.empty) {
+            [Optional.empty() as Optional<String>]
         } else {
-            copyResourcesByBackend(executorConfigurations.values(), lang)
-            getWorkQueue(asciidoctorClasspath).submit(AsciidoctorJExecuterWorker) { params ->
-                params.extensionConfigurationContainer =
-                    new ExecutorConfigurationContainer(executorConfigurations.values())
+            Transform.toList(this.languages) { String it ->
+                Optional.of(it)
             }
         }
-        executorConfigurations
     }
 
-    private WorkQueue getWorkQueue(FileCollection asciidoctorClasspath) {
-        IN_PROCESS ?
-            worker.classLoaderIsolation(configureClassloaderIsolatedWorker(asciidoctorClasspath)) :
-            worker.processIsolation(configureProcessIsolatedWorker(asciidoctorClasspath))
-    }
-
-    private Closure configureClassloaderIsolatedWorker(FileCollection asciidoctorClasspath) {
-        return { ClassLoaderWorkerSpec spec ->
-            spec.classpath.from(asciidoctorClasspath)
-        }
-    }
-
-    private Closure configureProcessIsolatedWorker(FileCollection asciidoctorClasspath) {
-        return { ProcessWorkerSpec spec ->
-            spec.classpath.from(asciidoctorClasspath)
-            configureForkOptions(spec.forkOptions)
-        }
-    }
-
-    private Map<String, ExecutorConfiguration> runWithJavaExec(
-            final File workingSourceDir,
-            final Set<File> sourceFiles,
-            Optional<String> lang
-    ) {
-        FileCollection javaExecClasspath = JavaExecUtils.getJavaExecClasspath(
-                project,
-                configurations,
-                asciidoctorj.injectInternalGuavaJar
-        )
-        Map<String, ExecutorConfiguration> executorConfigurations = getExecutorConfigurations(
-                workingSourceDir,
-                sourceFiles,
-                lang
-        )
-        File execConfigurationData = JavaExecUtils.writeExecConfigurationData(this, executorConfigurations.values())
-        copyResourcesByBackend(executorConfigurations.values(), lang)
-
-        logger.debug("Serialised AsciidoctorJ configuration to ${execConfigurationData}")
-        logger.info "Running AsciidoctorJ instance with classpath ${javaExecClasspath.files}"
-
-        try {
-            project.javaexec { JavaExecSpec jes ->
-                configureForkOptions(jes)
-                logger.debug "Running AsciidoctorJ instance with environment: ${jes.environment}"
-                jes.with {
-                    setExecClass(jes, AsciidoctorJavaExec.canonicalName)
-                    classpath = javaExecClasspath
-                    args execConfigurationData.absolutePath
-                }
-            }
-        } catch (GradleException e) {
-            throw new AsciidoctorRemoteExecutionException(
-                    'Remote Asciidoctor process failed to complete successfully',
-                    e
-            )
-        }
-
-        executorConfigurations
-    }
-
-    /** Attempt to use the mainClass property if we're running a recent enough Gradle version,
-     * else revert to the old property.
-     *
-     * The main property will be removed from JavaExecSpec in Gradle 8.0 and replaced by
-     * the mainClass property that was added in 6.4.
-     */
-    @CompileDynamic
-    private void setExecClass(JavaExecSpec jes, String execClass) {
-        if (PRE_6_4) {
-            jes.main = execClass
-        } else {
-            jes.mainClass = execClass
-        }
-    }
-
-    private void copyResourcesByBackend(
+    private void copyResourcesByExecutorConfiguration(
             Iterable<ExecutorConfiguration> executorConfigurations,
             Optional<String> lang
     ) {
         for (ExecutorConfiguration ec : executorConfigurations) {
-            copyResourcesByBackend(ec, lang)
+            copyResourcesByExecutorConfiguration(ec, lang)
         }
     }
 
-    private void copyResourcesByBackend(
+    private void copyResourcesByExecutorConfiguration(
             ExecutorConfiguration ec,
             Optional<String> lang
     ) {
@@ -654,44 +701,29 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         }
 
         if (deps.empty && closurePaths.empty) {
-            null
+            projectOperations.fsOperations.emptyFileCollection()
         } else if (closurePaths.empty) {
             jrubyLessConfiguration(deps)
         } else if (deps.empty) {
-            project.files(closurePaths)
+            projectOperations.fsOperations.files(closurePaths)
         } else {
-            jrubyLessConfiguration(deps) + project.files(closurePaths)
+            jrubyLessConfiguration(deps) + projectOperations.fsOperations.files(closurePaths)
         }
     }
 
-    private List<File> ifNoGroovyAddLocal(final List<Dependency> deps) {
-        if (deps.find {
-            it.name == 'groovy-all' || it.name == 'groovy'
-        }) {
-            []
-        } else {
-            [JavaExecUtils.localGroovy]
-        }
-    }
-
-    @CompileDynamic
-    private Configuration jrubyLessConfiguration(List<Dependency> deps) {
-        Configuration cfg = project.configurations.detachedConfiguration(deps.toArray() as Dependency[])
-        cfg.resolutionStrategy.eachDependency { DependencyResolveDetails dsr ->
-            dsr.with {
-                if (target.name == 'jruby' && target.group == 'org.jruby') {
-                    useTarget "org.jruby:jruby:${target.version}"
-                }
-            }
-        }
+    // TODO: Try to do this without a detached configuration
+    private FileCollection jrubyLessConfiguration(List<Dependency> deps) {
+        Configuration cfg = detachedConfigurationCreator.apply(deps)
+        asciidoctorj.loadJRubyResolutionStrategy(cfg)
         cfg
     }
 
     private Map<String, Object> preparePreserialisedAttributes(final File workingSourceDir, Optional<String> lang) {
         prepareAttributes(
-                workingSourceDir,
+                projectOperations.stringTools,
                 attributes,
-                lang.present ? asciidoctorj.getAttributesForLang(lang.get()) : [:],
+                (lang.present ? asciidoctorj.getAttributesForLang(lang.get()) : [:]),
+                getTaskSpecificDefaultAttributes(workingSourceDir) as Map<String, ?>,
                 attributeProviders,
                 lang
         )
@@ -703,16 +735,17 @@ class AbstractAsciidoctorTask extends AbstractAsciidoctorBaseTask {
         } as List<Closure>
     }
 
-    @SuppressWarnings('AbstractClassWithoutAbstractMethod')
-    abstract static class AsciidoctorJExecuterWorker implements WorkAction<Params> {
-        static interface Params extends WorkParameters {
-            ExecutorConfigurationContainer getExtensionConfigurationContainer()
-            void setExtensionConfigurationContainer(ExecutorConfigurationContainer container)
-        }
-
-        @Override
-        void execute() {
-            new AsciidoctorJExecuter(parameters.extensionConfigurationContainer).run()
-        }
-    }
+//    @SuppressWarnings('AbstractClassWithoutAbstractMethod')
+//    abstract static class AsciidoctorJExecuterWorker implements WorkAction<Params> {
+//        static interface Params extends WorkParameters {
+//            ExecutorConfigurationContainer getExtensionConfigurationContainer()
+//
+//            void setExtensionConfigurationContainer(ExecutorConfigurationContainer container)
+//        }
+//
+//        @Override
+//        void execute() {
+//            new AsciidoctorJExecuter(parameters.extensionConfigurationContainer).run()
+//        }
+//    }
 }

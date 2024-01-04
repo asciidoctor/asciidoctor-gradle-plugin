@@ -1,5 +1,5 @@
 apply plugin: AsciidoctorGradleGroovyProject
-apply plugin: 'java-library'
+
 generateModuleVersions {
     basename = 'testfixtures-core'
     propertyNames ~/.+/
@@ -14,12 +14,11 @@ dependencies {
     implementation localGroovy()
     implementation gradleApi()
     implementation gradleTestKit()
-    api "org.ysb33r.gradle:grolifant70:${grolifantVersion}"
-    implementation 'junit:junit:4.12'
+    api "org.ysb33r.gradle:grolifant-herd:${agProject.versionOf('grolifant')}"
     api 'commons-io:commons-io:2.6'
     implementation "org.jsoup:jsoup:$jsoupVersion"
     implementation "cglib:cglib-nodep:$cglibVersion"
-    implementation("org.spockframework:spock-core:$spockVersion") {
+    implementation("org.spockframework:spock-core:${agProject.versionOf('spock')}") {
         exclude group: 'org.codehaus.groovy'
         exclude group: 'org.hamcrest', module: 'hamcrest-core'
     }

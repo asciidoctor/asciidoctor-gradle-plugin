@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.util.GradleVersion
 import org.ysb33r.grolifant.api.core.OperatingSystem
+import org.ysb33r.grolifant.api.core.ProjectOperations
 
 import java.nio.file.Path
 
@@ -53,7 +54,7 @@ class AsciidoctorUtils {
     static final Spec<? super File> ACCEPT_ONLY_FILES = new Spec<File>() {
         @Override
         boolean isSatisfiedBy(File element) {
-            element.isFile()
+            element.file
         }
     }
 
@@ -67,20 +68,40 @@ class AsciidoctorUtils {
      * @param filePatterns Patterns to use to identify suitable sources.
      * @return A collection of suitable files.
      * @throw {@link GradleException} is files starting with undersocres are detected.
+     *
+     * @deprecated
      */
+    @Deprecated
     static FileTree getSourceFileTree(final Project project, final File sourceDir, final PatternSet filePatterns) {
-        FileTree ft = project.fileTree(sourceDir).
-            matching(filePatterns).filter(ACCEPT_ONLY_FILES).asFileTree
+        getSourceFileTree(
+                ProjectOperations.find(project),
+                sourceDir,
+                filePatterns
+        )
+    }
+
+    /** Gets a fileTree that described an Asciidoctor set of source files.
+     *
+     * @param po {@link ProjectOperations} instance to applu
+     * @param sourceDir Base directory for the sourcs.
+     * @param filePatterns Patterns to use to identify suitable sources.
+     * @return A collection of suitable files.
+     * @throw {@link GradleException} is files starting with undersocres are detected.
+     */
+    static FileTree getSourceFileTree(final ProjectOperations po, final File sourceDir, final PatternSet filePatterns) {
+        FileTree ft = po.fileTree(sourceDir).
+                matching(filePatterns).filter(ACCEPT_ONLY_FILES).asFileTree
 
         ft.visit { FileVisitDetails it ->
             if (it.name.startsWith('_')) {
                 throw new GradleException("Sources starting with '_' found. This is not allowed. " +
-                    "Current sources are: ${ft.files}")
+                        "Current sources are: ${ft.files}")
             }
         }
 
         ft
     }
+
     /*
      */
     /** Normalises slashes in a path.
@@ -168,11 +189,7 @@ class AsciidoctorUtils {
      * @since 3.0
      */
     static <T> void setConvention(Property<T> property, Provider<T> value) {
-        if (GRADLE_LT_5_1) {
-            doSetPropertyConventionPre51(property, value)
-        } else {
-            doSetPropertyConvention(property, value)
-        }
+        doSetPropertyConvention(property, value)
     }
 
     /** Maps a file object to a directory provider
@@ -202,28 +219,7 @@ class AsciidoctorUtils {
      * @since 3.0
      */
     static DirectoryProperty createDirectoryProperty(Project project) {
-        if (GRADLE_LT_5_0) {
-            doCreateDirectoryPropertyPre50(project)
-        } else {
-            doCreateDirectoryProperty(project)
-        }
-    }
-
-    @CompileDynamic
-    private static DirectoryProperty doCreateDirectoryPropertyPre50(Project project) {
-        project.layout.directoryProperty()
-    }
-
-    @CompileDynamic
-    private static DirectoryProperty doCreateDirectoryProperty(Project project) {
         project.objects.directoryProperty()
-    }
-
-    @CompileDynamic
-    private static <T> void doSetPropertyConventionPre51(Property<T> property, Provider<T> value) {
-        if (!property.isPresent()) {
-            property.set(value)
-        }
     }
 
     @CompileDynamic

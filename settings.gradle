@@ -1,6 +1,24 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+        mavenLocal()
+    }
+}
+
+plugins {
+    id "com.gradle.enterprise" version "3.16.1"
+}
+
+gradleEnterprise {
+    buildScan {
+        termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+        termsOfServiceAgree = 'yes'
+    }
+}
+
 rootProject.name = 'asciidoctor-gradle-plugin'
 
-//include 'kindlegen-gradle'
 include 'asciidoctoreditorconfig'
 
 ['offline-repo', 'jvm'].each {
@@ -8,17 +26,24 @@ include 'asciidoctoreditorconfig'
     project(":testfixtures/${it}").name = "testfixtures-${it}"
 }
 
-[ 'js', 'base', 'slides-export', 'jvm' ].each {
+['base', 'js', 'jvm'].each {
     include it
     project(":${it}").name = "asciidoctor-gradle-${it}"
 }
 
-[ 'epub', 'pdf', 'leanpub', 'slides' ].each {
+['pdf', 'epub'/*,  'leanpub' */].each {
     include "jvm-${it}"
     project(":jvm-${it}").name = "asciidoctor-gradle-jvm-${it}"
 }
 
-[ 'gems' ].each {
+////[  'slides-export' ].each {
+////    include it
+////    project(":${it}").name = "asciidoctor-gradle-${it}"
+////}
+//
+
+
+['gems' /*, 'slides'*/].each {
     include it
     project(":${it}").name = "asciidoctor-gradle-jvm-${it}"
 }

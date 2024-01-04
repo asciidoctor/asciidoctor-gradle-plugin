@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,10 +55,10 @@ class MultiLanguageFunctionalSpec extends FunctionalSpecification {
 
         then:
         verifyAll {
-            new File(testProjectDir.root, 'build/docs/asciidoc/en/sample.html').exists()
-            new File(testProjectDir.root, 'build/docs/asciidoc/es/sample.html').exists()
-            new File(testProjectDir.root, 'build/docs/asciidoc/en/images/fake.txt').exists()
-            new File(testProjectDir.root, 'build/docs/asciidoc/es/images/fake.txt').exists()
+            new File(buildDir, 'docs/asciidoc/en/sample.html').exists()
+            new File(buildDir, 'docs/asciidoc/es/sample.html').exists()
+            new File(buildDir, 'docs/asciidoc/en/images/fake.txt').exists()
+            new File(buildDir, 'docs/asciidoc/es/images/fake.txt').exists()
         }
     }
 
@@ -83,12 +83,12 @@ class MultiLanguageFunctionalSpec extends FunctionalSpecification {
 
         then:
         verifyAll {
-            new File(testProjectDir.root, 'build/docs/asciidoc/en/html5/sample.html').exists()
-            new File(testProjectDir.root, 'build/docs/asciidoc/es/html5/sample.html').exists()
-            new File(testProjectDir.root, 'build/docs/asciidoc/en/html5/images/fake.txt').exists()
-            new File(testProjectDir.root, 'build/docs/asciidoc/es/html5/images/fake.txt').exists()
-            new File(testProjectDir.root, 'build/docs/asciidoc/en/docbook/sample.xml').exists()
-            new File(testProjectDir.root, 'build/docs/asciidoc/es/docbook/sample.xml').exists()
+            new File(buildDir, 'docs/asciidoc/en/html5/sample.html').exists()
+            new File(buildDir, 'docs/asciidoc/es/html5/sample.html').exists()
+            new File(buildDir, 'docs/asciidoc/en/html5/images/fake.txt').exists()
+            new File(buildDir, 'docs/asciidoc/es/html5/images/fake.txt').exists()
+            new File(buildDir, 'docs/asciidoc/en/docbook/sample.xml').exists()
+            new File(buildDir, 'docs/asciidoc/es/docbook/sample.xml').exists()
         }
     }
 
@@ -113,10 +113,10 @@ class MultiLanguageFunctionalSpec extends FunctionalSpecification {
 
         then:
         verifyAll {
-            new File(testProjectDir.root, 'build/docs/asciidoc/en/html5/sample.html').exists()
-            new File(testProjectDir.root, 'build/docs/asciidoc/es/html5/sample.html').exists()
-            new File(testProjectDir.root, 'build/docs/asciidoc/en/docbook/sample.xml').exists()
-            new File(testProjectDir.root, 'build/docs/asciidoc/es/docbook/sample.xml').exists()
+            new File(buildDir, 'docs/asciidoc/en/html5/sample.html').exists()
+            new File(buildDir, 'docs/asciidoc/es/html5/sample.html').exists()
+            new File(buildDir, 'docs/asciidoc/en/docbook/sample.xml').exists()
+            new File(buildDir, 'docs/asciidoc/es/docbook/sample.xml').exists()
         }
     }
 
@@ -144,9 +144,9 @@ class MultiLanguageFunctionalSpec extends FunctionalSpecification {
 
         then:
         verifyAll {
-            new File(testProjectDir.root, 'build/docs/asciidoc/en/sample.html').text
+            new File(buildDir, 'docs/asciidoc/en/sample.html').text
                 .contains('<meta name="asciidoctor-docinfo-test"/>')
-            new File(testProjectDir.root, 'build/docs/asciidoc/es/sample.html').text
+            new File(buildDir, 'docs/asciidoc/es/sample.html').text
                 .contains('<meta name="asciidoctor-docinfo-test"/>')
         }
     }
@@ -165,7 +165,7 @@ class MultiLanguageFunctionalSpec extends FunctionalSpecification {
 
             sourceDir 'src/docs/asciidoc'
 
-            attributes docinfo: 'shared'
+            attributes docinfo: 'shared', description: 'asciidoctor-docinfo-test'
             baseDirFollowsSourceDir()
             useIntermediateWorkDir()
         }
@@ -176,10 +176,10 @@ class MultiLanguageFunctionalSpec extends FunctionalSpecification {
 
         then:
         verifyAll {
-            new File(testProjectDir.root, 'build/docs/asciidoc/en/sample.html').text
-                .contains('<meta name="asciidoctor-docinfo-test"/>')
-            new File(testProjectDir.root, 'build/docs/asciidoc/es/sample.html').text
-                .contains('<meta name="asciidoctor-docinfo-test"/>')
+            new File(buildDir, 'docs/asciidoc/en/sample.html').text
+                .contains('<meta name="description" content="asciidoctor-docinfo-test">')
+            new File(buildDir, 'docs/asciidoc/es/sample.html').text
+                .contains('<meta name="description" content="asciidoctor-docinfo-test">')
         }
     }
 
@@ -219,16 +219,16 @@ class MultiLanguageFunctionalSpec extends FunctionalSpecification {
 
         then:
         verifyAll {
-            new File(testProjectDir.root, 'build/docs/asciidoc/en/sample.html').exists()
-            new File(testProjectDir.root, 'build/docs/asciidoc/es/sample.html').exists()
-            new File(testProjectDir.root, 'build/docs/asciidoc/en/foo/fake-en.txt').exists()
-            new File(testProjectDir.root, 'build/docs/asciidoc/en/foo/fake-common.txt').exists()
-            new File(testProjectDir.root, 'build/docs/asciidoc/es/foo/fake-es.txt').exists()
-            new File(testProjectDir.root, 'build/docs/asciidoc/es/foo/fake-common.txt').exists()
-            !new File(testProjectDir.root, 'build/docs/asciidoc/en/images/fake.txt').exists()
-            !new File(testProjectDir.root, 'build/docs/asciidoc/es/images/fake.txt').exists()
-            !new File(testProjectDir.root, 'build/docs/asciidoc/en/foo/fake-es.txt').exists()
-            !new File(testProjectDir.root, 'build/docs/asciidoc/es/foo/fake-en.txt').exists()
+            new File(buildDir, 'docs/asciidoc/en/sample.html').exists()
+            new File(buildDir, 'docs/asciidoc/es/sample.html').exists()
+            new File(buildDir, 'docs/asciidoc/en/foo/fake-en.txt').exists()
+            new File(buildDir, 'docs/asciidoc/en/foo/fake-common.txt').exists()
+            new File(buildDir, 'docs/asciidoc/es/foo/fake-es.txt').exists()
+            new File(buildDir, 'docs/asciidoc/es/foo/fake-common.txt').exists()
+            !new File(buildDir, 'docs/asciidoc/en/images/fake.txt').exists()
+            !new File(buildDir, 'docs/asciidoc/es/images/fake.txt').exists()
+            !new File(buildDir, 'docs/asciidoc/en/foo/fake-es.txt').exists()
+            !new File(buildDir, 'docs/asciidoc/es/foo/fake-en.txt').exists()
         }
     }
 

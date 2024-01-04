@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.base
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.testfixtures.ProjectBuilder
+import org.ysb33r.grolifant.api.core.ProjectOperations
 import spock.lang.Specification
 
 class AbstractImplementationEngineExtensionSpec extends Specification {
@@ -31,6 +32,7 @@ class AbstractImplementationEngineExtensionSpec extends Specification {
     Task proxyTask
 
     void setup() {
+        ProjectOperations.maybeCreateExtension(project)
         projectExtension = project.extensions.create(EXTNAME, TestExtension, project)
         proxyTask = project.tasks.create('proxyTask')
         taskExtension = proxyTask.extensions.create(EXTNAME, TestExtension, proxyTask, EXTNAME)

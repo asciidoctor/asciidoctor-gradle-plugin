@@ -35,6 +35,7 @@ import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.options.Option
 import org.gradle.util.GradleVersion
+import org.ysb33r.grolifant.api.core.ProjectOperations
 
 import java.util.concurrent.Callable
 
@@ -48,9 +49,9 @@ abstract class AbstractExportBaseTask extends DefaultTask {
     private final static boolean GRADLE_GE_4_8 = GradleVersion.current() >= GradleVersion.version('4.8')
     private final static String HTML_EXT = '.html'
     private final List<Object> slideInputFiles = []
+    private final ProjectOperations projectOperations
     private Object outputDir
     private Callable<Profile> profileProvider
-//    private Provider<Map<String, Object>> parametersProvider
     private Integer height
     private Integer width
 
@@ -244,6 +245,10 @@ abstract class AbstractExportBaseTask extends DefaultTask {
         }
     }
 
+    protected AbstractExportBaseTask() {
+        this.projectOperations = ProjectOperations.find(project)
+    }
+
     /** The list of profiles supported by this conversion task.
      *
      * @return List of profiles. Never {@code null} or empty.
@@ -257,6 +262,18 @@ abstract class AbstractExportBaseTask extends DefaultTask {
      * @return Formatted output file name
      */
     abstract protected String outputFileNameFromInput(File input)
+
+    /**
+     * Access to {@link ProjectOperations}.
+     *
+     * @return {@code ProjecOperations} that is associated with the current project.
+     *
+     * @since 4.0
+     */
+    @Internal
+    protected ProjectOperations getProjectOperations() {
+        this.projectOperations
+    }
 
     @CompileDynamic
     private void checkTaskDependencies(Iterable<Object> tasks) {

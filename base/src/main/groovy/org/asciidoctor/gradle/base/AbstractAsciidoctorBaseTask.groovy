@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,7 @@ package org.asciidoctor.gradle.base
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.base.basedir.BaseDirFollowsProject
-import org.asciidoctor.gradle.base.basedir.BaseDirFollowsRootProject
-import org.asciidoctor.gradle.base.basedir.BaseDirIsFixedPath
-import org.asciidoctor.gradle.base.basedir.BaseDirIsNull
+import org.asciidoctor.gradle.base.internal.DefaultAsciidoctorBaseDirConfiguration
 import org.asciidoctor.gradle.base.internal.Workspace
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
@@ -32,27 +29,20 @@ import org.gradle.api.file.CopySpec
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileTree
 import org.gradle.api.file.FileTreeElement
+import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.Console
-import org.gradle.api.tasks.IgnoreEmptyDirectories
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.OutputDirectories
 import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.PathSensitive
-import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.api.tasks.util.PatternSet
-import org.gradle.util.GradleVersion
 import org.ysb33r.grolifant.api.core.ProjectOperations
-import org.ysb33r.grolifant.api.v4.FileUtils
-import org.ysb33r.grolifant.api.v4.StringUtils
 
 import java.nio.file.Path
-import java.util.concurrent.Callable
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.UNDERSCORE_LED_FILES
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.createDirectoryProperty
@@ -60,8 +50,10 @@ import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClos
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.mapToDirectoryProvider
 import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 import static org.ysb33r.grolifant.api.core.TaskInputFileOptions.IGNORE_EMPTY_DIRECTORIES
+import static org.ysb33r.grolifant.api.core.TaskInputFileOptions.SKIP_WHEN_EMPTY
 
-/** Abstract base task for Asciidoctor that can be shared between AsciidoctorJ and Asciidoctor.js.
+/**
+ * Abstract base task for Asciidoctor that can be shared between AsciidoctorJ and Asciidoctor.js.
  *
  * @author Schalk W. Cronjé
  * @author Lari Hotari
@@ -71,24 +63,25 @@ import static org.ysb33r.grolifant.api.core.TaskInputFileOptions.IGNORE_EMPTY_DI
  */
 @CompileStatic
 @SuppressWarnings(['MethodCount', 'ClassSize'])
-abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
+abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements AsciidoctorTaskMethods {
 
-    private static final boolean GRADLE_LT_4_3 = GradleVersion.current() < GradleVersion.version('4.3')
+    @Delegate
+    private final AsciidoctorTaskBaseDirConfiguration baseDirConfiguration
 
     private final DirectoryProperty srcDir
     private final DirectoryProperty outDir
     private final ProjectOperations projectOperations
-    private BaseDirStrategy baseDir
     private PatternSet sourceDocumentPattern
     private PatternSet secondarySourceDocumentPattern
     private CopySpec resourceCopy
     private List<String> copyResourcesForBackends = []
     private boolean withIntermediateWorkDir = false
-    private PatternSet intermediateArtifactPattern
     private final List<String> languages = []
     private final Map<String, CopySpec> languageResources = [:]
     private final OutputOptions configuredOutputOptions = new OutputOptions()
     private final Provider<String> defaultRevNumber
+    private final Provider<File> intermediateWorkDirProvider
+    private final Property<PatternSet> intermediateArtifactPattern
 
     /** Logs documents as they are converted
      *
@@ -151,100 +144,6 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
     @Internal
     DirectoryProperty getOutputDirProperty() {
         this.outDir
-    }
-
-    /** Base directory (current working directory) for a conversion.
-     *
-     * @return Base directory.
-     */
-    // IMPORTANT: Do not change this to @InputDirectory as it can lead to file locking issues on
-    // Windows. In reality we do not need to track contents of the directory
-    // simply the value change - we achieve that via a normal property.
-    @Internal
-    File getBaseDir() {
-        if (!languages.empty) {
-            throw new AsciidoctorMultiLanguageException('Use getBaseDir(lang) instead')
-        }
-        this.baseDir ? this.baseDir.baseDir : project.projectDir
-    }
-
-    /** Base directory (current working directory) for a conversion.
-     *
-     * Depending on the strateggy in use, the source language used in the conversion
-     * may change the final base directory relative to the value returned by {@link #getBaseDir}.
-     *
-     * @param lang Language in use
-     * @return Language-dependent base directory
-     */
-    File getBaseDir(String lang) {
-        this.baseDir ? this.baseDir.getBaseDir(lang) : project.projectDir
-    }
-
-    /** Sets the base directory for a conversion.
-     *
-     * The base directory is used by AsciidoctorJ to set a current working directory for
-     * a conversion.
-     *
-     * If never set, then {@code project.projectDir} will be assumed to be the base directory.
-     *
-     * @param f Base directory
-     */
-    void setBaseDir(Object f) {
-        switch (f) {
-            case BaseDirStrategy:
-                this.baseDir = (BaseDirStrategy) f
-                break
-            case null:
-                this.baseDir = BaseDirIsNull.INSTANCE
-                break
-            default:
-                this.baseDir = new BaseDirIsFixedPath(project.providers.provider({
-                    project.file(f)
-                } as Callable<File>))
-        }
-    }
-
-    /** Sets the basedir to be the same directory as the root project directory.
-     *
-     * @return A strategy that allows the basedir to be locked to the root project.
-     *
-     * @since 2.2.0
-     */
-    void baseDirIsRootProjectDir() {
-        this.baseDir = new BaseDirFollowsRootProject(project)
-    }
-
-    /** Sets the basedir to be the same directory as the current project directory.
-     *
-     * @return A strategy that allows the basedir to be locked to the current project.
-     *
-     * @since 2.2.0
-     */
-    void baseDirIsProjectDir() {
-        this.baseDir = new BaseDirFollowsProject(project)
-    }
-
-    /** The base dir will be the same as the source directory.
-     *
-     * If an intermediate working directory is used, the the base dir will be where the
-     * source directory is located within the temporary working directory.
-     *
-     * @return A strategy that allows the basedir to be locked to the current project.
-     *
-     * @since 2.2.0
-     */
-    void baseDirFollowsSourceDir() {
-        this.baseDir = new BaseDirIsFixedPath(project.providers.provider({ AbstractAsciidoctorBaseTask task ->
-            task.withIntermediateWorkDir ? task.intermediateWorkDir : task.sourceDir
-        }.curry(this) as Callable<File>))
-    }
-
-    /** Sets the basedir to be the same directory as each individual source file.
-     *
-     * @since 3.0.0
-     */
-    void baseDirFollowsSourceFile() {
-        this.baseDir = BaseDirIsNull.INSTANCE
     }
 
     /** Configures sources.
@@ -332,10 +231,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      *
      * @since 1.5.1
      */
-    @InputFiles
-    @SkipWhenEmpty
-    @IgnoreEmptyDirectories
-    @PathSensitive(RELATIVE)
+    @Internal
     FileTree getSourceFileTree() {
         if (languages.empty) {
             getSourceFileTreeFrom(sourceDir)
@@ -355,9 +251,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * @return Collection of secondary source files
      *
      */
-    @InputFiles
-    @IgnoreEmptyDirectories
-    @PathSensitive(RELATIVE)
+    @Internal
     FileTree getSecondarySourceFileTree() {
         if (languages.empty) {
             getSecondarySourceFileTreeFrom(sourceDir)
@@ -471,6 +365,28 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         Optional.ofNullable(this.copyResourcesForBackends)
     }
 
+    /**
+     * A provider of patterns identifying intermediate artifacts.
+     *
+     * @return Provider to a {@link PatternSet}. Can be empty.
+     */
+    @Override
+    Provider<PatternSet> getIntermediateArtifactPatternProvider() {
+        this.intermediateArtifactPattern
+    }
+
+    /**
+     * Returns the copy specification for the resources of a specific language.
+     *
+     * @param lang Language
+     *
+     * @return Copy specification. Can be {@code null}.
+     */
+    @Override
+    CopySpec getLanguageResourceCopySpec(String lang) {
+        languageResources[lang]
+    }
+
     /** Some extensions such as {@code ditaa} creates images in the source directory.
      *
      * Use this setting to copy all sources and resources to an intermediate work directory
@@ -493,10 +409,10 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      */
     void withIntermediateArtifacts(@DelegatesTo(PatternSet) Closure cfg) {
         useIntermediateWorkDir()
-        if (this.intermediateArtifactPattern == null) {
-            this.intermediateArtifactPattern = new PatternSet()
+        if (!this.intermediateArtifactPattern.present) {
+            this.intermediateArtifactPattern.set(new PatternSet())
         }
-        executeDelegatingClosure(this.intermediateArtifactPattern, cfg)
+        executeDelegatingClosure(this.intermediateArtifactPattern.get(), cfg)
     }
 
     /** Additional artifacts created by Asciidoctor that might require copying.
@@ -507,10 +423,25 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      */
     void withIntermediateArtifacts(final Action<PatternSet> cfg) {
         useIntermediateWorkDir()
-        if (this.intermediateArtifactPattern == null) {
-            this.intermediateArtifactPattern = new PatternSet()
+        if (!this.intermediateArtifactPattern.present) {
+            this.intermediateArtifactPattern.set(new PatternSet())
         }
-        cfg.execute(this.intermediateArtifactPattern)
+        cfg.execute(this.intermediateArtifactPattern.get())
+    }
+
+    /**
+     * Checks whether an intermediate workdir is required.
+     *
+     * @return {@code true} is there is an intermediate working directory.
+     */
+    @Override
+    boolean hasIntermediateWorkDir() {
+        this.intermediateWorkDirProvider.present
+    }
+
+    @Override
+    Provider<File> getIntermediateWorkDirProvider() {
+        this.intermediateWorkDirProvider
     }
 
     /** The directory that will be the intermediate directory should one be required.
@@ -521,7 +452,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      */
     @Internal
     File getIntermediateWorkDir() {
-        project.file("${project.buildDir}/tmp/${FileUtils.toSafeFileName(this.name)}.intermediate")
+        this.intermediateWorkDirProvider.get()
     }
 
     /** Returns a list of all output directories by backend
@@ -585,6 +516,105 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         this.languages.addAll(langs)
     }
 
+    /** Gets the CopySpec for additional resources.
+     *
+     * If {@code resources} was never called, it will return a default CopySpec otherwise it will return the
+     * one built up via successive calls to {@code resources}
+     *
+     * @param lang Language to to apply to or empty for no-language support.
+     * @return A{@link CopySpec}. Never {@code null}.
+     */
+    @Override
+    CopySpec getResourceCopySpec(Optional<String> lang) {
+        this.resourceCopy ?: getDefaultResourceCopySpec(lang)
+    }
+
+    /** The default CopySpec that will be used if {@code resources} was never called
+     *
+     * By default anything below {@code $sourceDir/images} will be included.
+     *
+     * @param lang Language to use. Can be empty (not {@code null}) when not to use a language.
+     * @return A{@link CopySpec}. Never {@code null}.
+     */
+    @CompileDynamic
+    CopySpec getDefaultResourceCopySpec(Optional<String> lang) {
+        project.copySpec {
+            from(lang.present ? new File(sourceDir, lang.get()) : sourceDir) {
+                include 'images/**'
+            }
+        }
+    }
+
+    /**
+     * A task may add some default attributes.
+     *
+     * If the user specifies any of these attributes, then those attributes will not be utilised.
+     *
+     * The default implementation will add {@code includedir}, {@code revnumber}, {@code gradle-project-group},
+     * {@code gradle-project-name}
+     *
+     * @param workingSourceDir Directory where source files are located.
+     *
+     * @return A collection of default attributes.
+     */
+    Map<String, Object> getTaskSpecificDefaultAttributes(File workingSourceDir) {
+        Map<String, Object> attrs = [
+                includedir: (Object) workingSourceDir.absolutePath
+        ]
+
+        String revNumber = defaultRevNumber.get()
+        if (!revNumber.empty && revNumber != Project.DEFAULT_VERSION) {
+            attrs.put('revnumber', revNumber)
+        }
+
+        attrs
+    }
+
+    /** Prepares a workspace prior to conversion.
+     *
+     * @return A presentation of the working source directory and the source tree.
+     */
+    Workspace prepareWorkspace() {
+        if (!this.languages.empty) {
+            throw new AsciidoctorMultiLanguageException('Use prepareWorkspace(lang) instead.')
+        }
+        if (this.withIntermediateWorkDir) {
+            File tmpDir = intermediateWorkDir
+            prepareTempWorkspace(tmpDir)
+            Workspace.builder().workingSourceDir(tmpDir).sourceTree(getSourceFileTreeFrom(tmpDir)).build()
+        } else {
+            Workspace.builder().workingSourceDir(sourceDir).sourceTree(sourceFileTree).build()
+        }
+    }
+
+    /** Prepares a workspace for a specific language prior to conversion.
+     *
+     * @param language Language to prepare workspace for.
+     * @return A presentation of the working source directory and the source tree.
+     */
+    Workspace prepareWorkspace(String language) {
+        if (this.withIntermediateWorkDir) {
+            File tmpDir = new File(intermediateWorkDir, language)
+            prepareTempWorkspace(tmpDir, language)
+            Workspace.builder().workingSourceDir(tmpDir).sourceTree(getSourceFileTreeFrom(tmpDir)).build()
+        } else {
+            File srcDir = new File(sourceDir, language)
+            Workspace.builder()
+                    .workingSourceDir(srcDir)
+                    .sourceTree(getSourceFileTreeFrom(srcDir))
+                    .build()
+        }
+    }
+
+    /** Checks whether an explicit strategy has been set for base directory.
+     *
+     * @return {@code true} if a strategy has been configured.
+     */
+    @Internal
+    boolean isBaseDirConfigured() {
+        this.baseDir != null
+    }
+
     /** Shortcut method for obtaining attributes.
      *
      * In most implementations this will just access the {@code getAttributes} method
@@ -632,18 +662,35 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
     @Internal
     abstract Set<Configuration> getReportableConfigurations()
 
+    @SuppressWarnings('ThisReferenceEscapesConstructor')
     protected AbstractAsciidoctorBaseTask() {
         super()
         this.projectOperations = ProjectOperations.find(project)
+        this.intermediateArtifactPattern = project.objects.property(PatternSet)
+        this.srcDir = createDirectoryProperty(project)
+        this.outDir = createDirectoryProperty(project)
+        this.defaultRevNumber = projectOperations.projectTools.versionProvider.orElse(Project.DEFAULT_VERSION)
+        this.intermediateWorkDirProvider = projectOperations.buildDirDescendant(
+                "/tmp/${projectOperations.fsOperations.toSafeFileName(this.name)}.intermediate"
+        )
+
         projectOperations.tasks.inputFiles(
                 inputs,
                 { projectOperations.fsOperations.resolveFilesFromCopySpec(getResourceCopySpec(Optional.empty())) },
                 RELATIVE,
                 IGNORE_EMPTY_DIRECTORIES
         )
-        this.srcDir = createDirectoryProperty(project)
-        this.outDir = createDirectoryProperty(project)
-        this.defaultRevNumber = projectOperations.projectTools.versionProvider.orElse(Project.DEFAULT_VERSION)
+        projectOperations.tasks.inputFiles(
+                inputs,
+                { sourceFileTree },
+                RELATIVE, IGNORE_EMPTY_DIRECTORIES, SKIP_WHEN_EMPTY
+        )
+        projectOperations.tasks.inputFiles(
+                inputs,
+                { secondarySourceFileTree },
+                RELATIVE, IGNORE_EMPTY_DIRECTORIES
+        )
+        this.baseDirConfiguration = new DefaultAsciidoctorBaseDirConfiguration(project, this)
     }
 
     @Nested
@@ -651,32 +698,16 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         configuredOutputOptions
     }
 
-    /** Gets the CopySpec for additional resources.
+    /**
+     *  Access tp the object that handles base directory configuration
      *
-     * If {@code resources} was never called, it will return a default CopySpec otherwise it will return the
-     * one built up via successive calls to {@code resources}
+     * @return Implementation of {@link AsciidoctorTaskBaseDirConfiguration}
      *
-     * @param lang Language to to apply to or empty for no-language support.
-     * @return A{@link CopySpec}. Never {@code null}.
+     * @since 4.0
      */
-    protected CopySpec getResourceCopySpec(Optional<String> lang) {
-        this.resourceCopy ?: getDefaultResourceCopySpec(lang)
-    }
-
-    /** The default CopySpec that will be used if {@code resources} was never called
-     *
-     * By default anything below {@code $sourceDir/images} will be included.
-     *
-     * @param lang Language to use. Can be empty (not {@code null}) when not to use a language.
-     * @return A{@link CopySpec}. Never {@code null}.
-     */
-    @CompileDynamic
-    protected CopySpec getDefaultResourceCopySpec(Optional<String> lang) {
-        project.copySpec {
-            from(lang.present ? new File(sourceDir, lang.get()) : sourceDir) {
-                include 'images/**'
-            }
-        }
+    @Nested
+    protected AsciidoctorTaskBaseDirConfiguration getBaseDirDelegate() {
+        this.baseDirConfiguration
     }
 
     /**
@@ -725,7 +756,11 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      * @return Source tree based upon configured pattern.
      */
     protected FileTree getSourceFileTreeFrom(File dir) {
-        AsciidoctorUtils.getSourceFileTree(project, dir, this.sourceDocumentPattern ?: defaultSourceDocumentPattern)
+        AsciidoctorUtils.getSourceFileTree(
+                projectOperations,
+                dir,
+                this.sourceDocumentPattern ?: defaultSourceDocumentPattern
+        )
     }
 
     /** Obtains a secondary source tree based on patterns.
@@ -763,68 +798,6 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         asciidocPatterns
     }
 
-    /**
-     * A task may add some default attributes.
-     *
-     * If the user specifies any of these attributes, then those attributes will not be utilised.
-     *
-     * The default implementation will add {@code includedir}, {@code revnumber}, {@code gradle-project-group},
-     * {@code gradle-project-name}
-     *
-     * @param workingSourceDir Directory where source files are located.
-     *
-     * @return A collection of default attributes.
-     */
-    protected Map<String, Object> getTaskSpecificDefaultAttributes(File workingSourceDir) {
-        Map<String, Object> attrs = [
-                includedir: (Object) workingSourceDir.absolutePath
-//                'gradle-project-name': (Object) project.name
-        ]
-
-        String revNumber = defaultRevNumber.get()
-        if (!revNumber.empty && revNumber != Project.DEFAULT_VERSION) {
-            attrs.put('revnumber', revNumber)
-        }
-
-//        if (project.group != null) {
-//            attrs.put('gradle-project-group', (Object) project.group)
-//        }
-
-        attrs
-    }
-
-    /** Get the output directory for a specific backend.
-     *
-     * @param backendName Name of backend
-     * @return Output directory.
-     */
-    protected File getOutputDirFor(final String backendName) {
-        if (outputDir == null) {
-            throw new GradleException("outputDir has not been defined for task '${name}'")
-        }
-        if (!this.languages.empty) {
-            throw new AsciidoctorMultiLanguageException('Use getOutputDir(backendname,language) instead.')
-        }
-        configuredOutputOptions.separateOutputDirs ? new File(outputDir, backendName) : outputDir
-    }
-
-    /** Get the output directory for a specific backend.
-     *
-     * @param backendName Name of backend
-     * @param language Language for which sources are being generated.
-     * @return Output directory.
-     *
-     * @since 3.0.0
-     */
-    protected File getOutputDirFor(final String backendName, final String language) {
-        if (outputDir == null) {
-            throw new GradleException("outputDir has not been defined for task '${name}'")
-        }
-        configuredOutputOptions.separateOutputDirs ?
-                new File(outputDir, "${language}/${backendName}") :
-                new File(outputDir, language)
-    }
-
     /** Adds an input property.
      *
      * Serves as a proxy method in order to deal with the API differences between Gradle 4.0-4.2 and 4.3
@@ -846,47 +819,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
      */
     @CompileDynamic
     protected void addOptionalInputProperty(String propName, Object value) {
-        if (GRADLE_LT_4_3) {
-            inputs.property propName, { -> StringUtils.stringize(value) ?: '' }
-        } else {
-            inputs.property(propName, value).optional(true)
-        }
-    }
-
-    /** Prepares a workspace prior to conversion.
-     *
-     * @return A presentation of the working source directory and the source tree.
-     */
-    protected Workspace prepareWorkspace() {
-        if (!this.languages.empty) {
-            throw new AsciidoctorMultiLanguageException('Use prepareWorkspace(lang) instead.')
-        }
-        if (this.withIntermediateWorkDir) {
-            File tmpDir = intermediateWorkDir
-            prepareTempWorkspace(tmpDir)
-            Workspace.builder().workingSourceDir(tmpDir).sourceTree(getSourceFileTreeFrom(tmpDir)).build()
-        } else {
-            Workspace.builder().workingSourceDir(sourceDir).sourceTree(sourceFileTree).build()
-        }
-    }
-
-    /** Prepares a workspace for a specific language prior to conversion.
-     *
-     * @param language Language to prepare workspace for.
-     * @return A presentation of the working source directory and the source tree.
-     */
-    protected Workspace prepareWorkspace(String language) {
-        if (this.withIntermediateWorkDir) {
-            File tmpDir = new File(intermediateWorkDir, language)
-            prepareTempWorkspace(tmpDir, language)
-            Workspace.builder().workingSourceDir(tmpDir).sourceTree(getSourceFileTreeFrom(tmpDir)).build()
-        } else {
-            File srcDir = new File(sourceDir, language)
-            Workspace.builder()
-                    .workingSourceDir(srcDir)
-                    .sourceTree(getSourceFileTreeFrom(srcDir))
-                    .build()
-        }
+        inputs.property(propName, value).optional(true)
     }
 
     /** Copy resources for a backend name.
@@ -905,8 +838,8 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         CopySpec rcs = getResourceCopySpec(includeLang)
         logger.info "Copy resources for '${backendName}' to ${outputDir}"
 
-        FileTree ps = this.intermediateArtifactPattern ?
-                project.fileTree(sourceDir).matching(this.intermediateArtifactPattern) :
+        FileTree ps = this.intermediateArtifactPattern.present ?
+                projectOperations.fileTree(sourceDir).matching(this.intermediateArtifactPattern.get()) :
                 null
 
         CopySpec langSpec = includeLang.present ? languageResources[includeLang.get()] : null
@@ -980,15 +913,6 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         }
     }
 
-    /** Checks whether an explicit strategy has been set for base directory.
-     *
-     * @return {@code true} if a strategy has been configured.
-     */
-    @Internal
-    protected boolean isBaseDirConfigured() {
-        this.baseDir != null
-    }
-
     /** Validates all preconditions prior to starting to run the conversion process.
      *
      */
@@ -997,7 +921,40 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         checkForIncompatiblePathRoots()
     }
 
-    /** Prepare attributes to be serialisable
+    /** Get the output directory for a specific backend.
+     *
+     * @param backendName Name of backend
+     * @return Output directory.
+     */
+    protected File getOutputDirFor(final String backendName) {
+        if (outputDir == null) {
+            throw new GradleException("outputDir has not been defined for task '${name}'")
+        }
+        if (!this.languages.empty) {
+            throw new AsciidoctorMultiLanguageException('Use getOutputDir(backendname,language) instead.')
+        }
+        configuredOutputOptions.separateOutputDirs ? new File(outputDir, backendName) : outputDir
+    }
+
+    /** Get the output directory for a specific backend.
+     *
+     * @param backendName Name of backend
+     * @param language Language for which sources are being generated.
+     * @return Output directory.
+     *
+     * @since 3.0.0
+     */
+    protected File getOutputDirFor(final String backendName, final String language) {
+        if (outputDir == null) {
+            throw new GradleException("outputDir has not been defined for task '${name}'")
+        }
+        configuredOutputOptions.separateOutputDirs ?
+                new File(outputDir, "${language}/${backendName}") :
+                new File(outputDir, language)
+    }
+
+    /**
+     * Prepare attributes to be serialisable
      *
      * @param workingSourceDir Working source directory from which source documents will be made available.
      * @param seedAttributes Initial attributes set on the task.
@@ -1041,7 +998,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         Map<String, Object> defaultAttrs = defaultAttributes.findAll { k, v ->
             !userDefinedAttrKeys.contains(k)
         }.collectEntries { k, v ->
-            ["${k}@".toString(), v instanceof Serializable ? v : StringUtils.stringize(v)]
+            ["${k}@".toString(), v instanceof Serializable ? v : projectOperations.stringTools.stringize(v)]
         } as Map<String, Object>
 
         if (lang.present) {
@@ -1074,13 +1031,6 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
         } as Map<String, Object>
     }
 
-    /** Name of the implementation engine.
-     *
-     * @return Name of the Asciidoctor implementation engine.
-     */
-    @Internal
-    abstract protected String getEngineName()
-
     private void checkForInvalidSourceDocuments() {
         if (!sourceFileTree.filter { File f ->
             f.name.startsWith('_')
@@ -1094,7 +1044,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask {
             throw new GradleException("outputDir has not been defined for task '${name}'")
         }
 
-        Path baseRoot = languages.empty ? getBaseDir()?.toPath()?.root : getBaseDir(languages[0])?.toPath()?.root
+        Path baseRoot = languages.empty ? baseDir?.toPath()?.root : getBaseDir(languages[0])?.toPath()?.root
         if (baseRoot != null) {
             Path sourceRoot = sourceDir.toPath().root
             Path outputRoot = outputDir.toPath().root

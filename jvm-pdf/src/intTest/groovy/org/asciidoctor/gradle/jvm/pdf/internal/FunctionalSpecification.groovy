@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,18 +18,15 @@ package org.asciidoctor.gradle.jvm.pdf.internal
 import groovy.transform.CompileStatic
 import org.apache.commons.io.FileUtils
 import org.asciidoctor.gradle.testfixtures.DslType
+import org.asciidoctor.gradle.testfixtures.FunctionalTestFixture
 import org.asciidoctor.gradle.testfixtures.FunctionalTestSetup
 import org.gradle.testkit.runner.GradleRunner
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
+import spock.lang.TempDir
 
 import static org.asciidoctor.gradle.testfixtures.DslType.GROOVY_DSL
-import static org.asciidoctor.gradle.testfixtures.DslType.KOTLIN_DSL
-import static org.asciidoctor.gradle.testfixtures.FunctionalTestSetup.getOfflineRepositoriesGroovyDsl
-import static org.asciidoctor.gradle.testfixtures.FunctionalTestSetup.getOfflineRepositoriesKotlinDsl
 
-class FunctionalSpecification extends Specification {
+class FunctionalSpecification extends Specification implements FunctionalTestFixture {
 
     @SuppressWarnings('LineLength')
     static
@@ -37,54 +34,24 @@ class FunctionalSpecification extends Specification {
     static
     final String TEST_REPO_DIR = FunctionalTestSetup.offlineRepo.absolutePath
 
-    @Rule
-    TemporaryFolder testProjectDir
+    @TempDir
+    File testProjectDir
 
-    @Rule
-    TemporaryFolder alternateProjectDir
+    File testKitDir
+
+    void setup() {
+        testKitDir = new File(testProjectDir, ".testkit-${UUID.randomUUID()}")
+        projectDir.mkdirs()
+    }
 
     @CompileStatic
     GradleRunner getGradleRunner(List<String> taskNames = ['asciidoctor']) {
-        FunctionalTestSetup.getGradleRunner(GROOVY_DSL, testProjectDir.root, taskNames)
+        FunctionalTestSetup.getGradleRunner(GROOVY_DSL, projectDir, taskNames).withTestKitDir(testKitDir)
     }
 
     @SuppressWarnings(['BuilderMethodWithSideEffects'])
     void createTestProject(String docGroup = 'normal') {
-        FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, docGroup), testProjectDir.root)
-    }
-
-    @CompileStatic
-    String getOfflineRepositories(DslType dslType = GROOVY_DSL) {
-        dslType == GROOVY_DSL ? getOfflineRepositoriesGroovyDsl(new File(TEST_REPO_DIR)) :
-            getOfflineRepositoriesKotlinDsl(new File(TEST_REPO_DIR))
-    }
-
-    File getJvmConvertGroovyBuildFile(String extraContent, String plugin = 'org.asciidoctor.jvm.pdf') {
-        File buildFile = testProjectDir.newFile('build.gradle')
-        buildFile << """
-            plugins {
-                id '${plugin}'
-            }
-
-            ${offlineRepositories}
-
-            ${extraContent}
-        """
-        buildFile
-    }
-
-    File getJvmConvertKotlinBuildFile(String extraContent, String plugin = 'org.asciidoctor.jvm.pdf') {
-        File buildFile = testProjectDir.newFile('build.gradle.kts')
-        buildFile << """
-            plugins {
-                id ("${plugin}")
-            }
-
-            ${getOfflineRepositories(KOTLIN_DSL)}
-
-            ${extraContent}
-        """
-        buildFile
+        FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, docGroup), projectDir)
     }
 
     String getDefaultProcessModeForAppveyor(final DslType dslType = GROOVY_DSL) {

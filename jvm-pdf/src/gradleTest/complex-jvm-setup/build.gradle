@@ -15,7 +15,7 @@ asciidoctorj {
 }
 
 asciidoctorPdf {
-    inProcess OUT_OF_PROCESS
+    executionMode = OUT_OF_PROCESS
     logDocuments true
     sourceDir 'src/docs/asciidoc'
 

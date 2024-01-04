@@ -1,7 +1,7 @@
 = Asciidoctor Gradle Plugin
 Andres Almiray <https://github.com/aalmiray[@aalmiray]>
-:version: 3.3.2
-:version-published: 3.3.2
+:version: 4.0.0
+:version-published: 4.0.0-alpha.1
 :asciidoc-url: http://asciidoc.org
 :asciidoctor-url: http://asciidoctor.org
 :issues: https://github.com/asciidoctor/asciidoctor-maven-plugin/issues
@@ -20,7 +20,7 @@ Andres Almiray <https://github.com/aalmiray[@aalmiray]>
 :plugin-name: Asciidoctor Gradle plugin
 :project-name: asciidoctor-gradle-plugin
 :project-full-path: asciidoctor/asciidoctor-gradle-plugin
-:github-branch: development-3.x
+:github-branch: development-4.x
 :linkattrs:
 ifndef::env-github[:icons: font]
 ifdef::env-github,env-browser[]

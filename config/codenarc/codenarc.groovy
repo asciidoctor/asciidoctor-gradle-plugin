@@ -129,9 +129,6 @@ ruleset {
         doNotApplyToFileNames = '*Spec.groovy,*Specification.groovy'
     }
     TernaryCouldBeElvis
-    VariableTypeRequired {
-        doNotApplyToFileNames = '*Spec.groovy,*Specification.groovy'
-    }
     VectorIsObsolete
 
     // rulesets/design.xml
@@ -220,7 +217,7 @@ ruleset {
     SpaceAroundOperator
     SpaceBeforeClosingBrace
     SpaceBeforeOpeningBrace
-    TrailingWhitespace  {
+    TrailingWhitespace {
         doNotApplyToFileNames = '*FunctionalSpec.groovy,*FunctionalSpecification.groovy'
     }
 
@@ -365,7 +362,9 @@ ruleset {
     UnnecessaryFinalOnPrivateMethod
     UnnecessaryFloatInstantiation
     UnnecessaryGString
-    UnnecessaryGetter
+    UnnecessaryGetter {
+        ignoreMethodNames = 'isEmpty'
+    }
     UnnecessaryIfStatement
     UnnecessaryInstanceOfCheck
     UnnecessaryInstantiationToGetClass
@@ -385,7 +384,6 @@ ruleset {
     UnnecessarySemicolon
     UnnecessarySetter
     UnnecessaryStringInstantiation
-    UnnecessarySubstring
     UnnecessaryTernaryExpression
     UnnecessaryToString
     UnnecessaryTransientModifier

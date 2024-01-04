@@ -1,5 +1,13 @@
-configurations {
-    additionalPluginClasspath
+agProject {
+    withAdditionalPluginClasspath()
+
+    configurePlugin(
+            'org.asciidoctor.editorconfig',
+            'Asciidoctor Editor Config Plugin',
+            'Generate .asciidoctorconfig files for use by supported IDEs',
+            'org.asciidoctor.gradle.editorconfig.AsciidoctorEditorConfigPlugin',
+            ['intellij', 'idea']
+    )
 }
 
 dependencies {
@@ -7,12 +15,5 @@ dependencies {
     additionalPluginClasspath project(':asciidoctor-gradle-jvm')
 }
 
-pluginUnderTestMetadata {
-    pluginClasspath.from configurations.additionalPluginClasspath
-}
 
-configurePlugin 'org.asciidoctor.editorconfig',
-    'Asciidoctor Editor Config Plugin',
-    'Generate .asciidoctorconfig files for use by supported IDEs',
-    ['asciidoctor', 'intellij', 'idea']
 

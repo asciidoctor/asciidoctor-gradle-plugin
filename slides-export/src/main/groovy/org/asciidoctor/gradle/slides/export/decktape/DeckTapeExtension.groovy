@@ -26,8 +26,8 @@ import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.SelfResolvingDependency
 import org.ysb33r.gradle.nodejs.NpmPackageDescriptor
-
-import static org.ysb33r.gradle.nodejs.utils.npm.NpmExecutor.getPackageInstallationFolder
+import org.ysb33r.gradle.nodejs.utils.npm.NpmExecutor
+import org.ysb33r.grolifant.api.core.ProjectOperations
 
 /** Extension to configure <a href="https://github.com/astefanutti/decktape">decktape</a> and
  * <a href="https://github.com/GoogleChrome/puppeteer">puppeteer</a>.
@@ -61,11 +61,9 @@ class DeckTapeExtension {
      */
     @SuppressWarnings('UnnecessaryGetter')
     Configuration getConfiguration() {
-        final NodeJSDependencyFactory factory = new NodeJSDependencyFactory(
-                project,
-                nodejs,
-                npm
-        )
+        final ProjectOperations po = ProjectOperations.find(project)
+        final NodeJSDependencyFactory factory = new NodeJSDependencyFactory(po, nodejs, npm)
+        final NpmExecutor npmExecutor = new NpmExecutor(po, nodejs, npm)
 
         // Ensure puppeteer is installed first
         final List<SelfResolvingDependency> deps = [
@@ -74,7 +72,7 @@ class DeckTapeExtension {
         ]
 
         File preGypBinPath = new File(
-                getPackageInstallationFolder(project, nodejs, npm, (NpmPackageDescriptor) deps[1]),
+                npmExecutor.getPackageInstallationFolder((NpmPackageDescriptor) deps[1]),
                 'bin'
         )
 
@@ -89,6 +87,7 @@ class DeckTapeExtension {
         )
     }
 
+    @Deprecated
     File getToolingWorkDir() {
         npm.homeDirectory
     }
