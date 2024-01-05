@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           java-version: 11
           distribution: zulu
@@ -26,7 +26,7 @@ jobs:
         # use a short path to avoid exceeding the path limit on Windows... sigh
         with:
           path: 'w'
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           java-version: 11
           distribution: zulu
@@ -66,7 +66,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/setup-java@v3
+    - uses: actions/setup-java@v4
       with:
         java-version: ${{ matrix.java }}
         distribution: zulu
