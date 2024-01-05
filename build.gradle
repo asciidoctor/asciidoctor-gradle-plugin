@@ -26,7 +26,7 @@ plugins {
     id 'org.ysb33r.os' version '0.9' apply false
     id 'org.ysb33r.cloudci' version '2.5' apply false
     id 'org.ysb33r.cloudci.appveyor.testreporter' version '2.5' apply false
-    id 'org.ysb33r.gradletest' version '3.0.0-alpha.3' apply false
+    id 'org.ysb33r.gradletest' version '3.0.0-alpha.4' apply false
     id 'idea'
 }
 
