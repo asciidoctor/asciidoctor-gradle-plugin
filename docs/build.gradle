@@ -40,7 +40,7 @@ configurations {
 }
 
 dependencies {
-    asciidocExtensions 'com.bmuschko:asciidoctorj-tabbed-code-extension:0.1'
+//    asciidocExtensions 'com.bmuschko:asciidoctorj-tabbed-code-extension:0.1'
 }
 
 task prepareSources( type: Sync) {
@@ -68,7 +68,7 @@ asciidoctor {
     baseDirFollowsSourceDir()
     dependsOn prepareSources
     sourceDir 'src/docs/asciidoc'
-    configurations 'asciidocExtensions'
+//    configurations 'asciidocExtensions'
 
     sources {
         include 'index.adoc'
