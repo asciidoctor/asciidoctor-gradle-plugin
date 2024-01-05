@@ -12,6 +12,5 @@ buildSrc/gradlew*
 .generated-src/
 # Because we auto-generate this from the main project
 # and it is only needed for IntelliJ
-docs/gradle/wrapper
 docs/.asciidoctorconfig
 
