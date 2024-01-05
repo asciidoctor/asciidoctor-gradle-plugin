@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ class JRubyTestVersions {
     // ----------------------------------------------------------
     public final static String AJ20_ABSOLUTE_MINIMUM = '9.2.5.0'
     public final static String AJ20_SAFE_MINIMUM = '9.2.5.0'
-    public final static String AJ20_SAFE_MAXIMUM = '9.2.13.0'
-    public final static String AJ20_ABSOLUTE_MAXIMUM = '9.2.13.0'
+    public final static String AJ20_SAFE_MAXIMUM = '9.3.8.0'
+    public final static String AJ20_ABSOLUTE_MAXIMUM = '9.4.0.0'
     // ----------------------------------------------------------
 }

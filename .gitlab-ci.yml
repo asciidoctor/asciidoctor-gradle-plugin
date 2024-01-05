@@ -118,7 +118,7 @@ test:integration_slides:
     expire_in: 10 days
     when: on_failure
 
-test:gradle_4.9,4.10.2:
+test:gradle_7.0.2,7.1.1,7.3.3:
   stage: test
   image: $JDK11_TEST_IMAGE
   except:
@@ -136,43 +136,7 @@ test:gradle_4.9,4.10.2:
     expire_in: 10 days
     when: on_failure
 
-test:gradle_5.0,5.1.1,5.3.1:
-  stage: test
-  image: $JDK11_TEST_IMAGE
-  except:
-    - pages
-    - gh-pages
-    - tags
-  dependencies:
-    - testrepo
-    - jdk11
-  script: ./run-compatibility-test-on-ci.sh
-  artifacts:
-    paths:
-      - '*/build/reports'
-      - '*/build/jacoco'
-    expire_in: 10 days
-    when: on_failure
-
-test:gradle_5.4.1,5.5.1,5.6.4:
-  stage: test
-  image: $JDK12_TEST_IMAGE
-  except:
-    - pages
-    - gh-pages
-    - tags
-  dependencies:
-    - testrepo
-    - jdk11
-  script: ./run-compatibility-test-on-ci.sh
-  artifacts:
-    paths:
-      - '*/build/reports'
-      - '*/build/jacoco'
-    expire_in: 10 days
-    when: on_failure
-
-test:gradle_6.0.1:
+test:gradle_7.4.2,7.5.1:
   stage: test
   image: $JDK12_TEST_IMAGE
   except:

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,11 @@ package org.asciidoctor.gradle.base
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.file.CopySpec
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.testfixtures.ProjectBuilder
+import org.ysb33r.grolifant.api.core.ProjectOperations
 import spock.lang.Specification
 
 /**
@@ -28,37 +31,8 @@ import spock.lang.Specification
 class BaseTaskPatternSpec extends Specification {
     Project project = ProjectBuilder.builder().build()
 
-    static class PatternSpecAsciidoctorTask extends AbstractAsciidoctorBaseTask {
-        // method for accessing internal field "sourceDocumentPattern"
-        PatternSet getInternalSourceDocumentPattern() {
-            AbstractAsciidoctorBaseTask.metaClass.getProperty(this, 'sourceDocumentPattern')
-        }
-
-        @Override
-        Map<String, Object> getAttributes() {
-            [:]
-        }
-
-        @Override
-        void setAttributes(Map<String, Object> m) { }
-
-        @Override
-        void attributes(Map<String, Object> m) { }
-
-        @Override
-        List<AsciidoctorAttributeProvider> getAttributeProviders() {
-            []
-        }
-
-        @Override
-        Set<Configuration> getReportableConfigurations() {
-            [] as Set
-        }
-
-        @Override
-        protected String getEngineName() {
-            null
-        }
+    void setup() {
+        ProjectOperations.maybeCreateExtension(project)
     }
 
     void "Should include patterns passed to sources method"() {
@@ -96,4 +70,59 @@ class BaseTaskPatternSpec extends Specification {
     private Task createTask(String name, Closure cfg) {
         project.tasks.create(name: name, type: PatternSpecAsciidoctorTask).configure cfg
     }
+
+    @SuppressWarnings(['GetterMethodCouldBeProperty'])
+    static class PatternSpecAsciidoctorTask extends AbstractAsciidoctorBaseTask {
+        // method for accessing internal field "sourceDocumentPattern"
+        PatternSet getInternalSourceDocumentPattern() {
+            AbstractAsciidoctorBaseTask.metaClass.getProperty(this, 'sourceDocumentPattern')
+        }
+
+        @Override
+        Map<String, Object> getAttributes() {
+            [:]
+        }
+
+        @Override
+        void setAttributes(Map<String, Object> m) { }
+
+        @Override
+        void attributes(Map<String, Object> m) { }
+
+        @Override
+        List<AsciidoctorAttributeProvider> getAttributeProviders() {
+            []
+        }
+
+        @Override
+        Set<Configuration> getReportableConfigurations() {
+            [] as Set
+        }
+
+        @Override
+        String getEngineName() {
+            null
+        }
+
+        @Override
+        Provider<PatternSet> getIntermediateArtifactPatternProvider() {
+            null
+        }
+
+        @Override
+        CopySpec getLanguageResourceCopySpec(String lang) {
+            null
+        }
+
+        @Override
+        boolean hasIntermediateWorkDir() {
+            false
+        }
+
+        @Override
+        Provider<File> getIntermediateWorkDirProvider() {
+            null
+        }
+    }
+
 }

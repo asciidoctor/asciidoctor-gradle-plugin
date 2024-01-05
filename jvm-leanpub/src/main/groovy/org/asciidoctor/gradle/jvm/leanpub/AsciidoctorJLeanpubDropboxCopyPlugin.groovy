@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,8 @@
 package org.asciidoctor.gradle.jvm.leanpub
 
 import groovy.transform.CompileStatic
-import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
-import org.ysb33r.grolifant.api.TaskProvider
 
 /** Adds a task to copy Leanpub task output to a Dropbox folder.
  *
@@ -30,28 +27,20 @@ import org.ysb33r.grolifant.api.TaskProvider
  */
 @CompileStatic
 class AsciidoctorJLeanpubDropboxCopyPlugin implements Plugin<Project> {
-
     public final static String LEANPUB_TASK_NAME = AsciidoctorJLeanpubPlugin.TASK_NAME
     public final static String COPY_TASK_NAME = "copy${LEANPUB_TASK_NAME.capitalize()}ToDropbox"
 
     @Override
     void apply(Project project) {
-        project.apply plugin: AsciidoctorJLeanpubPlugin
-        Action copyConfig = new Action<DropboxCopyTask>() {
-            @Override
-            void execute(DropboxCopyTask dropboxCopyTask) {
-                dropboxCopyTask.with {
-                    dependsOn(LEANPUB_TASK_NAME)
-                    sourceDir = {
-                        Task task = project.tasks.getByName(LEANPUB_TASK_NAME)
-                        new File(
-                            ((AsciidoctorLeanpubTask) task).outputDir,
-                            'manuscript'
-                        )
-                    }
-                }
-            }
+        project.pluginManager.apply(AsciidoctorJLeanpubPlugin)
+        final leanpubTask = project.tasks.named(LEANPUB_TASK_NAME, AsciidoctorLeanpubTask)
+        final leanpubSourceDir = leanpubTask.map {
+            new File(it.outputDir, 'manuscript')
         }
-        TaskProvider.registerTask(project, COPY_TASK_NAME, DropboxCopyTask, copyConfig)
+
+        project.tasks.register(COPY_TASK_NAME, DropboxCopyTask) { t ->
+            t.dependsOn(leanpubTask)
+            t.sourceDir = leanpubSourceDir
+        }
     }
 }

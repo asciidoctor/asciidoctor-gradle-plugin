@@ -1,20 +1,28 @@
-dependencies {
-    compile project(':asciidoctor-gradle-jvm')
+agProject {
+    withOfflineTestConfigurations()
 
+    configurePlugin(
+            'org.asciidoctor.jvm.pdf',
+            'AsciidoctorJ PDF Conversion Plugin',
+            'Simplifies conversion of asciidoc documents to PDF',
+            'org.asciidoctor.gradle.jvm.pdf.AsciidoctorJPdfPlugin',
+            ['asciidoctorj', 'pdf']
+    )
+}
+
+dependencies {
+    implementation project(':asciidoctor-gradle-jvm')
     intTestOfflineRepo "org.asciidoctor:asciidoctorj:${compileOnlyAsciidoctorJVersion}"
     intTestOfflineRepo "org.asciidoctor:asciidoctorj-pdf:${downloadOnlyPdfVersion}"
 }
 
-test {
+tasks.named('test', Test) {
     systemProperties TEST_THEMES_DIR: file('src/test/resources/themes')
 }
 
-intTest {
-    systemProperties TEST_PROJECTS_DIR: file('src/intTest/projects')
+tasks.named('intTest', Test) {
+    maxParallelForks = 2
+    forkEvery = 1
+    maxHeapSize = '2048m'
 }
-
-configurePlugin 'org.asciidoctor.jvm.pdf',
-    'AsciidoctorJ PDF Conversion Plugin',
-    'Simplifies conversion of asciidoc documents to PDF',
-    ['asciidoctorj', 'pdf']
 

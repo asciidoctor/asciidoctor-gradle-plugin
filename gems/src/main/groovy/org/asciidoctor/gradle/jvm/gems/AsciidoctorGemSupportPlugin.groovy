@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,15 @@
  */
 package org.asciidoctor.gradle.jvm.gems
 
-import com.github.jrubygradle.api.core.JRubyCorePlugin
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.jvm.AsciidoctorJBasePlugin
-import org.asciidoctor.gradle.jvm.AsciidoctorJExtension
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
-import org.ysb33r.grolifant.api.TaskProvider
-
-import static org.ysb33r.grolifant.api.TaskProvider.registerTask
+import org.gradle.api.tasks.bundling.Jar
+import org.ysb33r.gradle.jruby.api.plugins.JRubyResolverPlugin
+import org.ysb33r.grolifant.api.core.ProjectOperations
 
 /** Plugin that simplifies that management of external GEMs.
  *
@@ -44,19 +42,25 @@ import static org.ysb33r.grolifant.api.TaskProvider.registerTask
 class AsciidoctorGemSupportPlugin implements Plugin<Project> {
 
     public static final String GEM_CONFIGURATION = 'asciidoctorGems'
-    public static final String GEMPREP_TASK = 'asciidoctorGemsPrepare'
+    public static final String GEMPREP_TASK = "${GEM_CONFIGURATION}Prepare"
+    public static final String JAR_TASK = "${GEM_CONFIGURATION}Jar"
 
     @Override
     void apply(Project project) {
-        project.apply plugin: AsciidoctorJBasePlugin
-        project.apply plugin: JRubyCorePlugin
+        project.pluginManager.tap {
+            apply AsciidoctorJBasePlugin
+            apply JRubyResolverPlugin
+        }
+        final po = ProjectOperations.find(project)
         Configuration gemConfig = project.configurations.maybeCreate(GEM_CONFIGURATION)
+        gemConfig.canBeResolved = true
+        gemConfig.canBeConsumed = false
 
         Action gemPrepDefaults = new Action<AsciidoctorGemPrepare>() {
             @Override
             void execute(AsciidoctorGemPrepare asciidoctorGemPrepare) {
-                asciidoctorGemPrepare.with {
-                    dependencies gemConfig
+                asciidoctorGemPrepare.tap {
+                    gemConfiguration = gemConfig
                     group = 'dependencies'
                     description = 'Prepare additional GEMs for AsciidoctorJ'
                     outputDir = "${project.buildDir}/.asciidoctorGems"
@@ -64,12 +68,23 @@ class AsciidoctorGemSupportPlugin implements Plugin<Project> {
             }
         }
 
-        TaskProvider<AsciidoctorGemPrepare> prepTask = registerTask(
-            project,
-            GEMPREP_TASK,
-            AsciidoctorGemPrepare,
-            gemPrepDefaults
+        final prepTask = project.tasks.register(
+                GEMPREP_TASK,
+                AsciidoctorGemPrepare,
+                gemPrepDefaults
         )
-        project.extensions.getByType(AsciidoctorJExtension).gemPaths { prepTask.get().outputDir }
+
+        project.tasks.register(JAR_TASK, Jar) { jar ->
+            jar.tap {
+                from(prepTask.map { it.outputDir })
+                archiveFileName.set("${GEM_CONFIGURATION}.jar".toString())
+                destinationDirectory.set(
+                        project.objects
+                                .directoryProperty()
+                                .fileProvider(po.buildDirDescendant('.asciidoctorGemsJars'))
+                )
+                dependsOn(prepTask)
+            }
+        }
     }
 }

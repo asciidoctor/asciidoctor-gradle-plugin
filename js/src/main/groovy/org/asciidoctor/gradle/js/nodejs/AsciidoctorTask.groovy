@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import org.asciidoctor.gradle.base.OutputOptions
 import org.gradle.api.Action
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.workers.WorkerExecutor
-import org.ysb33r.grolifant.api.FileUtils
 
 import javax.inject.Inject
 
@@ -48,7 +47,7 @@ class AsciidoctorTask extends AbstractAsciidoctorNodeJSTask {
         } else {
             folderName = "asciidoc${name.capitalize()}"
         }
-        final String safeFolderName = FileUtils.toSafeFileName(folderName)
+        final String safeFolderName = projectOperations.fsOperations.toSafeFileName(folderName)
         setConvention(project, sourceDirProperty, project.layout.projectDirectory.dir("src/docs/${folderName}"))
         setConvention(outputDirProperty, project.layout.buildDirectory.dir("docs/${safeFolderName}"))
     }

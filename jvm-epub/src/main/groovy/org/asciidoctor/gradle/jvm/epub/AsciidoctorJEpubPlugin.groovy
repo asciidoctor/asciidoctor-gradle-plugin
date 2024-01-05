@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,11 @@ import org.asciidoctor.gradle.jvm.AsciidoctorJExtension
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.ysb33r.grolifant.api.TaskProvider
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.setConvention
 
-/** Provides additional conventions for building EPUBs.
+/**
+ * Provides additional conventions for building EPUBs.
  *
  * <ul>
  *   <li>Creates a task called {@code asciidoctorEpub}.
@@ -41,23 +41,21 @@ import static org.asciidoctor.gradle.base.AsciidoctorUtils.setConvention
 class AsciidoctorJEpubPlugin implements Plugin<Project> {
 
     void apply(Project project) {
-        project.with {
-            apply plugin: AsciidoctorJBasePlugin
-            extensions.getByType(AsciidoctorJExtension).modules.epub.use()
+        project.pluginManager.apply(AsciidoctorJBasePlugin)
+        project.extensions.getByType(AsciidoctorJExtension).modules.epub.use()
 
-            Action epubDefaults = new Action<AsciidoctorEpubTask>() {
-                @Override
-                void execute(AsciidoctorEpubTask task) {
-                    task.group = AsciidoctorJBasePlugin.TASK_GROUP
-                    task.description = 'Convert AsciiDoc files to EPUB3 formats'
-                    setConvention(project, task.sourceDirProperty,
+        Action epubDefaults = new Action<AsciidoctorEpubTask>() {
+            @Override
+            void execute(AsciidoctorEpubTask task) {
+                task.group = AsciidoctorJBasePlugin.TASK_GROUP
+                task.description = 'Convert AsciiDoc files to EPUB3 formats'
+                setConvention(project, task.sourceDirProperty,
                         project.layout.projectDirectory.dir('src/docs/asciidoc'))
-                    setConvention(task.outputDirProperty,
+                setConvention(task.outputDirProperty,
                         task.project.layout.buildDirectory.dir('docs/asciidocEpub'))
-                }
             }
-
-            TaskProvider.registerTask(project, 'asciidoctorEpub', AsciidoctorEpubTask, epubDefaults)
         }
+
+        project.tasks.register('asciidoctorEpub', AsciidoctorEpubTask, epubDefaults)
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,14 @@ package org.asciidoctor.gradle.internal
 
 import groovy.transform.CompileStatic
 import groovy.transform.InheritConstructors
+import groovy.util.logging.Slf4j
 import org.asciidoctor.gradle.remote.AsciidoctorJavaExec
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.FileCollection
 import org.gradle.api.invocation.Gradle
 import org.gradle.util.GradleVersion
-import org.ysb33r.grolifant.api.FileUtils
+import org.ysb33r.grolifant.api.core.ProjectOperations
 
 import java.util.regex.Pattern
 
@@ -36,6 +37,7 @@ import static org.asciidoctor.gradle.base.AsciidoctorUtils.getClassLocation
  * @since 2.0
  */
 @CompileStatic
+@Slf4j
 class JavaExecUtils {
 
     /** The {@code jruby-complete} dependency without a version.
@@ -54,11 +56,14 @@ class JavaExecUtils {
      * @param asciidoctorClasspath External asciidoctor dependencies
      * @param addInternalGuava Set to {@code true} to add internal Guava to classpath
      * @return A computed classpath that can be given to an external Java process.
+     *
+     * @deprecated
      */
+    @Deprecated
     static FileCollection getJavaExecClasspath(
-        final Project project,
-        final FileCollection asciidoctorClasspath,
-        boolean addInternalGuava = false
+            final Project project,
+            final FileCollection asciidoctorClasspath,
+            boolean addInternalGuava = false
     ) {
         File entryPoint = getClassLocation(AsciidoctorJavaExec)
         File groovyJar = getClassLocation(GroovyObject)
@@ -68,30 +73,79 @@ class JavaExecUtils {
         addInternalGuava ? project.files(fc, getInternalGuavaLocation(project.gradle)) : fc
     }
 
+    /** Get the classpath that needs to be passed to the external Java process.
+     *
+     * @param project Current Gradle project
+     * @param asciidoctorClasspath External asciidoctor dependencies
+     * @param addInternalGuava Set to {@code true} to add internal Guava to classpath
+     * @return A computed classpath that can be given to an external Java process.
+     */
+    static FileCollection getJavaExecClasspath(
+            final ProjectOperations po,
+            final FileCollection asciidoctorClasspath,
+            boolean addInternalGuava = false
+    ) {
+        File entryPoint = getClassLocation(AsciidoctorJavaExec)
+        File groovyJar = getClassLocation(GroovyObject)
+
+        final fc = po.fsOperations.emptyFileCollection()
+        fc.from(entryPoint, groovyJar)
+
+        if (addInternalGuava) {
+            fc.from(getInternalGuavaLocation(po))
+        }
+        fc + asciidoctorClasspath
+    }
+
     /** The file to which execution configuration data can be serialised to.
      *
      * @param task Task for which execution data will be serialised.
      * @return File that will (eventually) contain the execution data.
      */
     static File getExecConfigurationDataFile(final Task task) {
-        task.project.file("${task.project.buildDir}/tmp/${FileUtils.toSafeFileName(task.name)}.javaexec-data")
+        final fso = ProjectOperations.find(task.project).fsOperations
+        task.project.file("${task.project.buildDir}/tmp/${fso.toSafeFileName(task.name)}.javaexec-data")
     }
 
-    /** Serializes execution configuration data.
+    /**
+     * Serializes execution configuration data.
      *
      * @param task Task for which execution data will be serialised.
      * @param executorConfigurations Executor configuration to be serialised
      * @return File that the execution data was written to.
+     *
+     * @deprecated
      */
-
+    @Deprecated
     static File writeExecConfigurationData(final Task task, Iterable<ExecutorConfiguration> executorConfigurations) {
+        log.debug("Executor configurations: ${executorConfigurations}")
         File execConfigurationData = getExecConfigurationDataFile(task)
         execConfigurationData.parentFile.mkdirs()
         ExecutorConfigurationContainer.toFile(execConfigurationData, executorConfigurations)
         execConfigurationData
     }
 
-    /** Returns the location of the local Groovy Jar that is used by Gradle.
+    /**
+     * Serializes execution configuration data.
+     *
+     * @param execConfigurationData File to be use for serialization data.
+     * @param executorConfigurations Executor configuration to be serialised
+     * @return File that the execution data was written to.
+     *
+     * @since 4.0
+     */
+    static void writeExecConfigurationData(
+            final File execConfigurationData,
+            Iterable<ExecutorConfiguration> executorConfigurations
+    ) {
+        log.debug("Executor configurations: ${executorConfigurations}")
+        execConfigurationData.parentFile.mkdirs()
+        ExecutorConfigurationContainer.toFile(execConfigurationData, executorConfigurations)
+        execConfigurationData
+    }
+
+    /**
+     * Returns the location of the local Groovy Jar that is used by Gradle.
      *
      * @return Location on filesystem where the Groovy Jar is located.
      */
@@ -105,6 +159,29 @@ class JavaExecUtils {
      * @return Return Guava location. Never {@code null}
      * @throw InternalGuavaLocationException
      */
+    static File getInternalGuavaLocation(ProjectOperations po) {
+        File[] files = new File(po.gradleUserHomeDir.get(), 'lib').listFiles(INTERNAL_GUAVA_PATTERN)
+
+        if (!files) {
+            throw new InternalGuavaLocationException('Cannot locate a Guava JAR in the Gradle distribution')
+        } else if (files.size() > 1) {
+            throw new InternalGuavaLocationException(
+                    "Found more than one Guava JAR in the Gradle distribution: ${files*.name}"
+            )
+        }
+        files[0]
+    }
+
+    /** Locate the internal Guava JAR from the Gradle distribution
+     *
+     * @param gradle Gradle instance
+     * @return Return Guava location. Never {@code null}
+     * @throw InternalGuavaLocationException
+     *
+     * @deprecated
+     */
+    @Deprecated
+    @SuppressWarnings('DuplicateStringLiteral')
     static File getInternalGuavaLocation(Gradle gradle) {
         File[] files = new File(gradle.gradleHomeDir, 'lib').listFiles(INTERNAL_GUAVA_PATTERN)
 
@@ -112,7 +189,7 @@ class JavaExecUtils {
             throw new InternalGuavaLocationException('Cannot locate a Guava JAR in the Gradle distribution')
         } else if (files.size() > 1) {
             throw new InternalGuavaLocationException(
-                "Found more than one Guava JAR in the Gradle distribution: ${files*.name}"
+                    "Found more than one Guava JAR in the Gradle distribution: ${files*.name}"
             )
         }
         files[0]

@@ -1,17 +1,24 @@
 plugins {
     id 'groovy'
+    id 'java-library'
 }
 
 apply from: 'gradle/load-gradle-properties.gradle'
 
 repositories {
-    jcenter()
+    mavenCentral()
     gradlePluginPortal()
+
+    if(gradleProperties['version'].endsWith('-SNAPSHOT')) {
+        mavenLocal()
+    }
 }
 
 dependencies {
-    compile localGroovy()
-    compile gradleApi()
-    compile "gradle.plugin.org.ysb33r.gradle:nodejs-gradle-plugin:${gradleProperties.nodejsGradleVersion}"
+    implementation localGroovy()
+    implementation gradleApi()
+    implementation "com.gradle.publish:plugin-publish-plugin:${gradleProperties.pluginPublishPlugin}"
+    api "org.ysb33r.gradle:nodejs-gradle-plugin:${gradleProperties.nodejsGradleVersion}"
+    api "org.ysb33r.gradle:grolifant-herd:${gradleProperties.grolifantVersion}"
 }
 

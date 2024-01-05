@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,10 @@ import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
-import org.ysb33r.grolifant.api.StringUtils
+import org.ysb33r.grolifant.api.core.ProjectOperations
 
-/** Copies Leanpub Asciidoctor task output to a Dropbox folder.
+/**
+ * Copies Leanpub Asciidoctor task output to a Dropbox folder.
  *
  * @author Schalk W. Cronjé
  *
@@ -37,6 +38,7 @@ import org.ysb33r.grolifant.api.StringUtils
 @CompileStatic
 class DropboxCopyTask extends DefaultTask {
 
+    private final ProjectOperations projectOperations
     private Object dropboxRoot = "${System.getProperty('user.home')}/Dropbox"
     private Object bookPath
     private Object sourceDir
@@ -50,13 +52,17 @@ class DropboxCopyTask extends DefaultTask {
         }
     }
 
+    DropboxCopyTask() {
+        this.projectOperations = ProjectOperations.find(project)
+    }
+
     /** Root directory on filesystem where Dropbox synchronises all files.
      *
      * @return Path to Dropbox root on local filesystem.
      */
     @Internal
     File getDropboxRoot() {
-        project.file(this.dropboxRoot)
+        projectOperations.fsOperations.file(this.dropboxRoot)
     }
 
     /** Override location of Dropbox root
@@ -75,7 +81,7 @@ class DropboxCopyTask extends DefaultTask {
      */
     @Input
     String getBookPath() {
-        this.bookPath != null ? StringUtils.stringize(this.bookPath) : null
+        this.bookPath != null ? projectOperations.stringTools.stringize(this.bookPath) : null
     }
 
     /** Sets the relative path of the Leanpub book in Dropbox.
@@ -95,7 +101,7 @@ class DropboxCopyTask extends DefaultTask {
     @InputDirectory
     @PathSensitive(PathSensitivity.RELATIVE)
     File getSourceDir() {
-        project.file(this.sourceDir)
+        projectOperations.fsOperations.file(this.sourceDir)
     }
 
     void setSourceDir(Object s) {
@@ -108,11 +114,11 @@ class DropboxCopyTask extends DefaultTask {
      */
     @OutputDirectory
     File getDestinationDir() {
-        project.file("${getDropboxRoot()}/${getBookPath()}/manuscript")
+        projectOperations.fsOperations.file("${getDropboxRoot()}/${getBookPath()}/manuscript")
     }
 
     @TaskAction
     void copy() {
-        project.copy(copySpec)
+        projectOperations.copy(copySpec)
     }
 }

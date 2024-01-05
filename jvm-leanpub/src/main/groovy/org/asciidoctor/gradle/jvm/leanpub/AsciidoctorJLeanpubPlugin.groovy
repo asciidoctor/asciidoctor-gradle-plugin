@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import org.asciidoctor.gradle.jvm.AsciidoctorJExtension
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.ysb33r.grolifant.api.TaskProvider
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.setConvention
 
@@ -40,26 +39,25 @@ import static org.asciidoctor.gradle.base.AsciidoctorUtils.setConvention
 @CompileStatic
 class AsciidoctorJLeanpubPlugin implements Plugin<Project> {
 
-    final static String TASK_NAME = 'asciidoctorLeanpub'
+    public final static String TASK_NAME = 'asciidoctorLeanpub'
 
     void apply(Project project) {
-        project.with {
-            apply plugin: AsciidoctorJBasePlugin
+        project.pluginManager.apply(AsciidoctorJBasePlugin)
 
-            Action leanpubDefaults = new Action<AsciidoctorLeanpubTask>() {
-                @Override
-                void execute(AsciidoctorLeanpubTask task) {
-                    task.group = AsciidoctorJBasePlugin.TASK_GROUP
-                    task.description = 'Convert AsciiDoc files to Leanpub-structured Markdown'
-                    setConvention(task.project, task.sourceDirProperty,
-                            project.layout.projectDirectory.dir('src/docs/asciidoc'))
-                    setConvention(task.outputDirProperty,
-                            task.project.layout.buildDirectory.dir('docs/asciidocLeanpub'))
-                }
+        Action leanpubDefaults = new Action<AsciidoctorLeanpubTask>() {
+            @Override
+            void execute(AsciidoctorLeanpubTask task) {
+                task.group = AsciidoctorJBasePlugin.TASK_GROUP
+                task.description = 'Convert AsciiDoc files to Leanpub-structured Markdown'
+                setConvention(task.project, task.sourceDirProperty,
+                        project.layout.projectDirectory.dir('src/docs/asciidoc'))
+                setConvention(task.outputDirProperty,
+                        task.project.layout.buildDirectory.dir('docs/asciidocLeanpub'))
             }
-
-            TaskProvider.registerTask(project, TASK_NAME, AsciidoctorLeanpubTask, leanpubDefaults)
-            extensions.getByType(AsciidoctorJExtension).modules.leanpub.use()
         }
+
+        project.tasks.register(TASK_NAME, AsciidoctorLeanpubTask, leanpubDefaults)
+        project.extensions.getByType(AsciidoctorJExtension).modules.leanpub.use()
     }
 }
+

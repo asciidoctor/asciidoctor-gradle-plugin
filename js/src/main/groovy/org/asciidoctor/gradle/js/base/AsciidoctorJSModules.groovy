@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,10 @@ package org.asciidoctor.gradle.js.base
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AsciidoctorModuleDefinition
+import org.gradle.api.Action
 
-/** Define versions for standard AsciidoctorJS modules.
+/**
+ * Define versions for standard AsciidoctorJS modules.
  *
  * @author Schalk W. Cronjé
  *
@@ -28,19 +30,29 @@ import org.asciidoctor.gradle.base.AsciidoctorModuleDefinition
 @CompileStatic
 interface AsciidoctorJSModules {
 
-    /** Configure docbook via closure.
+    /**
+     * Configure docbook via closure.
      *
      * @param cfg Configurating closure
      */
     void docbook(@DelegatesTo(AsciidoctorModuleDefinition) Closure cfg)
 
-    /** The Docbook module
+    /**
+     * Configure docbook via an action.
      *
-     * @return Acess to the Docbook module. Never {@code null}.
+     * @param cfg Configurator
+     */
+    void docbook(Action<AsciidoctorModuleDefinition>  cfg)
+
+    /**
+     * The Docbook module
+     *
+     * @return Access to the Docbook module. Never {@code null}.
      */
     AsciidoctorModuleDefinition getDocbook()
 
-    /** For the module that are configured in both module sets,
+    /**
+     * For the module that are configured in both module sets,
      * compare to see if the versions are the same
      *
      * @param other Other module set to compare.
@@ -49,7 +61,8 @@ interface AsciidoctorJSModules {
      */
     boolean isSetVersionsDifferentTo(AsciidoctorJSModules other)
 
-    /** Returns a module by name
+    /**
+     * Returns a module by name
      *
      * @param name Name of module
      * @return Module* @throws {@link org.asciidoctor.gradle.base.ModuleNotFoundException} when the module

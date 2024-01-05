@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,26 +16,40 @@
 package org.asciidoctor.gradle.base.process
 
 import groovy.transform.CompileStatic
+import org.ysb33r.grolifant.api.core.jvm.ExecutionMode
 
 /** Ways of executing Java processes.
  *
  * @since 3.0 (Relocated from {@code org.asciidoctor.gradle.jvm.ProcessMode} which existed since 2.0.0)
  * @author Schalk W. Cronjé
+ *
+ * @deprecated Since 4.0. Use {@link ExecutionMode} instead
  */
 @CompileStatic
+@Deprecated
 enum ProcessMode {
     /** Use Gradle worker in-process.
      *
      */
-    IN_PROCESS,
+    IN_PROCESS(ExecutionMode.CLASSPATH),
 
     /** Use out-of-process Gradle worker.
      *
      */
-    OUT_OF_PROCESS,
+    OUT_OF_PROCESS(ExecutionMode.OUT_OF_PROCESS),
 
     /** Use a classic out-of-process Java execution.
      *
      */
-    JAVA_EXEC
+    JAVA_EXEC(ExecutionMode.JAVA_EXEC)
+
+    final ExecutionMode executionMode
+
+    static ProcessMode fromExecutionMode(ExecutionMode mode) {
+        ProcessMode.values().find { it.executionMode == mode } ?: JAVA_EXEC
+    }
+
+    private ProcessMode(ExecutionMode em) {
+        this.executionMode = em
+    }
 }

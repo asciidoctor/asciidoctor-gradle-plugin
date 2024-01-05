@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,10 @@ import org.gradle.api.Action
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.workers.WorkerExecutor
-import org.ysb33r.grolifant.api.FileUtils
+import org.ysb33r.grolifant.api.core.ClosureUtils
 
 import javax.inject.Inject
 
-import static groovy.lang.Closure.DELEGATE_FIRST
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.setConvention
 
 /** Standard generic task for converting Asciidoctor documents.
@@ -57,15 +56,13 @@ import static org.asciidoctor.gradle.base.AsciidoctorUtils.setConvention
 @CacheableTask
 class AsciidoctorTask extends AbstractAsciidoctorTask {
 
-    /** Configures output options for this task.
+    /**
+     * Configures output options for this task.
      *
      * @param cfg Closure which will delegate to a {@link org.asciidoctor.gradle.base.OutputOptions} instance.
      */
-    void outputOptions(Closure cfg) {
-        Closure configurator = (Closure) cfg.clone()
-        configurator.delegate = this.configuredOutputOptions
-        configurator.resolveStrategy = DELEGATE_FIRST
-        configurator.call()
+    void outputOptions(@DelegatesTo(OutputOptions) Closure cfg) {
+        ClosureUtils.configureItem(outputOptions, cfg)
     }
 
     /** Configures output options for this task.
@@ -74,33 +71,34 @@ class AsciidoctorTask extends AbstractAsciidoctorTask {
      *   to configure.
      */
     void outputOptions(Action<OutputOptions> cfg) {
-        cfg.execute(this.configuredOutputOptions)
+        cfg.execute(outputOptions)
     }
 
     @Inject
     AsciidoctorTask(WorkerExecutor we) {
         super(we)
         final String taskPrefix = 'asciidoctor'
+        executionMode = JAVA_EXEC // TODO: Remove this as it is just for testing
         String folderName
         if (name.startsWith(taskPrefix)) {
             folderName = name.replaceFirst(taskPrefix, 'asciidoc')
         } else {
             folderName = "asciidoc${name.capitalize()}"
         }
-        final String safeFolderName = FileUtils.toSafeFileName(folderName)
+        final String safeFolderName = projectOperations.fsOperations.toSafeFileName(folderName)
         setConvention(project, sourceDirProperty, project.layout.projectDirectory.dir("src/docs/${folderName}"))
         setConvention(outputDirProperty, project.layout.buildDirectory.dir("docs/${safeFolderName}"))
     }
 
     @Override
-    void processAsciidocSources() {
+    void exec() {
         if (!baseDirConfigured) {
             if (attributes.keySet() in ['docinfo', 'docinfo1', 'docinfo2']) {
                 logger.warn('You are using docinfo attributes, but a base directory strategy has not been configured.' +
                         'It is recommended that you set baseDirFollowsSourceDir() in your task.')
             }
         }
-        super.processAsciidocSources()
+        super.exec()
     }
 
     /** The default pattern set for secondary sources baced upon the configured backends.
@@ -111,15 +109,13 @@ class AsciidoctorTask extends AbstractAsciidoctorTask {
      * @return Default pattern set.
      */
     @Override
-    protected PatternSet getDefaultSecondarySourceDocumentPattern() {
+    PatternSet getDefaultSecondarySourceDocumentPattern() {
         PatternSet ps = super.defaultSecondarySourceDocumentPattern
 
-        Set<String> backends = this.configuredOutputOptions.backends
-
-        if (backends.find { it.startsWith('html') }) {
+        if (backends().find { it.startsWith('html') }) {
             ps.include '*docinfo*.html'
         }
-        if (backends.find { it.startsWith('docbook') }) {
+        if (backends().find { it.startsWith('docbook') }) {
             ps.include '*docinfo*.xml'
         }
 

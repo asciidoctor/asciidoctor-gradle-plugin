@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,14 +28,14 @@ import org.gradle.api.file.CopySpec
 @java.lang.SuppressWarnings('NoWildcardImports')
 import org.gradle.api.tasks.*
 import org.gradle.workers.WorkerExecutor
-import org.ysb33r.grolifant.api.StringUtils
-import org.ysb33r.grolifant.api.Version
+import org.ysb33r.grolifant.api.v4.StringUtils
+import org.ysb33r.grolifant.api.core.Version
 
 import javax.inject.Inject
 
 import static org.asciidoctor.gradle.jvm.gems.AsciidoctorGemSupportPlugin.GEMPREP_TASK
 import static org.asciidoctor.gradle.jvm.slides.RevealJSExtension.FIRST_VERSION_WITH_PLUGIN_SUPPORT
-import static org.ysb33r.grolifant.api.TaskProvider.*
+import static org.ysb33r.grolifant.api.v4.TaskProvider.*
 import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 
 /**
@@ -68,7 +68,7 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
         this.revealjsOptions = new RevealJSOptions(project)
         configuredOutputOptions.backends = [BACKEND_NAME]
         copyAllResources()
-        org.ysb33r.grolifant.api.TaskProvider<AsciidoctorGemPrepare> gemPrepare = taskByName(project, GEMPREP_TASK)
+        org.ysb33r.grolifant.api.v4.TaskProvider<AsciidoctorGemPrepare> gemPrepare = taskByName(project, GEMPREP_TASK)
 
         asciidoctorj.with {
             requires(REVEALJS_GEM)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,12 @@ package org.asciidoctor.gradle.base
 import groovy.transform.CompileStatic
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.ysb33r.grolifant.api.AbstractCombinedProjectTaskExtension
+import org.gradle.api.provider.Provider
+import org.ysb33r.grolifant.api.core.ProjectOperations
+import org.ysb33r.grolifant.api.core.runnable.CombinedProjectTaskExtensionBase
 
-import static org.ysb33r.grolifant.api.StringUtils.stringize
+import java.util.concurrent.Callable
+import java.util.function.Function
 
 /** Base class for implementing extensions in the Asciidoctor Gradle suite.
  *
@@ -29,9 +32,9 @@ import static org.ysb33r.grolifant.api.StringUtils.stringize
  * @since 3.0
  */
 @CompileStatic
-abstract class AbstractImplementationEngineExtension
-    extends AbstractCombinedProjectTaskExtension
-    implements AsciidoctorAttributeProvider {
+class AbstractImplementationEngineExtension
+        extends CombinedProjectTaskExtensionBase
+        implements AsciidoctorAttributeProvider {
 
     private SafeMode safeMode
     private final Map<String, String> defaultVersionMap
@@ -53,8 +56,10 @@ abstract class AbstractImplementationEngineExtension
        end::extension-property[]
        ------------------------- */
 
-    /** Returns all of the Asciidoctor options.
+    /**
+     * Resolves all of the Asciidoctor options.
      *
+     * @return A map of resovled attributes
      */
     Map<String, Object> getAttributes() {
         stringizeMapRecursive(this.attributes, onlyTaskAttributes) { AbstractImplementationEngineExtension it ->
@@ -154,8 +159,8 @@ abstract class AbstractImplementationEngineExtension
 
         if (task && langAttrs) {
             stringizeMapRecursive(
-                langAttrs.attributes,
-                langAttrs.onlyTask
+                    langAttrs.attributes,
+                    langAttrs.onlyTask
             ) { AbstractImplementationEngineExtension it ->
                 it.getAttributesForLang(lang)
             }
@@ -246,16 +251,20 @@ abstract class AbstractImplementationEngineExtension
     }
 
     protected AbstractImplementationEngineExtension(Project project, String moduleResourceName) {
-        super(project)
+        super(ProjectOperations.find(project))
         this.safeMode = SafeMode.UNSAFE
         this.attributes['gradle-project-name'] = project.name
-        this.attributes['gradle-project-group'] = { project.group ?: '' }
-        this.attributes['gradle-project-version'] = { project.version ?: '' }
+        this.attributes['gradle-project-group'] = projectOperations.projectTools.groupProvider.orElse('')
+        this.attributes['gradle-project-version'] = projectOperations.projectTools.versionProvider.orElse('')
         this.defaultVersionMap = ModuleVersionLoader.load(moduleResourceName)
     }
 
     protected AbstractImplementationEngineExtension(Task task, final String name) {
-        super(task, name)
+        super(
+                task,
+                ProjectOperations.find(task.project),
+                (AbstractImplementationEngineExtension) task.project.extensions.getByName(name)
+        )
     }
 
     protected Map<String, String> getDefaultVersionMap() {
@@ -267,9 +276,9 @@ abstract class AbstractImplementationEngineExtension
     }
 
     protected Map<String, Object> stringizeMapRecursive(
-        Map<String, Object> map,
-        boolean fromTaskOnly,
-        Closure<Map<String, Object>> other
+            Map<String, Object> map,
+            boolean fromTaskOnly,
+            Closure<Map<String, Object>> other
     ) {
         if (!task || fromTaskOnly) {
             stringizeScalarMapItems(map)
@@ -284,17 +293,17 @@ abstract class AbstractImplementationEngineExtension
     }
 
     protected Collection<String> stringizeList(
-        Collection<Object> list,
-        boolean fromTaskOnly,
-        Closure<Collection<String>> other
+            Collection<Object> list,
+            boolean fromTaskOnly,
+            Function<AbstractImplementationEngineExtension,Collection<String>> other
     ) {
         if (!task || fromTaskOnly) {
             stringize(list)
-        } else if (list.isEmpty()) {
-            other.call(extFromProject)
+        } else if (list.empty) {
+            other.apply(extFromProject)
         } else {
             List<Object> newOptions = []
-            newOptions.addAll(other.call(extFromProject))
+            newOptions.addAll(other.apply(extFromProject))
             newOptions.addAll(list)
             stringize(newOptions)
         }
@@ -312,8 +321,11 @@ abstract class AbstractImplementationEngineExtension
                     return (Boolean) item
                 case File:
                     return ((File) item).absolutePath
+                case Provider:
+                case Callable:
+                    return item
                 default:
-                    return stringize(item)
+                    return { -> projectOperations.stringTools.stringize(item) } as Callable<String>
             }
         }
     }
@@ -330,13 +342,20 @@ abstract class AbstractImplementationEngineExtension
                     return [key, ((Boolean) item)]
                 case File:
                     return [key, ((File) item).absolutePath]
+                case Provider:
+                case Callable:
+                    return [key, item]
                 default:
-                    return [key, stringize(item)]
+                    return [key, { -> projectOperations.stringTools.stringize(item) } as Callable<String>]
             }
         } as Map<String, Object>
     }
 
     private AbstractImplementationEngineExtension getExtFromProject() {
         task ? (AbstractImplementationEngineExtension) projectExtension : this
+    }
+
+    private List<String> stringize(Collection<?> stringyThings) {
+        projectOperations.stringTools.stringize(stringyThings)
     }
 }

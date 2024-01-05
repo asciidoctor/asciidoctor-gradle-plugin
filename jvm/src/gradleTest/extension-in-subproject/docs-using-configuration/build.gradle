@@ -1,7 +1,12 @@
-apply plugin : 'org.asciidoctor.jvm.convert'
+plugins {
+    id 'org.asciidoctor.jvm.convert'
+}
 
 configurations {
-    asciidocExt
+    asciidocExt {
+        canBeResolved = true
+        canBeConsumed = false
+    }
 }
 
 dependencies {
@@ -14,5 +19,5 @@ asciidoctorj {
 
 asciidoctor {
     configurations 'asciidocExt'
-    inProcess JAVA_EXEC
+    executionMode = JAVA_EXEC
 }

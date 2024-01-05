@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,12 +47,13 @@ class AsciidoctorLeanpubTask extends AbstractAsciidoctorTask {
     AsciidoctorLeanpubTask(WorkerExecutor we) {
         super(we)
 
-        configuredOutputOptions.backends = [BACKEND]
+        outputOptions.backends = [BACKEND]
         copyNoResources()
         asciidoctorj.options.put('doctype', 'book')
     }
 
-    /** The style used to format colists.
+    /**
+     * The style used to format colists.
      *
      * @return Colist style
      */
@@ -74,7 +75,8 @@ class AsciidoctorLeanpubTask extends AbstractAsciidoctorTask {
         this.colistPrefix = val
     }
 
-    /** A task may add some default attributes.
+    /**
+     * A task may add some default attributes.
      *
      * If the user specifies any of the attributes, then these attributes will not be utilised.
      *
@@ -85,11 +87,13 @@ class AsciidoctorLeanpubTask extends AbstractAsciidoctorTask {
      * @return A collection of default attributes.
      */
     @Override
-    protected Map<String, Object> getTaskSpecificDefaultAttributes(File workingSourceDir) {
-        Map<String,Object> attrs = super.getTaskSpecificDefaultAttributes(workingSourceDir)
-//        attrs.put 'front-cover-image', getFrontCoverImage()
-        attrs.put 'leanpub-colist-style', getColistStyle()
-        attrs.put 'leanpub-colist-prefix', getColistPrefix()
+    Map<String, ?> getTaskSpecificDefaultAttributes(File workingSourceDir) {
+        Map<String, ?> attrs = super.getTaskSpecificDefaultAttributes(workingSourceDir)
+        attrs.putAll([
+                //                'front-cover-image': getFrontCoverImage(),
+                'leanpub-colist-style' : colistStyle,
+                'leanpub-colist-prefix': colistPrefix
+        ])
         attrs
     }
 }

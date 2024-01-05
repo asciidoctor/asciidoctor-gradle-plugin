@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,12 +71,12 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
 
         then: 'u content is generated as HTML and XML'
         verifyAll {
-            new File(testProjectDir.root, 'build/docs/asciidoc/html5/sample.html').exists() || !compatible
-            new File(testProjectDir.root, 'build/docs/asciidoc/html5/subdir/sample2.html').exists() || !compatible
-            new File(testProjectDir.root, 'build/docs/asciidoc/docbook/sample.xml').exists() || !compatible
-            !new File(testProjectDir.root, 'build/docs/asciidoc/docinfo/docinfo.xml').exists() || !compatible
-            !new File(testProjectDir.root, 'build/docs/asciidoc/docinfo/sample-docinfo.xml').exists() || !compatible
-            !new File(testProjectDir.root, 'build/docs/asciidoc/html5/subdir/_include.html').exists() || !compatible
+            new File(buildDir, 'docs/asciidoc/html5/sample.html').exists() || !compatible
+            new File(buildDir, 'docs/asciidoc/html5/subdir/sample2.html').exists() || !compatible
+            new File(buildDir, 'docs/asciidoc/docbook/sample.xml').exists() || !compatible
+            !new File(buildDir, 'docs/asciidoc/docinfo/docinfo.xml').exists() || !compatible
+            !new File(buildDir, 'docs/asciidoc/docinfo/sample-docinfo.xml').exists() || !compatible
+            !new File(buildDir, 'docs/asciidoc/html5/subdir/_include.html').exists() || !compatible
         }
 
         where:
@@ -133,28 +133,32 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         noExceptionThrown()
     }
 
-    void 'Can run in JAVA_EXEC process mode (Groovy DSL)'() {
+    @Unroll
+    void "Can run in #processMode process mode (Groovy DSL)"() {
         given:
-        getBuildFile('''
+        getBuildFile("""
             asciidoctorj {
                 logLevel = 'INFO'
             }
 
             asciidoctor {
-                inProcess = JAVA_EXEC
+                executionMode = ${processMode}
 
                 outputOptions {
                     backends 'html5'
                 }
                 sourceDir 'src/docs/asciidoc'
             }
-        ''')
+        """)
 
         when:
         getGradleRunner(DEFAULT_ARGS).build()
 
         then:
         noExceptionThrown()
+
+        where:
+        processMode << ['IN_PROCESS', 'OUT_OF_PROCESS', 'JAVA_EXEC']
     }
 
     @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/292')
@@ -168,7 +172,7 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
 
         when:
         getGradleRunner(DEFAULT_ARGS).build()
-        String sample2 = new File(testProjectDir.root, 'build/docs/asciidoc/subdir/sample2.html').text
+        String sample2 = new File(buildDir, 'docs/asciidoc/subdir/sample2.html').text
 
         then:
         sample2.contains('gradle-relative-srcdir = [..]')
@@ -201,7 +205,7 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         given:
         getBuildFile('''
         asciidoctor {
-            inProcess = JAVA_EXEC
+            executionMode = JAVA_EXEC
             outputOptions {
                 backends = ['html5', 'abc', 'xyz']
             }
@@ -221,7 +225,7 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
     @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/368')
     void 'Docinfo files are processed'() {
         given:
-        getBuildFile( '''
+        getBuildFile('''
         asciidoctor {
             attributes docinfo: 'shared'
             baseDirFollowsSourceDir()
@@ -232,7 +236,7 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         getGradleRunner(DEFAULT_ARGS).withDebug(true).build()
 
         then:
-        new File(testProjectDir.root, 'build/docs/asciidoc/sample.html').text
+        new File(buildDir, 'docs/asciidoc/sample.html').text
                 .contains('<meta name="asciidoctor-docinfo-test"/>')
     }
 

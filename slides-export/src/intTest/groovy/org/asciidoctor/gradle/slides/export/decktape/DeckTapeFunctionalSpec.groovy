@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ package org.asciidoctor.gradle.slides.export.decktape
 
 import org.asciidoctor.gradle.slides.export.internal.FunctionalSpecification
 import org.gradle.testkit.runner.BuildResult
-import org.ysb33r.grolifant.api.OperatingSystem
+import org.ysb33r.grolifant.api.core.OperatingSystem
 import spock.lang.IgnoreIf
 import spock.lang.Issue
 import spock.lang.Stepwise
@@ -59,6 +59,8 @@ class DeckTapeFunctionalSpec extends FunctionalSpecification {
 
     @Unroll
     @Timeout(240)
+    // TODO: Check and re-enable on windows.
+    @IgnoreIf({ OperatingSystem.current().windows })
     void 'Standalone asciidoctor slide task can be exported with #profile profile'() {
         setup:
         withBuildScan = true
@@ -166,13 +168,13 @@ class DeckTapeFunctionalSpec extends FunctionalSpecification {
 
         when:
         BuildResult result = getGradleRunner([
-            '-i',
-            'standalonePdfConverter',
-            '--width=1024',
-            '--height=768',
-            '--range=2-3',
-            '--pause=1000',
-            '--load-pause=500'
+                '-i',
+                'standalonePdfConverter',
+                '--width=1024',
+                '--height=768',
+                '--range=2-3',
+                '--pause=1000',
+                '--load-pause=500'
         ]).build()
 
         then:

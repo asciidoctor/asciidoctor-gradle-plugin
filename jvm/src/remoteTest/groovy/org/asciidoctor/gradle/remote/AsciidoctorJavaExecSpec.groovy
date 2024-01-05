@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ class AsciidoctorJavaExecSpec extends RemoteSpecification {
 
     void 'Can execute a conversion from execution specification'() {
         given:
-        Map asciidoc = getProject(testProjectDir.root)
+        Map asciidoc = getProject(projectDir)
         AsciidoctorJavaExec aje = new AsciidoctorJavaExec(getContainerSingleEntry(asciidoc.src, asciidoc.outputDir))
 
         when:
@@ -35,12 +35,12 @@ class AsciidoctorJavaExecSpec extends RemoteSpecification {
 
     void 'Can execute a conversion using serialised execution specification'() {
         given:
-        File executionData = new File(testProjectDir.root, 'execdata')
-        Map asciidoc = getProject(testProjectDir.root)
+        File executionData = new File(projectDir, 'execdata')
+        Map asciidoc = getProject(projectDir)
         ExecutorConfigurationContainer ecc = getContainerMultipleEntries(
             asciidoc.src,
             asciidoc.outputDir,
-            asciidoc.gemPath
+            null // asciidoc.gemPath
         )
         ecc.toFile(executionData, ecc.configurations)
 
@@ -63,7 +63,7 @@ class AsciidoctorJavaExecSpec extends RemoteSpecification {
 
     void 'Should throw an exception when failure level is reached or exceeded'() {
         given:
-        Map asciidoc = getProject(testProjectDir.root)
+        Map asciidoc = getProject(projectDir)
         AsciidoctorJavaExec aje = new AsciidoctorJavaExec(new ExecutorConfigurationContainer(
                 getExecutorConfiguration(HTML, asciidoc.src, new File(asciidoc.outputDir, OUTPUT_HTML), null, 1)
         ))

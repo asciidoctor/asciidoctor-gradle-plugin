@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ class RelativeIncludeFunctionalSpec extends FunctionalSpecification {
         getGradleRunner(DEFAULT_ARGS).withDebug(true).build()
 
         then:
-        new File(testProjectDir.root, 'build/docs/asciidoc/nested/sample.html').text
+        new File(buildDir, 'docs/asciidoc/nested/sample.html').text
                 .contains('This is from _nested-include.adoc file.')
     }
 }

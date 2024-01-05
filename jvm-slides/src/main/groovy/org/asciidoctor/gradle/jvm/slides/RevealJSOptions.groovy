@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,14 +23,14 @@ import org.gradle.api.file.CopySpec
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.PathSensitive
-import org.ysb33r.grolifant.api.StringUtils
+import org.ysb33r.grolifant.api.v4.StringUtils
 
 import java.nio.file.FileSystems
 import java.nio.file.Path
 
 import static org.gradle.api.tasks.PathSensitivity.RELATIVE
-import static org.ysb33r.grolifant.api.MapUtils.stringizeValues
-import static org.ysb33r.grolifant.api.StringUtils.stringize
+import static org.ysb33r.grolifant.api.v4.MapUtils.stringizeValues
+import static org.ysb33r.grolifant.api.v4.StringUtils.stringize
 
 /** Options for Reveal.js slides.
  *
@@ -371,8 +371,9 @@ class RevealJSOptions {
 
     /** Set the Parallax background size.
      *
-     * @param css Anything that can be converted to a String via {@link org.ysb33r.grolifant.api.StringUtils#stringize}.
-     *   Must be in CSS syntax.
+     * @param css Anything that can be converted to a String via
+     * {@link org.ysb33r.grolifant.api.v4.StringUtils#stringize}.
+     * Must be in CSS syntax.
      */
     void setParallaxBackgroundSize(Object css) {
         this.parallaxBackgroundSize = css

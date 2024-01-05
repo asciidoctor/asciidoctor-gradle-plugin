@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,14 @@ package org.asciidoctor.gradle.jvm.pdf
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AbstractDownloadableComponent
 import org.gradle.api.Project
-import org.ysb33r.grolifant.api.StringUtils
 
-/** Easy way to configure themes for Asciidoctor PDF either as local themes or
+import java.util.concurrent.Callable
+
+/**
+ * Easy way to configure themes for Asciidoctor PDF either as local themes or
  * as downloadable.
+ *
+ * @author Schalk W. Cronjé
  *
  * @since 2.0
  */
@@ -30,8 +34,8 @@ class AsciidoctorPdfThemesExtension extends AbstractDownloadableComponent<PdfLoc
 
     public final static String NAME = 'pdfThemes'
 
-    /** Describes tha name and location of a PDF theme.
-     *
+    /**
+     * Describes tha name and location of a PDF theme.
      */
     @SuppressWarnings('ClassName')
     static class PdfThemeDescriptor {
@@ -44,8 +48,8 @@ class AsciidoctorPdfThemesExtension extends AbstractDownloadableComponent<PdfLoc
         }
     }
 
-    /** Defines a local theme.
-     *
+    /**
+     * Defines a local theme.
      */
     @SuppressWarnings('ClassName')
     static class PdfLocalTheme {
@@ -61,7 +65,8 @@ class AsciidoctorPdfThemesExtension extends AbstractDownloadableComponent<PdfLoc
         Object themeName
     }
 
-    /** Extension for configuring PDF themes.
+    /**
+     * Extension for configuring PDF themes.
      *
      * @param project Project this extension has been associated with.
      */
@@ -69,7 +74,8 @@ class AsciidoctorPdfThemesExtension extends AbstractDownloadableComponent<PdfLoc
         super(project)
     }
 
-    /** Instantiates a component of type {@code C}.
+    /**
+     * Instantiates a component of type {@code C}.
      *
      * @param name Name of component
      * @return New component source description
@@ -81,15 +87,19 @@ class AsciidoctorPdfThemesExtension extends AbstractDownloadableComponent<PdfLoc
         theme
     }
 
-    /** Create a closure that will convert an instance of a {@code C} into a {@code S}.
+    /**
+     * Create a closure that will convert an instance of a {@link PdfLocalTheme} into a {@link PdfThemeDescriptor}.
      *
      * @param theme Component to be converted.
      * @return Converting closure.
      */
     @Override
-    protected Closure convertible(PdfLocalTheme theme) {
+    protected Callable<PdfThemeDescriptor> convertible(PdfLocalTheme theme) {
         return { ->
-            new PdfThemeDescriptor(StringUtils.stringize(theme.themeName), project.file(theme.themeDir))
+            new PdfThemeDescriptor(
+                    projectOperations.stringTools.stringize(theme.themeName),
+                    projectOperations.fsOperations.file(theme.themeDir)
+            )
         }
     }
 

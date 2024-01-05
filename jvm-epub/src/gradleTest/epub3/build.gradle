@@ -12,7 +12,7 @@ asciidoctorEpub {
         include 'epub3.adoc'
     }
 
-    inProcess IN_PROCESS
+    executionMode = IN_PROCESS
 }
 
 task runGradleTest {

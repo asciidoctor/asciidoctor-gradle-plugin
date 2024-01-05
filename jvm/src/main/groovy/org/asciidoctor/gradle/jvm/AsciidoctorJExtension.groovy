@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,25 +20,23 @@ import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AbstractImplementationEngineExtension
 import org.asciidoctor.gradle.base.ModuleNotFoundException
 import org.asciidoctor.gradle.base.Transform
+import org.asciidoctor.gradle.internal.DefaultAsciidoctorJModules
 import org.asciidoctor.gradle.internal.JavaExecUtils
-import org.gradle.api.Action
-import org.gradle.api.GradleException
-import org.gradle.api.NonExtensible
-import org.gradle.api.Project
-import org.gradle.api.Task
-import org.gradle.api.artifacts.Configuration
-import org.gradle.api.artifacts.Dependency
-import org.gradle.api.artifacts.DependencyResolveDetails
-import org.gradle.api.artifacts.ResolutionStrategy
-import org.gradle.api.file.FileCollection
+@java.lang.SuppressWarnings('NoWildcardImports')
+import org.gradle.api.*
+@java.lang.SuppressWarnings('NoWildcardImports')
+import org.gradle.api.artifacts.*
+import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.logging.LogLevel
-import org.gradle.util.GradleVersion
-import org.ysb33r.grolifant.api.OperatingSystem
 
+import java.util.concurrent.Callable
+import java.util.function.BiConsumer
+import java.util.function.BiFunction
+import java.util.function.Function
 import java.util.regex.Pattern
 
-import static org.ysb33r.grolifant.api.ClosureUtils.configureItem
-import static org.ysb33r.grolifant.api.StringUtils.stringize
+import static groovy.lang.Closure.DELEGATE_FIRST
+import static org.ysb33r.grolifant.api.core.ClosureUtils.configureItem
 
 /** Extension for configuring AsciidoctorJ.
  *
@@ -64,32 +62,36 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     private static final String ASCIIDOCTORJ_LEANPUB_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctor-leanpub-markdown"
     private static final String JRUBY_COMPLETE_DEPENDENCY = JavaExecUtils.JRUBY_COMPLETE_DEPENDENCY
     private static final String ASCIIDOCTOR_DEPENDENCY_PROPERTY_NAME = 'asciidoctorj'
-    private static final OperatingSystem OS = OperatingSystem.current()
-    private static final boolean GUAVA_REQUIRED_FOR_EXTERNALS = GradleVersion.current() >= GradleVersion.version('4.8')
+    private static final String CONFIGURATION_NAME = "__\$\$${NAME}\$\$__"
 
-    private Object version
-    private Optional<Object> jrubyVersion
+    // TODO: Kill this off
+//    private static final boolean GUAVA_REQUIRED_FOR_EXTERNALS = !LegacyLevel.PRE_4_8
 
-    private Boolean injectGuavaJar
+    private static final BiConsumer<DependencyResolveDetails, Callable<String>> DRD_VERSION_RESOLVER = {
+        DependencyResolveDetails drd, Callable<String> versionResolver ->
+            drd.useVersion(versionResolver.call())
+    } as BiConsumer<DependencyResolveDetails, Callable<String>>
 
+    private final LogLevel defaultLogLevel
     private final Map<String, Object> options = [:]
     private final List<Object> jrubyRequires = []
     private final List<Object> asciidoctorExtensions = []
-    private final List<Object> gemPaths = []
-    private final List<Action<ResolutionStrategy>> resolutionsStrategies = []
-    private final List<Action<Configuration>> configurationCallbacks = []
+//    private final List<Object> gemPaths = []
     private final List<Object> warningsAsErrors = []
-    private final AsciidoctorJModules modules
-
+    private final DefaultAsciidoctorJModules modules
+    private final Configuration publicConfiguration
+    private final Configuration privateConfiguration
+    private final BiFunction<String, Closure, Dependency> dependencyCreator
+    private final Function<Project, Dependency> projectDependency
+    private Object version
+    private Optional<Object> jrubyVersion
     private boolean onlyTaskOptions = false
-    private boolean onlyTaskRequires = false
     private boolean onlyTaskExtensions = false
-    private boolean onlyTaskGems = false
     private boolean onlyTaskWarnings = false
-    private boolean onlyTaskResolutionStrategies = false
-    private boolean onlyTaskConfigurationCallbacks = false
-
     private LogLevel logLevel
+//    private Boolean injectGuavaJar
+    private boolean onlyTaskRequires = false
+//    private boolean onlyTaskGems = false
 
     /** Attach extension to a project.
      *
@@ -98,14 +100,29 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     @SuppressWarnings('ThisReferenceEscapesConstructor')
     AsciidoctorJExtension(Project project) {
         super(project, 'asciidoctorj-extension')
-        this.version = defaultVersionMap[ASCIIDOCTOR_DEPENDENCY_PROPERTY_NAME]
-        this.modules = new AsciidoctorJModules(this, defaultVersionMap)
 
+        String privateName = "${CONFIGURATION_NAME}_d"
+        String publicName = "${CONFIGURATION_NAME}_r"
+        projectOperations.configurations.createLocalRoleFocusedConfiguration(privateName, publicName)
+        this.privateConfiguration = project.configurations.getByName(privateName)
+        this.publicConfiguration = project.configurations.getByName(publicName)
+        loadStandardPublicConfigurationResolutionStrategy()
+
+        this.dependencyCreator = createDependencyLoader(project.dependencies, this.privateConfiguration)
+        this.projectDependency = createProjectDependencyLoader(project.dependencies)
+        this.version = defaultVersionMap[ASCIIDOCTOR_DEPENDENCY_PROPERTY_NAME]
+        this.modules = new DefaultAsciidoctorJModules(projectOperations, this, defaultVersionMap)
+        this.defaultLogLevel = project.logging.level
         if (this.version == null) {
             throw new ModuleNotFoundException('Default version for AsciidoctorJ must be defined. ' +
-                'Please report a bug at https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues'
+                    'Please report a bug at https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues'
             )
         }
+//        this.configurations = project.configurations
+//        this.dependencies = project.dependencies
+
+        this.modules.onUpdate { owner.updateConfiguration() }
+        updateConfiguration()
     }
 
     /** Attach extension to a task.
@@ -115,7 +132,23 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     @SuppressWarnings('ThisReferenceEscapesConstructor')
     AsciidoctorJExtension(Task task) {
         super(task, NAME)
-        this.modules = new AsciidoctorJModules(this, defaultVersionMap)
+        String privateName = "__\$\$${NAME}_${task.name}\$\$__d"
+        String publicName = "__\$\$${NAME}_${task.name}\$\$__r"
+        projectOperations.configurations.createLocalRoleFocusedConfiguration(privateName, publicName)
+        this.privateConfiguration = task.project.configurations.getByName(privateName)
+        this.publicConfiguration = task.project.configurations.getByName(publicName)
+        loadStandardPublicConfigurationResolutionStrategy()
+
+        Configuration projectConfiguration = task.project.configurations.findByName("${CONFIGURATION_NAME}_d")
+        if (projectConfiguration) {
+            this.publicConfiguration.extendsFrom(projectConfiguration)
+        }
+
+        this.dependencyCreator = createDependencyLoader(task.project.dependencies, this.privateConfiguration)
+        this.projectDependency = createProjectDependencyLoader(task.project.dependencies)
+        this.modules = new DefaultAsciidoctorJModules(projectOperations, this, defaultVersionMap)
+        this.modules.onUpdate { owner.updateConfiguration() }
+        updateConfiguration()
     }
 
     /* -------------------------
@@ -148,7 +181,8 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
         }
     }
 
-    /** Defines extensions to be registered. The given parameters should
+    /**
+     * Defines extensions to be registered. The given parameters should
      * either contain Asciidoctor Groovy DSL closures or files
      * with content conforming to the Asciidoctor Groovy DSL.
      *
@@ -158,7 +192,8 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
         addExtensions(exts as List)
     }
 
-    /** Clears the existing list of extensions and replace with a new set.
+    /**
+     * Clears the existing list of extensions and replace with a new set.
      *
      * If this is declared on a task extension all extention from the global
      * project extension will be ignored.
@@ -226,56 +261,57 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
         ~/include file not found/
     }
 
-    /* -------------------------
-       tag::extension-property[]
-       gemPaths:: One or more gem installation directories (separated by the system path separator).
-         Use `gemPaths` to append. Use `setGemPaths` or `gemPaths=['path1','path2']` to overwrite.
-         Use `asGemPath` to obtain a path string, separated by platform-specific separator.
-         Type: `FileCollection`, but any collection of objects convertible with `project.files` can be passed
-         Default: empty
-       end::extension-property[]
-       ------------------------- */
-
-    /** Returns the list of paths to be used for {@code GEM_HOME}
-     *
-     */
-    FileCollection getGemPaths() {
-        if (!task || onlyTaskGems) {
-            project.files(this.gemPaths)
-        } else {
-            project.files(this.gemPaths) + extFromProject.gemPaths
-        }
-    }
-
-    /** Sets a new list of GEM paths to be used.
-     *
-     * @param paths Paths resolvable by {@ocde project.files}
-     */
-    void setGemPaths(Iterable<Object> paths) {
-        this.gemPaths.clear()
-        this.gemPaths.addAll(paths)
-
-        if (task) {
-            this.onlyTaskGems = true
-        }
-    }
-
-    /** Adds more paths for discovering GEMs.
-     *
-     * @param f Path objects that can be be converted with {@code project.file}.
-     */
-    void gemPaths(Object... f) {
-        this.gemPaths.addAll(f)
-    }
-
-    /** Returns the list of paths to be used for GEM installations in a format that is
-     * suitable for assignment to {@code GEM_HOME}
-     *
-     * Calling this will cause gemPath to be resolved immediately.
-     */
-    String asGemPath() {
-        getGemPaths().files*.toString().join(OS.pathSeparator)
-    }
+//    /* -------------------------
+//       tag::extension-property[]
+//       gemPaths:: One or more gem installation directories (separated by the system path separator).
+//         Use `gemPaths` to append. Use `setGemPaths` or `gemPaths=['path1','path2']` to overwrite.
+//         Use `asGemPath` to obtain a path string, separated by platform-specific separator.
+//         Type: `FileCollection`, but any collection of objects convertible with `project.files` can be passed
+//         Default: empty
+//       end::extension-property[]
+//       ------------------------- */
+//
+//    /** Returns the list of paths to be used for {@code GEM_HOME}
+//     *
+//     */
+//    FileCollection getGemPaths() {
+//        if (!task || onlyTaskGems) {
+//            projectOperations.fsOperations.files(this.gemPaths)
+//        } else {
+//            projectOperations.fsOperations.files(this.gemPaths).from(extFromProject.gemPaths)
+//        }
+//    }
+//
+//    /** Sets a new list of GEM paths to be used.
+//     *
+//     * @param paths Paths resolvable by {@ocde project.files}
+//     */
+//    void setGemPaths(Iterable<Object> paths) {
+//        this.gemPaths.clear()
+//        this.gemPaths.addAll(paths)
+//
+//        if (task) {
+//            this.onlyTaskGems = true
+//        }
+//    }
+//
+//    /** Adds more paths for discovering GEMs.
+//     *
+//     * @param f Path objects that can be be converted with {@code project.file}.
+//     */
+//    void gemPaths(Object... f) {
+//        this.gemPaths.addAll(f)
+//    }
+//
+//    /**
+//     * Returns the list of paths to be used for GEM installations in a format that is
+//     * suitable for assignment to {@code GEM_HOME}
+//     *
+//     * Calling this will cause gemPath to be resolved immediately.
+//     */
+//    String asGemPath() {
+//        getGemPaths().files*.toString().join(OS.pathSeparator)
+//    }
 
     /* -------------------------
        tag::extension-property[]
@@ -297,12 +333,12 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     String getJrubyVersion() {
         if (task) {
             if (this.jrubyVersion != null && this.jrubyVersion.present) {
-                stringize(this.jrubyVersion.get())
+                projectOperations.stringTools.stringize(this.jrubyVersion.get())
             } else {
                 extFromProject.getJrubyVersion()
             }
         } else {
-            this.jrubyVersion?.present ? stringize(this.jrubyVersion.get()) : null
+            this.jrubyVersion?.present ? projectOperations.stringTools.stringize(this.jrubyVersion.get()) : null
         }
     }
 
@@ -335,7 +371,7 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
         if (task) {
             this.logLevel == null ? extFromProject.logLevel : this.logLevel
         } else {
-            this.logLevel ?: project.logging.level
+            this.logLevel ?: this.defaultLogLevel
         }
     }
 
@@ -453,9 +489,11 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
      * @since 1.5.0
      */
     List<String> getRequires() {
-        stringizeList(this.jrubyRequires, onlyTaskRequires) { AsciidoctorJExtension it ->
-            it.requires
-        }.toList()
+        stringizeList(
+                this.jrubyRequires,
+                onlyTaskRequires,
+                x -> ((AsciidoctorJExtension) x).requires
+        ).toList()
     }
 
     /** Applies a new set of Ruby modules to be included, clearing any previous set.
@@ -490,122 +528,24 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
        end::extension-property[]
        ------------------------- */
 
-    /** List of resolution strategies that will be applied to the Asciidoctorj group of dependencies.
-     *
-     * If called on a task, the project extensions's resolution strategies are returned ahead of the task-specific
-     * resolution strategies.
-     *
-     * If called on a task where {@link #clearResolutionStrategies} was called previously, only the task-specifc
-     * resolution strategies are returned.
-     *
-     * @return List of actions. Can be empty, but never {@code null}.
-     *
-     * @since 3.1.0
-     */
-    Iterable<Action<ResolutionStrategy>> getResolutionStrategies() {
-        if (task) {
-            if (onlyTaskResolutionStrategies) {
-                this.resolutionsStrategies
-            } else {
-                extFromProject.resolutionsStrategies + this.resolutionsStrategies
-            }
-        } else {
-            this.resolutionsStrategies
-        }
-    }
-
-    /** Clears the current list of resolution strategies.
-     *
-     * If called on a task extension, all subsequent strategies added to the project extension will be ignored
-     * in task context.
-     */
-    void clearResolutionStrategies() {
-        if (task) {
-            onlyTaskResolutionStrategies = true
-        }
-        this.resolutionsStrategies.clear()
-    }
-
-    /** Adds a resolution strategy for resolving asciidoctorj related dependencies
+    /**
+     * Adds rules to the resolution strategy for resolving asciidoctorj related dependencies
      *
      * @param strategy Additional resolution strategy. Takes a {@link ResolutionStrategy} as parameter.
      */
     void resolutionStrategy(Action<ResolutionStrategy> strategy) {
-        this.resolutionsStrategies.add(strategy)
+        this.publicConfiguration.resolutionStrategy(strategy)
     }
 
-    /** Adds a resolution strategy for resolving asciidoctorj related dependencies
+    /**
+     * Adds rules to the resolution strategy for resolving asciidoctorj related dependencies
      *
      * @param strategy Additional resolution strategy. Takes a {@link ResolutionStrategy} as parameter.
      */
     void resolutionStrategy(@DelegatesTo(ResolutionStrategy) Closure strategy) {
-        this.resolutionsStrategies.add(strategy as Action<ResolutionStrategy>)
-    }
-
-    /* -------------------------
-       tag::extension-property[]
-        onConfiguration:: Additional actions to be performed when the detached configuration for the
-        {asciidoctorj-name} is created.
-       end::extension-property[]
-       ------------------------- */
-
-    /** List of callbacks that will be applied whent he asciidoctorj-related detached configuration is created.
-     *
-     * If called on a task, the project extensions's callbacks are returned ahead of the task-specific
-     * callbacks.
-     *
-     * If called on a task where {@link #clearConfigurationCallbacks} was called previously, only the task-specifc
-     * callbacks are returned.
-     *
-     * @return List of callbacks. Can be empty, but never {@code null}.
-     *
-     * @since 3.1.0
-     */
-    Iterable<Action<Configuration>> getConfigurationCallbacks() {
-        if (task) {
-            if (onlyTaskConfigurationCallbacks) {
-                this.configurationCallbacks
-            } else {
-                extFromProject.configurationCallbacks + this.configurationCallbacks
-            }
-        } else {
-            this.configurationCallbacks
-        }
-    }
-
-    /** Clears the current list of resolution strategies.
-     *
-     * If called on a task extension, all subsequent callbacks added to the project extension will be ignored
-     * in task context.
-     *
-     * @since 3.1.0
-     */
-    void clearConfigurationCallbacks() {
-        if (task) {
-            onlyTaskConfigurationCallbacks = true
-        }
-
-        this.configurationCallbacks.clear()
-    }
-
-    /** Adds a callback for when the asciidoctorj-related detached configuration is created.
-     *
-     * @param callback The detached configuration is passed to this {@code Action}.
-     *
-     * @since 3.1.0
-     */
-    void onConfiguration(Action<Configuration> callback) {
-        this.configurationCallbacks.add(callback)
-    }
-
-    /** Adds a callback for when the asciidoctorj-related detached configuration is created.
-     *
-     * @param callback The detached configuration is passed to this closure}.
-     *
-     * @since 3.1.0
-     */
-    void onConfiguration(@DelegatesTo(Configuration) Closure callback) {
-        this.configurationCallbacks.add(callback as Action<Configuration>)
+        Closure cfg = (Closure) strategy.clone()
+        cfg.resolveStrategy = DELEGATE_FIRST
+        this.publicConfiguration.resolutionStrategy(cfg)
     }
 
     /* -------------------------
@@ -614,117 +554,74 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
        end::extension-property[]
        ------------------------- */
 
-    /** Version of AsciidoctorJ that should be used.
+    /**
+     * Version of AsciidoctorJ that should be used.
      *
+     * @return Asciidoctor version
      */
     String getVersion() {
         if (task) {
-            this.version ? stringize(this.version) : extFromProject.getVersion()
+            this.version ? projectOperations.stringTools.stringize(this.version) : extFromProject.getVersion()
         } else {
-            stringize(this.version)
+            projectOperations.stringTools.stringize(this.version)
         }
     }
 
     /** Set a new version to use.
      *
-     * @param v New version to be used. Can be of anything that be be resolved by {@link stringize ( Object o )}
+     * @param v New version to be used. Can be of anything that be be resolved by
+     * {@link org.ysb33r.grolifant.api.core.StringTools#stringize ( Object o )}
      */
     void setVersion(Object v) {
         this.version = v
     }
 
-    /** Whether the Guava JAR that ships with the Gradle distribution should be injected into the
-     * classpath for external AsciidoctorJ processes.
-     *
-     * If not set previously via {@link #setInjectInternalGuavaJar} then a default version depending of the version of
-     * the Gradle distribution will be used.
-     *
-     * @return {@code true} if JAR should be injected.
-     */
-    boolean getInjectInternalGuavaJar() {
-        if (task) {
-            this.injectGuavaJar == null ? extFromProject.injectInternalGuavaJar : this.injectGuavaJar
-        } else {
-            this.injectGuavaJar == null ? GUAVA_REQUIRED_FOR_EXTERNALS : this.injectGuavaJar
-        }
-    }
+//    /** Whether the Guava JAR that ships with the Gradle distribution should be injected into the
+//     * classpath for external AsciidoctorJ processes.
+//     *
+//     * If not set previously via {@link #setInjectInternalGuavaJar} then a default version depending of the version of
+//     * the Gradle distribution will be used.
+//     *
+//     * @return {@code true} if JAR should be injected.
+//     */
+//    boolean getInjectInternalGuavaJar() {
+//        if (task) {
+//            this.injectGuavaJar == null ? extFromProject.injectInternalGuavaJar : this.injectGuavaJar
+//        } else {
+//            this.injectGuavaJar == null ? GUAVA_REQUIRED_FOR_EXTERNALS : this.injectGuavaJar
+//        }
+//    }
 
-    /** Whether the Guava JAR that ships with the Gradle distribution should be injected into the
-     * classpath for external AsciidoctorJ processes.
-     *
-     * @param inject {@code true} if JAR should be injected.
-     */
-    void setInjectInternalGuavaJar(boolean inject) {
-        this.injectGuavaJar = inject
-    }
+//    /** Whether the Guava JAR that ships with the Gradle distribution should be injected into the
+//     * classpath for external AsciidoctorJ processes.
+//     *
+//     * @param inject {@code true} if JAR should be injected.
+//     */
+//    void setInjectInternalGuavaJar(boolean inject) {
+//        this.injectGuavaJar = inject
+//    }
 
-    /** Returns a runConfiguration of the configured AsciidoctorJ dependencies.
+    /**
+     * Returns a runConfiguration of the configured AsciidoctorJ dependencies.
      *
-     * @return A non-attached runConfiguration.
+     * @return Resolvable configuration.
      */
     Configuration getConfiguration() {
-        final String gDslVer = finalGroovyDslVersion
-        final String pdfVer = finalPdfVersion
-        final String epubVer = finalEpubVersion
-        final String leanpubVer = finalLeanpubVersion
-        final String diagramVer = finalDiagramVersion
-        final String jrubyVer = getJrubyVersion() ?: minimumSafeJRubyVersion(getVersion())
-        final String jrubyCompleteDep = "${JRUBY_COMPLETE_DEPENDENCY}:${jrubyVer}"
+        this.publicConfiguration
+    }
 
-        List<Dependency> deps = [createDependency("${ASCIIDOCTORJ_CORE_DEPENDENCY}:${getVersion()}")]
-
-        if (gDslVer != null) {
-            deps.add(createDependency("${ASCIIDOCTORJ_GROOVY_DSL_DEPENDENCY}:${gDslVer}"))
-        }
-
-        if (pdfVer != null) {
-            deps.add(createDependency("${ASCIIDOCTORJ_PDF_DEPENDENCY}:${pdfVer}"))
-        }
-
-        if (epubVer != null) {
-            deps.add(createDependency("${ASCIIDOCTORJ_EPUB_DEPENDENCY}:${epubVer}"))
-        }
-
-        if (leanpubVer != null) {
-            deps.add(createDependency("${ASCIIDOCTORJ_LEANPUB_DEPENDENCY}:${leanpubVer}"))
-        }
-
-        if (diagramVer != null) {
-            deps.add(createDependency(
-                "${ASCIIDOCTORJ_DIAGRAM_DEPENDENCY}:${diagramVer}", excludeTransitiveAsciidoctorJ()
-            ))
-        }
-
-        deps.add(
-            createDependency(jrubyCompleteDep)
-        )
-
-        Configuration configuration = project.configurations.detachedConfiguration(
-            deps.toArray() as Dependency[]
-        )
-
-        configuration.resolutionStrategy.eachDependency { DependencyResolveDetails dsr ->
+    /**
+     * Loads a JRUBy resolution rule onto the given configuration.
+     *
+     * @param cfg Configuration.
+     *
+     * @since 4.0
+     */
+    void loadJRubyResolutionStrategy(Configuration cfg) {
+        cfg.resolutionStrategy.eachDependency { DependencyResolveDetails dsr ->
             if (dsr.target.name == 'jruby' && dsr.target.group == 'org.jruby') {
                 dsr.useTarget "${JRUBY_COMPLETE_DEPENDENCY}:${dsr.target.version}"
             }
-        }
-
-        resolutionStrategies.each {
-            configuration.resolutionStrategy(it)
-        }
-
-        configurationCallbacks.each {
-            it.execute(configuration)
-        }
-
-        configuration
-    }
-
-    private Dependency createDependency(final String notation, final Closure configurator = null) {
-        if (configurator) {
-            project.dependencies.create(notation, configurator)
-        } else {
-            project.dependencies.create(notation)
         }
     }
 
@@ -755,13 +652,13 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
         asciidoctorExtensions.addAll(dehydrateExtensions(newExtensions))
     }
 
-    /** Prepare extensions for serialisation.
+    /**
+     * Prepare extensions for serialisation.
      *
      * This takes care of dehydrating any closures.
      *
      * @param exts List of extensions
      * @return List of extensions suitable for serialization.
-     *
      */
     private List<Object> dehydrateExtensions(final List<Object> exts) {
         Transform.toList(exts) {
@@ -770,7 +667,7 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
                     ((Closure) it).dehydrate()
                     break
                 case Project:
-                    project.dependencies.project(path: ((Project) it).path)
+                    projectDependency.apply(((Project) it))
                     break
                 default:
                     it
@@ -778,7 +675,7 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
         }
     }
 
-    @SuppressWarnings('UnusedPrivateMethodParameter')
+    @SuppressWarnings(['UnusedPrivateMethodParameter', 'UnusedPrivateMethod'])
     private String minimumSafeJRubyVersion(final String asciidoctorjVersion) {
         '9.1.0.0'
     }
@@ -786,7 +683,7 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     @SuppressWarnings('Instanceof')
     private List<Pattern> patternize(final List<Object> patterns) {
         Transform.toList(patterns) {
-            (Pattern) (it instanceof Pattern ? it : ~/${stringize(it)}/)
+            (Pattern) (it instanceof Pattern ? it : ~/${projectOperations.stringTools.stringize(it)}/)
         }
     }
 
@@ -796,6 +693,70 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
         return {
             exclude(group: ASCIIDOCTORJ_GROUP, module: 'asciidoctorj')
             exclude(group: ASCIIDOCTORJ_GROUP, module: 'asciidoctorj-api')
+        }
+    }
+
+    private void updateConfiguration() {
+        final String gDslVer = finalGroovyDslVersion
+        final String pdfVer = finalPdfVersion
+        final String epubVer = finalEpubVersion
+        final String leanpubVer = finalLeanpubVersion
+        final String diagramVer = finalDiagramVersion
+
+        loadDependencyRuleOnce(ASCIIDOCTORJ_CORE_DEPENDENCY) { -> owner.version }
+        loadDependencyRuleOnce(JRUBY_COMPLETE_DEPENDENCY) { ->
+            owner.getJrubyVersion() ?: owner.minimumSafeJRubyVersion(owner.getVersion())
+        }
+
+        if (gDslVer != null) {
+            loadDependencyRuleOnce(ASCIIDOCTORJ_GROOVY_DSL_DEPENDENCY) { -> owner.finalGroovyDslVersion }
+        }
+
+        if (pdfVer != null) {
+            loadDependencyRuleOnce(ASCIIDOCTORJ_PDF_DEPENDENCY) { -> owner.finalPdfVersion }
+        }
+
+        if (epubVer != null) {
+            loadDependencyRuleOnce(ASCIIDOCTORJ_EPUB_DEPENDENCY) { -> owner.finalEpubVersion }
+        }
+
+        if (leanpubVer != null) {
+            loadDependencyRuleOnce(ASCIIDOCTORJ_LEANPUB_DEPENDENCY) { -> owner.finalLeanpubVersion }
+        }
+
+        if (diagramVer != null) {
+            loadDependencyRuleOnce(
+                    ASCIIDOCTORJ_DIAGRAM_DEPENDENCY,
+                    { -> owner.finalDiagramVersion },
+                    excludeTransitiveAsciidoctorJ()
+            )
+        }
+    }
+
+    @SuppressWarnings('DuplicateNumberLiteral')
+    private void loadDependencyRuleOnce(
+            final String coords,
+            Callable<String> versionResolver,
+            @DelegatesTo(ExternalModuleDependency) Closure configurator = null
+    ) {
+        final parts = coords.split(':', 2)
+
+        if (parts.size() != 2) {
+            throw new ModuleNotFoundException("'${coords}' is not a valid group:name format")
+        }
+
+        if (!this.privateConfiguration.dependencies.find {
+            it.group == parts[0] && it.name == parts[1]
+        }) {
+            final initialVersion = versionResolver.call()
+            dependencyCreator.apply("${coords}:${initialVersion}".toString(), configurator)
+            this.publicConfiguration.resolutionStrategy { ResolutionStrategy rs ->
+                rs.eachDependency { drd ->
+                    if (drd.requested.group == parts[0] && drd.requested.name == parts[1]) {
+                        DRD_VERSION_RESOLVER.accept(drd, versionResolver)
+                    }
+                }
+            }
         }
     }
 
@@ -837,5 +798,25 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
         } else {
             extFromProject.modules.diagram.version
         }
+    }
+
+    private void loadStandardPublicConfigurationResolutionStrategy() {
+        loadJRubyResolutionStrategy(publicConfiguration)
+    }
+
+    private BiFunction<String, Closure, Dependency> createDependencyLoader(DependencyHandler deps, Configuration cfg) {
+        { String cfgName, String coords, Closure configurator ->
+            if (configurator != null) {
+                deps.add(cfgName, coords, configurator)
+            } else {
+                deps.add(cfgName, coords)
+            }
+        }.curry(cfg.name) as BiFunction<String, Closure, Dependency>
+    }
+
+    private Function<Project, Dependency> createProjectDependencyLoader(DependencyHandler deps) {
+        { Project p ->
+            deps.project(path: p.path)
+        } as Function<Project, Dependency>
     }
 }

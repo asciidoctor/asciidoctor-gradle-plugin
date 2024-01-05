@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ class RequiresFunctionalSpec extends FunctionalSpecification {
 
         when:
         final BuildResult firstInvocationResult = getGradleRunner(DEFAULT_ARGS).build()
-        File outputFolder = new File(testProjectDir.root, 'build/docs/asciidoc')
+        File outputFolder = new File(buildDir, 'docs/asciidoc')
         File outputFile = new File(outputFolder, 'ditaa.html')
 
         then:
@@ -52,7 +52,7 @@ class RequiresFunctionalSpec extends FunctionalSpecification {
         outputFolder.listFiles().findAll { it.name.endsWith(imageFileExt) }.size() == 1
 
         when:
-        new File(testProjectDir.root, "src/docs/asciidoc/${DITAA}") << 'changes'
+        new File(projectDir, "src/docs/asciidoc/${DITAA}") << 'changes'
         final BuildResult secondInvocationResult = getGradleRunner(['clean'] + DEFAULT_ARGS).build()
 
         then:
@@ -91,7 +91,7 @@ class RequiresFunctionalSpec extends FunctionalSpecification {
 
         when:
         final BuildResult firstInvocationResult = getGradleRunner(['-i'] + DEFAULT_ARGS).build()
-        File outputFolder = new File(testProjectDir.root, 'build/docs/asciidoc')
+        File outputFolder = new File(buildDir, 'docs/asciidoc')
         File outputFile = new File(outputFolder, 'ditaa.html')
 
         then:
@@ -100,7 +100,7 @@ class RequiresFunctionalSpec extends FunctionalSpecification {
         outputFolder.listFiles().findAll { it.name.endsWith(imageFileExt) }.size() == 1
 
         when:
-        new File(testProjectDir.root, "src/docs/asciidoc/${DITAA}") << 'changes'
+        new File(projectDir, "src/docs/asciidoc/${DITAA}") << 'changes'
         final BuildResult secondInvocationResult = getGradleRunner(['clean'] + DEFAULT_ARGS).build()
 
         then:

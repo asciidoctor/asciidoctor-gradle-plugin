@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package org.asciidoctor.gradle.jvm
 
-@java.lang.SuppressWarnings('NoWildcardImports')
 import org.asciidoctor.gradle.internal.FunctionalSpecification
 import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Timeout
@@ -23,8 +22,8 @@ import spock.lang.Unroll
 
 class ResourcesFunctionalSpec extends FunctionalSpecification {
 
-    static final List DEFAULT_ARGS = ['asciidoctor', '-s']
-    static final String ASCIIDOC_FILE = 'sample.asciidoc'
+    public static final List DEFAULT_ARGS = ['asciidoctor', '-s']
+    public static final String ASCIIDOC_FILE = 'sample.asciidoc'
 
     void setup() {
         createTestProject('resources')
@@ -32,7 +31,6 @@ class ResourcesFunctionalSpec extends FunctionalSpecification {
 
     @Timeout(value = 90)
     @Unroll
-    @SuppressWarnings('LineLength')
     void 'When resources are not specified, copy all images to destination with intermediate workdir=#intermediate)'() {
         given:
         getBuildFile("""
@@ -41,7 +39,7 @@ class ResourcesFunctionalSpec extends FunctionalSpecification {
         }
         """)
         GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
-        File buildDir = new File(testProjectDir.root, 'build/docs/asciidoc')
+        File buildDir = new File(buildDir, 'docs/asciidoc')
         File imagesDir = new File(buildDir, 'images')
 
         when:
@@ -71,7 +69,7 @@ class ResourcesFunctionalSpec extends FunctionalSpecification {
         }
         ''')
         GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
-        File buildDir = new File(testProjectDir.root, 'build/docs/asciidoc')
+        File buildDir = new File(buildDir, 'docs/asciidoc')
         File imagesDir = new File(buildDir, 'images')
         File extraDir = new File(buildDir, 'images2')
 
@@ -103,7 +101,7 @@ class ResourcesFunctionalSpec extends FunctionalSpecification {
         }
         ''')
         GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
-        File buildDir = new File(testProjectDir.root, 'build/docs/asciidoc')
+        File buildDir = new File(buildDir, 'docs/asciidoc')
         File imagesDir = new File(buildDir, 'images')
 
         when:
@@ -128,7 +126,7 @@ class ResourcesFunctionalSpec extends FunctionalSpecification {
         }
         ''')
         GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
-        File buildDir = new File(testProjectDir.root, 'build/docs/asciidoc')
+        File buildDir = new File(buildDir, 'docs/asciidoc')
         File htmlImagesDir = new File(buildDir, 'html5/images')
         File docbookImagesDir = new File(buildDir, 'docbook/images')
 
@@ -155,7 +153,7 @@ class ResourcesFunctionalSpec extends FunctionalSpecification {
         }
         ''')
         GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
-        File buildDir = new File(testProjectDir.root, 'build/docs/asciidoc')
+        File buildDir = new File(buildDir, 'docs/asciidoc')
         File imagesDir = new File(buildDir, 'images')
 
         when:
@@ -169,7 +167,6 @@ class ResourcesFunctionalSpec extends FunctionalSpecification {
         }
     }
 
-    // 'Resources can be copied on a per-backend-basis'
     @Timeout(value = 90)
     void 'Resources can be copied on a per-backend-basis'() {
         given:
@@ -182,7 +179,7 @@ class ResourcesFunctionalSpec extends FunctionalSpecification {
         }
         ''')
         GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
-        File buildDir = new File(testProjectDir.root, 'build/docs/asciidoc')
+        File buildDir = new File(buildDir, 'docs/asciidoc')
         File htmlImagesDir = new File(buildDir, 'html5/images')
         File docbookImagesDir = new File(buildDir, 'docbook/images')
 

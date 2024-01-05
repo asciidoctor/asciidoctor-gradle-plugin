@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,19 @@
 package org.asciidoctor.gradle.js.nodejs.internal
 
 import groovy.transform.CompileStatic
+import groovy.util.logging.Slf4j
 import org.asciidoctor.gradle.base.SafeMode
 import org.asciidoctor.gradle.base.Transform
-import org.gradle.api.Project
 import org.gradle.process.ExecSpec
 import org.ysb33r.gradle.nodejs.utils.NodeJSExecutor
+import org.ysb33r.grolifant.api.core.ProjectOperations
 
 /** Executes an instance of Asciidoctor.Js
  *
  * @since 3.0
  */
 @CompileStatic
+@Slf4j
 class AsciidoctorJSRunner {
 
     private static final String ATTR = '-a'
@@ -38,7 +40,7 @@ class AsciidoctorJSRunner {
     private static final String DESTDIR = '-D'
 
     private final List<String> arguments
-    private final Project project
+    private final ProjectOperations projectOperations
     private final File nodejs
     private final File asciidoctorjs
     private final File destinationDir
@@ -47,19 +49,19 @@ class AsciidoctorJSRunner {
 
     @SuppressWarnings('ParameterCount')
     AsciidoctorJSRunner(
-        File nodejs,
-        Project project,
-        FileLocations asciidoctorjs,
-        String backend,
-        SafeMode safeMode,
-        File baseDir,
-        File destinationDir,
-        Map<String, String> attributes,
-        Set<String> requires,
-        Optional<String> doctype,
-        boolean logDocuments
+            File nodejs,
+            ProjectOperations projectOperations,
+            FileLocations asciidoctorjs,
+            String backend,
+            SafeMode safeMode,
+            File baseDir,
+            File destinationDir,
+            Map<String, String> attributes,
+            Set<String> requires,
+            Optional<String> doctype,
+            boolean logDocuments
     ) {
-        this.project = project
+        this.projectOperations = projectOperations
         this.asciidoctorjs = asciidoctorjs.executable
         this.nodejs = nodejs
         this.destinationDir = destinationDir
@@ -67,9 +69,9 @@ class AsciidoctorJSRunner {
         this.nodeWorkingDir = asciidoctorjs.workingDir
 
         this.arguments = [
-            BACKEND, backend,
-            SAFEMODE, safeMode.toString().toLowerCase(Locale.US),
-            BASEDIR, baseDir.absolutePath
+                BACKEND, backend,
+                SAFEMODE, safeMode.toString().toLowerCase(Locale.US),
+                BASEDIR, baseDir.absolutePath
         ]
 
         if (doctype.present) {
@@ -96,13 +98,12 @@ class AsciidoctorJSRunner {
                 args(asciidoctorjs.absolutePath)
                 args(arguments)
                 args(
-                    DESTDIR,
-                    (relativeOutputPath.empty ?
-                        destinationDir :
-                        new File(destinationDir, relativeOutputPath)
-                    ).absolutePath
+                        DESTDIR,
+                        (relativeOutputPath.empty ?
+                                destinationDir :
+                                new File(destinationDir, relativeOutputPath)
+                        ).absolutePath
                 )
-                args('--')
                 args(Transform.toList(sources) {
                     it.absolutePath
                 })
@@ -112,10 +113,10 @@ class AsciidoctorJSRunner {
         }
 
         if (logDocuments) {
-            project.logger.info("Converting ${sources*.name.join(', ')}")
+            log.info("Converting ${sources*.name.join(', ')}")
         }
 
-        project.exec((Closure) configurator)
+        projectOperations.exec((Closure) configurator)
     }
 
     @SuppressWarnings('ClassName')
@@ -123,15 +124,4 @@ class AsciidoctorJSRunner {
         File executable
         File workingDir
     }
-
-//    --embedded, -e          suppress enclosing document structure and output an embedded document
-//                            [boolean] [default: false]
-//    --no-header-footer, -s  suppress enclosing document structure and output an embedded document
-//    Optional<String> sectionNumbers -n
-//    Optional<String> failureLevel --failure-level
-//        [choices: "info", "INFO", "warn", "WARN", "warning", "WARNING",
-//        "error", "ERROR", "fatal", "FATAL"] [default: "FATAL"]
-//    boolean verboseMode -v
-//   boolean traceMode --trace
-//    boolean withTimings -t
 }

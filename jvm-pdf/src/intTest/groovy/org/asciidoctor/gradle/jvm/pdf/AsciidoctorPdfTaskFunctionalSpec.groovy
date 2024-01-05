@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,14 @@
 package org.asciidoctor.gradle.jvm.pdf
 
 import org.asciidoctor.gradle.jvm.pdf.internal.FunctionalSpecification
+import org.asciidoctor.gradle.testfixtures.GradleTestVersions
 import org.asciidoctor.gradle.testfixtures.generators.PdfBackendJRubyAsciidoctorJCombinationGenerator
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Issue
 import spock.lang.Unroll
+
+import static org.asciidoctor.gradle.testfixtures.GradleTestVersions.latestMinimumOrThis
 
 /**
  * @author Schalk W. Cronjé
@@ -52,7 +55,7 @@ asciidoctorPdf {
 
         then:
         verifyAll {
-            new File(testProjectDir.root, DEFAULT_OUTPUT_FILE).exists()
+            new File(projectDir, DEFAULT_OUTPUT_FILE).exists()
         }
 
         where:
@@ -88,7 +91,7 @@ asciidoctorPdf {
         combination.compatible ? runner.build() : runner.buildAndFail()
 
         then:
-        combination.compatible && new File(testProjectDir.root, DEFAULT_OUTPUT_FILE).exists() || !combination.compatible
+        combination.compatible && new File(projectDir, DEFAULT_OUTPUT_FILE).exists() || !combination.compatible
 
         where:
         combination << PdfBackendJRubyAsciidoctorJCombinationGenerator.get()
@@ -100,7 +103,7 @@ asciidoctorPdf {
         asciidoctorPdf {
             sourceDir 'src/docs/asciidoc'
 
-            inProcess = JAVA_EXEC
+            executionMode = JAVA_EXEC
         }
         """)
 
@@ -109,7 +112,7 @@ asciidoctorPdf {
 
         then:
         verifyAll {
-            new File(testProjectDir.root, DEFAULT_OUTPUT_FILE).exists()
+            new File(projectDir, DEFAULT_OUTPUT_FILE).exists()
         }
     }
 
@@ -134,7 +137,7 @@ asciidoctorPdf {
 
         then:
         verifyAll {
-            new File(testProjectDir.root, DEFAULT_OUTPUT_FILE).exists()
+            new File(projectDir, DEFAULT_OUTPUT_FILE).exists()
         }
     }
 
@@ -153,6 +156,7 @@ asciidoctorPdf {
             sourceDir 'src/docs/asciidoc'
             fontsDirs 'src/docs/asciidoc/pdf-theme', file('src/docs/asciidoc/path')
             fontsDirs 'src/docs/asciidoc/pdf-theme-path'
+            executionMode = JAVA_EXEC
         }
         """)
 
@@ -161,7 +165,7 @@ asciidoctorPdf {
 
         then:
         verifyAll {
-            new File(testProjectDir.root, DEFAULT_OUTPUT_FILE).exists()
+            new File(projectDir, DEFAULT_OUTPUT_FILE).exists()
         }
     }
 
@@ -179,15 +183,16 @@ asciidoctorPdf {
             theme 'basic'
             sourceDir 'src/docs/asciidoc'
             fontsDirs 'src/docs/asciidoc/pdf-theme'
+            executionMode = JAVA_EXEC
         }
-        """)
+        """.stripIndent())
 
         when:
         getGradleRunner([DEFAULT_TASK, '-i']).build()
 
         then:
         verifyAll {
-            new File(testProjectDir.root, DEFAULT_OUTPUT_FILE).exists()
+            new File(projectDir, DEFAULT_OUTPUT_FILE).exists()
         }
     }
 
@@ -195,35 +200,36 @@ asciidoctorPdf {
     @Unroll
     void 'can apply a task configuration rule to set source and output directory (Gradle #gradleVersion)'() {
         given:
-        File newSourceDir = new File(testProjectDir.root, 'src/asciidoc')
-        assert new File(testProjectDir.root, 'src/docs/asciidoc').renameTo(newSourceDir)
-        testProjectDir.newFile('build.gradle') << """
+        File newSourceDir = new File(projectDir, 'src/asciidoc')
+        assert new File(projectDir, 'src/docs/asciidoc').renameTo(newSourceDir)
+        buildFile.text = """
             plugins {
                 id 'org.asciidoctor.jvm.pdf' apply false
             }
 
-            tasks.withType(org.asciidoctor.gradle.jvm.pdf.AsciidoctorPdfTask) {
+            tasks.withType(org.asciidoctor.gradle.jvm.pdf.AsciidoctorPdfTask).configureEach {
                 sourceDir = 'src/asciidoc'
                 outputDir = "\${buildDir}/output"
+                executionMode = JAVA_EXEC
             }
 
             apply plugin: 'org.asciidoctor.jvm.pdf'
             
             ${offlineRepositories}
-        """
+        """.stripIndent()
 
         when:
-        getGradleRunner([DEFAULT_TASK])
+        getGradleRunner([DEFAULT_TASK, '-s'])
                 .withGradleVersion(gradleVersion)
                 .build()
 
         then:
         verifyAll {
-            new File(testProjectDir.root, 'build/output/sample.pdf').exists()
+            new File(projectDir, 'build/output/sample.pdf').exists()
         }
 
         where:
-        gradleVersion << ['4.10.3', '5.6.4', '6.0.1']
+        gradleVersion << [latestMinimumOrThis('7.0.1'), GradleTestVersions.MAX_VERSION]
     }
 
     @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/579')
@@ -243,21 +249,11 @@ asciidoctorPdf {
         }
 
         where:
-        gradleVersion << ['6.7']
+        gradleVersion << [GradleTestVersions.MAX_VERSION]
     }
 
     File getBuildFile(String extraContent) {
-        File buildFile = testProjectDir.newFile('build.gradle')
-        buildFile << """
-plugins {
-    id 'org.asciidoctor.jvm.pdf'
-}
-
-${offlineRepositories}
-
-${extraContent}
-"""
-        buildFile
+        writeGroovyBuildFile('org.asciidoctor.jvm.pdf', extraContent)
     }
 
     String getResolutionStrategy(final String asciidoctorjVer, final String jrubyVer) {

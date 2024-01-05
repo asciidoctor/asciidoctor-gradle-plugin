@@ -18,8 +18,10 @@ configurations:: Specify additional configurations
 copyAllResources:: Copy all resources to the output directory
 copyNoResources:: Do not copy any resources to the output directory
 copyResourcesOnlyIf:: Only copy resources if the backend matches the listed backend.
+executionMode:: Specifies whether Asciidoctor conversions should be run in-process or out-of-process.
+  Default: `JAVA_EXEC`.
+  In version 3.x this was called `inProcess`
 languages:: Invoke source language support but specifying one or more languages.
-inProcess:: Specifies whether Asciidoctor conversions should be run in-process or out-of-process. Default: `true` (in-process).
 logDocuments:: Specifies if documents being processed should be logged on console. Type: boolean. Default: `false`.
 options:: A shortcut to `asciidoctorj.options`.
 outputDir:: where generated docs go.

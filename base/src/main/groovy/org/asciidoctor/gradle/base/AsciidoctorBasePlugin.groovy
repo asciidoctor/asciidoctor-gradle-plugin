@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +24,14 @@ import org.gradle.api.Task
 import org.gradle.api.UnknownTaskException
 import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.diagnostics.DependencyReportTask
-import org.ysb33r.grolifant.api.TaskProvider
+import org.gradle.language.base.plugins.LifecycleBasePlugin
+import org.ysb33r.grolifant.api.core.ProjectOperations
 
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-/** Base plugin for all Asciidoctor plugins (J & JS).
+/**
+ * Base plugin for all Asciidoctor plugins (J & JS).
  *
  * @author Schalk W. Cronjé
  *
@@ -40,22 +42,22 @@ class AsciidoctorBasePlugin implements Plugin<Project> {
     private static final Pattern DEPS_TASK_PATTERN = ~/^(.+)Dependencies$/
 
     void apply(Project project) {
-        project.apply plugin: 'base'
+        project.pluginManager.apply LifecycleBasePlugin
+        ProjectOperations.maybeCreateExtension(project)
         registerDependencyReportRules(project)
     }
 
     private void registerDependencyReportRules(Project project) {
         TaskContainer tasks = project.tasks
         tasks.addRule(
-            '<asciidocTaskName>Dependencies: Report dependencies for AsciidoctorJ tasks'
+                '<asciidocTaskName>Dependencies: Report dependencies for AsciidoctorJ(S) tasks'
         ) { String targetTaskName ->
             Matcher matcher = targetTaskName =~ DEPS_TASK_PATTERN
             if (matcher.matches()) {
                 try {
-                    TaskProvider associate = TaskProvider.taskByTypeAndName(
-                        project,
-                        AbstractAsciidoctorBaseTask,
-                        taskBaseName(matcher)
+                    final associate = project.tasks.named(
+                            taskBaseName(matcher),
+                            AbstractAsciidoctorBaseTask
                     )
 
                     tasks.create(targetTaskName, DependencyReportTask, new Action<Task>() {
@@ -77,5 +79,4 @@ class AsciidoctorBasePlugin implements Plugin<Project> {
     private String taskBaseName(Matcher matcher) {
         matcher[0][1]
     }
-
 }

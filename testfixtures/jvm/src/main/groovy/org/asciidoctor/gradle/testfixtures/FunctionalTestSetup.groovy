@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.asciidoctor.gradle.testfixtures
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.testfixtures.internal.TestFixtureVersionLoader
 import org.gradle.testkit.runner.GradleRunner
-import org.ysb33r.grolifant.api.OperatingSystem
+import org.ysb33r.grolifant.api.core.OperatingSystem
 
 /** Utility methods for setting up functional plugin tests.
  *

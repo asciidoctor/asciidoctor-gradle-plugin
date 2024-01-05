@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,13 @@
 package org.asciidoctor.gradle.jvm.epub
 
 import org.asciidoctor.gradle.jvm.epub.internal.FunctionalSpecification
-import org.asciidoctor.gradle.testfixtures.CachingTest
+import org.asciidoctor.gradle.testfixtures.BuildScanFixture
+import org.asciidoctor.gradle.testfixtures.CachingTestFixture
 
 import static org.asciidoctor.gradle.testfixtures.JRubyTestVersions.AJ20_SAFE_MAXIMUM
 
-class AsciidoctorEpubTaskCachingFunctionalSpec extends FunctionalSpecification implements CachingTest {
+class AsciidoctorEpubTaskCachingFunctionalSpec extends FunctionalSpecification
+        implements CachingTestFixture, BuildScanFixture {
     private static final String DEFAULT_TASK = 'asciidoctorEpub'
     private static final String DEFAULT_OUTPUT_FILE = 'build/docs/asciidocEpub/epub3.epub'
     private static final String JRUBY_TEST_VERSION = AJ20_SAFE_MAXIMUM
@@ -59,17 +61,11 @@ class AsciidoctorEpubTaskCachingFunctionalSpec extends FunctionalSpecification i
     }
 
     File getBuildFile(String extraContent) {
-        File buildFile = testProjectDir.newFile('build.gradle')
-        buildFile << """
-            plugins {
-                id 'org.asciidoctor.jvm.epub'
+        writeGroovyBuildFile('org.asciidoctor.jvm.epub', extraContent).withWriterAppend { w ->
+            if (performBuildScan) {
+                w.println buildScanConfiguration
             }
-            
-            ${scan ? buildScanConfiguration : ''}
-            ${offlineRepositories}
-            
-            ${extraContent}
-        """
+        }
         buildFile
     }
 

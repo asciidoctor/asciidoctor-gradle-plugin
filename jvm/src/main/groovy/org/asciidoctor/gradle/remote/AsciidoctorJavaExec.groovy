@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,20 +95,6 @@ class AsciidoctorJavaExec extends ExecutorBase {
         }
     }
 
-    private Asciidoctor getAsciidoctorInstance() {
-        String combinedGemPath = runConfigurations*.gemPath.findAll { it }.join(File.pathSeparator)
-        boolean noGemPath = combinedGemPath.empty || combinedGemPath == File.pathSeparator
-        noGemPath ? create() : create(combinedGemPath)
-    }
-
-    private void addRequires(Asciidoctor asciidoctor) {
-        runConfigurations.each { runConfiguration ->
-            for (require in runConfiguration.requires) {
-                asciidoctor.requireLibrary(require)
-            }
-        }
-    }
-
     /** Writes the message to stdout.
      *
      * @param logLevel The level of the message (ignored).
@@ -128,5 +114,15 @@ class AsciidoctorJavaExec extends ExecutorBase {
             extensionRegistry.addExtension(ext)
         }
         extensionRegistry.registerExtensionsWith((Asciidoctor) asciidoctor)
+    }
+
+    private void addRequires(Asciidoctor asciidoctor) {
+        runConfigurations.each { runConfiguration ->
+            asciidoctor.requireLibraries(runConfiguration.requires)
+        }
+    }
+
+    private Asciidoctor getAsciidoctorInstance() {
+        create()
     }
 }

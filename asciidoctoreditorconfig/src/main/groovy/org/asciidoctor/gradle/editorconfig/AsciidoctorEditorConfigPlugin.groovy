@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.editorconfig
 import groovy.transform.CompileStatic
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.ysb33r.grolifant.api.core.ProjectOperations
 
 /** Asciidoctor editorConfig plugin.
  *
@@ -31,17 +32,10 @@ class AsciidoctorEditorConfigPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        AsciidoctorEditorConfigGenerator task = project.tasks.create(
-            DEFAULT_TASK_NAME,
-            AsciidoctorEditorConfigGenerator
+        ProjectOperations.maybeCreateExtension(project)
+        project.tasks.register(
+                DEFAULT_TASK_NAME,
+                AsciidoctorEditorConfigGenerator
         )
-        configureIdea(task)
-    }
-
-    void configureIdea(AsciidoctorEditorConfigGenerator aecg) {
-        Project project = aecg.project
-        project.pluginManager.withPlugin('idea') {
-            project.tasks.getByName('ideaModule').dependsOn aecg
-        }
     }
 }

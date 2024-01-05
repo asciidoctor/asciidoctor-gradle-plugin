@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,56 +15,31 @@
  */
 package org.asciidoctor.gradle.jvm.gems.internal
 
-import org.apache.commons.io.FileUtils
+import org.asciidoctor.gradle.testfixtures.FunctionalTestFixture
 import org.gradle.testkit.runner.GradleRunner
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
-import org.ysb33r.grolifant.api.OperatingSystem
+import org.ysb33r.grolifant.api.core.OperatingSystem
 import spock.lang.Specification
+import spock.lang.TempDir
 
-class FunctionalSpecification extends Specification {
+class FunctionalSpecification extends Specification implements FunctionalTestFixture {
     public static final String TEST_PROJECTS_DIR = System.getProperty(
-        'TEST_PROJECTS_DIR',
-        './asciidoctor-gradle-jvm-gems/src/intTest/projects'
+            'TEST_PROJECTS_DIR',
+            './asciidoctor-gradle-jvm-gems/src/intTest/projects'
     )
     public static final String TEST_REPO_DIR = System.getProperty(
-        'OFFLINE_REPO',
-        './testfixtures/offline-repo/build/repo'
+            'OFFLINE_REPO',
+            './testfixtures/offline-repo/build/repo'
     )
     public static final OperatingSystem OS = OperatingSystem.current()
 
-    @Rule
-    TemporaryFolder testProjectDir
+    @TempDir
+    File testProjectDir
 
-    @Rule
-    TemporaryFolder alternateProjectDir
+    void setup() {
+        projectDir.mkdirs()
+    }
 
     GradleRunner getGradleRunner(List<String> taskNames) {
-        GradleRunner.create()
-            .withProjectDir(testProjectDir.root)
-            .withArguments(taskNames)
-            .withPluginClasspath()
-            .forwardOutput()
-            .withDebug(true)
-    }
-
-    @SuppressWarnings(['BuilderMethodWithSideEffects'])
-    void createTestProject(String docGroup) {
-        FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, docGroup), testProjectDir.root)
-    }
-
-    String getOfflineRepositories() {
-        File repo = new File(TEST_REPO_DIR, 'repositories.gradle')
-        if (!repo.exists()) {
-            throw new FileNotFoundException(
-                "${repo} not found. Run ':testfixture-offline-repo:buildOfflineRepositories' build task"
-            )
-        }
-
-        if (OS.windows) {
-            "apply from: /${repo.absolutePath}/"
-        } else {
-            "apply from: '${repo.absolutePath}'"
-        }
+        getGroovyGradleRunner(taskNames)
     }
 }

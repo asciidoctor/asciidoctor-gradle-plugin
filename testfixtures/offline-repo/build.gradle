@@ -1,4 +1,4 @@
-import fi.linuxbox.gradle.download.worker.DownloadWorkerTask
+import org.ysb33r.gradle.ivypot.OfflineRepositorySync
 
 apply plugin: 'base'
 apply plugin: 'fi.linuxbox.download.worker'
@@ -6,29 +6,26 @@ apply plugin: 'org.ysb33r.os'
 apply plugin: 'org.ysb33r.ivypot'
 
 repositories {
-	jcenter()
+    mavenCentral()
 }
 
-syncRemoteRepositories {
+tasks.named('syncRemoteRepositories', OfflineRepositorySync) {
 
     group 'Off-line repository'
     description 'Build Ivy repository from configurations'
 
-    repoRoot project.ext.offlineRepoRoot
+    repoDetails { root = project.ext.offlineRepoRoot }
 
     inputs.file file("${rootProject.projectDir}/module-versions.properties")
     outputs.files project.ext.offlineRepoDescriptionFile
     outputs.files file("${project.ext.offlineRepoDescriptionFile}.kts")
 
     repositories {
-        // Put this first as sometimes Ivy hits a hiccup on JCenter()
         mavenCentral()
-        jcenter()
         maven { url 'https://plugins.gradle.org/m2/' }
 
-        if (version.endsWith('-SNAPSHOT')) {
+        if (project.version.toString().endsWith('-SNAPSHOT')) {
             mavenLocal()
-            maven { url "https://dl.bintray.com/jruby-gradle/plugins" }
         }
     }
 
@@ -37,7 +34,7 @@ syncRemoteRepositories {
             rootUri = 'https://nodejs.org/dist/'
             artifactPattern = 'v[revision]/[module]-v[revision]-[classifier].[ext]'
         }
-   }
+    }
 
     addAllProjects()
 
