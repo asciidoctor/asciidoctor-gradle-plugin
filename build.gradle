@@ -21,7 +21,7 @@ plugins {
     id 'com.github.kt3k.coveralls' version '2.8.2' apply false
     id 'net.ossindex.audit' version '0.1.1' apply false
     id 'org.kordamp.jdeps' version '0.2.0' apply false
-    id 'fi.linuxbox.download.worker' version '0.3' apply false
+    id 'fi.linuxbox.download.worker' version '0.4' apply false
     id 'org.ysb33r.ivypot' version '1.0.0' apply false
     id 'org.ysb33r.os' version '0.9' apply false
     id 'org.ysb33r.cloudci' version '2.5' apply false
