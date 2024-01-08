@@ -29,6 +29,7 @@ import java.util.regex.Pattern
 @SuppressWarnings(['CloneableWithoutClone'])
 @TupleConstructor
 class ExecutorConfiguration implements Serializable, Cloneable {
+    private static final long serialVersionUID = -2024L
     File sourceDir
     File outputDir
     File projectDir

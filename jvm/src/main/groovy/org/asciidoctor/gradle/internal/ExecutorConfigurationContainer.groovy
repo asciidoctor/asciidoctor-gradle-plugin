@@ -17,7 +17,8 @@ package org.asciidoctor.gradle.internal
 
 import groovy.transform.CompileStatic
 
-/** Contains a number of executor configurations.
+/**
+ * Contains a number of executor configurations.
  *
  * @since 2.0.0
  *
@@ -25,6 +26,7 @@ import groovy.transform.CompileStatic
  */
 @CompileStatic
 class ExecutorConfigurationContainer implements Serializable {
+    private static final long serialVersionUID = -2024L
     final List<ExecutorConfiguration> configurations
 
     ExecutorConfigurationContainer(Iterable<ExecutorConfiguration> list) {

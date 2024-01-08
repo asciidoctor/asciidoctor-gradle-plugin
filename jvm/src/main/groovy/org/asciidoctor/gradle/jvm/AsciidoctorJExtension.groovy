@@ -28,6 +28,8 @@ import org.gradle.api.*
 import org.gradle.api.artifacts.*
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.logging.LogLevel
+import org.gradle.api.provider.Provider
+import org.ysb33r.grolifant.api.core.LegacyLevel
 
 import java.util.concurrent.Callable
 import java.util.function.BiConsumer
@@ -64,8 +66,8 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     private static final String ASCIIDOCTOR_DEPENDENCY_PROPERTY_NAME = 'asciidoctorj'
     private static final String CONFIGURATION_NAME = "__\$\$${NAME}\$\$__"
 
-    // TODO: Kill this off
-//    private static final boolean GUAVA_REQUIRED_FOR_EXTERNALS = !LegacyLevel.PRE_4_8
+    @SuppressWarnings(['SpaceAfterOpeningBrace', 'SpaceBeforeClosingBrace'])
+    private static final Closure EMPTY_CONFIGURATOR = {}
 
     private static final BiConsumer<DependencyResolveDetails, Callable<String>> DRD_VERSION_RESOLVER = {
         DependencyResolveDetails drd, Callable<String> versionResolver ->
@@ -76,7 +78,6 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     private final Map<String, Object> options = [:]
     private final List<Object> jrubyRequires = []
     private final List<Object> asciidoctorExtensions = []
-//    private final List<Object> gemPaths = []
     private final List<Object> warningsAsErrors = []
     private final DefaultAsciidoctorJModules modules
     private final Configuration publicConfiguration
@@ -89,9 +90,7 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     private boolean onlyTaskExtensions = false
     private boolean onlyTaskWarnings = false
     private LogLevel logLevel
-//    private Boolean injectGuavaJar
     private boolean onlyTaskRequires = false
-//    private boolean onlyTaskGems = false
 
     /** Attach extension to a project.
      *
@@ -118,8 +117,6 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
                     'Please report a bug at https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues'
             )
         }
-//        this.configurations = project.configurations
-//        this.dependencies = project.dependencies
 
         this.modules.onUpdate { owner.updateConfiguration() }
         updateConfiguration()
@@ -185,22 +182,126 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
      * Defines extensions to be registered. The given parameters should
      * either contain Asciidoctor Groovy DSL closures or files
      * with content conforming to the Asciidoctor Groovy DSL.
+     * <p>
+     *    If you use this method, then Gradle JARs will be leaked on to the classpath. This might not be what you
+     *    want.
+     * <p>
+     * @param Closures of Asciidoctor Groovy DSL extensions.
      *
-     * @since 2.2.0
+     * @since 4.0.0
      */
-    void docExtensions(Object... exts) {
-        addExtensions(exts as List)
+    void docExtensions(Closure<?>... exts) {
+        if (LegacyLevel.PRE_8_4) {
+            addExtensions(exts as List<Object>)
+        } else {
+            throw new GradleException(
+                    'Closures are not supported on Gradle 8.4+ due to Gradle instrumentation issues. ' +
+                            'Place the content in a string or load from it from a file instead.'
+            )
+        }
+    }
+
+    /**
+     * Defines extensions to be registered. The given parameters should
+     * either contain Asciidoctor Groovy DSL closures or files
+     * with content conforming to the Asciidoctor Groovy DSL.
+     *
+     * @param Files of Groovy code of Asciidoctor Groovy DSL extensions.
+     *
+     * @since 4.0.0
+     */
+    void docExtensions(File... exts) {
+        addExtensions(exts as List<Object>)
+    }
+
+    /**
+     * Defines extensions to be registered. The given parameters should
+     * either contain Asciidoctor Groovy DSL closures or files
+     * with content conforming to the Asciidoctor Groovy DSL.
+     *
+     * @param Strings of Groovy code of Asciidoctor Groovy DSL extensions.
+     *
+     * @since 4.0.0
+     */
+    void docExtensions(String... exts) {
+        addExtensions(exts as List<Object>)
+    }
+
+    /**
+     * Defines extensions to be registered. The given parameters should
+     * either contain Asciidoctor Groovy DSL closures or files
+     * with content conforming to the Asciidoctor Groovy DSL.
+     *
+     * @param Provider to strings or files of Groovy code of Asciidoctor Groovy DSL extensions
+     *
+     * @since 4.0.0
+     */
+    void docExtensions(Provider<?>... exts) {
+        addExtensions(exts as List<Object>)
+    }
+
+    /**
+     * Defines extensions to be registered. The given parameters should
+     * either contain Asciidoctor Groovy DSL closures or files
+     * with content conforming to the Asciidoctor Groovy DSL.
+     *
+     * <p>
+     *     THis method is specifically useful for project dependencies.
+     * </p>
+     * @param Dependencies containing Asciidoctor extensions
+     *
+     * @since 4.0.0
+     */
+    void docExtensions(Dependency... exts) {
+        addExtensions(exts as List<Object>)
+    }
+
+    /**
+     * Defines extensions to be registered. The given parameters should
+     * either contain Asciidoctor Groovy DSL closures or files
+     * with content conforming to the Asciidoctor Groovy DSL.
+     *
+     * <p>
+     *     THis method is specifically useful for project dependencies.
+     * </p>
+     * @param Dependencies containing Asciidoctor extensions
+     *
+     * @since 4.0.0
+     */
+    void docExtensions(Project... exts) {
+        addExtensions(exts as List<Object>)
+    }
+
+    /**
+     * Defines extensions to be registered. The given parameters should
+     * either contain Asciidoctor Groovy DSL closures or files
+     * with content conforming to the Asciidoctor Groovy DSL.
+     *
+     * @param External dependency definitions using standard Gradle dependency notation.
+     *
+     * @since 4.0.0
+     */
+    void docExtensionsFromExternal(String... exts) {
+        addExtensions(Transform.toList(exts as List) {
+            dependencyCreator.apply(it.toString(), EMPTY_CONFIGURATOR)
+        } as List<Object>)
     }
 
     /**
      * Clears the existing list of extensions and replace with a new set.
      *
-     * If this is declared on a task extension all extention from the global
+     * If this is declared on a task extension all extension from the global
      * project extension will be ignored.
      *
      * @since 2.2.0
      */
     void setDocExtensions(Iterable<Object> newExtensions) {
+        if (!LegacyLevel.PRE_8_4 && newExtensions.find { it instanceof Closure }) {
+            throw new GradleException(
+                    'Closures are no longer supported on Gradle 8.4+ due to Gradle instrumentation issues. ' +
+                            'Place content in a string or load from it from a file instead.'
+            )
+        }
         asciidoctorExtensions.clear()
         addExtensions(newExtensions as List)
         onlyTaskExtensions = true
@@ -260,58 +361,6 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     Pattern missingIncludes() {
         ~/include file not found/
     }
-
-//    /* -------------------------
-//       tag::extension-property[]
-//       gemPaths:: One or more gem installation directories (separated by the system path separator).
-//         Use `gemPaths` to append. Use `setGemPaths` or `gemPaths=['path1','path2']` to overwrite.
-//         Use `asGemPath` to obtain a path string, separated by platform-specific separator.
-//         Type: `FileCollection`, but any collection of objects convertible with `project.files` can be passed
-//         Default: empty
-//       end::extension-property[]
-//       ------------------------- */
-//
-//    /** Returns the list of paths to be used for {@code GEM_HOME}
-//     *
-//     */
-//    FileCollection getGemPaths() {
-//        if (!task || onlyTaskGems) {
-//            projectOperations.fsOperations.files(this.gemPaths)
-//        } else {
-//            projectOperations.fsOperations.files(this.gemPaths).from(extFromProject.gemPaths)
-//        }
-//    }
-//
-//    /** Sets a new list of GEM paths to be used.
-//     *
-//     * @param paths Paths resolvable by {@ocde project.files}
-//     */
-//    void setGemPaths(Iterable<Object> paths) {
-//        this.gemPaths.clear()
-//        this.gemPaths.addAll(paths)
-//
-//        if (task) {
-//            this.onlyTaskGems = true
-//        }
-//    }
-//
-//    /** Adds more paths for discovering GEMs.
-//     *
-//     * @param f Path objects that can be be converted with {@code project.file}.
-//     */
-//    void gemPaths(Object... f) {
-//        this.gemPaths.addAll(f)
-//    }
-//
-//    /**
-//     * Returns the list of paths to be used for GEM installations in a format that is
-//     * suitable for assignment to {@code GEM_HOME}
-//     *
-//     * Calling this will cause gemPath to be resolved immediately.
-//     */
-//    String asGemPath() {
-//        getGemPaths().files*.toString().join(OS.pathSeparator)
-//    }
 
     /* -------------------------
        tag::extension-property[]
@@ -575,31 +624,6 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     void setVersion(Object v) {
         this.version = v
     }
-
-//    /** Whether the Guava JAR that ships with the Gradle distribution should be injected into the
-//     * classpath for external AsciidoctorJ processes.
-//     *
-//     * If not set previously via {@link #setInjectInternalGuavaJar} then a default version depending of the version of
-//     * the Gradle distribution will be used.
-//     *
-//     * @return {@code true} if JAR should be injected.
-//     */
-//    boolean getInjectInternalGuavaJar() {
-//        if (task) {
-//            this.injectGuavaJar == null ? extFromProject.injectInternalGuavaJar : this.injectGuavaJar
-//        } else {
-//            this.injectGuavaJar == null ? GUAVA_REQUIRED_FOR_EXTERNALS : this.injectGuavaJar
-//        }
-//    }
-
-//    /** Whether the Guava JAR that ships with the Gradle distribution should be injected into the
-//     * classpath for external AsciidoctorJ processes.
-//     *
-//     * @param inject {@code true} if JAR should be injected.
-//     */
-//    void setInjectInternalGuavaJar(boolean inject) {
-//        this.injectGuavaJar = inject
-//    }
 
     /**
      * Returns a runConfiguration of the configured AsciidoctorJ dependencies.
