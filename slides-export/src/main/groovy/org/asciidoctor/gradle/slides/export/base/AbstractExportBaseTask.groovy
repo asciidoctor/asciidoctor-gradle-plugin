@@ -29,12 +29,10 @@ import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.options.Option
-import org.gradle.util.GradleVersion
 import org.ysb33r.grolifant.api.core.ProjectOperations
 
 import java.util.concurrent.Callable
@@ -46,7 +44,6 @@ import static org.gradle.api.tasks.PathSensitivity.RELATIVE
  */
 @CompileStatic
 abstract class AbstractExportBaseTask extends DefaultTask {
-    private final static boolean GRADLE_GE_4_8 = GradleVersion.current() >= GradleVersion.version('4.8')
     private final static String HTML_EXT = '.html'
     private final List<Object> slideInputFiles = []
     private final ProjectOperations projectOperations
@@ -280,10 +277,8 @@ abstract class AbstractExportBaseTask extends DefaultTask {
         dependsOn tasks.findAll {
             if (it instanceof Task) {
                 true
-            } else if (GRADLE_GE_4_8) {
-                it instanceof org.gradle.api.tasks.TaskProvider
             } else {
-                false
+                it instanceof org.gradle.api.tasks.TaskProvider
             }
         }.toSet()
     }

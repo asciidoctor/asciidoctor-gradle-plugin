@@ -27,7 +27,6 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.util.PatternSet
-import org.gradle.util.GradleVersion
 import org.ysb33r.grolifant.api.core.OperatingSystem
 import org.ysb33r.grolifant.api.core.ProjectOperations
 
@@ -48,8 +47,6 @@ class AsciidoctorUtils {
     public static final OperatingSystem OS = OperatingSystem.current()
     public static final String UNDERSCORE_LED_FILES = '**/_*'
     public static final PatternSet UNDERSCORE_LED_PATTERN = new PatternSet().include(UNDERSCORE_LED_FILES)
-    public static final boolean GRADLE_LT_5_0 = GradleVersion.current() < GradleVersion.version('5.0')
-    public static final boolean GRADLE_LT_5_1 = GradleVersion.current() < GradleVersion.version('5.1')
 
     static final Spec<? super File> ACCEPT_ONLY_FILES = new Spec<File>() {
         @Override
