@@ -150,6 +150,12 @@ subprojects {
             targetCompatibility = project.targetCompatibility
         }
 
+        java {
+            toolchain {
+                languageVersion = JavaLanguageVersion.of(8)
+            }
+        }
+
         project.tasks.withType(Test) {
             testLogging {
                 afterSuite { desc, result ->
