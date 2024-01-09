@@ -145,11 +145,6 @@ subprojects {
             }
         }
 
-        compileGroovy {
-            sourceCompatibility = project.sourceCompatibility
-            targetCompatibility = project.targetCompatibility
-        }
-
         java {
             toolchain {
                 languageVersion = JavaLanguageVersion.of(8)
