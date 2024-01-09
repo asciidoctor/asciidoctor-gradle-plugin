@@ -29,8 +29,8 @@ class AsciidoctorGradleGroovyProject implements Plugin<Project> {
         SourceSetContainer sourceSets = project.extensions.getByType(SourceSetContainer)
         SourceSet main = sourceSets.getByName('main')
 
-        project.tasks.named(main.processResourcesTaskName).configure { Copy copy ->
-            copy.from generateModuleVersions, { CopySpec cs ->
+        project.tasks.named(main.processResourcesTaskName, Copy).configure { copy ->
+            copy.from(generateModuleVersions.get().outputs.files) { CopySpec cs ->
                 cs.into "${ModuleVersions.INTERMEDIATE_FOLDER_PATH}"
             }
         }

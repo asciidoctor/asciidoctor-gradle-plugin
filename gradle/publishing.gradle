@@ -48,7 +48,7 @@ tasks.named('jar', Jar) {
 ext {
     pomConfig = {
         name project.name
-        description project.project_description
+//        description project.project_description
         url project.project_website
         inceptionYear '2013'
         licenses {
@@ -115,9 +115,9 @@ ext {
 }
 
 publishing.publications.withType(MavenPublication).configureEach {
-    pom.withXml {
-        asNode().appendNode('description', project.project_description)
-    }
+//    pom.withXml {
+//        asNode().appendNode('description', project.project_description)
+//    }
 }
 
 pluginBundle {

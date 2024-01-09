@@ -34,9 +34,12 @@ class AsciidoctorEditorConfigIntegrationSpec extends FunctionalSpecification {
         File attrFile = new File(projectDir, 'inputs.adoc')
         attrFile.text = ":${key3}: ${value3}\n"
 
+        new File(projectDir, 'gradle.properties').text = """
+        group=${groupName}
+        version=${projVer}
+        """.stripIndent()
+
         getGroovyBuildFile("""
-        group = '${groupName}'
-        version = '${projVer}'
         apply plugin : 'org.asciidoctor.jvm.base'
 
         asciidoctorj {

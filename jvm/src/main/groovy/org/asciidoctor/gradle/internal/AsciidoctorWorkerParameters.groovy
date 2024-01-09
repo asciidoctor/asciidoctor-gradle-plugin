@@ -18,13 +18,14 @@ package org.asciidoctor.gradle.internal
 import org.ysb33r.grolifant.api.remote.worker.SerializableWorkerAppParameters
 
 /**
- * Parameters for serializing ASciidoctor jobs to workers.
+ * Parameters for serializing Asciidoctor jobs to workers.
  *
  * @author Schalk W> Cronjé
  *
  * @since 4.0
  */
 class AsciidoctorWorkerParameters implements SerializableWorkerAppParameters {
+    private static final long serialVersionUID = 1251694026305095019
 
     /**
      * Whether to attempt conversions in parallel inside the worker.

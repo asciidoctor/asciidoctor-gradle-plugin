@@ -15,7 +15,7 @@ dependencies {
     implementation gradleApi()
     implementation gradleTestKit()
     api "org.ysb33r.gradle:grolifant-herd:${agProject.versionOf('grolifant')}"
-    api 'commons-io:commons-io:2.6'
+    api 'commons-io:commons-io:2.15.1'
     implementation "org.jsoup:jsoup:$jsoupVersion"
     implementation "cglib:cglib-nodep:$cglibVersion"
     implementation("org.spockframework:spock-core:${agProject.versionOf('spock')}") {

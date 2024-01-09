@@ -21,7 +21,6 @@ import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtraPropertiesExtension
-import org.gradle.util.GradleVersion
 
 /**
  * A simplified way of grouping deprecation messages.
@@ -36,8 +35,7 @@ class DeprecatedFeatures implements Plugin<Project> {
 
     private static final String EXTENSION_NAME = '$$asciidoctor-deprecated-features$$'
     private static final String BASE_MESSAGE = 'You are using one or more deprecated Asciidoctor Gradle plugin features.'
-    private static final boolean GRADLE_4_5_OR_LATER = GradleVersion.current() >= GradleVersion.version('4.5')
-    private static final String COMMAND_LINE = GRADLE_4_5_OR_LATER ? '--warning-mode=all' : '-i or --info'
+    private static final String COMMAND_LINE = '--warning-mode=all'
 
     static void addDeprecationMessage(Project project, String identifier, String message) {
         try {

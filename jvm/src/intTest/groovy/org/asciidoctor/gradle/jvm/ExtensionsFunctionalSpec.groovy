@@ -46,7 +46,7 @@ class ExtensionsFunctionalSpec extends FunctionalSpecification {
     void 'Extension can be applied via closure (#model)'() {
         given:
         getBuildFile(
-            model.processMode, model.version, """
+                model.processMode, model.version, """
             asciidoctor {
                 asciidoctorj {
                      docExtensions {
@@ -84,12 +84,95 @@ class ExtensionsFunctionalSpec extends FunctionalSpecification {
         model << AsciidoctorjVersionProcessModeGenerator.get()
     }
 
+    @SuppressWarnings('GStringExpressionWithinString')
+    void 'Extension can be applied via closure (Gradle #gradle)'() {
+        given:
+        final model = AsciidoctorjVersionProcessModeGenerator.get().first()
+        getBuildFile(
+                model.processMode, model.version, """
+            asciidoctor {
+                asciidoctorj {
+                     docExtensions {
+                        block(name: "BIG", contexts: [":paragraph"]) {
+                            parent, reader, attributes ->
+                            def upperLines = reader.readLines()*.toUpperCase()
+                            .inject("") {a, b -> a + '\\\\n' + b}
+            
+                            createBlock(parent, "paragraph", [upperLines], attributes, [:])
+                        }
+                        block("small") {
+                            parent, reader, attributes ->
+                            def lowerLines = reader.readLines()*.toLowerCase()
+                            .inject("") {a, b -> a + '\\\\n' + b}
+            
+                            createBlock(parent, "paragraph", [lowerLines], attributes, [:])
+                        }
+                     }
+                }
+            }
+            """.stripIndent())
+
+        GradleRunner runner = getGradleRunner(DEFAULT_ARGS).withGradleVersion(gradle)
+
+        when:
+        runner.build()
+        File resultFile = new File(buildDir, "docs/asciidoc/${ASCIIDOC_INLINE_EXTENSIONS_FILE.replaceFirst('asciidoc', 'html')}")
+
+        then: 'content is generated as HTML and XML'
+        resultFile.exists()
+        resultFile.text.contains('WRITE THIS IN UPPERCASE')
+        resultFile.text.contains('and write this in lowercase')
+
+        where:
+        gradle << ['8.3', '8.1.1', '7.6.1', '7.0.2']
+    }
+
+    @SuppressWarnings('GStringExpressionWithinString')
+    void 'Extension cannot be applied via closure if Gradle #gradle'() {
+        given:
+        final model = AsciidoctorjVersionProcessModeGenerator.get().first()
+        getBuildFile(
+                model.processMode, model.version, """
+            asciidoctor {
+                asciidoctorj {
+                     docExtensions {
+                        block(name: "BIG", contexts: [":paragraph"]) {
+                            parent, reader, attributes ->
+                            def upperLines = reader.readLines()*.toUpperCase()
+                            .inject("") {a, b -> a + '\\\\n' + b}
+            
+                            createBlock(parent, "paragraph", [upperLines], attributes, [:])
+                        }
+                        block("small") {
+                            parent, reader, attributes ->
+                            def lowerLines = reader.readLines()*.toLowerCase()
+                            .inject("") {a, b -> a + '\\\\n' + b}
+            
+                            createBlock(parent, "paragraph", [lowerLines], attributes, [:])
+                        }
+                     }
+                }
+            }
+            """.stripIndent())
+
+        GradleRunner runner = getGradleRunner(DEFAULT_ARGS).withGradleVersion(gradle)
+
+        when:
+        final result = runner.buildAndFail()
+
+        then:
+        result.output.contains('Closures are not supported on Gradle 8.4+ due to Gradle instrumentation issues. Place the content in a string or load from it from a file instead.')
+
+        where:
+        gradle << ['8.4', '8.5']
+    }
+
     @Unroll
     @Timeout(value = 90)
     void 'Extension can be applied from a string (#model)'() {
         given:
         getBuildFile(
-            model.processMode, model.version, """
+                model.processMode, model.version, """
 asciidoctor {
 
     asciidoctorj {
@@ -132,12 +215,61 @@ block('small') {
         model << AsciidoctorjVersionProcessModeGenerator.get()
     }
 
+    @Unroll
+    @Timeout(value = 90)
+    void 'Extension can be applied from a string (Gradle #gradle)'() {
+        given:
+        final model = AsciidoctorjVersionProcessModeGenerator.get().first()
+        getBuildFile(
+                model.processMode, model.version, """
+asciidoctor {
+
+    asciidoctorj {
+        docExtensions '''
+block(name: 'BIG', contexts: [':paragraph']) {
+        parent, reader, attributes ->
+        def upperLines = reader.readLines()
+        .collect {it.toUpperCase()}
+        .inject('') {a, b -> "\${a}\\\n\${b}"}
+
+        createBlock(parent, "paragraph", [upperLines], attributes, [:])
+}
+block('small') {
+        parent, reader, attributes ->
+        def lowerLines = reader.readLines()
+        .collect {it.toLowerCase()}
+        .inject('') {a, b -> "\${a}\\\n\${b}"}
+
+        createBlock(parent, 'paragraph', [lowerLines], attributes, [:])
+}
+'''
+    }
+}
+""")
+        GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
+        if (model.processMode != 'JAVA_EXEC') {
+            runner.withDebug(false)
+        }
+
+        when:
+        runner.build()
+        File resultFile = new File(buildDir, "docs/asciidoc/${ASCIIDOC_INLINE_EXTENSIONS_FILE.replaceFirst('asciidoc', 'html')}")
+
+        then: 'content is generated as HTML and XML'
+        resultFile.exists()
+        resultFile.text.contains('WRITE THIS IN UPPERCASE')
+        resultFile.text.contains('and write this in lowercase')
+
+        where:
+        gradle << ['8.4', '8.3', '8.1.1', '7.6.1', '7.0.2']
+    }
+
     @Timeout(value = 90)
     @Unroll
     void 'Extension can be applied from file (#model)'() {
         given:
         getBuildFile(
-            model.processMode, model.version, """
+                model.processMode, model.version, """
 asciidoctor {
     asciidoctorj {
         docExtensions file('src/docs/asciidoc/blockMacro.groovy')
@@ -170,7 +302,7 @@ asciidoctor {
         given: 'A build file that declares extensions'
 
         getBuildFile(
-            model.processMode, model.version, '''
+                model.processMode, model.version, '''
         asciidoctorj {
             docExtensions {
                 postprocessor { document, output ->
@@ -208,7 +340,7 @@ asciidoctor {
     void 'Fail build if extension fails to compile (#model)'() {
         given:
         getBuildFile(
-            model.processMode, model.version, """
+                model.processMode, model.version, """
 asciidoctor {
     asciidoctorj {
         docExtensions '''
@@ -241,22 +373,22 @@ asciidoctor {
         given:
         String extDSL = '''asciidoctorj.docExtensions file('src/docs/asciidoc/blockMacro.groovy')'''
         getBuildFile(
-            processMode, version, """
+                processMode, version, """
                 ${extScope == GLOBAL ? extDSL : ''}
 
                 asciidoctor {
                     ${extScope == LOCAL ? extDSL : ''}
                 }
             """,
-            verScope == GLOBAL
+                verScope == GLOBAL
         )
         GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
 
         when:
         runner.build()
         File resultFile = new File(
-            buildDir,
-            'docs/asciidoc/' + ASCIIDOC_INLINE_EXTENSIONS_FILE.replaceFirst('asciidoc', 'html')
+                buildDir,
+                'docs/asciidoc/' + ASCIIDOC_INLINE_EXTENSIONS_FILE.replaceFirst('asciidoc', 'html')
         )
 
         then: 'content is generated as HTML and XML'
@@ -270,14 +402,14 @@ asciidoctor {
 
         and:
         extScope | verScope
-        LOCAL    | LOCAL
-        LOCAL    | GLOBAL
-        GLOBAL   | LOCAL
-        GLOBAL   | GLOBAL
+        LOCAL | LOCAL
+        LOCAL | GLOBAL
+        GLOBAL | LOCAL
+        GLOBAL | GLOBAL
     }
 
     File getBuildFile(
-        final String processMode, final String version, final String extraContent, boolean configureGlobally = false) {
+            final String processMode, final String version, final String extraContent, boolean configureGlobally = false) {
 
         String versionConfig = """
             asciidoctorj {

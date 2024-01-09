@@ -52,6 +52,7 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.process.JavaForkOptions
 import org.gradle.workers.WorkerExecutor
+import org.ysb33r.grolifant.api.core.LegacyLevel
 import org.ysb33r.grolifant.api.core.jvm.ExecutionMode
 import org.ysb33r.grolifant.api.core.jvm.JavaForkOptionsWithEnvProvider
 import org.ysb33r.grolifant.api.core.jvm.worker.WorkerAppParameterFactory
@@ -66,6 +67,7 @@ import static org.asciidoctor.gradle.base.internal.AsciidoctorAttributes.prepare
 import static org.asciidoctor.gradle.base.internal.AsciidoctorAttributes.resolveAsCacheable
 import static org.asciidoctor.gradle.base.internal.AsciidoctorAttributes.resolveAsSerializable
 import static org.asciidoctor.gradle.internal.JavaExecUtils.getExecConfigurationDataFile
+import static org.asciidoctor.gradle.internal.JavaExecUtils.getInternalGradleLibraryLocation
 import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 
 /**
@@ -426,8 +428,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
             entrypoint {
                 classpath(JavaExecUtils.getJavaExecClasspath(
                         projectOperations,
-                        configurations,
-                        false // asciidoctorj.injectInternalGuavaJar
+                        configurations
                 ))
             }
 
@@ -585,7 +586,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
                 backendName: backendName,
                 logDocuments: logDocuments,
                 fatalMessagePatterns: asciidoctorj.fatalWarnings,
-                asciidoctorExtensions: (asciidoctorJExtensions.findAll { !(it instanceof Dependency) }),
+                asciidoctorExtensions: serializableAsciidoctorJExtensions,
                 requires: asciidoctorj.requires,
                 copyResources: copyResources.present &&
                         (copyResources.get().empty || backendName in copyResources.get()),
@@ -633,6 +634,23 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
         }
     }
 
+    private List<Object> getSerializableAsciidoctorJExtensions() {
+        asciidoctorJExtensions.findAll { !(it instanceof Dependency) }.collect {
+            getSerializableAsciidoctorJExtension(it)
+        }
+    }
+
+    private Object getSerializableAsciidoctorJExtension(Object ext) {
+        switch (ext) {
+            case CharSequence:
+                return projectOperations.stringTools.stringize(ext)
+            case Provider:
+                return getSerializableAsciidoctorJExtension(((Provider) ext).get())
+            default:
+                return ext
+        }
+    }
+
     private Map<String, Workspace> prepareWorkspacesByLanguage() {
         languagesAsOptionals.collectEntries { Optional<String> lang ->
             Workspace workspace = prepareWorkspace(lang)
@@ -652,7 +670,6 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
             copyResourcesByExecutorConfiguration(loadedConfigurations, byLang)
             [lang, loadedConfigurations]
         } as Map<String, List<ExecutorConfiguration>>
-
         mapping
     }
 
@@ -695,8 +712,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
         }
 
         if (!closurePaths.empty) {
-            // Jumping through hoops to make docExtensions based upon closures to work.
-            closurePaths.add(getClassLocation(org.gradle.internal.scripts.ScriptOrigin))
+            handleGradleClosureInstrumentation(closurePaths)
             closurePaths.addAll(ifNoGroovyAddLocal(deps))
         }
 
@@ -708,6 +724,29 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
             projectOperations.fsOperations.files(closurePaths)
         } else {
             jrubyLessConfiguration(deps) + projectOperations.fsOperations.files(closurePaths)
+        }
+    }
+
+    private void handleGradleClosureInstrumentation(Set<File> closurePaths) {
+        // Jumping through hoops to make docExtensions based upon closures to work.
+        closurePaths.add(getClassLocation(org.gradle.internal.scripts.ScriptOrigin))
+        if (LegacyLevel.PRE_8_4 && !LegacyLevel.PRE_7_6) {
+            closurePaths.add(getClassLocation(org.gradle.api.GradleException))
+        }
+        if (LegacyLevel.PRE_8_4 && !LegacyLevel.PRE_8_3) {
+            closurePaths.add(getInternalGradleLibraryLocation(
+                    projectOperations,
+                    ~/gradle-internal-instrumentation-api-([\d.]+).jar/
+            ))
+            closurePaths.add(getInternalGradleLibraryLocation(
+                    projectOperations,
+                    ~/gradle-instrumentation-declarations-([\d.]+).jar/
+            ))
+        }
+        if (!LegacyLevel.PRE_8_1 && LegacyLevel.PRE_8_4) {
+            closurePaths.add(getClassLocation(kotlin.io.FilesKt))
+            closurePaths.add(getClassLocation(org.gradle.internal.lazy.Lazy))
+            closurePaths.add(getInternalGradleLibraryLocation(projectOperations, ~/fastutil-([\d.]+)-min.jar/))
         }
     }
 
