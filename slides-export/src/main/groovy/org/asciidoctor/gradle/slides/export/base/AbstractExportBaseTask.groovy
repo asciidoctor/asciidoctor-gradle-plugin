@@ -15,7 +15,6 @@
  */
 package org.asciidoctor.gradle.slides.export.base
 
-import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AbstractAsciidoctorBaseTask
 import org.asciidoctor.gradle.base.AsciidoctorUtils
@@ -32,6 +31,7 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.SkipWhenEmpty
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.options.Option
 import org.ysb33r.grolifant.api.core.ProjectOperations
 
@@ -272,14 +272,9 @@ abstract class AbstractExportBaseTask extends DefaultTask {
         this.projectOperations
     }
 
-    @CompileDynamic
     private void checkTaskDependencies(Iterable<Object> tasks) {
         dependsOn tasks.findAll {
-            if (it instanceof Task) {
-                true
-            } else {
-                it instanceof org.gradle.api.tasks.TaskProvider
-            }
-        }.toSet()
+            it instanceof Task || it instanceof TaskProvider
+        }
     }
 }
