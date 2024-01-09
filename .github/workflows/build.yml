@@ -9,16 +9,13 @@ jobs:
         with:
           java-version: 11
           distribution: zulu
-      # Licensing
+      - uses: gradle/gradle-build-action@v2
+        with:
+          gradle-home-cache-cleanup: true
       - name: Licensing
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: --console=plain -S license
-      # Coding style
+        run: ./gradlew --console=plain -S license
       - name: Coding style
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: --console=plain -S codenarcAll
+        run: ./gradlew --console=plain -S codenarcAll
   build-windows:
     runs-on: windows-latest
     steps:
@@ -27,32 +24,27 @@ jobs:
         with:
           java-version: 11
           distribution: zulu
+      - uses: gradle/gradle-build-action@v2
+        with:
+          gradle-home-cache-cleanup: true
       - name: Cache offline repository
         uses: actions/cache@v3
         with:
           path: testfixtures/offline-repo/build/repo
           key: ${{ runner.os }}-offline-repo-${{ hashFiles('module-versions.properties') }}
           restore-keys: ${{ runner.os }}-offline-repo-
-      # Build
       - name: Build offline repository
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: --console=plain --no-build-cache :testfixtures-offline-repo:buildOfflineRepositories
+        run: ./gradlew --console=plain --no-build-cache :testfixtures-offline-repo:buildOfflineRepositories
       - name: Build
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: --console=plain --warning-mode=all -s clean assemble
-      # Test
+        run: ./gradlew --console=plain --warning-mode=all -s clean assemble
       # TODO: Resolve the gem integration test issue.  See https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/694
       - name: Test
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: --console=plain --warning-mode=all -s check --no-parallel -Djava.net.preferIPv4Stack=true -x gradleTest -x :asciidoctor-gradle-jvm-gems:IntTest --scan
+        run: ./gradlew --console=plain --warning-mode=all -s check --no-parallel -x gradleTest -x :asciidoctor-gradle-jvm-gems:IntTest --scan
+        env:
+          JAVA_TOOL_OPTIONS: -Djava.net.preferIPv4Stack=true
       # Stop gradlew to avoid locking issues
       - name: Cleanup
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: --stop
+        run: ./gradlew --stop
   build:
     strategy:
       matrix:
@@ -67,6 +59,9 @@ jobs:
       with:
         java-version: ${{ matrix.java }}
         distribution: zulu
+    - uses: gradle/gradle-build-action@v2
+      with:
+        gradle-home-cache-cleanup: true
     - name: Cache offline repository
       uses: actions/cache@v3
       with:
@@ -74,28 +69,15 @@ jobs:
         key: ${{ runner.os }}-offline-repo-${{ hashFiles('module-versions.properties') }}
         restore-keys: ${{ runner.os }}-offline-repo-
     - name: Build offline repository
-      uses: gradle/gradle-build-action@v2
-      with:
-        arguments: --console=plain --no-build-cache :testfixtures-offline-repo:buildOfflineRepositories
-    # Build
+      run: ./gradlew --console=plain --no-build-cache :testfixtures-offline-repo:buildOfflineRepositories
     - name: Build
-      uses: gradle/gradle-build-action@v2
-      with:
-        arguments: -i -S --console=plain --no-build-cache assemble
-    # Integration tests
+      run: ./gradlew  -i -S --console=plain --no-build-cache assemble
     - name: Integration tests (without slides)
-      uses: gradle/gradle-build-action@v2
-      with:
-        arguments: -i -s --console=plain --no-build-cache test intTest remoteTest --scan
+      run: ./gradlew  -i -s --console=plain --no-build-cache test intTest remoteTest --scan
 #        arguments: -i -s --console=plain --no-build-cache test intTest remoteTest  -x asciidoctor-gradle-jvm-slides:intTest
 #        arguments: -i -s --console=plain --no-build-cache test intTest remoteTest -x asciidoctor-gradle-slides-export:intTest -x asciidoctor-gradle-jvm-slides:intTest
 #    TODO: See https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/695
 #    - name: Integration tests (slides only)
-#      uses: eskatos/gradle-command-action@v2
-#      with:
-#        arguments: -i -s --console=plain --no-build-cache test asciidoctor-gradle-jvm-slides:intTest asciidoctor-gradle-slides-export:intTest
-    # Gradle tests
+#      uses: ./gradlew -i -s --console=plain --no-build-cache test asciidoctor-gradle-jvm-slides:intTest asciidoctor-gradle-slides-export:intTest
     - name: Gradle tests
-      uses: gradle/gradle-build-action@v2
-      with:
-        arguments: -i -s --console=plain --no-build-cache gradleTest --scan
+      run: ./gradlew -i -s --console=plain --no-build-cache gradleTest --scan

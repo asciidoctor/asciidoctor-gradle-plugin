@@ -12,16 +12,14 @@ jobs:
         with:
           java-version: 11
           distribution: zulu
+      - uses: gradle/gradle-build-action@v2
+        with:
+          gradle-home-cache-cleanup: true
+      - run: cd docs
       - name: Combine documentation
-        uses: gradle/gradle-build-action@v2
-        with:
-          build-root-directory: docs
-          arguments: --console=plain -q combineDocs
+        run: ./gradlew --console=plain -q combineDocs
       - name: Publish documentation
-        uses: gradle/gradle-build-action@v2
-        with:
-          build-root-directory: docs
-          arguments: "--console=plain --info :antora:publishDocs :gh-pages:publishDocs
+        run: ./gradlew --console=plain --info :antora:publishDocs :gh-pages:publishDocs
           -Dorg.ajoberstar.grgit.auth.username=${{ secrets.GITHUB_PUBLISH_USER }}
           -Dorg.ajoberstar.grgit.auth.password=${{ secrets.GITHUB_PUBLISH_KEY }}
-          -Dorg.ajoberstar.grgit.auth.force=hardcoded"
+          -Dorg.ajoberstar.grgit.auth.force=hardcoded
