@@ -11,7 +11,7 @@ agProject {
 }
 
 dependencies {
-    implementation project(':asciidoctor-gradle-jvm')
+    api project(':asciidoctor-gradle-jvm')
     intTestOfflineRepo "org.asciidoctor:asciidoctorj:${compileOnlyAsciidoctorJVersion}"
     intTestOfflineRepo "org.asciidoctor:asciidoctorj-pdf:${downloadOnlyPdfVersion}"
 }
