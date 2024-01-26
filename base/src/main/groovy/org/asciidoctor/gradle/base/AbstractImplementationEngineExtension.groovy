@@ -295,7 +295,7 @@ class AbstractImplementationEngineExtension
     protected Collection<String> stringizeList(
             Collection<Object> list,
             boolean fromTaskOnly,
-            Function<AbstractImplementationEngineExtension,Collection<String>> other
+            Function<AbstractImplementationEngineExtension, Collection<String>> other
     ) {
         if (!task || fromTaskOnly) {
             stringize(list)
@@ -325,7 +325,7 @@ class AbstractImplementationEngineExtension
                 case Callable:
                     return item
                 default:
-                    return { -> projectOperations.stringTools.stringize(item) } as Callable<String>
+                    return { -> projectOperations.stringTools.stringizeOrNull(item) } as Callable<String>
             }
         }
     }
@@ -346,7 +346,7 @@ class AbstractImplementationEngineExtension
                 case Callable:
                     return [key, item]
                 default:
-                    return [key, { -> projectOperations.stringTools.stringize(item) } as Callable<String>]
+                    return [key, { -> projectOperations.stringTools.stringizeOrNull(item) } as Callable<String>]
             }
         } as Map<String, Object>
     }
@@ -356,6 +356,6 @@ class AbstractImplementationEngineExtension
     }
 
     private List<String> stringize(Collection<?> stringyThings) {
-        projectOperations.stringTools.stringize(stringyThings)
+        projectOperations.stringTools.stringizeDropNull(stringyThings)
     }
 }
