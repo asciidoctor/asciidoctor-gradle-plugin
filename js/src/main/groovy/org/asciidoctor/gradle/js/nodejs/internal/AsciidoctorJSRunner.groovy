@@ -78,9 +78,14 @@ class AsciidoctorJSRunner {
             arguments.addAll([DOCTYPE, doctype.get()])
         }
 
-        arguments.addAll(attributes.collectMany { String key, String value ->
-            value ? [ATTR, "${key}=${value}".toString()] : [ATTR, key]
-        })
+        attributes.each { String key, String value ->
+            arguments.addAll(value ? [ATTR, "${key}=${value}".toString()] : [ATTR, key])
+        }
+        // Cannot use the better form of code as below, due to some Groovy incompatibility
+        // Therefore using the above code
+        //        arguments.addAll(attributes.collectMany { String key, String value ->
+        //            value ? [ATTR, "${key}=${value}".toString()] : [ATTR, key]
+        //        })
 
         arguments.addAll(requires.collectMany {
             [REQUIRE, it]
