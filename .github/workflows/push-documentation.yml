@@ -23,7 +23,7 @@ jobs:
       - name: Publish documentation
         run: |
           cd docs
-          ./gradlew --console=plain --info :antora:publishDocs :gh-pages:publishDocs
-          -Dorg.ajoberstar.grgit.auth.username=${{ secrets.GITHUB_PUBLISH_USER }}
-          -Dorg.ajoberstar.grgit.auth.password=${{ secrets.GITHUB_PUBLISH_KEY }}
-          -Dorg.ajoberstar.grgit.auth.force=hardcoded
+          ./gradlew --console=plain --info :antora:publishDocs :gh-pages:publishDocs \
+            -Dorg.ajoberstar.grgit.auth.username=${{ secrets.GITHUB_PUBLISH_USER }} \
+            -Dorg.ajoberstar.grgit.auth.password=${{ secrets.GITHUB_PUBLISH_KEY }} \
+            -Dorg.ajoberstar.grgit.auth.force=hardcoded
