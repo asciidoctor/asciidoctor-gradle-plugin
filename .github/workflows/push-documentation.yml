@@ -21,6 +21,8 @@ jobs:
           cd docs
           ./gradlew --console=plain -q combineDocs
       - name: Publish documentation
+        env:
+          CI_BRANCH: ${{ github.ref_name }}
         run: |
           cd docs
           ./gradlew --console=plain --info :antora:publishDocs :gh-pages:publishDocs \
