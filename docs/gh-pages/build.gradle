@@ -3,7 +3,7 @@ plugins {
 }
 
 ext {
-    currentBranch = System.getenv('TRAVIS_BRANCH') ?: 'not-on-travis-ci'
+    currentBranch = System.getenv('CI_BRANCH') ?: 'not-on-ci'
     pushDocs = currentBranch.matches(~/^master|development-.+|maintenance-.+$/)
 }
 
@@ -25,7 +25,7 @@ gitPublish {
 }
 
 task publishDocs {
-    if(pushDocs) {
+    if (pushDocs) {
         dependsOn gitPublishPush
     }
     doFirst {
