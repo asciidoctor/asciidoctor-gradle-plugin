@@ -4,7 +4,7 @@ plugins {
 
 ext {
     currentBranch = System.getenv('CI_BRANCH') ?: 'not-on-ci'
-    pushDocs = currentBranch.matches(~/^(master|development-3.x|maintenance-1.5|maintenance-1.6)$/)
+    pushDocs = currentBranch.matches(~/^master|development-.+|maintenance-.+$/)
 }
 
 gitPublish {
