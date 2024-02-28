@@ -3,8 +3,11 @@ on:
   push:
     branches:
       - master
+      - development-4.x
+permissions:
+  contents: write
 jobs:
-  check:
+  push-docs:
     runs-on: ubuntu-latest
     if: github.repository == 'asciidoctor/asciidoctor-gradle-plugin'
     steps:
@@ -12,8 +15,8 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           java-version: 11
-          distribution: zulu
-      - uses: gradle/gradle-build-action@v2
+          distribution: temurin
+      - uses: gradle/actions/setup-gradle@v3
         with:
           gradle-home-cache-cleanup: true
       - name: Combine documentation
@@ -23,9 +26,9 @@ jobs:
       - name: Publish documentation
         env:
           CI_BRANCH: ${{ github.ref_name }}
+          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+          GRGIT_USER: 'GH Action User'
+          GRGIT_PASS: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd docs
-          ./gradlew --console=plain --info :antora:publishDocs :gh-pages:publishDocs \
-            -Dorg.ajoberstar.grgit.auth.username=${{ secrets.GITHUB_PUBLISH_USER }} \
-            -Dorg.ajoberstar.grgit.auth.password=${{ secrets.GITHUB_PUBLISH_KEY }} \
-            -Dorg.ajoberstar.grgit.auth.force=hardcoded
+          ./gradlew --console=plain :gh-pages:publishDocs --info --stacktrace

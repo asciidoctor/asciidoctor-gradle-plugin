@@ -1,10 +1,8 @@
-import org.apache.tools.ant.filters.ReplaceTokens
-
 plugins {
     id 'idea'
     id 'org.asciidoctor.jvm.convert' apply false
     id 'org.asciidoctor.editorconfig' apply false
-    id 'org.ajoberstar.git-publish' version '4.2.1' apply false
+    id 'org.ajoberstar.git-publish' version '4.2.2' apply false
 }
 
 repositories {

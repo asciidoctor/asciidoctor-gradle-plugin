@@ -1,3 +1,4 @@
 == Compatibility
 
-This collection of plugins requires at least Gradle 4.9, JDK 8.0 and AsciidoctorJ 2.0.0 to run. If you need prior Gradle,  JDK or {asciidoctorj-name} support please use a plugin from the 1.5.x or 1.6.x release series.
+This collection of plugins requires at least Gradle 4.9, JDK 11.0 and AsciidoctorJ 2.0.0 to run.
+If you need prior Gradle, JDK or {asciidoctorj-name} support please use a plugin from the 1.5.x or 1.6.x release series.

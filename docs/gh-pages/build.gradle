@@ -1,4 +1,5 @@
 plugins {
+    id 'base'
     id 'org.ajoberstar.git-publish'
 }
 
@@ -8,8 +9,8 @@ ext {
 }
 
 gitPublish {
-    repoUri = gitHubRepoUri
-    branch = pagesBranch
+    repoUri = System.getenv('REPO_URL') ?: gitHubRepoUri
+    branch = 'gh-pages'
 
     contents {
         into currentBranch
