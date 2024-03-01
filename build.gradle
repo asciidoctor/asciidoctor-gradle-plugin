@@ -126,7 +126,7 @@ subprojects {
                     eachDependency { DependencyResolveDetails details ->
                         if (details.requested.group == 'org.codehaus.groovy') {
                             details.useVersion GroovySystem.version
-                            details.because 'THe same version as Grodale Groovy is required'
+                            details.because 'The same version as Gradle Groovy is required'
                         }
                     }
                 }
@@ -165,7 +165,7 @@ subprojects {
 
 apply from: 'gradle/coveralls.gradle'
 
-task syncWrapper( type : Copy ) {
+task syncWrapper(type: Copy) {
     from 'gradle', {
         include 'wrapper/**'
     }

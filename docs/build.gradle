@@ -14,12 +14,13 @@ ext {
     asciidoctorCombinedDocsDir = file("${buildDir}/docs/combined")
 
     docProjects = [
-        'asciidoctoreditorconfig',
-        'base', 'jvm', 'jvm-epub', 'jvm-gems',  'jvm-pdf',
-        'jvm-leanpub',
-        'jvm-slides', 'slides-export',
-//        'kindlegen',
-        'js'
+            new IncludedProject(name: 'asciidoctoreditorconfig', dir: 'asciidoctoreditorconfig'),
+            new IncludedProject(name: 'asciidoctor-gradle-base', dir: 'base'),
+            new IncludedProject(name: 'asciidoctor-gradle-jvm-gems', dir: 'gems'),
+            new IncludedProject(name: 'asciidoctor-gradle-js', dir: 'js'),
+            new IncludedProject(name: 'asciidoctor-gradle-jvm', dir: 'jvm'),
+            new IncludedProject(name: 'asciidoctor-gradle-jvm-epub', dir: 'jvm-epub'),
+            new IncludedProject(name: 'asciidoctor-gradle-jvm-pdf', dir: 'jvm-pdf'),
     ]
 }
 
@@ -30,8 +31,6 @@ allprojects {
 
 apply plugin: 'org.asciidoctor.jvm.convert'
 apply plugin: 'org.asciidoctor.editorconfig'
-apply from: "${rootDir}/gradle/utilities.gradle"
-//apply from: "${rootDir}/gradle/asciidoctor-config.gradle"
 
 configurations {
     asciidocExtensions
@@ -41,14 +40,14 @@ dependencies {
 //    asciidocExtensions 'com.bmuschko:asciidoctorj-tabbed-code-extension:0.1'
 }
 
-task prepareSources( type: Sync) {
+task prepareSources(type: Sync) {
     group 'documentation'
     description 'Copy sources from all plugin projects'
     into asciidoctorSourceSyncDir
 
     docProjects.each { proj ->
         from pluginProjectDir(proj), {
-            into pluginDirName(proj)
+            into proj.dir
             include 'src/**'
             exclude '**/META-INF/**'
         }
@@ -63,21 +62,17 @@ asciidoctor {
     group 'documentation'
     description 'Build HTML documentation'
 
-    baseDirFollowsSourceDir()
     dependsOn prepareSources
+    baseDirFollowsSourceDir()
+    // configurations 'asciidocExtensions'
     sourceDir 'src/docs/asciidoc'
-//    configurations 'asciidocExtensions'
-
-    sources {
-        include 'index.adoc'
-    }
-
+    sources { include 'index.adoc' }
     attributes toc: 'right',
-        toclevels: 2,
-        'source-highlighter': 'rouge'
+            toclevels: 2,
+            'source-highlighter': 'rouge'
 
     docProjects.each { proj ->
-        attributes "plugin-${proj}" : file("${prepareSources.destinationDir}/${pluginDirName(proj)}/src")
+        attributes "plugin-${proj.dir}": file("${prepareSources.destinationDir}/${proj.dir}/src")
     }
 }
 
@@ -87,7 +82,7 @@ task generateIndex {
     ext {
         outputFile = file("${buildDir}/docs/index-source/index.adoc")
     }
-    
+
     inputs.property 'docProjects', docProjects
     outputs.file outputFile
 
@@ -98,14 +93,14 @@ task generateIndex {
             w.println ''
             w.println "* link:./user-guide/[User guide]"
 
-            docProjects.sort().each { proj ->
-                w.println "* link:./api-${pluginDirName(proj)}/[API: ${pluginDirName(proj)}]"
+            docProjects*.dir.sort().each { projDir ->
+                w.println "* link:./api-${projDir}/[API: ${projDir}]"
             }
         }
     }
 }
 
-task asciidocIndex( type: org.asciidoctor.gradle.jvm.AsciidoctorTask ) {
+task asciidocIndex(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
     group 'documentation'
     description 'Generate HTML index'
 
@@ -114,20 +109,20 @@ task asciidocIndex( type: org.asciidoctor.gradle.jvm.AsciidoctorTask ) {
     outputDir "${buildDir}/docs/index"
 }
 
-task combineDocs (type : Sync) {
+task combineDocs(type: Sync) {
     group 'documentation'
     description 'Combine all generated documentation into a single tree'
+
+    dependsOn docProjects.collect { includedBuildTask(it, 'groovydoc') }
     into asciidoctorCombinedDocsDir
-
     from asciidocIndex
-
     from asciidoctor, {
         into 'user-guide'
     }
 
     docProjects.each { proj ->
         from "${pluginProjectDir(proj)}/build/docs/groovydoc", {
-            into "api-${pluginDirName(proj)}"
+            into "api-${proj.dir}"
         }
     }
 }
@@ -137,4 +132,17 @@ asciidoctorEditorConfig {
     additionalAttributes 'src/docs/asciidoc/attributes.adoc'
     additionalAttributes asciidoctor.asciidoctorj
     dependsOn prepareSources
+}
+
+class IncludedProject implements Serializable {
+    String name
+    String dir
+}
+
+File pluginProjectDir(IncludedProject pluginName) {
+    new File(rootProject.projectDir.parentFile, pluginName.dir)
+}
+
+TaskReference includedBuildTask(IncludedProject proj, String task) {
+    gradle.includedBuild('asciidoctor-gradle-plugin').task(":${proj.name}:${task}")
 }

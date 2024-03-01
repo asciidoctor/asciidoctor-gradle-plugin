@@ -8,7 +8,7 @@ groovydoc {
     footer          = "Copyright &copy; ${copyrightYear} the original author or authors. All rights reserved."
     includePrivate  = false
     link "https://docs.gradle.org/${gradle.gradleVersion}/javadoc/", 'org.gradle.'
-    link 'http://docs.oracle.com/javase/8/docs/api/', 'java.', 'org.xml.', 'javax.', 'org.w3c.'
+    link 'https://docs.oracle.com/javase/8/docs/api/', 'java.', 'org.xml.', 'javax.', 'org.w3c.'
 }
 
 javadoc {
