@@ -16,9 +16,9 @@ Then, add the `docinfo1` attribute to the attributes list in the previous exampl
 .build.gradle
 ----
 asciidoctorj { // <1>
-    attribute 'docinfo1', ''
+    attribute 'docinfo', ''
 }
 ----
 <1> Substitute `asciidoctorjs` if you are using the {asciidoctorjs-name} engine.
 
-See link:{asciidoctor-userguide}#docinfo-file[{asciidoctor-userguide-name}] for more information on `docinfo` and friends.
+See link:{asciidoctor-docs}/docinfo/[Asciidoctor's Docinfo File] for more information on `docinfo` and friends.
