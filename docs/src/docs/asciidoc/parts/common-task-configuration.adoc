@@ -5,7 +5,8 @@ All Asciidoctor tasks will have the following methods and properties:
 .Properties and methods common all {asciidoctorj-name} tasks
 [horizontal]
 asciidoctorj:: a task extension which allows a task to extend of override global configuration for Asciidoctor tasks.
-  This allow extensive flexibility. Any thing that can be configured in the global `asciidoctorj` extension can also be configured here.
+  This allows extensive flexibility.
+  Any thing that can be configured in the global `asciidoctorj` extension can also be configured here.
 attributes:: A shortcut for `asciidoctorj.attributes` and `asciidoctorjs.attributes`.
 baseDir:: Base directory for asciidoctor document conversion and root document inclusion.
   The base directory will be the project directory by default, but can be set to any other directory.
@@ -29,10 +30,12 @@ outputDir:: where generated docs go.
   Type: File, but any object convertible with `project.file` can be passed.
   Default: `$buildDir/asciidoc`.
 parallelMode:: Specifies whether each backend or other variant of a converting tasks should be run in parallel or sequential.
-  Sequential conversions might have less initialisation overhead, but may suffer from `gemPath` and extension pollution. Default: `true` (parallel).
+  Sequential conversions might have less initialisation overhead, but may suffer from `gemPath` and extension pollution.
+  Default: `true` (parallel).
 resources:: specify which additional files (image etc.) must be copied to output directory using a
   http://www.gradle.org/docs/current/javadoc/org/gradle/api/file/CopySpec.html[CopySpec].
-secondarySources: Specify which source files should be monitor for change. These are typically files which are included by top-level files as well as doctype files.
+secondarySources:: Specify which source files should be monitored for change.
+  These are typically files which are included by top-level files as well as doctype files.
   Default: All files in sourceDir which matches `getDefaultSourceDocumentPattern()` as well as doctype files.
 sourceDir:: where the asciidoc sources are.
   Use either `sourceDir path`, `setSourceDir path` or `sourceDir=path`
@@ -41,9 +44,13 @@ sourceDir:: where the asciidoc sources are.
 sources:: Specify which Asciidoctor source files to include as toplevel documents. It uses an
   http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.html[Ant-style PatternSet].
 useIntermediateWorkDir:: Use an intermediate work directory for sources ances.
-  Some extensions such as `ditaa` will write content into the source directory. In order to keep the project source directory pristine an intermediate work directory can be used. All sources and resources will be copied there prior the executing Asciidoctor.
+  Some extensions such as `ditaa` will write content into the source directory.
+  In order to keep the project source directory pristine an intermediate work directory can be used.
+  All sources and resources will be copied there prior the executing Asciidoctor.
 withIntermediateArtifacts:: Add intermediate artifacts to output directory.
-  If the document conversion process creates intermediate artifacts which needs to be added to the output directory, then the pattern set with a closure or `Action`. This implies `useIntermediateWorkDir`. An example of such a case is the use of `ditaa`.
+  If the document conversion process creates intermediate artifacts which needs to be added to the output directory, then the pattern set with a closure or `Action`.
+  This implies `useIntermediateWorkDir`.
+  An example of such a case is the use of `ditaa`.
 
 IMPORTANT: You will have to configure the properties for each plugin as they are not inherited from one to another. 
 For example you will have to configure `languages` for both `org.asciidoctor.jvm.convert` and `org.asciidoctor.jvm.pdf` plugins if you want multi language pdf and html. 
@@ -61,7 +68,7 @@ backends:: the backends to use.
 separateOutputDirs:: specifies whether each backend should use a separate subfolder under `outputDir`.
   Default: `true`
 
-=== Defining Sources
+== Defining Sources
 
 The plugin will search for sources under `sourceDir`. Sources may have any of the following extensions in
 order to be discovered:
@@ -104,7 +111,7 @@ tasks {
 
 Paths defined in this PatternSet are resolved relative to the `sourceDir`.
 
-=== Processing Auxiliary Files
+== Processing Auxiliary Files
 
 Some backends require that additional files be copied across. The most common example are images for HTML backends. For
 this the `resources` method is used. It is provided with a closure that configures an org.asciidoctor.gradle.jvm.epub.internal
@@ -181,7 +188,7 @@ If you do not want this behaviour, then it can be turned off by doing
 copyNoResources()
 ----
 
-If you are using multiple languages and you have identical resource patterns for each languages within `sourceDir/${lang}` you need to explicitly declare those on a per-language basis:
+If you are using multiple languages and you have identical resource patterns for each language within `sourceDir/${lang}` you need to explicitly declare those on a per-language basis:
 
 [source,groovy,role="primary"]
 .build.gradle
@@ -222,11 +229,13 @@ asciidoctor {
 
 == Docinfo processing
 
-When using the `docinfo` attribute with `html` and `docbook` backends, it is recommended that `baseDirFollowsSourceDir()` is always set. This will ensure that the docinfo files are picked up correctly from the same directory that is the source directory.
+When using the `docinfo` attribute with `html` and `docbook` backends, it is recommended that `baseDirFollowsSourceDir()` is always set.
+This will ensure that the docinfo files are picked up correctly from the same directory that is the source directory.
 
 == Source language support
 
-Some scenarios work on a source set of documents in a primary language and then translations of those sources into other languages. The Gradle plugin simplifies this scenario by allowing a structure such as
+Some scenarios work on a source set of documents in a primary language and then translations of those sources into other languages.
+The Gradle plugin simplifies this scenario by allowing a structure such as
 
 [source]
 ----
@@ -247,7 +256,9 @@ asciidoctor {
 }
 ----
 
-Gradle will then process both the `en` and the `es` source set and output to the output directory using the same languages names. Intermediate working directories and multiple backends are also covered. In this case the `lang` attribute will be injected with the specific language as the value.
+Gradle will then process both the `en` and the `es` source set and output to the output directory using the same languages names.
+Intermediate working directories and multiple backends are also covered.
+In this case the `lang` attribute will be injected with the specific language as the value.
 
 It is also possible to specify additional attributes that will only be added when a specific language is processed
 
@@ -260,17 +271,18 @@ asciidoctorj { // <1>
 
 asciidoctorjs { // <2>
     attributesForLang 'en', langName : 'English'
-    attributesForLang 'ca', langName : 'Catala'
+    attributesForLang 'ca', langName : 'Catala'F
 }
 ----
 <1> Configuration when using {asciidoctorj-name}
 <2> Configuration when using {asciidoctorjs-name}
 
-=== Choosing a Process Mode for {asciidoctorj-name}
+== Choosing a Process Mode for {asciidoctorj-name}
 
 All {asciidoctorj-name}-based tasks can control how Asciidoctor conversions are being run via the `inProcess` property. This is early days, and a choice for your build will depend very much on your context, but the following has already become clear:
 
 * `IN_PROCESS` and `OUT_OF_PROCESS` should theoretically run faster, especially if you continuously rebuild the same documentation. Gradle workers are the underlying implementation for these two options
 * The safe option is always `JAVA_EXEC`. For lower memory consumption this is by far the safer option. (It is also the only way we can get the Windows-based tests for this plugin to complete on Appveyor & Travis CI). It you run a lot of builds the penalty start-up time might become an issue for you.
 
-NOTE: In certain cases the plugin will overrule your choice as it has some built-in rules for special cases. In such cases it will log a warning that it has done that.
+NOTE: In certain cases the plugin will overrule your choice as it has some built-in rules for special cases.
+In such cases it will log a warning that it has done that.

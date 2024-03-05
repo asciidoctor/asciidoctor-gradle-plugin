@@ -48,8 +48,7 @@ The following common entities can also be set:
 include::{plugin-base}/main/groovy/org/asciidoctor/gradle/base/AbstractImplementationEngineExtension.groovy[indent=0,tags="extension-property"]
 
 // TODO: Split attributes into a standalone section that is not part of base plugin.
-[[attributes,Setting Attributes]]
-[[options,Setting Options]]
+[#options-and-attributes]
 == Options & Attributes
 
 The following options may be set using the extension's `options` property
@@ -108,10 +107,9 @@ These attributes may be overridden by explicit user input.
 
 Refer to the {asciidoctor-docs}[Asciidoctor documentation] to learn more about these options and attributes.
 
-Attribute values defined on the build file will win over values defined on the documents themselves. You can change
-this behavior by appending an `@` at the end of the value when defined in the build file. Please refer to
-link:{asciidoctor-userguide}#attribute-assignment-precedence[Attribute assignment precedence, window="_blank"]
-for more information.
+Attribute values defined on the build file will win over values defined on the documents themselves.
+You can change  this behavior by appending an `@` at the end of the value when defined in the build file.
+Please refer to link:{asciidoc-docs}/attributes/assignment-precedence#altering-the-assignment-precedence[Attribute assignment precedence, window="_blank"] for more information.
 
 [[asciidoctorj-modules,{asciidoctorj-name} Modules]]
 == Versions of modules

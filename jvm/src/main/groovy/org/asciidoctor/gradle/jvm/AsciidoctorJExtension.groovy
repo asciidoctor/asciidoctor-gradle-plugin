@@ -481,7 +481,8 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
        tag::extension-property[]
        options:: {asciidoctorj-name} options.
          Use `options` to append and `setOptions` to replace any current options with a new set.
-         Options are evaluated as late as possible. See <<options>> for more details.
+         Options are evaluated as late as possible.
+         See <<options-and-attributes,Setting Options>> for more details.
        end::extension-property[]
        ------------------------- */
 

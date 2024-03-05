@@ -8,20 +8,17 @@ asciidoc:
     project-full-path: asciidoctor/asciidoctor-gradle-plugin
     plugin-name: Asciidoctor Gradle plugin
     asciidoc-url: https://asciidoc.org
-    asciidoc-userguide: https://docs.asciidoctor.org/asciidoc/latest/
-    asciidoctor-docs: https://docs.asciidoctor.org/
-    asciidoctor-maven-plugin: https://github.com/asciidoctor/asciidoctor-maven-plugin[Asciidoctor Maven Plugin]
+    asciidoc-docs: https://docs.asciidoctor.org/asciidoc/latest
+    asciidoctor-docs: https://docs.asciidoctor.org/asciidoctor/latest
+    asciidoctor-maven-plugin-name: Asciidoctor Maven Plugin
+    asciidoctor-maven-plugin-url: https://github.com/asciidoctor/asciidoctor-maven-plugin
     asciidoctor-url: https://asciidoctor.org
-    asciidoctor-userguide: https://docs.asciidoctor.org/asciidoctor/latest/
     asciidoctorj-epub-name: Asciidoctorj-EPUB
     asciidoctorj-name: AsciidoctorJ
-    asciidoctorj-pdf-leanpub: Asciidoctorj Leanpub
     asciidoctorj-pdf-name: Asciidoctorj-PDF
-    asciidoctorj: https://github.com/asciidoctor/asciidoctorj
+    asciidoctorj-url: https://github.com/asciidoctor/asciidoctorj
     asciidoctorjs-name: Asciidoctor.js
-    groovy-dsl-name: Groovy DSL
     gradle-url: https://gradle.org/
-    issues: https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/
     issues-asciidoctorj: https://github.com/asciidoctor/asciidoctorj/issues/
     issues-jruby: https://github.com/asciidoctor/asciidoctorj/issues/
     jruby-name: JRuby

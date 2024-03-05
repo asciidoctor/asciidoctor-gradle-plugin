@@ -52,7 +52,8 @@ class AbstractImplementationEngineExtension
        tag::extension-property[]
         attributes:: Asciidoctor attributes.
           Use `attributes` to append and `setAttributes` to replace any current attributes with a new set.
-          Attribute values are lazy-evaluated to strings. See <<attributes>> for more detail.
+          Attribute values are lazy-evaluated to strings.
+          See <<options-and-attributes,Setting Attributes>> for more detail.
        end::extension-property[]
        ------------------------- */
 
