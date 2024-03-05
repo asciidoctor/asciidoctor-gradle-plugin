@@ -1,5 +1,6 @@
-:project-name: asciidoctor-gradle-plugin
 :project-full-path: asciidoctor/asciidoctor-gradle-plugin
+:project-name: asciidoctor-gradle-plugin
+:project-repo-url: asciidoctor-gradle-plugin
 :plugin-name: Asciidoctor Gradle plugin
 :asciidoc-url: https://asciidoc.org
 :asciidoc-docs: https://docs.asciidoctor.org/asciidoc/latest

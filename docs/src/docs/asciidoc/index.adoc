@@ -33,13 +33,13 @@ include::parts/asciidoctorj-epub-plugin.adoc[]
 
 include::parts/asciidoctorj-revealjs-plugin.adoc[]
 
-//! include::parts/asciidoctorj-leanpub-plugin.adoc[]
+// include::parts/asciidoctorj-leanpub-plugin.adoc[]
 
 include::parts/asciidoctor-diagram.adoc[]
 
 include::parts/asciidoctorj-gems-plugin.adoc[]
 
-//! include::parts/kindlegen-plugin.adoc[]
+// include::parts/kindlegen-plugin.adoc[]
 
 include::parts/asciidoctorj-custom-extensions.adoc[]
 
