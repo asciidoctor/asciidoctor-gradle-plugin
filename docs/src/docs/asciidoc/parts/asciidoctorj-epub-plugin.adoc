@@ -1,5 +1,5 @@
 [[asciidoctorj-epub-plugin,{asciidoctorj-name} EPUB plugin]]
-== The AsciidoctorEpub Plugin
+= The AsciidoctorEpub Plugin
 
 INFO: As from version 3.3 support for KindleGen is dropped as Amazon no longer has the binary available for download.
 
@@ -8,7 +8,7 @@ INFO: As from version 3.3 support for KindleGen is dropped as Amazon no longer h
 .build.gradle
 ----
 plugins {
-    id 'org.asciidoctor.jvm.epub' version '{revnumber}'
+    id 'org.asciidoctor.jvm.epub' version '{release-version}'
 }
 ----
 
@@ -17,7 +17,7 @@ plugins {
 .build.gradle.kts
 ----
 plugins {
-    id("org.asciidoctor.jvm.epub") version "{revnumber}"
+    id("org.asciidoctor.jvm.epub") version "{release-version}"
 }
 ----
 When applying `org.asciidoctor.jvm.epub` it creates a single task of type `org.asciidoctor.gradle.jvm.epub.AsciidoctorEpubTask` which is then configured to:

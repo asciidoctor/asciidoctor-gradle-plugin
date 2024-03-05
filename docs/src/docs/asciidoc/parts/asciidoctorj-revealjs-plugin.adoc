@@ -1,12 +1,12 @@
 [[asciidoctorj-revealjs-plugin,AsciidoctorJ Reveal.js plugin]]
-== The AsciidoctorJ Reveal.js Plugin
+= The AsciidoctorJ Reveal.js Plugin
 
 [source,groovy,role="primary"]
 [subs=attributes+]
 .build.gradle
 ----
 plugins {
-    id 'org.asciidoctor.jvm.revealjs' version '{revnumber}'
+    id 'org.asciidoctor.jvm.revealjs' version '{release-version}'
 }
 ----
 
@@ -15,7 +15,7 @@ plugins {
 .build.gradle.kts
 ----
 plugins {
-    id("org.asciidoctor.jvm.revealjs") version "{revnumber}"
+    id("org.asciidoctor.jvm.revealjs") version "{release-version}"
 }
 ----
 
@@ -56,7 +56,7 @@ revealjs {
 
 If not specified, sensible defaults are provided.
 
-=== Reveal.js Options
+== Reveal.js Options
 [[RevealJsOptions]]
 
 Various options can be configured for Reveal.js. Although these can be set as attributes directly, it is far better to set them on the task as advantage can be taken of Gradle task caching and file resolving.
@@ -109,7 +109,7 @@ processBar:: Display a presentation progress bar.
   Type is boolean.
 pushToHistory:: Push each slide change to the browser history.
   Type is boolean.
-righttoLeft:: Change the presentation direction to be RTL.
+rightToLeft:: Change the presentation direction to be RTL.
   Type is boolean.
 slideNumber:: Display the slide number of the current slide.
   Can be a `RevealJSOptions.SlideNumber`, a string value or a boolean.

@@ -1,4 +1,4 @@
-== Asciidoctor Compatibility Plugin
+= Asciidoctor Compatibility Plugin
 
 In order to help people upgrade a compatibility plugin has been kept which mostly behaves in the same way as the {asciidoctorj-name} plugins in the 1.5.x series 
 [source,groovy,role="primary"]
@@ -6,7 +6,7 @@ In order to help people upgrade a compatibility plugin has been kept which mostl
 .build.gradle
 ----
 plugins {
-    id 'org.asciidoctor.convert' version '{revnumber}'
+    id 'org.asciidoctor.convert' version '{release-version}'
 }
 ----
 
@@ -15,7 +15,7 @@ plugins {
 .build.gradle.kts
 ----
 plugins {
-    id("org.asciidoctor.convert") version "{revnumber}"
+    id("org.asciidoctor.convert") version "{release-version}"
 }
 ----
 
@@ -64,4 +64,5 @@ sourceDir:: where the asciidoc sources are.
 sources:: specify which Asciidoctor source files to include by using an
   http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.html[Ant-style PatternSet].
 
-NOTE: Even though the DSL remains the same with this task, the internals have been changed to use the same `JAVA_EXEC` mechanism of the `org.asciidoctor.jvm.convert` plugins. The problems which the 1.5.x series suffered with classpaths anions disappearing should now be a thing of the past.
+NOTE: Even though the DSL remains the same with this task, the internals have been changed to use the same `JAVA_EXEC` mechanism of the `org.asciidoctor.jvm.convert` plugins.
+The problems which the 1.5.x series suffered with classpaths anions disappearing should now be a thing of the past.

@@ -1,4 +1,4 @@
-== Extra content for HTML & Docbook backends
+= Extra content for HTML & Docbook backends
 
 You may need to include extra content into the head of the exported document.
 For example, you might want to include jQuery inside the `<head>` element of the HTML export.

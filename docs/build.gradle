@@ -69,7 +69,8 @@ asciidoctor {
     sources { include 'index.adoc' }
     attributes toc: 'right',
             toclevels: 2,
-            'source-highlighter': 'rouge'
+            'source-highlighter': 'rouge',
+            'release-version': project.version
 
     docProjects.each { proj ->
         attributes "plugin-${proj.dir}": file("${prepareSources.destinationDir}/${proj.dir}/src")

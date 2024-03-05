@@ -1,10 +1,10 @@
 [[asciidoctorj-extensions,Adding custom {asciidoctorj-name} extensions]]
-== Adding Custom Extensions
+= Adding Custom Extensions
 
 Starting with version 1.5.0 you were able to write your own Asciidoctor extensions in Groovy, or any other JVM language
 for that matter. Now with the 2.0.0 you have even more flexibility in that extensions can be applied on a per task basis on globally. There are several options available to make it happen.
 
-=== As External Library
+== As External Library
 
 This is the most versatile option, as it allows you to reuse the same extension in different projects. An external library
 is just like any other Java/Groovy project. You simply define a dependency using the `asciidoctor` configuration.
@@ -39,8 +39,7 @@ tasks.withType<AsciidoctorTask> {
 }
 ----
 
-
-=== As Project Dependency
+== As Project Dependency
 
 The next option is to host the extension project in a multi-project build. This allows for a much quicker development cycle
 as you don't have to publish the jar to a repository every time you make adjustments to the code. Take for example the
@@ -81,7 +80,7 @@ The `extension` project is a sibling for `core`. The build file for the latter l
 .build.gradle
 ----
 plugins {
-   id 'org.asciidoctor.jvm.convert' version '{revnumber}'
+   id 'org.asciidoctor.jvm.convert' version '{release-version}'
 }
 
 repositories {
@@ -108,7 +107,7 @@ Alternatively you can add the project to the extension directly
 .build.gradle
 ----
 plugins {
-   id 'org.asciidoctor.jvm.convert' version '{revnumber}'
+   id 'org.asciidoctor.jvm.convert' version '{release-version}'
 }
 
 asciidoctorj {
@@ -119,7 +118,7 @@ asciidoctorj {
 In the less-common case where extension is not supplied via the default configuration, the latter shortcut will not work, and you will need to use the longer method described above.
 
 
-=== As Inline Script
+== As Inline Script
 
 The next option is to define extensions directly in the build script.
 This approach is based on the project asciidoctorj-groovy-dsl that allows to define Asciidoctor extensions in Groovy.

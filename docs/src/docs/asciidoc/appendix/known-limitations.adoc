@@ -1,5 +1,5 @@
 [appendix]
-== Known Issues
+= Known Issues
 
 These are the main ones we know about:
 

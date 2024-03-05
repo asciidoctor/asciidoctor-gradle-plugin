@@ -1,4 +1,4 @@
-== Quick Start
+= Quick Start
 
 To start you need to use one of the plugins from the following Gradle snippet
 
@@ -7,7 +7,7 @@ To start you need to use one of the plugins from the following Gradle snippet
 .build.gradle
 ----
 plugins {
-    id 'org.asciidoctor.jvm.convert' version '{revnumber}'
+    id 'org.asciidoctor.jvm.convert' version '{release-version}'
 }
 ----
 
@@ -16,6 +16,6 @@ plugins {
 .build.gradle.kts
 ----
 plugins {
-    id("org.asciidoctor.jvm.convert") version "{revnumber}"
+    id("org.asciidoctor.jvm.convert") version "{release-version}"
 }
 ----

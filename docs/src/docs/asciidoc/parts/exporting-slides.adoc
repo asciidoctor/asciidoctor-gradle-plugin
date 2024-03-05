@@ -1,5 +1,5 @@
 [[decktape-plugin,Decktape plugin]]
-== Exporting Slides
+= Exporting Slides
 
 If you have created HTML slides via an Asciidoctor task you can export them to PDF/PNG/JPG.
 
@@ -45,8 +45,8 @@ If you do
 .build.gradle
 ----
 plugins {
-    id 'org.asciidoctor.jvm.revealjs' version '{revnumber}'
-    id 'org.asciidoctor.decktape.base' version '{revnumber}'
+    id 'org.asciidoctor.jvm.revealjs' version '{release-version}'
+    id 'org.asciidoctor.decktape.base' version '{release-version}'
 }
 ----
 
@@ -55,8 +55,8 @@ plugins {
 .build.gradle.kts
 ----
 plugins {
-    id("org.asciidoctor.jvm.revealjs") version "{revnumber}"
-    id("org.asciidoctor.decktape.base") version "{revnumber}"
+    id("org.asciidoctor.jvm.revealjs") version "{release-version}"
+    id("org.asciidoctor.decktape.base") version "{release-version}"
 }
 ----
 

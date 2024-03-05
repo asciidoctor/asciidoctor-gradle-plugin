@@ -1,5 +1,5 @@
 [[diagram]]
-== Using AsciidoctorJ Diagram
+= Using AsciidoctorJ Diagram
 
 The new plugins have built-in support for `asciidoctorj-diagram`. Simply add the following to the project or task extension and
 diagramming will be available. If it is not set the `asciidoctorj-diagram` JAR will not be added to the classpath.
@@ -18,7 +18,7 @@ asciidoctorj {
 
 With this enhancement, there is also no longer a need to add `requires 'asciidoctor-diagram'`.
 
-NOTE: If you using OpenJDK 9/10 on MacOS you might find an error such as below
+NOTE: If you are using OpenJDK 9/10 on macOS you might find an error such as below
 
 ----
 Caused by: java.lang.UnsatisfiedLinkError: /path/to/openjdk10/lib/libfontmanager.dylib: dlopen(/path/to/openjdk10/lib/libfontmanager.dylib, 1): Library not loaded: /Users/jenkins/workspace/openjdk10_build_x86-64_macos/openjdk/installedfreetype/lib/libfreetype.6.dylib

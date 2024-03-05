@@ -1,11 +1,11 @@
-== Kindlegen plugin
+= Kindlegen plugin
 
 [source,groovy,role="primary"]
 [subs=attributes+]
 .build.gradle
 ----
 plugins {
-    id 'org.asciidoctor.kindlegen.base' version '{revnumber}'
+    id 'org.asciidoctor.kindlegen.base' version '{release-version}'
 }
 ----
 
@@ -14,7 +14,7 @@ plugins {
 .build.gradle.kts
 ----
 plugins {
-    id("org.asciidoctor.kindlegen.base") version "{revnumber}"
+    id("org.asciidoctor.kindlegen.base") version "{release-version}"
 }
 ----
 

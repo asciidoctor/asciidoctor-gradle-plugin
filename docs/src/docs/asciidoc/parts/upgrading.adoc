@@ -1,5 +1,4 @@
-
-== Upgrading From Older Versions of Asciidoctor
+= Upgrading From Older Versions of Asciidoctor
 
 NOTE: If you are still on a 1.5/1.6 version of the plugin, upgrade to the latest 2.x version first.
 
@@ -21,11 +20,11 @@ If you have {asciidoctorj-name} binary extensions you'll need to recompile them 
 
 Substitutable attributes means that the build script author can change those attributes by setting them explicitly.
 
-=== Asciidoctor compatibility tasks
+== Asciidoctor compatibility tasks
 
 The Asciidoctor compatibility task has been removed. You need to use the Asciidoctor task from `org.asciidoctor.jvm.convert` instead.
 
-=== GEMs
+== GEMs
 
 If you used external GEMs via the http://jruby-gradle.github.io/[JRuby Gradle plugin], you should switch over to using `org.asciidoctor.jvm.gems` instead. You should also use the `asciidoctorGems` configuration rather than the `gems` configuration. Tasks should not depend on `JRubyPrepare`, but on `AsciidoctorGemsPrepare` instead.
 
@@ -49,7 +48,7 @@ then change it to
 [subs=attributes+]
 ----
 plugins {
-    id 'org.asciidoctor.jvm.gems' version '{revnumber}'
+    id 'org.asciidoctor.jvm.gems' version '{release-version}'
 }
 
 repositories {
@@ -57,20 +56,20 @@ repositories {
 }
 ----
 
-=== Reveal.js
+== Reveal.js
 
 Follows the same guidelines as for GEMS above.
 
-=== Configurations
+== Configurations
 
 The `asciidoctor` configuration is no longer available. If you used that before to make artifacts available on the classpath you should use the `configurations` method on the task to add them. If you used it to manipulate versions of {asciidoctorj-name} and JRuby then you should rather use the explicit versions settings on `asciidoctorj`.
 
-=== Multiple Asciidoctor tasks
+== Multiple Asciidoctor tasks
 
 If you have more than one Asciidoctor task, decide which `options`, `attributes` and `requires` should go in the `asciidoctorj` global project extension block and which should be customised within the tasks `asciidoctor` extension block.
 
 Importantly, you probably did `import org.asciidoctor.gradle.AsciidoctorTask`. You will need to change that to `import org.asciidoctor.gradle.jvm.AsciidoctorTask`.
 
-=== Extensions
+== Extensions
 
 Extensions on the Gradle classpath are no longer detected. You need to declare them explicitly. This includes any extensions created in `buildSrc`.

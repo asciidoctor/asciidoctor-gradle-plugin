@@ -1,13 +1,13 @@
 :AsciidoctorPdfTask-url: {groovydoc-jvm}/AsciidoctorPdfTask.html
 [[asciidoctorj-pdf-plugin,AsciidoctorJ PDF plugin]]
-== The AsciidoctorPdf Plugin
+= The AsciidoctorPdf Plugin
 
 [source,groovy,role="primary"]
 [subs=attributes+]
 .build.gradle
 ----
 plugins {
-    id 'org.asciidoctor.jvm.pdf' version '{revnumber}'
+    id 'org.asciidoctor.jvm.pdf' version '{release-version}'
 }
 ----
 
@@ -16,7 +16,7 @@ plugins {
 .build.gradle.kts
 ----
 plugins {
-    id("org.asciidoctor.jvm.pdf") version "{revnumber}"
+    id("org.asciidoctor.jvm.pdf") version "{release-version}"
 }
 ----
 
@@ -24,8 +24,8 @@ When applying `org.asciidoctor.jvm.pdf` it creates a single task of type `org.as
 
 The default task is named `asciidoctorPdf` and is configured to:
 
-* Output source to "${buildDir}/docs/asciidocPdf"
-* Not to copy any resources to the output directory
+* Output source to "${buildDir}/docs/asciidocPdf".
+* Not to copy any resources to the output directory.
 * It will set also a default version for `asciidoctorj-pdf` artifact. To override set `asciidoctorj.pdfVersion` or `asciidoctorPdf.asciidoctorj.pdfVersion`.
 
 The `AsciidoctorPdfTask` task type has the following additional methods:
@@ -48,7 +48,7 @@ pdfThemes {
     }
 }
 ----
-<1> Local themes are registered using the `local` keyword and must be provided with a name
+<1> Local themes are registered using the `local` keyword and must be provided with a name.
 <2> Directory for finding the theme. Specify a directory in any form acceptable to `project.file`.
 <3> Optional setting of the style name. If this is not set, the theme name provided previously will be used.
 

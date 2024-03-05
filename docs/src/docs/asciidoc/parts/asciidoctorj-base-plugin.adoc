@@ -1,4 +1,4 @@
-== AsciidoctorJ Base Plugin
+= AsciidoctorJ Base Plugin
 
 This plugin is automatically applied by all AsciidoctorJ-based plugins.
 
@@ -50,7 +50,7 @@ include::{plugin-base}/main/groovy/org/asciidoctor/gradle/base/AbstractImplement
 // TODO: Split attributes into a standalone section that is not part of base plugin.
 [[attributes,Setting Attributes]]
 [[options,Setting Options]]
-=== Options & Attributes
+== Options & Attributes
 
 The following options may be set using the extension's `options` property
 
@@ -114,7 +114,7 @@ link:{asciidoctor-userguide}#attribute-assignment-precedence[Attribute assignmen
 for more information.
 
 [[asciidoctorj-modules,{asciidoctorj-name} Modules]]
-=== Versions of modules
+== Versions of modules
 
 The modules block currently supports four elements
 
@@ -172,7 +172,7 @@ asciidoctorj {
 <1> Set the {asciidoctorj-pdf-name} version to `1.2.3`.
 <2> Use the default version of {asciidoctorj-pdf-name}.
 
-=== Applying the {asciidoctorj-name} Base plugin on its own
+== Applying the {asciidoctorj-name} Base plugin on its own
 
 If none of the default conventions work for you, the base plugin can be applied on its own.
 
@@ -181,7 +181,7 @@ If none of the default conventions work for you, the base plugin can be applied 
 .build.gradle
 ----
 plugins {
-    id 'org.asciidoctor.jvm.base' version '{revnumber}'
+    id 'org.asciidoctor.jvm.base' version '{release-version}'
 }
 ----
 
@@ -190,6 +190,6 @@ plugins {
 .build.gradle.kts
 ----
 plugins {
-    id("org.asciidoctor.jvm.base") version "{revnumber}"
+    id("org.asciidoctor.jvm.base") version "{release-version}"
 }
 ----

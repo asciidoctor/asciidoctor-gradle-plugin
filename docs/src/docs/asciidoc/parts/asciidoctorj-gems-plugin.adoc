@@ -1,5 +1,5 @@
 [[asciidoctorj-gems-plugin,AsciidoctorJ GEMs plugin]]
-== Ruby GEM support
+= Ruby GEM support
 
 GEM support is simplified via the `org.asciidoctor.jvm.gems` plugin.
 
@@ -8,7 +8,7 @@ GEM support is simplified via the `org.asciidoctor.jvm.gems` plugin.
 .build.gradle
 ----
 plugins {
-    id 'org.asciidoctor.jvm.gems' version '{revnumber}'
+    id 'org.asciidoctor.jvm.gems' version '{release-version}'
 }
 
 repositories {
@@ -35,6 +35,6 @@ asciidoctorj {
 .build.gradle.kts
 ----
 plugins {
-    id("org.asciidoctor.jvm.gems") version "{revnumber}"
+    id("org.asciidoctor.jvm.gems") version "{release-version}"
 }
 ----

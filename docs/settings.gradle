@@ -1,6 +1,4 @@
-rootProject.name='asciidoctor-gradle-docs'
+rootProject.name = 'asciidoctor-gradle-docs'
 
 includeBuild('..')
 include 'gh-pages'
-// Removes antora, causes issue with gh-pages and git-publish plugin. Causing commits to delete files.
-// include 'antora'
