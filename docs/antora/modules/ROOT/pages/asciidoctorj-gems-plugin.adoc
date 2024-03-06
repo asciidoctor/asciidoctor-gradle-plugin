@@ -1,5 +1,4 @@
-[[asciidoctorj-gems-plugin,AsciidoctorJ GEMs plugin]]
-= Ruby GEM support
+= AsciidoctorJ GEMs plugin
 
 GEM support is simplified via the `org.asciidoctor.jvm.gems` plugin.
 

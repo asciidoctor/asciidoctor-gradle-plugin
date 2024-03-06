@@ -1,5 +1,4 @@
-[[asciidoctorj-revealjs-plugin,AsciidoctorJ Reveal.js plugin]]
-= The AsciidoctorJ Reveal.js Plugin
+= AsciidoctorJ Reveal.js plugin
 
 [source,groovy,role="primary"]
 [subs=attributes+]
@@ -24,7 +23,7 @@ When applying `org.asciidoctor.jvm.revealjs` support is added for creating slide
 * Create a task called `asciidoctorRevealJs`.
 * Create an extension called `revealjs` which is used for configuring the version of Reveal.js as well as a template.
 * Create an extension called `revealjsPlugins` which will allow for downloading additional Reveal.js plugins.
-* Output source to "${buildDir}/docs/asciidocRevealJs"
+* Output source to "$\{buildDir}/docs/asciidocRevealJs"
 * Copy all resources to the output directory including Reveal.js templates.
 * Apply the `org.asciidoctor.jvm.gems` plugin as GEM support is required.
 
@@ -32,7 +31,7 @@ The `AsciidoctorRevealJSTask` task type has the following additional methods:
 
 [horizontal]
 revealjsOptions:: Configure special Reveal.js options.
-  Can be configured via Closure or Action. See <<RevealJsOptions>> for more details.
+  Can be configured via Closure or Action. See xref:#RevealJsOptions[] for more details.
 templateDir:: Location where the template directory will be located on disk before Asciidoctor processing starts.
 theme:: The Reveal.js theme to use.
   The theme must match one from the template.

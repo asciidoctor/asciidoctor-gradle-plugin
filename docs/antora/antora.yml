@@ -1,6 +1,6 @@
 name: gradle-plugin
 title: Gradle Plugin Suite
-version: 4.0
+version: '4.0'
 asciidoc:
   attributes:
     release-version: 4.0.2
@@ -14,11 +14,14 @@ asciidoc:
     asciidoctor-maven-plugin-name: Asciidoctor Maven Plugin
     asciidoctor-maven-plugin-url: https://github.com/asciidoctor/asciidoctor-maven-plugin
     asciidoctor-url: https://asciidoctor.org
-    asciidoctorj-epub-name: Asciidoctorj-EPUB
+    asciidoctorj-epub-name: Asciidoctorj EPUB3
+    asciidoctorj-epub-url: https://github.com/asciidoctor/asciidoctorj-epub3
     asciidoctorj-name: AsciidoctorJ
-    asciidoctorj-pdf-name: Asciidoctorj-PDF
+    asciidoctorj-pdf-name: Asciidoctorj PDF
+    asciidoctorj-pdf-url: https://github.com/asciidoctor/asciidoctorj-pdf
     asciidoctorj-url: https://github.com/asciidoctor/asciidoctorj
     asciidoctorjs-name: Asciidoctor.js
+    asciidoctorjs-url: https://github.com/asciidoctor/asciidoctor.js
     gradle-url: https://gradle.org/
     issues-asciidoctorj: https://github.com/asciidoctor/asciidoctorj/issues/
     issues-jruby: https://github.com/asciidoctor/asciidoctorj/issues/

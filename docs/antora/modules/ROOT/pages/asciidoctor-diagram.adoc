@@ -1,4 +1,3 @@
-[[diagram]]
 = Using AsciidoctorJ Diagram
 
 The new plugins have built-in support for `asciidoctorj-diagram`. Simply add the following to the project or task extension and

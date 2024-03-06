@@ -1,9 +1,8 @@
-[[asciidoctorj-leanpub-plugin,{asciidoctorj-name} Leanpub plugin]]
-= The AsciidoctorLeanpub Plugin
+= {asciidoctorj-name} Leanpub plugin
 
 When applying `org.asciidoctor.jvm.leanpub` it creates a single task of type `org.asciidoctor.gradle.jvm.epub.AsciidoctorLeanTask` which is then configured to:
 
-* Output source to "${buildDir}/docs/asciidocLeanpub".
+* Output source to "$\{buildDir}/docs/asciidocLeanpub".
 * Set also a default version for `asciidoctor-leanpub-backend` artifact.
 To override set `asciidoctorj.leanpubVersion` or `asciidoctorLeanpub.asciidoctorj.leanpubVersion`.
 

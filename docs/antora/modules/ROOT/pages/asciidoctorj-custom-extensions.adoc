@@ -1,4 +1,3 @@
-[[asciidoctorj-extensions,Adding custom {asciidoctorj-name} extensions]]
 = Adding Custom Extensions
 
 Starting with version 1.5.0 you were able to write your own Asciidoctor extensions in Groovy, or any other JVM language

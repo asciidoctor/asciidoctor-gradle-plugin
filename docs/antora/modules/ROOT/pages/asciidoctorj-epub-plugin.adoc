@@ -1,5 +1,4 @@
-[[asciidoctorj-epub-plugin,{asciidoctorj-name} EPUB plugin]]
-= The AsciidoctorEpub Plugin
+= {asciidoctorj-name} EPUB plugin
 
 INFO: As from version 3.3 support for KindleGen is dropped as Amazon no longer has the binary available for download.
 
@@ -22,7 +21,7 @@ plugins {
 ----
 When applying `org.asciidoctor.jvm.epub` it creates a single task of type `org.asciidoctor.gradle.jvm.epub.AsciidoctorEpubTask` which is then configured to:
 
-* Output source to "${buildDir}/docs/asciidocEpub"
+* Output source to "$\{buildDir}/docs/asciidocEpub"
 * Not to copy any resources to the output directory
 * It will set also a default version for `asciidoctorj-epub` artifact. To override set `asciidoctorj.epubVersion` or `asciidoctorEpub.asciidoctorj.epubVersion`.
 

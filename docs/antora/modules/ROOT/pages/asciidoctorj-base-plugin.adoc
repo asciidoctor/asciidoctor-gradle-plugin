@@ -40,12 +40,12 @@ asciidoctor {
 The {asciidoctorj-name}-specific entities that can be set are:
 
 [horizontal]
-include::{plugin-jvm}/main/groovy/org/asciidoctor/gradle/jvm/AsciidoctorJExtension.groovy[indent=0,tags="extension-property"]
+include::ROOT:example$jvm/src/main/groovy/org/asciidoctor/gradle/jvm/AsciidoctorJExtension.groovy[indent=0,tags="extension-property"]
 
 The following common entities can also be set:
 
 [horizontal]
-include::{plugin-base}/main/groovy/org/asciidoctor/gradle/base/AbstractImplementationEngineExtension.groovy[indent=0,tags="extension-property"]
+include::ROOT:example$base/src/main/groovy/org/asciidoctor/gradle/base/AbstractImplementationEngineExtension.groovy[indent=0,tags="extension-property"]
 
 // TODO: Split attributes into a standalone section that is not part of base plugin.
 [#options-and-attributes]
@@ -139,13 +139,14 @@ asciidoctorj {
   }
 }
 ----
-<1> {asciidoctorj-epub-name} version. If not specified asciidoctorj-epub will not be on the classpath. If you plan to use the EPUB backend and not using the EPUB plugin, then you need to set a version here.
-<2> {asciidoctorj-pdf-name} version. If not specified asciidoctorj-pdf will not be on the classpath. If you plan to use the PDF backend and not using the PDF plugin, then you need to set a version here.
-<3> See <<diagram,AsciidoctorJ Diagram>>,
-<4> Version of Groovy Extensions DSL. If not specified and no extensions are specified, Groovy DSL will not be used. However, if any extensions are added without setting an explicit version and default version will be used.
-<5> {asciidoctorj-leanpub-name} version. If not specified asciidoctorj-leanpub will not be on the classpath. If you plan to use the Leanpub backend and not using the Leanpub plugin, then you need to set a version here.
+<1> {asciidoctorj-pdf-url}[{asciidoctorj-pdf-name}] version. If not specified asciidoctorj-pdf will not be on the classpath. If you plan to use the PDF backend and not using the PDF plugin, then you need to set a version here.
+<2> {asciidoctorj-epub-url}[{asciidoctorj-epub-name}] version. If not specified asciidoctorj-epub will not be on the classpath. If you plan to use the EPUB backend and not using the EPUB plugin, then you need to set a version here.
+<3> See xref:page$asciidoctor-diagram.adoc[].
+<4> Version of https://github.com/asciidoctor/asciidoctorj-groovy-dsl[Groovy Extensions DSL]. If not specified and no extensions are specified, Groovy DSL will not be used. However, if any extensions are added without setting an explicit version and default version will be used.
+<5> https://github.com/asciidoctor/asciidoctor-leanpub-converter[Asciidoctor Leanpub Converter] version. If not specified asciidoctorj-leanpub will not be on the classpath. If you plan to use the Leanpub backend and not using the Leanpub plugin, then you need to set a version here.
 
-When using the {kotlin-dsl} the same settings can be achieved use something similar `getModules().getPdf().version("1.2.3")`. In a similar fashion shortcuts can be achieved in the {groovy-dsl}:
+When using the Kotlin DSL the same settings can be achieved use something similar `getModules().getPdf().version("1.2.3")`.
+In a similar fashion shortcuts can be achieved in the Groovy DSL:
 
 [source,groovy,role="primary"]
 .build.gradle

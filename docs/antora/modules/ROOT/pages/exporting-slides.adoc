@@ -34,9 +34,9 @@ task standalonePdfConverter(type: DeckTapeTask) {
 <3> If screenshots are activated, then screenshot images of the slides are also produced.
 <4> Image format. PMG and JPG are supported.
 <5> Width and height of the exported slides.
-<6> Range of slides to export. By default all are exported.
+<6> Range of slides to export. By default, all are exported.
 
-=== Combining with Reveal.js plugin
+== Combining with Reveal.js plugin
 
 If you do
 
@@ -60,6 +60,6 @@ plugins {
 }
 ----
 
-a little bit of _magic_ happens. A task called on `asciidoctorRevealJsExport` is created on demand from a rule and all of the appropriate properties are set on it so that it can export slides created by the `asciidoctorRevealJs` task.
+a little bit of _magic_ happens. A task called on `asciidoctorRevealJsExport` is created on demand from a rule and all the appropriate properties are set on it so that it can export slides created by the `asciidoctorRevealJs` task.
 
 You can configure the `asciidoctorRevealJsExport` task like any other `DeckTapeTask`.

@@ -1,7 +1,6 @@
-[[asciidoctorjs-plugin,{asciidoctorjs-name} plugin]]
 = Working with Asciidoctor.js instead
 
-Instead of {asciidoctorj-name}, {asciidoctorjs-name} can be used as a rendering engine as from 3.0.
+Instead of {asciidoctorj-name}, {asciidoctorjs-url}[{asciidoctorjs-name}] can be used as a rendering engine from 3.0.
 
 The configuration follows much the same as for {asciidoctorj-name}, but will a couple of differences.
 
