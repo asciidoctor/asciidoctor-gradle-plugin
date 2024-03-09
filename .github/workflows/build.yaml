@@ -1,5 +1,14 @@
 name: Build
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore:
+      - '*.adoc'
+      - docs/**
+  pull_request:
+    paths-ignore:
+      - '*.adoc'
+      - docs/**
+
 jobs:
   check:
     runs-on: ubuntu-latest
