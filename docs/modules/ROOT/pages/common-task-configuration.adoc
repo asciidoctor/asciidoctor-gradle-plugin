@@ -271,7 +271,7 @@ asciidoctorj { // <1>
 
 asciidoctorjs { // <2>
     attributesForLang 'en', langName : 'English'
-    attributesForLang 'ca', langName : 'Catala'F
+    attributesForLang 'ca', langName : 'Catala'
 }
 ----
 <1> Configuration when using {asciidoctorj-name}
