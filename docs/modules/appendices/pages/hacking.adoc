@@ -7,4 +7,4 @@ Development for 4.x is against the link:{project-repo-url}/tree/{development-bra
 PRs are preferably taking against this branch.
 
 The 3.x series of the plugin is now in maintenance only mode.
-PRs for that should be raised against the link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/maintenance-3.x[maintenance-3.x] branches.
+PRs for that should be raised against the link:{project-repo-url}/tree/maintenance-3.x[maintenance-3.x] branches.
