@@ -1,4 +1,4 @@
-= The Asciidoctor Editor Config Plugin
+= Asciidoctor Editor Config Plugin
 
 [source,groovy,role="primary"]
 [subs=attributes+]
