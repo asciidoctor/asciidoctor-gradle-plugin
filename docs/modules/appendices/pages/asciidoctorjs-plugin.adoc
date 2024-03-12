@@ -1,4 +1,4 @@
-= Working with Asciidoctor.js instead
+= Working with Asciidoctor.js
 
 Instead of {asciidoctorj-name}, {asciidoctorjs-url}[{asciidoctorjs-name}] can be used as a rendering engine from 3.0.
 

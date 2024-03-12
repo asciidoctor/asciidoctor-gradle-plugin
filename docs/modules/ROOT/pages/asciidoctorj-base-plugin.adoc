@@ -1,6 +1,6 @@
 = AsciidoctorJ Base Plugin
 
-This plugin is automatically applied by all AsciidoctorJ-based plugins.
+This plugin is automatically applied by all {asciidoctorj-name}-based plugins.
 
 Adds an extension for configuring which version of {asciidoctorj-name} and various other {asciidoctorj-name} backends.
 
