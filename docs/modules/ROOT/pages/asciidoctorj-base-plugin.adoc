@@ -105,11 +105,11 @@ The following attributes are automatically set by the `asciidoctorj` extension:
 
 These attributes may be overridden by explicit user input.
 
-Refer to the {asciidoctor-docs}[Asciidoctor documentation] to learn more about these options and attributes.
+Refer to the xref:asciidoctor::index.adoc[] to learn more about these options and attributes.
 
 Attribute values defined on the build file will win over values defined on the documents themselves.
 You can change  this behavior by appending an `@` at the end of the value when defined in the build file.
-Please refer to link:{asciidoc-docs}/attributes/assignment-precedence#altering-the-assignment-precedence[Attribute assignment precedence, window="_blank"] for more information.
+Please refer to xref:asciidoc:attributes:assignment-precedence.adoc#altering-the-assignment-precedence[Attribute assignment precedence] for more information.
 
 [[asciidoctorj-modules,{asciidoctorj-name} Modules]]
 == Versions of modules

@@ -21,4 +21,4 @@ asciidoctorj { // <1>
 ----
 <1> Substitute `asciidoctorjs` if you are using the {asciidoctorjs-name} engine.
 
-See link:{asciidoctor-docs}/docinfo/[Asciidoctor's Docinfo File] for more information on `docinfo` and friends.
+See xref:asciidoc:docinfo:index.adoc[] for more information on `docinfo` and friends.

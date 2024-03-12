@@ -9,8 +9,6 @@ asciidoc:
     project-repo-url: https://github.com/asciidoctor/asciidoctor-gradle-plugin
     plugin-name: Asciidoctor Gradle plugin
     asciidoc-url: https://asciidoc.org
-    asciidoc-docs: https://docs.asciidoctor.org/asciidoc/latest
-    asciidoctor-docs: https://docs.asciidoctor.org/asciidoctor/latest
     asciidoctor-maven-plugin-name: Asciidoctor Maven Plugin
     asciidoctor-maven-plugin-url: https://github.com/asciidoctor/asciidoctor-maven-plugin
     asciidoctor-url: https://asciidoctor.org
