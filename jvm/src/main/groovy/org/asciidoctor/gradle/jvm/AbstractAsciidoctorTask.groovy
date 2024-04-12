@@ -22,6 +22,7 @@ import org.asciidoctor.gradle.base.AsciidoctorTaskFileOperations
 import org.asciidoctor.gradle.base.AsciidoctorTaskMethods
 import org.asciidoctor.gradle.base.AsciidoctorTaskOutputOptions
 import org.asciidoctor.gradle.base.AsciidoctorTaskWorkspacePreparation
+import org.asciidoctor.gradle.base.SafeMode
 import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.base.internal.DefaultAsciidoctorBaseDirConfiguration
 import org.asciidoctor.gradle.base.internal.DefaultAsciidoctorFileOperations
@@ -38,13 +39,16 @@ import org.asciidoctor.gradle.internal.ExecutorUtils
 import org.asciidoctor.gradle.internal.JavaExecUtils
 import org.asciidoctor.gradle.remote.AsciidoctorJavaExec
 import org.gradle.api.Action
+import org.gradle.api.GradleException
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.ConfigurationContainer
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.file.FileCollection
+import org.gradle.api.logging.LogLevel
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
@@ -60,6 +64,8 @@ import org.ysb33r.grolifant.api.core.runnable.AbstractJvmModelExecTask
 import org.ysb33r.grolifant.api.remote.worker.WorkerAppExecutorFactory
 
 import java.util.function.Function
+import java.util.regex.Pattern
+import java.util.stream.Collectors
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.getClassLocation
 import static org.asciidoctor.gradle.base.internal.AsciidoctorAttributes.evaluateProviders
@@ -93,16 +99,52 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
     public final static Severity WARN = Severity.WARN
     public final static Severity INFO = Severity.INFO
 
-    protected final AsciidoctorJExtension asciidoctorj
     private ExecutionMode inProcess
     private Severity failureLevel = Severity.FATAL
     private final List<Object> asciidocConfigurations = []
     private final File rootDir
     private final File projectDir
     private final File execConfigurationDataFile
-    private final Function<List<Dependency>, Configuration> detachedConfigurationCreator
     private final Property<FileCollection> jvmClasspath
     private final List<Provider<File>> gemJarProviders = []
+
+    private final MapProperty<String, Object> optionsProperty = project.objects.mapProperty(String, Object)
+    private final MapProperty<String, Object> attributesProperty = project.objects.mapProperty(String, Object)
+    private final ListProperty<AsciidoctorAttributeProvider> attributeProviderProperty = project.objects
+            .listProperty(AsciidoctorAttributeProvider)
+    private final FileCollection configurationsFileCollection
+    private final ListProperty<Pattern> fatalWarningsProperty = project.objects.listProperty(Pattern)
+    private final ListProperty<String> requiresProperty = project.objects.listProperty(String)
+    private final Property<LogLevel> logLevelProperty = project.objects.property(LogLevel)
+    private final Property<SafeMode> safeModeProperty = project.objects.property(SafeMode)
+    private final ListProperty<Object> docExtensionsProperty = project.objects.listProperty(Object)
+
+    private final Provider<FileCollection> jrubyLessDependenciesProvider = project.provider {
+        List<Dependency> deps = this.docExtensionsProperty.get().findAll {
+            it instanceof Dependency
+        } as List<Dependency>
+
+        def detachedConfigurationCreator = { ConfigurationContainer c, List<Dependency> d ->
+            final cfg = c.detachedConfiguration(d.toArray() as Dependency[])
+            cfg.canBeConsumed = false
+            cfg.canBeResolved = true
+            cfg
+        }.curry(project.configurations) as Function<List<Dependency>, Configuration>
+
+        Configuration cfg = detachedConfigurationCreator.apply(deps)
+        asciidoctorJExtension.loadJRubyResolutionStrategy(cfg)
+        cfg
+    } as Provider<FileCollection>
+
+    private final Provider<Map<String, Map<String, Object>>> attributesByLangProvider = project.provider {
+        def attributesByLang = [:]
+        languagesAsOptionals.each { lang ->
+            if (lang.present) {
+                attributesByLang.put(lang.get(), asciidoctorJExtension.getAttributesForLang(lang.get()))
+            }
+        }
+        attributesByLang
+    } as Provider<Map<String, Map<String, Object>>>
 
     @Delegate
     private final DefaultAsciidoctorFileOperations asciidoctorTaskFileOperations
@@ -222,7 +264,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
      */
     @Input
     Map<String, Object> getOptions() {
-        resolveAsCacheable(asciidoctorj.options, projectOperations)
+        resolveAsCacheable(optionsProperty.get(), projectOperations)
     }
 
     /** Apply a new set of Asciidoctor options, clearing any options previously set.
@@ -234,7 +276,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
      * @param m Map with new options
      */
     void setOptions(Map m) {
-        asciidoctorj.options = m
+        optionsProperty.set(m)
     }
 
     /** Add additional asciidoctor options
@@ -246,7 +288,8 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
      * @param m Map with new options
      */
     void options(Map m) {
-        asciidoctorj.options(m)
+        checkForAttributesInOptions(m)
+        this.optionsProperty.get().putAll(m)
     }
 
     /** Returns all of the Asciidoctor options.
@@ -256,7 +299,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
      */
     @Input
     Map<String, Object> getAttributes() {
-        resolveAsCacheable(asciidoctorj.attributes, projectOperations)
+        resolveAsCacheable(attributesProperty.get(), projectOperations)
     }
 
     /** Apply a new set of Asciidoctor options, clearing any options previously set.
@@ -268,7 +311,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
      * @param m Map with new options
      */
     void setAttributes(Map m) {
-        asciidoctorj.attributes = m
+        attributesProperty.set(m)
     }
 
     /** Add additional asciidoctor options
@@ -280,7 +323,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
      * @param m Map with new options
      */
     void attributes(Map m) {
-        asciidoctorj.attributes(m)
+        attributesProperty.putAll(m)
     }
 
     /** Additional providers of attributes.
@@ -292,7 +335,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
      */
     @Internal
     List<AsciidoctorAttributeProvider> getAttributeProviders() {
-        asciidoctorj.attributeProviders
+        attributeProviderProperty.get().stream().collect(Collectors.toList())
     }
 
     /** Returns all of the specified configurations as a collections of files.
@@ -301,11 +344,10 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
      *
      * @return FileCollection
      */
-    @Classpath
     @SuppressWarnings('Instanceof')
-    FileCollection getConfigurations() {
+    FileCollection getConfigurations(AsciidoctorJExtension asciidoctorJExtension) {
         final precompiledExtensions = findDependenciesInExtensions()
-        FileCollection fc = this.asciidocConfigurations.inject(asciidoctorj.configuration) {
+        FileCollection fc = this.asciidocConfigurations.inject(asciidoctorJExtension.configuration) {
             FileCollection seed, Object it ->
                 seed + projectOperations.configurations.asConfiguration(it)
         }
@@ -348,8 +390,8 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
      */
     @Override
     Set<Configuration> getReportableConfigurations() {
-        ([asciidoctorj.configuration] + projectOperations.configurations.asConfigurations(asciidocConfigurations))
-                .toSet()
+        ([asciidoctorJExtension.configuration] + projectOperations.configurations
+                .asConfigurations(asciidocConfigurations)).toSet()
     }
 
     /**
@@ -428,7 +470,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
             entrypoint {
                 classpath(JavaExecUtils.getJavaExecClasspath(
                         projectOperations,
-                        configurations
+                        configurationsFileCollection
                 ))
             }
 
@@ -440,7 +482,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
             )
         } else {
             entrypoint {
-                classpath(configurations)
+                classpath(configurationsFileCollection)
             }
         }
         super.exec()
@@ -467,19 +509,23 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
                 asciidoctorTaskFileOperations
         )
         this.baseDirConfiguration = new DefaultAsciidoctorBaseDirConfiguration(project, this)
-        this.asciidoctorj = extensions.create(AsciidoctorJExtension.NAME, AsciidoctorJExtension, this)
+
+        def asciidoctorj = extensions.create(AsciidoctorJExtension.NAME, AsciidoctorJExtension, this)
+        this.optionsProperty.set(asciidoctorj.options)
+        this.safeModeProperty.set(asciidoctorj.safeMode)
+        this.attributesProperty.set(asciidoctorj.attributes)
+        this.attributeProviderProperty.set(asciidoctorj.attributeProviders)
+        this.configurationsFileCollection = getConfigurations(asciidoctorj)
+        this.fatalWarningsProperty.set(asciidoctorj.fatalWarnings)
+        this.requiresProperty.set(asciidoctorj.requires)
+        this.logLevelProperty.set(asciidoctorj.logLevel != null ? asciidoctorj.logLevel : LogLevel.INFO)
+        this.docExtensionsProperty.set(asciidoctorj.docExtensions)
+
         this.projectDir = project.projectDir
         this.rootDir = project.rootDir
         this.jvmClasspath = project.objects.property(FileCollection)
         this.execConfigurationDataFile = getExecConfigurationDataFile(this)
-        this.detachedConfigurationCreator = { ConfigurationContainer c, List<Dependency> deps ->
-            final cfg = c.detachedConfiguration(deps.toArray() as Dependency[])
-            cfg.canBeConsumed = false
-            cfg.canBeResolved = true
-            cfg
-        }.curry(project.configurations) as Function<List<Dependency>, Configuration>
 
-        inputs.files(this.asciidoctorj.configuration)
         inputs.files { gemJarProviders }.withPathSensitivity(RELATIVE)
         inputs.property 'backends', { -> backends() }
         inputs.property 'asciidoctorj-version', { -> asciidoctorj.version }
@@ -585,13 +631,13 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
                 ),
                 backendName: backendName,
                 logDocuments: logDocuments,
-                fatalMessagePatterns: asciidoctorj.fatalWarnings,
+                fatalMessagePatterns: fatalWarningsProperty.get().stream().collect(Collectors.toList()),
                 asciidoctorExtensions: serializableAsciidoctorJExtensions,
-                requires: asciidoctorj.requires,
+                requires: requiresProperty.get().stream().collect(Collectors.toList()),
                 copyResources: copyResources.present &&
                         (copyResources.get().empty || backendName in copyResources.get()),
-                executorLogLevel: ExecutorUtils.getExecutorLogLevel(asciidoctorj.logLevel),
-                safeModeLevel: asciidoctorj.safeMode.level
+                executorLogLevel: ExecutorUtils.getExecutorLogLevel(logLevelProperty.get()),
+                safeModeLevel: safeModeProperty.get().level
         )
     }
 
@@ -601,7 +647,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
      */
     @Internal
     protected List<Object> getAsciidoctorJExtensions() {
-        asciidoctorj.docExtensions
+        docExtensionsProperty.get().stream().collect(Collectors.toList())
     }
 
     @Nested
@@ -631,6 +677,17 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
             []
         } else {
             [JavaExecUtils.localGroovy]
+        }
+    }
+
+    @Internal
+    private AsciidoctorJExtension getAsciidoctorJExtension() {
+        extensions.getByName(AsciidoctorJExtension.NAME) as AsciidoctorJExtension
+    }
+
+    private void checkForAttributesInOptions(Map m) {
+        if (m.containsKey('attributes')) {
+            throw new GradleException('Attributes found in options. Please use \'attributes\' method')
         }
     }
 
@@ -703,7 +760,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
 
     @SuppressWarnings('Instanceof')
     private FileCollection findDependenciesInExtensions() {
-        List<Dependency> deps = asciidoctorj.docExtensions.findAll {
+        List<Dependency> deps = this.docExtensionsProperty.get().findAll {
             it instanceof Dependency
         } as List<Dependency>
 
@@ -719,11 +776,11 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
         if (deps.empty && closurePaths.empty) {
             projectOperations.fsOperations.emptyFileCollection()
         } else if (closurePaths.empty) {
-            jrubyLessConfiguration(deps)
+            jrubyLessDependenciesProvider.get()
         } else if (deps.empty) {
             projectOperations.fsOperations.files(closurePaths)
         } else {
-            jrubyLessConfiguration(deps) + projectOperations.fsOperations.files(closurePaths)
+            jrubyLessDependenciesProvider.get() + projectOperations.fsOperations.files(closurePaths)
         }
     }
 
@@ -731,7 +788,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
         // Jumping through hoops to make docExtensions based upon closures to work.
         closurePaths.add(getClassLocation(org.gradle.internal.scripts.ScriptOrigin))
         if (LegacyLevel.PRE_8_4 && !LegacyLevel.PRE_7_6) {
-            closurePaths.add(getClassLocation(org.gradle.api.GradleException))
+            closurePaths.add(getClassLocation(GradleException))
         }
         if (LegacyLevel.PRE_8_4 && !LegacyLevel.PRE_8_3) {
             closurePaths.add(getInternalGradleLibraryLocation(
@@ -750,18 +807,11 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
         }
     }
 
-    // TODO: Try to do this without a detached configuration
-    private FileCollection jrubyLessConfiguration(List<Dependency> deps) {
-        Configuration cfg = detachedConfigurationCreator.apply(deps)
-        asciidoctorj.loadJRubyResolutionStrategy(cfg)
-        cfg
-    }
-
     private Map<String, Object> preparePreserialisedAttributes(final File workingSourceDir, Optional<String> lang) {
         prepareAttributes(
                 projectOperations.stringTools,
                 attributes,
-                (lang.present ? asciidoctorj.getAttributesForLang(lang.get()) : [:]),
+                (lang.present ? attributesByLangProvider.get().getOrDefault(lang.get(), [:]) : [:]),
                 getTaskSpecificDefaultAttributes(workingSourceDir) as Map<String, ?>,
                 attributeProviders,
                 lang
@@ -769,7 +819,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
     }
 
     private List<Closure> findExtensionClosures() {
-        asciidoctorj.docExtensions.findAll {
+        this.docExtensionsProperty.get().findAll {
             it instanceof Closure
         } as List<Closure>
     }
