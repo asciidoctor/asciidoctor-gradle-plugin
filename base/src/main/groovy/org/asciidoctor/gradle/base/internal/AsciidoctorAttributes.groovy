@@ -41,7 +41,7 @@ class AsciidoctorAttributes {
      *
      * @param attrs Attributes
      * @param po {@link ProjectOperations} instance
-     * @return Cacheable map whicvh can contain providers.
+     * @return Cacheable map which can contain providers.
      */
     static Map<String, Object> resolveAsCacheable(Map<String, Object> attrs, ProjectOperations po) {
         resolveMapRecursive(attrs, po)

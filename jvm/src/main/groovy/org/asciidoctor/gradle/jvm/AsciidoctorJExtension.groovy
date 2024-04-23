@@ -74,6 +74,44 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
             drd.useVersion(versionResolver.call())
     } as BiConsumer<DependencyResolveDetails, Callable<String>>
 
+    /**
+     * Provider to the Asciidoctor version.
+     *
+     * @since 4.1
+     */
+    final Provider<String> versionProvider
+
+    /**
+     * Provider to the JRuby version.
+     * Can be empty.
+     *
+     * @since 4.1
+     */
+    final Provider<String> jrubyVersionProvider
+
+    /**
+     * Provide patterns for Asciidoctor messages that are treated as failures.
+     *
+     * @since 4.1
+     */
+    final Provider<List<Pattern>> fatalWarningsProvider
+
+    /**
+     * Provider to AsciidoctorJ options.
+     * Never empty, but contained map can be empty.
+     *
+     * @since 4.1
+     */
+    final Provider<Map<String, Object>> optionsProvider
+
+    /**
+     * Provider to AsciidoctorJ attributes.
+     * Never empty, but contained map can be empty.
+     *
+     * @since 4.1
+     */
+    final Provider<Map<String, Object>> attributesProvider
+
     private final LogLevel defaultLogLevel
     private final Map<String, Object> options = [:]
     private final List<Object> jrubyRequires = []
@@ -118,6 +156,12 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
             )
         }
 
+        this.versionProvider = project.provider { -> getVersion() }
+        this.jrubyVersionProvider = project.provider { -> getJrubyVersion() }
+        this.optionsProvider = project.provider { -> getOptions() }
+        this.attributesProvider = project.provider { -> getAttributes() }
+        this.fatalWarningsProvider = project.provider { -> patternize(owner.warningsAsErrors) }
+
         this.modules.onUpdate { owner.updateConfiguration() }
         updateConfiguration()
     }
@@ -143,6 +187,22 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
 
         this.dependencyCreator = createDependencyLoader(task.project.dependencies, this.privateConfiguration)
         this.projectDependency = createProjectDependencyLoader(task.project.dependencies)
+
+        this.versionProvider = task.project.provider { -> getVersion() }
+        this.jrubyVersionProvider = task.project.provider { -> getJrubyVersion() }
+        this.optionsProvider = task.project.provider { -> getOptions() }
+        this.attributesProvider = task.project.provider { -> getAttributes() }
+
+        this.fatalWarningsProvider = task.project.provider { ->
+            if (onlyTaskWarnings) {
+                patternize(this.warningsAsErrors)
+            } else if (this.warningsAsErrors.empty) {
+                extFromProject.fatalWarnings
+            } else {
+                extFromProject.fatalWarnings + patternize(this.warningsAsErrors)
+            }
+        }
+
         this.modules = new DefaultAsciidoctorJModules(projectOperations, this, defaultVersionMap)
         this.modules.onUpdate { owner.updateConfiguration() }
         updateConfiguration()
@@ -322,13 +382,7 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
      *
      */
     List<Pattern> getFatalWarnings() {
-        if (!task || onlyTaskWarnings) {
-            patternize(this.warningsAsErrors)
-        } else if (this.warningsAsErrors.empty) {
-            extFromProject.fatalWarnings
-        } else {
-            extFromProject.fatalWarnings + patternize(this.warningsAsErrors)
-        }
+        this.fatalWarningsProvider.get()
     }
 
     /** Provide patterns for Asciidoctor messages that are treated as failures.
