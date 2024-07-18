@@ -40,7 +40,8 @@ import java.util.regex.Pattern
 import static groovy.lang.Closure.DELEGATE_FIRST
 import static org.ysb33r.grolifant.api.core.ClosureUtils.configureItem
 
-/** Extension for configuring AsciidoctorJ.
+/**
+ * Extension for configuring AsciidoctorJ.
  *
  * It can be used as both a project and a task extension.
  *
@@ -85,7 +86,7 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     private final BiFunction<String, Closure, Dependency> dependencyCreator
     private final Function<Project, Dependency> projectDependency
     private Object version
-    private Optional<Object> jrubyVersion
+    private Optional<Object> jrubyVersionProvider
     private boolean onlyTaskOptions = false
     private boolean onlyTaskExtensions = false
     private boolean onlyTaskWarnings = false
@@ -381,27 +382,29 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
      */
     String getJrubyVersion() {
         if (task) {
-            if (this.jrubyVersion != null && this.jrubyVersion.present) {
-                projectOperations.stringTools.stringize(this.jrubyVersion.get())
+            if (this.jrubyVersionProvider != null && this.jrubyVersionProvider.present) {
+                projectOperations.stringTools.stringize(this.jrubyVersionProvider.get())
             } else {
-                extFromProject.getJrubyVersion()
+                extFromProject.jrubyVersion
             }
         } else {
-            this.jrubyVersion?.present ? projectOperations.stringTools.stringize(this.jrubyVersion.get()) : null
+            this.jrubyVersionProvider?.present ?
+                    projectOperations.stringTools.stringize(this.jrubyVersionProvider.get()) : null
         }
     }
 
     /** Set a version of JRuby to use.
      *
-     * The version specified is not a guarantetd version, simply a minimum required version.
+     * The version specified is not a guaranteed version, simply a minimum required version.
      * If the version of asciidoctorj is dependent on a version later than the one specified
-     * here, then that would be used instead. In such cases iif the exact version needs to be
+     * here, then that would be used instead. In such cases if the exact version needs to be
      * forced then a resolution strategy needs to be provided via {@link #resolutionStrategy}.
      *
      * @param v JRuby version
      */
     void setJrubyVersion(Object v) {
-        this.jrubyVersion = Optional.of(v)
+        this.jrubyVersionProvider = Optional.of(v)
+        updateConfiguration()
     }
 
     /* -------------------------
@@ -624,6 +627,7 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
      */
     void setVersion(Object v) {
         this.version = v
+        updateConfiguration()
     }
 
     /**
@@ -644,8 +648,13 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
      */
     void loadJRubyResolutionStrategy(Configuration cfg) {
         cfg.resolutionStrategy.eachDependency { DependencyResolveDetails dsr ->
-            if (dsr.target.name == 'jruby' && dsr.target.group == 'org.jruby') {
-                dsr.useTarget "${JRUBY_COMPLETE_DEPENDENCY}:${dsr.target.version}"
+            if (dsr.requested.name == 'jruby' && dsr.requested.group == 'org.jruby') {
+                dsr.useTarget "${JRUBY_COMPLETE_DEPENDENCY}:${dsr.requested.version}"
+            }
+
+            String req = "${dsr.requested.group}:${dsr.requested.name}"
+            if (JRUBY_COMPLETE_DEPENDENCY == req && jrubyVersion) {
+                dsr.useVersion jrubyVersion
             }
         }
     }
@@ -700,11 +709,6 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
         }
     }
 
-    @SuppressWarnings(['UnusedPrivateMethodParameter', 'UnusedPrivateMethod'])
-    private String minimumSafeJRubyVersion(final String asciidoctorjVersion) {
-        '9.1.0.0'
-    }
-
     @SuppressWarnings('Instanceof')
     private List<Pattern> patternize(final List<Object> patterns) {
         Transform.toList(patterns) {
@@ -729,8 +733,12 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
         final String diagramVer = finalDiagramVersion
 
         loadDependencyRuleOnce(ASCIIDOCTORJ_CORE_DEPENDENCY) { -> owner.version }
-        loadDependencyRuleOnce(JRUBY_COMPLETE_DEPENDENCY) { ->
-            owner.getJrubyVersion() ?: owner.minimumSafeJRubyVersion(owner.getVersion())
+
+        if (jrubyVersionProvider?.present) {
+            loadDependencyRuleOnce(
+                    JRUBY_COMPLETE_DEPENDENCY,
+                    { Optional x -> x.get() }.curry(jrubyVersionProvider) as Callable<String>
+            )
         }
 
         if (gDslVer != null) {
