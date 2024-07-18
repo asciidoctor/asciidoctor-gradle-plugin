@@ -1,0 +1,10 @@
+= Development
+:development-branch: development-4.x
+
+`master` now represents the code for the latest 4.x release of these plugins.
+
+Development for 4.x is against the link:{project-repo-url}/tree/{development-branch}[{development-branch}] branch.
+PRs are preferably taking against this branch.
+
+The 3.x series of the plugin is now in maintenance only mode.
+PRs for that should be raised against the link:{project-repo-url}/tree/maintenance-3.x[maintenance-3.x] branches.

@@ -1,26 +1,11 @@
 = Asciidoctor Gradle Plugin
 Andres Almiray <https://github.com/aalmiray[@aalmiray]>
-:version: 4.0.0
-:version-published: 4.0.0-alpha.1
-:asciidoc-url: http://asciidoc.org
-:asciidoctor-url: http://asciidoctor.org
-:issues: https://github.com/asciidoctor/asciidoctor-maven-plugin/issues
+:asciidoc-url: https://asciidoc.org
+:asciidoctor-url: https://asciidoctor.org
 :gradle-url: http://gradle.org/
-:asciidoctor-maven-plugin: https://github.com/asciidoctor/asciidoctor-maven-plugin
-:kotlindsl: https://github.com/gradle/kotlin-dsl[Gradle Kotlin DSL]
-:lightguard: https://github.com/LightGuard
-:asciidoctorj: https://github.com/asciidoctor/asciidoctorj
-:asciidoctorj-name: AsciidoctorJ
-:asciidoctorjs-name: Asciidoctor.js
-:asciidoctorj-epub-name: Asciidoctorj-EPUB
-:asciidoctorj-pdf-name: Asciidoctorj-PDF
-:lordofthejars: https://github.com/lordofthejars
-:asciidoctor-docs: http://asciidoctor.org/docs/
 :asciidoctor-development-docs: https://asciidoctor.github.io/asciidoctor-gradle-plugin/
-:plugin-name: Asciidoctor Gradle plugin
-:project-name: asciidoctor-gradle-plugin
 :project-full-path: asciidoctor/asciidoctor-gradle-plugin
-:github-branch: development-4.x
+:github-branch: master
 :linkattrs:
 ifndef::env-github[:icons: font]
 ifdef::env-github,env-browser[]
@@ -36,21 +21,21 @@ ifdef::env-github[]
 endif::[]
 
 ifdef::status[]
-image:https://github.com/asciidoctor/asciidoctor-gradle-plugin/workflows/Build/badge.svg[GitHub Actions Status, link=https://github.com/asciidoctor/asciidoctor-gradle-plugin/actions]
-image:http://img.shields.io/coveralls/{project-full-path}/{github-branch}.svg[Coverage Status, link=https://coveralls.io/r/{project-full-path}]
-image:http://img.shields.io/badge/license-ASF2-blue.svg[Apache License 2, link=http://www.apache.org/licenses/LICENSE-2.0.txt]
+image:https://github.com/asciidoctor/asciidoctor-gradle-plugin/workflows/Build/badge.svg[GitHub Actions Status,link=https://github.com/asciidoctor/asciidoctor-gradle-plugin/actions]
+image:http://img.shields.io/coveralls/{project-full-path}/{github-branch}.svg[Coverage Status,link=https://coveralls.io/r/{project-full-path}]
+image:http://img.shields.io/badge/license-ASF2-blue.svg[Apache License 2,link=http://www.apache.org/licenses/LICENSE-2.0.txt]
 image:https://gitlab.com/asciidoctor/asciidoctor-gradle-plugin/badges/master/pipeline.svg[link="https://gitlab.com/asciidoctor/asciidoctor-gradle-plugin/commits/master",title="pipeline status"]
 endif::[]
 
 The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to convert all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
 
-Documentation:: We are migrating our documentation to the new Asciidoctor Antora-based site when it is ready. In the meantime you can read a snapshot of the new documentation at {asciidoctor-development-docs}{github-branch}
+Documentation:: We are migrating our documentation to the new Asciidoctor Antora-based site when it is ready.
+In the meantime you can read a snapshot of the current documentation at {asciidoctor-development-docs}{github-branch}
 
 ifdef::env-github[]
-Structure:: `master` now represents the code for the latest 3.x release of these plugins.
+Structure:: `master` now represents the code for the latest 4.x release of these plugins.
 Development for 4.x is against the link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/development-4.x[{github-branch}] branch.
 PRs are preferably taking against this branch.
 The 3.x series of the plugin is now in maintenance only mode.
 PRs for that should be raised against the link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/maintenance-3.x[maintenance-3.x]branches.
 endif::[]
-
