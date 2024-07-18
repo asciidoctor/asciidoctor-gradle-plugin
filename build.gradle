@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+// Works around missing 4.0.1 of grgit-core.
+buildscript {
+    dependencies {
+        classpath 'org.ajoberstar.grgit:grgit-core:4.1.1'
+    }
+}
+
 plugins {
     id 'net.nemerosa.versioning' version '2.15.1' apply false
     id 'com.github.ben-manes.versions' version '0.50.0' apply false
