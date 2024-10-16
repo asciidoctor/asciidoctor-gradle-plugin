@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,42 +15,44 @@
  */
 package org.asciidoctor.gradle.jvm.slides.internal
 
+import groovy.transform.CompileStatic
 import org.apache.commons.io.FileUtils
+import org.asciidoctor.gradle.testfixtures.FunctionalTestFixture
+import org.asciidoctor.gradle.testfixtures.FunctionalTestSetup
 import org.gradle.testkit.runner.GradleRunner
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import org.ysb33r.grolifant.api.core.OperatingSystem
 import spock.lang.Specification
+import spock.lang.TempDir
 
-class FunctionalSpecification extends Specification {
-    public static final String TEST_PROJECTS_DIR = System.getProperty(
-        'TEST_PROJECTS_DIR',
-        './src/intTest/projects'
-    )
-    public static final String TEST_REPO_DIR = System.getProperty(
-        'OFFLINE_REPO',
-        '../testfixtures/offline-repo/build/repo'
-    )
+import static org.asciidoctor.gradle.testfixtures.DslType.GROOVY_DSL
+
+class FunctionalSpecification extends Specification implements FunctionalTestFixture {
+
+    @SuppressWarnings('LineLength')
+    static
+    final String TEST_PROJECTS_DIR = System.getProperty('TEST_PROJECTS_DIR', './src/intTest/projects')
+    static
+    final String TEST_REPO_DIR = FunctionalTestSetup.offlineRepo.absolutePath
     public static final OperatingSystem OS = OperatingSystem.current()
 
-    @Rule
-    TemporaryFolder testProjectDir
+    @TempDir
+    File testProjectDir
 
-    @Rule
-    TemporaryFolder alternateProjectDir
+    @TempDir
+    File alternateProjectDir
 
-    GradleRunner getGradleRunner(List<String> taskNames) {
-        GradleRunner.create()
-            .withProjectDir(testProjectDir.root)
-            .withArguments(taskNames)
-            .withPluginClasspath()
-            .forwardOutput()
-            .withDebug(true)
+    void setup() {
+        projectDir.mkdirs()
+    }
+
+    @CompileStatic
+    GradleRunner getGradleRunner(List<String> taskNames = ['asciidoctor']) {
+        FunctionalTestSetup.getGradleRunner(GROOVY_DSL, projectDir, taskNames)//.withTestKitDir(testKitDir)
     }
 
     @SuppressWarnings(['BuilderMethodWithSideEffects'])
-    void createTestProject(String docGroup) {
-        FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, docGroup), testProjectDir.root)
+    void createTestProject(String docGroup = 'normal') {
+        FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, docGroup), projectDir)
     }
 
     String getOfflineRepositories() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,14 @@
 package org.asciidoctor.gradle.jvm.slides
 
 import org.asciidoctor.gradle.jvm.slides.internal.FunctionalSpecification
-import org.asciidoctor.gradle.testfixtures.CachingTest
+import org.asciidoctor.gradle.testfixtures.CachingTestFixture
 import spock.lang.Issue
 import spock.lang.PendingFeature
 
+import static java.util.Collections.emptyList
 import static org.asciidoctor.gradle.testfixtures.JRubyTestVersions.AJ20_SAFE_MAXIMUM
 
-@SuppressWarnings(['UnnecessaryGetter'])
-class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecification implements CachingTest {
+class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecification implements CachingTestFixture {
     private static final String DEFAULT_TASK = 'asciidoctorRevealJs'
     private static final String JRUBY_TEST_VERSION = AJ20_SAFE_MAXIMUM
     private static final String DEFAULT_REVEALJS_PATH = 'build/docs/asciidocRevealJs'
@@ -37,7 +37,7 @@ class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecificati
     @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/485')
     void "Revealjs task is cacheable and relocatable"() {
         given:
-        getBuildFile()
+        buildFile
 
         when:
         assertDefaultTaskExecutes()
@@ -57,7 +57,7 @@ class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecificati
     @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/485')
     void "Revealjs task is cached when only output directory is changed"() {
         given:
-        getBuildFile()
+        buildFile
 
         when:
         assertDefaultTaskExecutes()
@@ -84,7 +84,7 @@ class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecificati
     @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/485')
     void "Revealjs task is not cached when templates are added"() {
         given:
-        getBuildFile()
+        buildFile
 
         when:
         assertDefaultTaskExecutes()
@@ -195,7 +195,6 @@ class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecificati
 
     @Override
     File getBuildFile(String extraContent) {
-        File buildFile = testProjectDir.newFile('build.gradle')
         buildFile << """
             plugins {
                 id 'org.asciidoctor.jvm.revealjs'
@@ -233,5 +232,10 @@ class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecificati
     @Override
     String getDefaultTask() {
         ":${DEFAULT_TASK}"
+    }
+
+    @Override
+    List<String> getBuildScanArguments() {
+        emptyList()
     }
 }

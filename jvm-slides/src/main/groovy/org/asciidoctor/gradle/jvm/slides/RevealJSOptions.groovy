@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,14 +23,13 @@ import org.gradle.api.file.CopySpec
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.PathSensitive
-import org.ysb33r.grolifant.api.v4.StringUtils
+import org.ysb33r.grolifant.api.core.ProjectOperations
+import org.ysb33r.grolifant.api.core.StringTools
 
 import java.nio.file.FileSystems
 import java.nio.file.Path
 
 import static org.gradle.api.tasks.PathSensitivity.RELATIVE
-import static org.ysb33r.grolifant.api.v4.MapUtils.stringizeValues
-import static org.ysb33r.grolifant.api.v4.StringUtils.stringize
 
 /** Options for Reveal.js slides.
  *
@@ -73,6 +72,7 @@ class RevealJSOptions {
     private Object customThemeRelativePath = 'style'
 
     final private Project project
+    final private StringTools stringTools
 
     @SuppressWarnings('ClassName')
     enum Transition {
@@ -142,6 +142,7 @@ class RevealJSOptions {
 
     RevealJSOptions(Project project) {
         this.project = project
+        this.stringTools = ProjectOperations.create(project).stringTools
     }
 
     /** Display controls in the bottom right corner.
@@ -315,7 +316,7 @@ class RevealJSOptions {
      *
      * If not set, the Reveal.js will use an internal default of {@code SLIDE}.
      */
-    void setTransition(RevealJSOptions.Transition tr) {
+    void setTransition(Transition tr) {
         this.transition = Optional.ofNullable(tr?.toString()?.toLowerCase())
     }
 
@@ -335,7 +336,7 @@ class RevealJSOptions {
      *
      * If not set then Reveal.js will use an interna default of {@code FADE}.
      */
-    void setBackgroundTransition(RevealJSOptions.Transition tr) {
+    void setBackgroundTransition(Transition tr) {
         this.backgroundTransition = Optional.ofNullable(tr?.toString()?.toLowerCase())
     }
 
@@ -355,7 +356,7 @@ class RevealJSOptions {
      *
      * If not provided, Reveal.js wil use an internal default value of {@code DEFAULT}.
      */
-    void setTransitionSpeed(RevealJSOptions.TransitionSpeed tr) {
+    void setTransitionSpeed(TransitionSpeed tr) {
         this.transitionSpeed = Optional.ofNullable(tr?.toString()?.toLowerCase())
     }
 
@@ -366,13 +367,12 @@ class RevealJSOptions {
     @org.gradle.api.tasks.Optional
     @Input
     String getParallaxBackgroundSize() {
-        this.parallaxBackgroundSize ? stringize(this.parallaxBackgroundSize) : null
+        this.parallaxBackgroundSize ? stringTools.stringize(this.parallaxBackgroundSize) : null
     }
 
     /** Set the Parallax background size.
      *
-     * @param css Anything that can be converted to a String via
-     * {@link org.ysb33r.grolifant.api.v4.StringUtils#stringize}.
+     * @param css Anything that can be converted to a String via {@link StringTools#stringize}.
      * Must be in CSS syntax.
      */
     void setParallaxBackgroundSize(Object css) {
@@ -392,7 +392,7 @@ class RevealJSOptions {
     /** If the parallax image is set as a file, this will be the relative path to which it will be copied
      * when resources are copied.
      *
-     * @param relPath Relative path can be anything convertible to a string using {@link StringUtils#stringize}.
+     * @param relPath Relative path can be anything convertible to a string using {@link StringTools#stringize}.
      */
     void setParallaxBackgroundImageRelativePath(Object relPath) {
         this.parallaxBackgroundImageRelativePath = relPath
@@ -404,7 +404,7 @@ class RevealJSOptions {
      */
     @Input
     String getParallaxBackgroundImageRelativePath() {
-        StringUtils.stringize(this.parallaxBackgroundImageRelativePath)
+        stringTools.stringize(this.parallaxBackgroundImageRelativePath)
     }
 
     /** Parallax background image if it is specified as a file.
@@ -477,7 +477,7 @@ class RevealJSOptions {
      */
     @Input
     String getHighlightJsThemeRelativePath() {
-        StringUtils.stringize(this.highlightJsThemeRelativePath)
+        stringTools.stringize(this.highlightJsThemeRelativePath)
     }
 
     /** Custom.js theme location if specified as a file.
@@ -526,7 +526,7 @@ class RevealJSOptions {
      */
     @Input
     String getCustomThemeRelativePath() {
-        StringUtils.stringize(this.customThemeRelativePath)
+        stringTools.stringize(this.customThemeRelativePath)
     }
 
     /** The Reveal.js settings as a map of Asciidoctor attributes.
@@ -559,10 +559,10 @@ class RevealJSOptions {
             revealjs_transitionSpeed     : transitionSpeed,
             revealjs_viewDistance        : viewDistance
         ].findAll { String k, Optional v ->
-            v.isPresent()
+            v.present
         } as Map<String, Optional>
 
-        Map<String, String> attrs = stringizeValues(allAttrs.collectEntries { String k, Optional v ->
+        Map<String, String> attrs = stringTools.stringizeValues(allAttrs.collectEntries { String k, Optional v ->
             [k, v.get()]
         } as Map<String, Object>)
 
@@ -655,7 +655,7 @@ class RevealJSOptions {
                 (((String) candidate) =~ /^(?i:https?):.+/) ? ((String) candidate).toURI() : project.file(candidate)
                 break
             default:
-                asFileOrWebUri(StringUtils.stringize(candidate))
+                asFileOrWebUri(stringTools.stringize(candidate))
         }
     }
 

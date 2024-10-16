@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.asciidoctor.gradle.jvm.slides
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AbstractDownloadableComponent
 import org.gradle.api.Project
-import org.ysb33r.grolifant.api.v4.StringUtils
+import org.ysb33r.grolifant.api.core.ProjectOperations
 
 /** Reveal.js plugins.
  *
@@ -28,6 +28,17 @@ import org.ysb33r.grolifant.api.v4.StringUtils
 class RevealJSPluginExtension extends AbstractDownloadableComponent<LocalRevealJSPlugin, ResolvedRevealJSPlugin> {
 
     public final static String NAME = 'revealjsPlugins'
+
+    @SuppressWarnings('ClassName')
+    static class ResolvedLocalRevealJsPlguin implements ResolvedRevealJSPlugin {
+        final File location
+        final String name
+
+        ResolvedLocalRevealJsPlguin(final File location, final String name) {
+            this.location = location
+            this.name = name
+        }
+    }
 
     RevealJSPluginExtension(Project project) {
         super(project)
@@ -50,20 +61,20 @@ class RevealJSPluginExtension extends AbstractDownloadableComponent<LocalRevealJ
      * @return Converting closure.
      */
     @Override
-    protected Closure convertible(final LocalRevealJSPlugin component) {
-        { Project project1 ->
+    protected Closure convertible(LocalRevealJSPlugin component) {
+        { ProjectOperations projectOperations ->
             new ResolvedRevealJSPlugin() {
                 @Override
                 File getLocation() {
-                    project1.file(component.location)
+                    projectOperations.fsOperations.file(component.location)
                 }
 
                 @Override
                 String getName() {
-                    StringUtils.stringize(component.name)
+                    projectOperations.stringTools.stringize(component.name)
                 }
             }
-        }.curry(project)
+        }.curry(projectOperations)
     }
 
     /** Instantiates a resolved component.

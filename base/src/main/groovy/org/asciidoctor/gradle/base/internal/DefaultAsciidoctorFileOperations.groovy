@@ -694,7 +694,7 @@ class DefaultAsciidoctorFileOperations implements AsciidoctorTaskFileOperations,
      * @param backendName Name of backend
      * @return Output directory.
      */
-    protected File getOutputDirFor(final String backendName) {
+    File getOutputDirFor(final String backendName) {
         if (outputDir == null) {
             throw new GradleException("outputDir has not been defined for task '${taskName}'")
         }

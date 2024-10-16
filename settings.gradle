@@ -31,7 +31,7 @@ include 'asciidoctoreditorconfig'
     project(":${it}").name = "asciidoctor-gradle-${it}"
 }
 
-['pdf', 'epub'/*,  'leanpub' */].each {
+['pdf', 'epub'/*,  'leanpub' */, 'slides'].each {
     include "jvm-${it}"
     project(":jvm-${it}").name = "asciidoctor-gradle-jvm-${it}"
 }
@@ -43,7 +43,7 @@ include 'asciidoctoreditorconfig'
 //
 
 
-['gems' /*, 'slides'*/].each {
+['gems'].each {
     include it
     project(":${it}").name = "asciidoctor-gradle-jvm-${it}"
 }

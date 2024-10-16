@@ -1,29 +1,51 @@
+import org.ysb33r.gradle.gradletest.GradleTest
+
+agProject {
+    withOfflineTestConfigurations()
+
+    configurePlugin(
+        'org.asciidoctor.jvm.revealjs.base',
+        'AsciidoctorJ Reveal.js Base Plugin',
+        'Base plugin for all AsciidoctorJ Reveal.js tasks & extensions. Provides the revealjs and revealjsPlugins project extensions.',
+        'org.asciidoctor.gradle.jvm.slides.AsciidoctorRevealJSBasePlugin',
+        ['asciidoctorj', 'reveal.js', 'slides']
+    )
+
+    configurePlugin(
+        'org.asciidoctor.jvm.revealjs',
+        'AsciidoctorJ Reveal.js Plugin',
+        'Plugin for generating Reveal.JS based slides from  Asciidoc source using AsciidoctorJ. Provides the asciidoctorRevealJs task.',
+        'org.asciidoctor.gradle.jvm.slides.AsciidoctorRevealJSPlugin',
+        ['asciidoctorj', 'reveal.js', 'slides']
+    )
+}
+
 generateModuleVersions {
     basename = 'revealjs-extension'
     propertyNames ~/^revealjs\./
 }
 
 dependencies {
+    api project(':asciidoctor-gradle-jvm')
     implementation project(':asciidoctor-gradle-base')
     implementation project(':asciidoctor-gradle-jvm-gems')
-    implementation "com.github.jruby-gradle:jruby-gradle-core-plugin:${jrubyGradleVersion}"
+    implementation "org.ysb33r.gradle.jruby:jrubygradle-resolver:${pluginJrubySimpleVersion}"
 }
 
-intTest {
-    enabled = !gradle.startParameter.isOffline()
+tasks.named('intTest', Test) {
     systemProperties TEST_PROJECTS_DIR: file('src/intTest/projects')
+    maxParallelForks = 4
+    forkEvery = 7
 }
 
-gradleTest {
-    enabled = !gradle.startParameter.isOffline()
+tasks.named('test', Test) {
+    dependsOn ':testfixtures-offline-repo:buildOfflineRepositories'
+    systemProperties OFFLINE_REPO: offlineRepoRoot.absolutePath
 }
 
-configurePlugin 'org.asciidoctor.jvm.revealjs.base',
-    'AsciidoctorJ Reveal.js Base Plugin',
-    'Base plugin for all AsciidoctorJ Reveal.js tasks & extensions. Provides the revealjs and revealjsPlugins project extensions.',
-    ['asciidoctorj', 'reveal.js', 'slides']
+tasks.named('gradleTest', GradleTest) {
+    systemProperties ASCIIDOCTORJ_VERSION: compileOnlyAsciidoctorJVersion
+    systemProperties GROOVY_VERSION: GroovySystem.version
 
-configurePlugin 'org.asciidoctor.jvm.revealjs',
-    'AsciidoctorJ Reveal.js Plugin',
-    'Plugin for generating Reveal.JS based slides from  Asciidoc source using AsciidoctorJ. Provides the ascidoctorRevealJs task.',
-    ['asciidoctorj', 'reveal.js', 'slides']
+    gradleArguments '-i', '-s'
+}

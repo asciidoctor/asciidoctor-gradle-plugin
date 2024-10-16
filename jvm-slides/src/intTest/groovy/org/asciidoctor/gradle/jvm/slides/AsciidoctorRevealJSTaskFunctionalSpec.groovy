@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,12 +38,12 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
 
         then:
         verifyAll {
-            new File(testProjectDir.root, 'build/docs/asciidocRevealJs/revealjs.html').exists()
-            new File(testProjectDir.root, 'build/docs/asciidocRevealJs/subdir/revealjs2.html').exists()
-            new File(testProjectDir.root, "${DEFAULT_REVEALJS_PATH}/css").exists()
-            new File(testProjectDir.root, "${DEFAULT_REVEALJS_PATH}/lib").exists()
-            new File(testProjectDir.root, "${DEFAULT_REVEALJS_PATH}/plugin").exists()
-            new File(testProjectDir.root, "${DEFAULT_REVEALJS_PATH}/js").exists()
+            new File(projectDir, 'build/docs/asciidocRevealJs/revealjs.html').exists()
+            new File(projectDir, 'build/docs/asciidocRevealJs/subdir/revealjs2.html').exists()
+            new File(projectDir, "${DEFAULT_REVEALJS_PATH}/css").exists()
+            new File(projectDir, "${DEFAULT_REVEALJS_PATH}/lib").exists()
+            new File(projectDir, "${DEFAULT_REVEALJS_PATH}/plugin").exists()
+            new File(projectDir, "${DEFAULT_REVEALJS_PATH}/js").exists()
         }
     }
 
@@ -64,9 +64,9 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
 
         then:
         verifyAll {
-            new File(testProjectDir.root, 'build/docs/asciidocRevealJs/revealjs.html').exists()
-            new File(testProjectDir.root, 'build/github-cache/hakimel/reveal.js/3.6.0').exists()
-            new File(testProjectDir.root, "${DEFAULT_REVEALJS_PATH}/js/reveal.js").
+            new File(projectDir, 'build/docs/asciidocRevealJs/revealjs.html').exists()
+            new File(projectDir, 'build/github-cache/hakimel/reveal.js/3.6.0').exists()
+            new File(projectDir, "${DEFAULT_REVEALJS_PATH}/js/reveal.js").
                 text.contains('var VERSION = \'3.6.0\';')
         }
     }
@@ -93,9 +93,9 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
 
         when:
         build()
-        String revealjsHtml = new File(testProjectDir.root, 'build/docs/asciidocRevealJs/revealjs.html').text
-        String pluginConfig = new File(testProjectDir.root, 'src/docs/asciidoc/empty-plugin-configuration.js').text
-        File pluginList = new File(testProjectDir.root, "${DEFAULT_REVEALJS_PATH}/revealjs-plugins.js")
+        String revealjsHtml = new File(projectDir, 'build/docs/asciidocRevealJs/revealjs.html').text
+        String pluginConfig = new File(projectDir, 'src/docs/asciidoc/empty-plugin-configuration.js').text
+        File pluginList = new File(projectDir, "${DEFAULT_REVEALJS_PATH}/revealjs-plugins.js")
 
         then:
         verifyAll {
@@ -104,7 +104,7 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
             revealjsHtml.contains("src: '${REVEALJS_DIR_NAME}/plugin/print-pdf/")
             revealjsHtml.contains("src: '${REVEALJS_DIR_NAME}/plugin/rajgoel/chart/plugin.js'")
             revealjsHtml.contains(pluginConfig)
-            new File(testProjectDir.root, "${DEFAULT_REVEALJS_PATH}/plugin/rajgoel/chart/plugin.js").exists()
+            new File(projectDir, "${DEFAULT_REVEALJS_PATH}/plugin/rajgoel/chart/plugin.js").exists()
         }
     }
 
@@ -113,7 +113,6 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
     }
 
     File getBuildFile(String extraContent) {
-        File buildFile = testProjectDir.newFile('build.gradle')
         buildFile << """
         plugins {
             id 'org.asciidoctor.jvm.revealjs'

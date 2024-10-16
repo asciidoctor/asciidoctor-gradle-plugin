@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,11 +28,16 @@ class RevealJSPluginExtensionSpec extends Specification {
     Map<String, String> versionMap = ModuleVersionLoader.load('revealjs-extension')
 
     Project project = ProjectBuilder.builder().build()
+    ProjectOperations projectOperations
     RevealJSPluginExtension ext
 
     void setup() {
-        ProjectOperations.maybeCreateExtension(project)
-        ext = new RevealJSPluginExtension(project)
+        projectOperations = ProjectOperations.maybeCreateExtension(project)
+        ext = project.extensions.create(
+                RevealJSPluginExtension.NAME,
+                RevealJSPluginExtension,
+                project
+        )
     }
 
     void 'Can configure a local reveal.js plugin'() {
