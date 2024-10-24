@@ -16,7 +16,11 @@
 package org.asciidoctor.gradle.remote
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.Attributes
+import org.asciidoctor.AttributesBuilder
 import org.asciidoctor.Options
+import org.asciidoctor.OptionsBuilder
+import org.asciidoctor.SafeMode
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 
 /**
@@ -55,46 +59,43 @@ class AsciidoctorJSetup implements Serializable {
      * @return Asciidoctor options
      */
     @SuppressWarnings('DuplicateStringLiteral ')
-    Map<String, Object> normalisedOptionsFor(final File file, ExecutorConfiguration runConfiguration) {
-        Map<String, Object> mergedOptions = [:]
+    Options normalisedOptionsFor(final File file, ExecutorConfiguration runConfiguration) {
+        OptionsBuilder optionsBuilder = Options.builder()
 
         runConfiguration.with {
             final String srcRelative = getRelativePath(file.parentFile, sourceDir)
 
-            mergedOptions.putAll(options)
-            mergedOptions.putAll([
-                    (Options.BACKEND) : backendName,
-                    (Options.IN_PLACE): false,
-                    (Options.SAFE)    : safeModeLevel,
-                    (Options.TO_DIR)  : (srcRelative.empty ? outputDir : new File(outputDir, srcRelative)).absolutePath,
-                    (Options.MKDIRS)  : true
-            ])
+            options.each { key, value -> optionsBuilder.option(key, value.toString()) }
+            optionsBuilder.backend(backendName)
+            optionsBuilder.inPlace(false)
+            optionsBuilder.safe(SafeMode.safeMode(safeModeLevel))
+            optionsBuilder.toDir((srcRelative.empty ? outputDir : new File(outputDir, srcRelative)))
+            optionsBuilder.mkDirs(true)
+            optionsBuilder.baseDir(baseDir ?: file.parentFile)
 
-            mergedOptions[Options.BASEDIR] = (baseDir ?: file.parentFile).absolutePath
-
-            if (mergedOptions.containsKey(Options.TO_FILE)) {
-                Object toFileValue = mergedOptions[Options.TO_FILE]
-                Object toDirValue = mergedOptions.remove(Options.TO_DIR)
+            if (options.containsKey(Options.TO_FILE)) {
+                Object toFileValue = options[Options.TO_FILE]
+                Object toDirValue = options.remove(Options.TO_DIR)
                 File toFile = toFileValue instanceof File ? (File) toFileValue : new File(toFileValue.toString())
                 File toDir = toDirValue instanceof File ? (File) toDirValue : new File(toDirValue.toString())
-                mergedOptions[Options.TO_FILE] = new File(toDir, toFile.name).absolutePath
+                optionsBuilder.toFile(new File(toDir, toFile.name))
             }
 
-            Map<String, Object> newAttrs = [:]
-            newAttrs.putAll(attributes)
-            newAttrs[ATTR_PROJECT_DIR] = projectDir.absolutePath
-            newAttrs[ATTR_ROOT_DIR] = rootDir.absolutePath
-            newAttrs[ATTR_REL_SRC_DIR] = getRelativePath(sourceDir, file.parentFile) ?: '.'
+            AttributesBuilder attributesBuilder = Attributes.builder()
+            attributes.each { key, value -> attributesBuilder.attribute(key, value.toString()) }
+            attributesBuilder.attribute(ATTR_PROJECT_DIR, projectDir.absolutePath)
+            attributesBuilder.attribute(ATTR_ROOT_DIR, rootDir.absolutePath)
+            attributesBuilder.attribute(ATTR_REL_SRC_DIR, srcRelative.empty ? '.' : srcRelative)
 
             if (legacyAttributes) {
-                newAttrs['projectdir'] = newAttrs[ATTR_PROJECT_DIR]
-                newAttrs['rootdir'] = newAttrs[ATTR_ROOT_DIR]
+                attributesBuilder.attribute('projectdir', projectDir.absolutePath)
+                attributesBuilder.attribute('rootdir', rootDir.absolutePath)
             }
 
-            mergedOptions[Options.ATTRIBUTES] = newAttrs
+            optionsBuilder.attributes(attributesBuilder.build())
         }
 
-        mergedOptions
+        optionsBuilder.build()
     }
 
     /**
