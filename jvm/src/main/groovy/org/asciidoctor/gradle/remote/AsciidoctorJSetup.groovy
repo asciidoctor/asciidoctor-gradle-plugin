@@ -65,7 +65,7 @@ class AsciidoctorJSetup implements Serializable {
         runConfiguration.with {
             final String srcRelative = getRelativePath(file.parentFile, sourceDir)
 
-            options.each { key, value -> optionsBuilder.option(key, value.toString()) }
+            options.each { key, value -> optionsBuilder.option(key, value) }
             optionsBuilder.backend(backendName)
             optionsBuilder.inPlace(false)
             optionsBuilder.safe(SafeMode.safeMode(safeModeLevel))
@@ -82,7 +82,7 @@ class AsciidoctorJSetup implements Serializable {
             }
 
             AttributesBuilder attributesBuilder = Attributes.builder()
-            attributes.each { key, value -> attributesBuilder.attribute(key, value.toString()) }
+            attributes.each { key, value -> attributesBuilder.attribute(key, value) }
             attributesBuilder.attribute(ATTR_PROJECT_DIR, projectDir.absolutePath)
             attributesBuilder.attribute(ATTR_ROOT_DIR, rootDir.absolutePath)
             attributesBuilder.attribute(ATTR_REL_SRC_DIR, srcRelative.empty ? '.' : srcRelative)
