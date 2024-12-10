@@ -6,5 +6,9 @@ The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to 
 This started as a port of the {asciidoctor-maven-plugin-url}[asciidoctor-maven-plugin] project founded by {lightguard} and relies on {asciidoctorj-url}[{asciidoctorj-name}] which was founded by {lordofthejars}.
 In fact the 1.5.x series of the {plugin-name} can still be considered a port.
 
-However, with 2.x series came a complete departure with functionality far exceeding any lightweight markup plugins for any other build tool.
+However, with the 2.x series came a complete departure with functionality far exceeding any lightweight markup plugins for any other build tool.
 With the 3.x serious allows for even more flexibility and options for the creation of a true DocuOps pipeline by bringing together Gradle as a powerful and generic build tool, and Asciidoctor as an agile and lightweight document generator.
+With 4.x came Gradle 8.x compatibility, and there was an attempt to make it configuration-cache compliant.
+
+Now with 5.x comes a new model, which simplifies declaration and removes the need to configure tasks.
+  Although it still has the classic usage available that was in 4.x, and which is not configuration-cache-compatible, the new model in 5.x offers both Gradle 9.x compatibility and configuration cache-compatibility.

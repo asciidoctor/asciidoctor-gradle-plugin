@@ -3,13 +3,14 @@ import groovy.transform.CompileStatic
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.CopySpec
+import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.TaskProvider
+import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.plugins.ide.idea.model.IdeaModel
-import org.ysb33r.gradle.nodejs.NodeJSExtension
-import org.ysb33r.grolifant.api.core.ProjectOperations
+import org.ysb33r.grolifant5.api.core.plugins.GrolifantServicePlugin
 
 @CompileStatic
 class AsciidoctorGradleGroovyProject implements Plugin<Project> {
@@ -20,9 +21,9 @@ class AsciidoctorGradleGroovyProject implements Plugin<Project> {
         project.pluginManager.identity {
             apply 'java-library'
             apply 'groovy'
+            apply GrolifantServicePlugin
         }
-        ProjectOperations.maybeCreateExtension(project)
-        project.extensions.create('agProject',AsciidoctorGradleProjectExtension,project)
+        project.extensions.create('agProject', AsciidoctorGradleProjectExtension, project)
 
         TaskProvider generateModuleVersions = project.tasks.register(GENERATOR_NAME, ModuleVersions)
 
@@ -35,14 +36,25 @@ class AsciidoctorGradleGroovyProject implements Plugin<Project> {
             }
         }
 
-        addDefaultVersions(project)
         configureIdea(project)
+        configureRepositories(project)
+        configureJava(project)
     }
 
-    @CompileDynamic
-    void addDefaultVersions(Project project) {
-        project.ext {
-            defaultNodeJsVersion = NodeJSExtension.NODEJS_DEFAULT
+    void configureRepositories(Project project) {
+        project.repositories.mavenCentral()
+        project.repositories.gradlePluginPortal()
+
+        if (project.extensions.getByType(AsciidoctorGradleProjectExtension).snapshot) {
+            project.repositories.mavenLocal()
+        }
+    }
+
+    void configureJava(Project project) {
+        final java = project.extensions.getByType(JavaPluginExtension)
+        final ver = project.providers.gradleProperty('jdkVersion').orElse('8').get()
+        java.toolchain {
+            it.languageVersion.set(JavaLanguageVersion.of(ver))
         }
     }
 

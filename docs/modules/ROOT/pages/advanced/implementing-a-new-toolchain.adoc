@@ -1,0 +1,58 @@
+= Implementing a new Toolchain
+
+Although this might be a rare case, it is documented here both to explain how the current toolchains are implemented and for the potential case where someone might want to implement a new toolchain.
+
+
+== Project setup
+
+.gradle/libs.versions.toml
+[source,toml]
+[subs=+attributes]
+----
+[versions]
+asciidoctorGradle = "{revnumber}"
+
+[libraries]
+asciidoctorCore = { module = "org.asciidoctor:asciidoctor5-core-plugin", version.ref = "asciidoctorGradle"}
+----
+
+.build.gradle
+[source,groovy]
+----
+repositories {
+  mavenCentral()
+  gradlePluginPortal()
+}
+
+dependencies {
+  api(libs.asciidoctorCore)
+}
+----
+
+== Create a toolchain
+
+The simplest way is to extend `org.asciidoctor.gradle.model5.core.AbstractAsciidoctorToolchain`.
+
+[source,groovy]
+----
+include::example$model5/core/test/groovy/org/asciidoctor/gradle/model5/core/testfixtures/ExampleToolchain.groovy[tags=minimal-toolchain]
+----
+
+At this point you can add whatever you need to `ExampleToolchain` to configure the toolchain itself.
+
+You will need to add at least one output formatter to your tool chain.
+
+== Create an output formatter
+
+[source,groovy]
+----
+----
+
+=== Registering tasks
+
+Tasks are only registered when a formatter is referenced in a publication.
+This is done because it is the only point where everything is tied together.
+The formatter, however, is the only piece in the puzzle that will know the correct task(s) to register.
+This is because it will know which toolchain it is attached to.
+It will also be passed the publication that wants to use it.
+When registering the task(s), the output formatter will then be responsible for configuring those tasks as well

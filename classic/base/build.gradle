@@ -1,0 +1,42 @@
+
+plugins {
+    id 'org.asciidoctor.internal.classic.module.versions'
+    id 'org.asciidoctor.internal.classic.gradle.project'
+}
+
+agProject {
+    withIntegrationTests()
+    withCompatibilityTests()
+    configurePlugin(
+            'org.asciidoctor.base.classic',
+            'Asciidoctor Classic (Deprecated) Base Plugin',
+            'Classic, but deprecated, base plugin for all asciidoctor document conversion plugins (AsciidoctorJ & AsciidoctorJS)',
+            'org.asciidoctor.gradle.base.AsciidoctorBasePlugin',
+            []
+    )
+}
+
+//dependencies {
+//    testImplementation project(':testfixtures-jvm')
+//    integrationTestImplementation project(':testfixtures-jvm')
+//}
+
+pluginManager.withPlugin('jacoco') {
+    jacocoTestReport {
+        executionData.setFrom(fileTree('.') { exclude '**' })
+        executionData test
+        dependsOn test
+    }
+}
+
+
+//configurations {
+//    gradleTestCompile.transitive = false
+//}
+
+tasks.register('foo') {
+    inputs.files(project.configurations.getByName('$$$IvypotRepoDetailsResolver$$$'))
+    doLast {
+        println inputs.files.files
+    }
+}

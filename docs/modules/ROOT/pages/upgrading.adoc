@@ -1,5 +1,21 @@
 = Upgrading From Older Versions of Asciidoctor
 
+== Upgrading to .5.x
+
+If you are on a version 3.x or older, upgrade to 4.x first.
+
+If you are on 4.x you can continue to use the old style, but you need to append `.classic` to all of your Asciidoctor plugins. If you used `org.asciidoctor.jvm.convert`, you now need to use `org.asciidoctor.jvm.convert.classic`
+
+Otherwise in 5.x, the correct way is to use the new model approach, where everything is configured in one place and there is no need to configure any tasks in the DSL.
+
+=== Notes about the classic model in 5.x
+
+* `docExtensions` no longer accept closures.
+  Content needs to be passed as a string or loaded from a file.
+  This is due to how Gradle instruments objects in Gradle 8.4+.
+
+== Upgrading to 4.x
+
 NOTE: If you are still on a 1.5/1.6 version of the plugin, upgrade to the latest 2.x version first.
 
 If you are on 2.x version, upgrade to the latest 2.x first and ensure that you have corrected all of the deprecation warnings.

@@ -1,0 +1,23 @@
+plugins {
+    id 'org.asciidoctor.jvm.convert.classic'
+}
+
+configurations {
+    asciidocExt {
+        canBeResolved = true
+        canBeConsumed = false
+    }
+}
+
+dependencies {
+    asciidocExt project(':extension')
+}
+
+asciidoctorj {
+    logLevel 'DEBUG'
+}
+
+tasks.named('asciidoctor') {
+    configurations 'asciidocExt'
+    executionMode =  'CLASSPATH'
+}

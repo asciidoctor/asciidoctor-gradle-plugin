@@ -17,7 +17,7 @@ package org.asciidoctor.gradle.editorconfig
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
-import org.gradle.api.DefaultTask
+import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
@@ -26,7 +26,7 @@ import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
-import org.ysb33r.grolifant.api.core.ProjectOperations
+import org.ysb33r.grolifant5.api.core.runnable.GrolifantDefaultTask
 
 import java.util.concurrent.Callable
 
@@ -45,24 +45,25 @@ import java.util.concurrent.Callable
  * @since 3.2.0
  */
 @CompileStatic
-class AsciidoctorEditorConfigGenerator extends DefaultTask {
+class AsciidoctorEditorConfigGenerator extends GrolifantDefaultTask {
 
-    private final Map<String, Object> attributes = [:]
+    private final Map<String, Object> attrs
     private final List<Provider<File>> fileProviders = []
+    private final Provider<Map<String, String>> attrProvider
     private final List<Provider<Map<String, String>>> attributeProviders = []
     private final Provider<File> outputFile
-    private final ProjectOperations projectOperations
-    private Object outputDir
+    private final Property<File> outputDir
 
     AsciidoctorEditorConfigGenerator() {
         notCompatibleWithConfigurationCache(
                 'Asciidoctor Gradle 4.x is not compatible with CC. Wait for the 5.x release'
         )
-        this.projectOperations = ProjectOperations.find(project)
-        this.outputDir = project.projectDir
-        this.outputFile = project.provider({
-            new File(destinationDir, '.asciidoctorconfig')
-        } as Callable<File>)
+        this.attrs = [:]
+        this.fileProviders = []
+        this.attrProvider = mapper(this.attrs)
+        this.outputDir = project.objects.property(File)
+        this.outputDir.set(fsOperations().provideProjectDir())
+        this.outputFile = this.outputDir.map { f -> new File(f, '.asciidoctorconfig') }
     }
 
     /**
@@ -71,8 +72,8 @@ class AsciidoctorEditorConfigGenerator extends DefaultTask {
      * @param attrs Replacement attributes
      */
     void setAttributes(Map<String, Object> attrs) {
-        this.attributes.clear()
-        this.attributes.putAll(attrs)
+        this.attrs.clear()
+        this.attrs.putAll(attrs)
     }
 
     /**
@@ -81,16 +82,17 @@ class AsciidoctorEditorConfigGenerator extends DefaultTask {
      * @param attrs Additional attributes.
      */
     void attributes(Map<String, Object> attrs) {
-        this.attributes.putAll(attrs)
+        this.attrs.putAll(attrs)
     }
 
-    /** Returns the set of attributes after values have been converted to strings.
+    /**
+     * Returns the set of attributes after values have been converted to strings.
      *
      * @return Attributes as key-value pairs.
      */
     @Input
-    Map<String, String> getAttributes() {
-        projectOperations.stringTools.stringizeValues(this.attributes)
+    Provider<Map<String, String>> getAttributes() {
+        this.attrProvider
     }
 
     /**
@@ -105,9 +107,7 @@ class AsciidoctorEditorConfigGenerator extends DefaultTask {
     void additionalAttributes(Object attrs) {
         switch (attrs) {
             case AsciidoctorAttributeProvider:
-                this.attributeProviders.add(projectOperations.provider({
-                    projectOperations.stringTools.stringizeValues(((AsciidoctorAttributeProvider) attrs).attributes)
-                } as Callable<Map<String, String>>))
+                this.attributeProviders.add(mapper(((AsciidoctorAttributeProvider) attrs).attributes))
                 break
             default:
                 this.fileProviders.add(project.provider({
@@ -145,8 +145,8 @@ class AsciidoctorEditorConfigGenerator extends DefaultTask {
      * @return Directory
      */
     @Internal
-    File getDestinationDir() {
-        projectOperations.fsOperations.file(this.outputDir)
+    Provider<File> getDestinationDir() {
+        this.outputDir
     }
 
     /**
@@ -155,7 +155,7 @@ class AsciidoctorEditorConfigGenerator extends DefaultTask {
      * @param dir Anything convertible to a directory using {@code project.file}.
      */
     void setDestinationDir(Object dir) {
-        this.outputDir = dir
+        fsOperations().updateFileProperty(this.outputDir, dir)
     }
 
     /**
@@ -171,7 +171,7 @@ class AsciidoctorEditorConfigGenerator extends DefaultTask {
     @TaskAction
     void exec() {
         outputFile.get().withWriter { w ->
-            Map<String,String> attrs = getAttributes()
+            Map<String, String> attrs = getAttributes().get()
             attrs.keySet().sort().each { String k ->
                 w.println ":${k}: ${attrs[k]}"
             }
@@ -185,6 +185,19 @@ class AsciidoctorEditorConfigGenerator extends DefaultTask {
             additionalFileProviders.each { prov ->
                 w << prov.get().text
             }
+        }
+    }
+
+    private Provider<Map<String, String>> mapper(Map<String, Object> mapOfAttrs) {
+        providerTools().provider { ->
+            final allKeys = mapOfAttrs.keySet()
+            final converted = stringTools().stringizeValuesDropNull(mapOfAttrs)
+            final convertedKeys = converted.keySet()
+            final nulls = allKeys - convertedKeys
+            nulls.each {
+                converted[it] = ''
+            }
+            converted
         }
     }
 }

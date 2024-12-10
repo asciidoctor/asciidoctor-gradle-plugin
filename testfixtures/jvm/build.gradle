@@ -1,24 +1,25 @@
-apply plugin: AsciidoctorGradleGroovyProject
+plugins {
+    id 'org.asciidoctor.internal.classic.groovy.project'
+}
 
 generateModuleVersions {
     basename = 'testfixtures-core'
     propertyNames ~/.+/
 
-    additionalProperties 'offline-repo-location' : new File(
-            project(':testfixtures-offline-repo').buildDir,
-            'repo'
-    ).absolutePath
+    additionalProperties 'offline-repo-location' : new File(rootDir,'.offline-repo').absolutePath
 }
 
 dependencies {
     implementation localGroovy()
     implementation gradleApi()
     implementation gradleTestKit()
-    api "org.ysb33r.gradle:grolifant-herd:${agProject.versionOf('grolifant')}"
-    api 'commons-io:commons-io:2.15.1'
-    implementation "org.jsoup:jsoup:$jsoupVersion"
-    implementation "cglib:cglib-nodep:$cglibVersion"
-    implementation("org.spockframework:spock-core:${agProject.versionOf('spock')}") {
+    api libs.grolifantApi
+    runtimeOnly libs.grolifantRuntime
+
+    api libs.commonsIO
+    implementation libs.jsoup
+    implementation libs.cglib
+    compileOnly("org.spockframework:spock-core:${agProject.versionOf('spock')}") {
         exclude group: 'org.codehaus.groovy'
         exclude group: 'org.hamcrest', module: 'hamcrest-core'
     }

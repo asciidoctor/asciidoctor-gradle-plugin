@@ -1,3 +1,5 @@
+apply plugin: AsciidoctorGradlePluginProject
+
 agProject {
     withAdditionalPluginClasspath()
 
@@ -12,7 +14,7 @@ agProject {
 
 dependencies {
     implementation project(':asciidoctor-gradle-base')
-    additionalPluginClasspath project(':asciidoctor-gradle-jvm')
+//    additionalPluginClasspath project(':asciidoctor-gradle-jvm')
 }
 
 

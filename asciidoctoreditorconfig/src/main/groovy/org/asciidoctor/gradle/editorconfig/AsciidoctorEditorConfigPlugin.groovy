@@ -18,7 +18,7 @@ package org.asciidoctor.gradle.editorconfig
 import groovy.transform.CompileStatic
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.ysb33r.grolifant.api.core.ProjectOperations
+import org.ysb33r.grolifant5.api.core.plugins.GrolifantServicePlugin
 
 /** Asciidoctor editorConfig plugin.
  *
@@ -32,7 +32,9 @@ class AsciidoctorEditorConfigPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        ProjectOperations.maybeCreateExtension(project)
+        project.pluginManager.tap {
+            apply(GrolifantServicePlugin)
+        }
         project.tasks.register(
                 DEFAULT_TASK_NAME,
                 AsciidoctorEditorConfigGenerator

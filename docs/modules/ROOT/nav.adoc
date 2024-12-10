@@ -1,17 +1,29 @@
-* xref:compatibility.adoc[]
-* xref:quick-start.adoc[]
-* xref:common-task-configuration.adoc[]
-* Plugins
-** xref:asciidoctorj-base-plugin.adoc[]
-** xref:asciidoctorj-plugin.adoc[]
-** xref:asciidoctorj-pdf-plugin.adoc[]
-** xref:asciidoctorj-epub-plugin.adoc[]
-** xref:asciidoctorj-revealjs-plugin.adoc[]
-** xref:asciidoctorj-gems-plugin.adoc[]
-** xref:asciidoctoreditorconfig-plugin.adoc[]
-// * xref:asciidoctorj-leanpub-plugin.adoc[]
-* xref:asciidoctor-diagram.adoc[]
-// * xref:kindlegen-plugin.adoc[]
-* xref:asciidoctorj-custom-extensions.adoc[]
+* xref:index.adoc[Overview]
+* xref:bootstrap.adoc[Bootstrap]
+* xref:asciidoctoreditorconfig-plugin.adoc[Asciidoctor Editor Config plugin]
 * xref:docinfo.adoc[]
-* xref:upgrading.adoc[]
+* xref:upgrading.adoc[Upgrading]
+* xref:terminology.adoc[]
+
+.Configuration
+* xref:model5/configure-publication.adoc[Configure publications]
+* xref:model5/configure-toolchains.adoc[Configure toolchains]
+
+.Classic (Deprecated) mode
+* xref:classic/quick-start.adoc[Quick start]
+* xref:classic/compatibility.adoc[]
+* xref:classic/asciidoctorj-base-plugin.adoc[]
+* xref:classic/asciidoctorj-plugin.adoc[]
+* xref:classic/asciidoctorj-pdf-plugin.adoc[]
+* xref:classic/asciidoctorj-epub-plugin.adoc[]
+* xref:classic/asciidoctorj-revealjs-plugin.adoc[]
+* xref:classic/asciidoctorj-gems-plugin.adoc[]
+// * xref:asciidoctorj-leanpub-plugin.adoc[]
+* xref:classic/asciidoctor-diagram.adoc[]
+// * xref:kindlegen-plugin.adoc[]
+* xref:classic/asciidoctorj-custom-extensions.adoc[]
+* xref:classic/common-task-configuration.adoc[]
+
+.Advanced
+* xref:advanced/implementing-a-new-toolchain.adoc[Implementing a new toolchain]
+

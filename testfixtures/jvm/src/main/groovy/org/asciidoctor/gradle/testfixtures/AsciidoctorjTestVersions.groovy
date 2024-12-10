@@ -31,4 +31,5 @@ class AsciidoctorjTestVersions {
     public final static String SERIES_20 = VERSIONS['asciidoctorj']
     public final static String GROOVYDSL_SERIES_20 = VERSIONS['asciidoctorj.groovydsl']
     public final static String DIAGRAM_SERIES_20 = VERSIONS['asciidoctorj.diagram']
+    public final static String DIAGRAM_DITAA_SERIES_20 = '1.0.3'
 }

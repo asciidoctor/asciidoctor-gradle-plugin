@@ -1,0 +1,150 @@
+= Configuring a publication
+
+== Main configuration blocks
+
+[source,groovy]
+----
+asciidoc {
+  publications {
+    main {
+      sources { // <.>
+      }
+      secondarySources { // <.>
+      }
+      resources { // <.>
+      }
+      attributes { // <.>
+      }
+      languages { // <.>
+      }
+      processingOptions { // <.>
+      }
+
+      outputFormats 'asciidoctorj.html5', 'asciidoctorj.pdf' // <.>
+    }
+  }
+}
+----
+<.> Customise asciidoc sources to be processed.
+<.> Customise sources that are not directly processed, but which needs to be monitored for changes.
+<.> Additional resources, such as images.
+<.> Use `attributes` block to configure Asciidoc attributes.
+<.> Human-language additional configuration.
+<.> Configure general processing options.
+<.> Configures the output formats for this publication.
+  The format is `toolchainName.outputFormat`.
+  See xref:configure-toolchains.adoc[Configuring Toolchains] for more info.
+
+=== Sources, secondary sources and resources
+
+[source,groovy]
+----
+asciidoc {
+  publications {
+    main {
+        sources {
+          include 'foo.adoc', 'star*.adoc' // <.>
+        }
+        secondarySources {
+            include 'examples/*.json' // <.>
+        }
+        resources { // <.>
+          from 'images', {
+            include '*.png'
+          }
+        }
+        sourceDir = 'src/docs/asciidoc' // <.>
+    }
+  }
+}
+----
+<.> A list of file patterns for files to include.
+  If nothing is set, all asciidoc documents are included.
+  It uses an
+http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.html[Ant-style PatternSet].
+<.> Specify which source files should be monitored for change.
+  These are typically files which are included by top-level files as well as doctype files.
+  It uses an
+http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.html[Ant-style PatternSet].
+<.> Configures a copy specification for resources.
+  These are files, such as images, that are required as part of publication, but not processed by an Asciidoctor engine.
+<.> It is possible to override the source directory, although the convention of `src/docs/asciidoc<PUBLICATION>` should suffice for most cases.
+
+=== Asciidoc attributes
+
+[source,groovy]
+----
+asciidoc {
+  publications {
+    main {
+      attributes {
+          replaceAll 'source-language': 'java' // <.>
+          add 'source-language': 'java', 'project-version' : '1.2.3' // <.>
+          add 'source-language', 'java' // <.>
+          add 'publish-time', asTime(LocalTime.now()) // <.>
+          add 'publish-date', asDate(LocalDate.now()) // <.>
+          addAttributeProvider { -> [ 'source-language': 'java']} // <.>
+      }
+    }
+  }
+}
+----
+<.> Replace all attributes, except those provided by providers with this new set.
+<.> Add more attributes as a map.
+<.> Add a single attribute.
+<.> Add an attribute and force it to be formatted as a time value.
+  Accepts any `java.time.*` values, or anything string that can be parsed.
+<.> Add an attribute and force it to be formatted as a date value.
+  Accepts any `java.time.*` values, or anything string that can be parsed.
+<.> Add a provider of attributes.
+
+=== Language customisation
+
+[source,groovy]
+----
+asciidoc {
+  publications {
+    main {
+      languages {
+        fr { // <.>
+          attributes {  // <.>
+              add 'publish-time', asTime(LocalTime.now())
+          }
+          resources { // <.>
+            from 'images/fr', {
+              include '*.png'
+            }
+          }
+        }
+      }
+    }
+  }
+}
+----
+<.> Add option for a language.
+  The naming does not matter directly, but convention is to use letter codes that correspond to either chttps://en.wikipedia.org/wiki/ISO_639-1[ISO 639-1] or https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes[ISO 639-2].
+<.> Attributes that will only be sent to the Asciidoctor processor when the specific language is processed.
+  DSL is the same as for `attributes` described earlier.
+<.> Resources to be processed for the specific language.
+  This is a copy specification.
+
+=== Processing options
+
+[source,groovy]
+----
+import org.asciidoctor.gradle.model5.core.SafeMode
+
+asciidoc {
+  publications {
+    main {
+      processingOptions {
+        safeMode = 'unsafe' // <.>
+        safeMode = SafeMode.UNSAFE // <.>
+      }
+    }
+  }
+}
+----
+<.> Set the safe mode as a named string.
+<.> Set the safe mode as an enumeration.
+  The default value is `SafeMode.UNSAFE`.

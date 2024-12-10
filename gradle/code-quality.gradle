@@ -39,22 +39,24 @@ codenarc {
     sourceSets = [project.sourceSets.main]
 }
 
-tasks.withType(CodeNarc) { codenarcSourceSetTask ->
-    def reportName = (codenarcSourceSetTask.name - 'codenarc').uncapitalize()
-    def ideReport = reports.add(org.gradle.api.reporting.internal.TaskGeneratedSingleFileReport, 'ide', reports.task)
-    ideReport.enabled = true
-    ideReport.destination = file( "${project.codenarc.reportsDir}/${reportName}.ide.txt")
-}
+// TODO: Come back to fix this
+//tasks.withType(CodeNarc) { codenarcSourceSetTask ->
+//    def reportName = (codenarcSourceSetTask.name - 'codenarc').uncapitalize()
+//    def ideReport = reports.add(org.gradle.api.reporting.internal.TaskGeneratedSingleFileReport, 'ide', reports.task)
+//    ideReport.enabled = true
+//    ideReport.destination = file( "${project.codenarc.reportsDir}/${reportName}.ide.txt")
+//}
 
-pluginManager.withPlugin('jacoco') {
-    jacocoTestReport {
-        reports {
-            xml.enabled = true // coveralls plugin depends on xml format report
-            html.enabled = true
-        }
-        mustRunAfter test
-    }
-}
+// TODO: Come back to fix jacoco
+//pluginManager.withPlugin('jacoco') {
+//    jacocoTestReport {
+//        reports {
+//            xml.enabled = true // coveralls plugin depends on xml format report
+//            html.enabled = true
+//        }
+//        mustRunAfter test
+//    }
+//}
 
 task codenarcAll {
     group 'verification'

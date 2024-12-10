@@ -1,0 +1,49 @@
+[versions]
+# Keep in alphabetical order, please
+asciidoctorj = "3.0.0"
+asciidoctorjDiagram = "3.0.1"
+asciidoctorjDiagramDitaa = "1.0.3"
+asciidoctorjEpub = "2.1.3"
+asciidoctorjGroovyDsl = "2.0.2"
+asciidoctorjs = "4.0.0"
+cglib = "3.3.0"
+commonsIO = "2.15.1"
+grolifant = "5.3.3"
+jruby = "9.4.8.0"
+jsoup = "1.17.2"
+nodejs = "22.18.0"
+pluginGradleTest = "4.1.0"
+pluginJRubySimple = "2.0.0"
+pluginNodejs = "4.1.0"
+pluginPublishPlugin = "1.2.1"
+pluginIvypot = "2.0.3-SNAPSHOT"
+pluginJRuby = "2.1.0-SNAPSHOT"
+pluginJavaScript = "4.1.0"
+pluginOS = "2.0.0"
+spock = "2.3-groovy-3.0"
+
+[libraries]
+# Keep in alphabetical order, please
+asciidoctorj = { module = "org.asciidoctor:asciidoctorj", version.ref = "asciidoctorj" }
+asciidoctorjDiagram = { module = "org.asciidoctor:asciidoctorj-diagram", version.ref = "asciidoctorjDiagram" }
+asciidoctorjDiagramDitaa = { module = "org.asciidoctor:asciidoctorj-diagram-ditaamini", version.ref = "asciidoctorjDiagramDitaa" }
+asciidoctorjEpub = { module = "org.asciidoctor:asciidoctorj-epub3", version.ref = "asciidoctorjEpub" }
+asciidoctorjGroovyDsl = { module = "org.asciidoctor:asciidoctorj-groovy-dsl", version.ref = "asciidoctorjGroovyDsl" }
+cglib = { module = "cglib:cglib-nodep", version.ref = "cglib" }
+commonsIO = { module = "commons-io:commons-io", version.ref = "commonsIO" }
+grolifantApi = { module = "org.ysb33r.gradle:grolifant5-core", version.ref = "grolifant" }
+grolifantRuntime = { module = "org.ysb33r.gradle:grolifant5-herd", version.ref = "grolifant" }
+grolifantRemoteWorker = { module = "org.ysb33r.gradle:grolifant5-rawhide", version.ref = "grolifant" }
+jrubyComplete = { module = "org.jruby:jruby-complete", version.ref = "jruby" }
+jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
+pluginGradleTest = { module = "org.ysb33r.gradletest:org.ysb33r.gradletest.gradle.plugin", version.ref = "pluginGradleTest" }
+pluginPublishPlugin = { module = "com.gradle.publish:plugin-publish-plugin", version.ref = "pluginPublishPlugin" }
+pluginNodejs = { module = "org.ysb33r.gradle:nodejs-gradle-plugin", version.ref = "pluginNodejs" }
+pluginIvypot = { module = "org.ysb33r.ivypot:ivypot-gradle-plugin", version.ref = "pluginIvypot" }
+pluginJavaScript = { module = "org.ysb33r.nodejs.dev.base:org.ysb33r.nodejs.dev.base.gradle.plugin", version.ref = "pluginJavaScript" }
+pluginJRuby = { module = "org.ysb33r.jruby.resolver:org.ysb33r.jruby.resolver.gradle.plugin", version.ref = "pluginJRuby" }
+pluginOS = { module = "org.ysb33r.os:org.ysb33r.os.gradle.plugin", version.ref = "pluginOS" }
+spockCore = { module = "org.spockframework:spock-core", version.ref = "spock" }
+
+[plugins]
+#gradleTest = { id = "org.ysb33r.gradletest", version.ref = "pluginGradleTest"}

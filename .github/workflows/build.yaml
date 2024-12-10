@@ -39,11 +39,11 @@ jobs:
       - name: Cache offline repository
         uses: actions/cache@v3
         with:
-          path: testfixtures/offline-repo/build/repo
+          path: .offline-repo
           key: ${{ runner.os }}-offline-repo-${{ hashFiles('module-versions.properties') }}
           restore-keys: ${{ runner.os }}-offline-repo-
       - name: Build offline repository
-        run: ./gradlew --console=plain --no-build-cache :testfixtures-offline-repo:buildOfflineRepositories
+        run: ./gradlew --console=plain --no-build-cache syncRemoteRepositories
       - name: Build
         run: ./gradlew --console=plain --warning-mode=all -s clean assemble
       # TODO: Resolve the gem integration test issue.  See https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/694
@@ -74,11 +74,11 @@ jobs:
     - name: Cache offline repository
       uses: actions/cache@v3
       with:
-        path: testfixtures/offline-repo/build/repo
+        path: .offline-repo
         key: ${{ runner.os }}-offline-repo-${{ hashFiles('module-versions.properties') }}
         restore-keys: ${{ runner.os }}-offline-repo-
     - name: Build offline repository
-      run: ./gradlew --console=plain --no-build-cache :testfixtures-offline-repo:buildOfflineRepositories
+      run: ./gradlew --console=plain --no-build-cache syncRemoteRepositories
     - name: Build
       run: ./gradlew  -i -S --console=plain --no-build-cache assemble
     - name: Integration tests (without slides)

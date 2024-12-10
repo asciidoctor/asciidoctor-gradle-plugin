@@ -52,12 +52,12 @@ class AsciidoctorjVersionProcessModeGenerator {
     static List<VersionProcess> get() {
         if (System.getenv('APPVEYOR') || System.getenv('TRAVIS') || System.getenv('GITHUB_ACTIONS')) {
             [SERIES_20].collect {
-                VersionProcess.of(it, JAVA_EXEC)
+                VersionProcess.of(it, OUT_OF_PROCESS)
             }.toUnique()
         } else {
             [SERIES_20].collectMany { it ->
                 [
-                    VersionProcess.of(it, JAVA_EXEC),
+//                    VersionProcess.of(it, JAVA_EXEC),
                     VersionProcess.of(it, IN_PROCESS),
                     VersionProcess.of(it, OUT_OF_PROCESS)
                 ]

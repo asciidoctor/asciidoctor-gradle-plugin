@@ -1,0 +1,16 @@
+apply plugin: AsciidoctorGradlePluginProject
+apply plugin: 'java-test-fixtures'
+
+agProject {
+    configurePlugin(
+            'org.asciidoctor.core',
+            'Asciidoctor Core Plugin',
+            'Forms the core of all Asciidoctor plugins',
+            'org.asciidoctor.gradle.model5.core.AsciidoctorCorePlugin',
+            []
+    )
+}
+
+tasks.named('pluginUnderTestMetadata', PluginUnderTestMetadata) {
+    pluginClasspath.from(sourceSets.getByName('testFixtures').runtimeClasspath)
+}

@@ -1,0 +1,119 @@
+plugins {
+    id 'org.asciidoctor.internal.classic.gradle.project.jvm'
+    id 'org.ysb33r.jruby.resolver'
+}
+
+agProject {
+    withOfflineTestConfigurations()
+    withIntegrationTests()
+    withCompatibilityTests()
+
+    configurePlugin(
+            'org.asciidoctor.jvm.base.classic',
+            'AsciidoctorJ Classic (Deprecated) Base Plugin',
+            'Classic, but deprecated, base plugin for all AsciidoctorJ tasks & extensions. Provides the asciidoctorj project extension',
+            'org.asciidoctor.gradle.jvm.AsciidoctorJBasePlugin',
+            ['asciidoctorj']
+    )
+
+    configurePlugin(
+            'org.asciidoctor.jvm.convert.classic',
+            'AsciidoctorJ Classic (Deprecated) General Purpose Document Conversion Plugin',
+            'Classic, but deprecated, asciidoctor task and conventions using the asciidoctorj engine',
+            'org.asciidoctor.gradle.jvm.AsciidoctorJPlugin',
+            ['asciidoctorj', 'html5', 'docbook']
+    )
+}
+
+testing {
+    suites {
+        remoteTest(JvmTestSuite) {
+        }
+    }
+}
+
+configurations {
+    cachingOnly
+}
+
+repositories {
+    ruby.gems()
+}
+
+dependencies {
+    compileOnly(libs.asciidoctorj)
+    compileOnly(libs.asciidoctorjGroovyDsl) {
+        exclude module: 'groovy-all'
+    }
+
+    api project(':asciidoctor-gradle-base')
+
+    implementation(libs.grolifantRemoteWorker)
+
+    runtimeOnly(libs.asciidoctorj)
+
+    // These three are used in the compatibility tests for extensions
+    intTestOfflineRepo "org.codehaus.groovy:groovy:${GroovySystem.version}"
+    intTestOfflineRepo "org.codehaus.groovy:groovy-ant:${GroovySystem.version}"
+    intTestOfflineRepo "org.codehaus.groovy:groovy-groovydoc:${GroovySystem.version}"
+    intTestOfflineRepo libs.asciidoctorjEpub
+
+    // This is here for extension testing on the compatibility plugin. It will be deleted
+    // when compatibility mode is removed.
+    testRuntimeOnly(libs.asciidoctorjGroovyDsl) {
+        exclude module: 'groovy-all'
+    }
+
+    remoteTestImplementation libs.asciidoctorj
+    remoteTestImplementation project(':testfixtures-jvm')
+    remoteTestRuntimeOnly(libs.asciidoctorjGroovyDsl) {
+        exclude module: 'groovy-all'
+    }
+
+    cachingOnly "org.codehaus.groovy:groovy-nio:${GroovySystem.version}"
+    cachingOnly "org.codehaus.groovy:groovy-sql:${GroovySystem.version}"
+    cachingOnly "org.codehaus.groovy:groovy-test:${GroovySystem.version}"
+    cachingOnly "org.codehaus.groovy:groovy-json:${GroovySystem.version}"
+    cachingOnly "org.codehaus.groovy:groovy-console:${GroovySystem.version}"
+    cachingOnly "org.codehaus.groovy:groovy-datetime:${GroovySystem.version}"
+    cachingOnly "org.codehaus.groovy:groovy-dateutil:${GroovySystem.version}"
+    cachingOnly "org.codehaus.groovy:groovy-astbuilder:${GroovySystem.version}"
+
+    cachingOnly libs.jrubyComplete, { transitive = false }
+    cachingOnly libs.asciidoctorjDiagram, { transitive = false }
+    cachingOnly libs.asciidoctorjDiagramDitaa, { transitive = false }
+}
+
+generateModuleVersions {
+    basename = 'asciidoctorj-extension'
+    propertyNames ~/^asciidoctorj$/, ~/^asciidoctorj\./
+}
+
+tasks.named('test', Test) {
+    systemProperties ROOT_PROJECT_DIR: rootDir.absolutePath
+}
+
+tasks.named('integrationTest',Test) {
+    maxParallelForks = 4
+    forkEvery = 2
+}
+
+tasks.named('check') {
+    dependsOn 'remoteTest'
+}
+
+// Compile the extensions compatibility test with the same version of
+//// AsciidoctorJ & Groovy version that is used in the project
+gradleTestSets {
+    testSets {
+        main {
+            gradleArguments '-i', '-s'
+            gradleArguments "-DOFFLINE_REPO=${new File(rootDir,'.offline-repo').absolutePath}",
+                    "-DASCIIDOCTORJ_VERSION=${agProject.versionOf('asciidoctorj')}",
+                    "-DGROOVY_VERSION=${GroovySystem.version}"
+            debug = true
+        }
+    }
+}
+
+

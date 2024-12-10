@@ -1,0 +1,25 @@
+apply plugin: AsciidoctorGradlePluginProject
+
+agProject {
+    configurePlugin(
+            'org.asciidoctor.jvm.core',
+            'AsciidoctorJ Base Plugin',
+            'Base plugin for all AsciidoctorJ tasks & extensions. Provides the asciidoctorj toolchain',
+            'org.asciidoctor.gradle.model5.jvm.core.AsciidoctorJBasePlugin',
+            ['asciidoctorj']
+    )
+
+    withVersionSubstitution("${project.name}.properties", [
+            VERSION  : versionOf('asciidoctorj'),
+            GROOVYDSL: versionOf('asciidoctorjGroovyDsl'),
+            DIAGRAM  : versionOf('asciidoctorjDiagram')
+    ])
+}
+
+dependencies {
+    api project(':asciidoctor5-core-plugin')
+    implementation(libs.grolifantApi)
+    implementation(libs.asciidoctorj)
+    runtimeOnly(libs.grolifantRuntime)
+    testImplementation project(':testfixtures-jvm')
+}

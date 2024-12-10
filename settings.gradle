@@ -7,13 +7,15 @@ pluginManagement {
 }
 
 plugins {
-    id "com.gradle.enterprise" version "3.16.1"
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
+    id "com.gradle.develocity" version "3.18.1"
 }
 
-gradleEnterprise {
+develocity {
     buildScan {
-        termsOfServiceUrl = 'https://gradle.com/terms-of-service'
-        termsOfServiceAgree = 'yes'
+        termsOfUseUrl = "https://gradle.com/help/legal-terms-of-use"
+        termsOfUseAgree = "yes"
+        publishing.onlyIf { System.getenv('CI') != null }
     }
 }
 
@@ -21,29 +23,39 @@ rootProject.name = 'asciidoctor-gradle-plugin'
 
 include 'asciidoctoreditorconfig'
 
-['offline-repo', 'jvm'].each {
+// New model5 plugins
+
+['core', 'js-core'].each {
+//['core', 'jvm-core'].each {
+    include "model5/${it}"
+    project(":model5/${it}").name = "asciidoctor5-${it}-plugin"
+}
+
+
+['jvm'].each {
     include "testfixtures/${it}"
     project(":testfixtures/${it}").name = "testfixtures-${it}"
 }
 
-['base', 'js', 'jvm'].each {
-    include it
-    project(":${it}").name = "asciidoctor-gradle-${it}"
+// Deprecated, classic plugins go here
+['base', 'jvm', 'js'].each {
+    include "classic/${it}"
+    project(":classic/${it}").name = "asciidoctor-gradle-${it}"
 }
 
-['pdf', 'epub'/*,  'leanpub' */, 'slides'].each {
-    include "jvm-${it}"
-    project(":jvm-${it}").name = "asciidoctor-gradle-jvm-${it}"
-}
+//['pdf', 'epub'/*,  'leanpub' */].each {
+//    include "classic/jvm-${it}"
+//    project(":classic/jvm-${it}").name = "asciidoctor-gradle-jvm-${it}"
+//}
 
 ////[  'slides-export' ].each {
-////    include it
-////    project(":${it}").name = "asciidoctor-gradle-${it}"
+////    include "classic/${it}"
+////    project(":classic/${it}").name = "asciidoctor-gradle-${it}"
 ////}
 //
 
 
-['gems'].each {
-    include it
-    project(":${it}").name = "asciidoctor-gradle-jvm-${it}"
-}
+//['gems' /*, 'slides'*/].each {
+//    include "classic/${it}"
+//    project(":classic/${it}").name = "asciidoctor-gradle-jvm-${it}"
+//}

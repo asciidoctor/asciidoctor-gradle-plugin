@@ -115,13 +115,13 @@ trait CachingTestFixture {
     abstract File getBuildFile(String extraContent)
 
     abstract File getOutputFile()
-
+//
     abstract File getSettingsFile()
-
+//
     abstract String getDefaultTask()
-
+//
     abstract File getProjectDir()
-
+//
     abstract File getAlternateProjectDir()
 
     abstract List<String> getBuildScanArguments()

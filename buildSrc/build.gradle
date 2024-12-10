@@ -1,24 +1,65 @@
 plugins {
     id 'groovy'
     id 'java-library'
+    id 'groovy-gradle-plugin'
 }
 
-apply from: 'gradle/load-gradle-properties.gradle'
+ext {
+    versionOf = { nm -> versionCatalogs.named('libs').findVersion(nm).get().toString() }
+
+    gradleProps = { ->
+        final po = new Properties()
+        file('../gradle.properties').withReader { r -> po.load(r) }
+        po
+    }.call()
+
+    isSnapshot = {
+        gradleProps.version.endsWith('-SNAPSHOT')
+    }.call()
+}
 
 repositories {
     mavenCentral()
     gradlePluginPortal()
 
-    if(gradleProperties['version'].endsWith('-SNAPSHOT')) {
+    if(isSnapshot) {
         mavenLocal()
     }
 }
 
 dependencies {
+    api libs.pluginNodejs
+    api libs.grolifantApi
+
     implementation localGroovy()
     implementation gradleApi()
-    implementation "com.gradle.publish:plugin-publish-plugin:${gradleProperties.pluginPublishPlugin}"
-    api "org.ysb33r.gradle:nodejs-gradle-plugin:${gradleProperties.nodejsGradleVersion}"
-    api "org.ysb33r.gradle:grolifant-herd:${gradleProperties.grolifantVersion}"
+    implementation libs.pluginPublishPlugin
+    implementation libs.pluginGradleTest
+
+    runtimeOnly libs.grolifantRuntime
+    runtimeOnly libs.pluginIvypot
+    runtimeOnly libs.pluginJRuby
+    runtimeOnly libs.pluginOS
+}
+
+gradlePlugin {
+    plugins {
+        basicGroovyProject {
+            id = 'org.asciidoctor.internal.classic.groovy.project'
+            implementationClass = 'org.asciidoctor.internal.classic.AsciidoctorGradleGroovyProject'
+        }
+        moduleVersions {
+            id = 'org.asciidoctor.internal.classic.module.versions'
+            implementationClass = 'org.asciidoctor.internal.classic.AsciidoctorGradleModuleVersions'
+        }
+        gradleProject {
+            id = 'org.asciidoctor.internal.classic.gradle.project'
+            implementationClass = 'org.asciidoctor.internal.classic.AsciidoctorGradlePluginProject'
+        }
+        jvmGradleProject {
+            id = 'org.asciidoctor.internal.classic.gradle.project.jvm'
+            implementationClass = 'org.asciidoctor.internal.classic.AsciidoctorJGradlePluginProject'
+        }
+    }
 }
 

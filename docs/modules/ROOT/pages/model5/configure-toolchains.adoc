@@ -1,0 +1,48 @@
+= Configure Toolchains
+
+== Toolchain basics
+Toolchains are added via additional plugins.
+For instance the `org.asciidoctor.jvm.core` plugin will add the toolchain for converting Asciidoc source using the AsciidoctorJ engine.
+The same plugin will also add 'html5` and `docbook` output formats for that toolchain.
+
+Users do not usually need to create toolchains directly, but might need to configure specific toolchains or output formatters.
+(Output formatters are effectively what is also know as Asciidoctor backends).
+
+In some special cases a user might want to create another toolchain of the same type, but configure it differently.
+[source,groovy]
+----
+import org.asciidoctor.gradle.model5.jvm.core.AsciidoctorJToolchain // <.>
+
+asciidoc {
+  toolchains {
+    asciidoctorj { // <.>
+
+    }
+    asciidoctorj2(AsciidoctorJToolchain) {  // <.>
+
+    }
+  }
+}
+----
+<.> Only needed if you plan to add additional toolchains yourself.
+<.> Configure the `asciidoctorj` toolchain that is supplied via the `org.asciidoctor.jvm.core` plugin.
+<.> Create a second AsciidoctorJ toolchain and configure it differently than the default.
+
+== Output formatter basics
+
+Output formats are registered on each toolchain.
+
+[source,groovy]
+----
+asciidoc {
+  toolchains {
+    asciidoctorj {
+        registeredOutputFormatters.named('pdf',AsciidoctorJPdf) {
+           themes {
+
+           }
+        }
+    }
+  }
+}
+----

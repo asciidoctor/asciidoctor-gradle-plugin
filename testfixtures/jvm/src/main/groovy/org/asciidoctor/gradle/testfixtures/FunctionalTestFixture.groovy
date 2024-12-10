@@ -18,11 +18,6 @@ package org.asciidoctor.gradle.testfixtures
 import groovy.transform.CompileStatic
 import org.gradle.testkit.runner.GradleRunner
 
-import static org.asciidoctor.gradle.testfixtures.DslType.GROOVY_DSL
-import static org.asciidoctor.gradle.testfixtures.DslType.KOTLIN_DSL
-import static org.asciidoctor.gradle.testfixtures.FunctionalTestSetup.getOfflineRepositoriesGroovyDsl
-import static org.asciidoctor.gradle.testfixtures.FunctionalTestSetup.getOfflineRepositoriesKotlinDsl
-
 /**
  * Apply this trait to integration tests.
  */
@@ -47,9 +42,9 @@ trait FunctionalTestFixture {
 
     File getAlternateProjectDir() { new File(testProjectDir, 'alternate-test-project') }
 
-    String getOfflineRepositories(DslType dslType = GROOVY_DSL) {
-        dslType == GROOVY_DSL ? getOfflineRepositoriesGroovyDsl(new File(TEST_REPO_DIR)) :
-                getOfflineRepositoriesKotlinDsl(new File(TEST_REPO_DIR))
+    String getOfflineRepositories(DslType dslType = DslType.GROOVY_DSL) {
+        dslType == DslType.GROOVY_DSL ? FunctionalTestSetup.getOfflineRepositoriesGroovyDsl() :
+                FunctionalTestSetup.getOfflineRepositoriesKotlinDsl()
     }
 
     void initializeProjectLayout() {
@@ -58,11 +53,11 @@ trait FunctionalTestFixture {
     }
 
     GradleRunner getGroovyGradleRunner(List<String> taskNames) {
-        FunctionalTestSetup.getGradleRunner(GROOVY_DSL, projectDir, taskNames)
+        FunctionalTestSetup.getGradleRunner(DslType.GROOVY_DSL, projectDir, taskNames)
     }
 
     GradleRunner getKotlinGradleRunner(List<String> taskNames) {
-        FunctionalTestSetup.getGradleRunner(KOTLIN_DSL, projectDir, taskNames)
+        FunctionalTestSetup.getGradleRunner(DslType.KOTLIN_DSL, projectDir, taskNames)
     }
 
     File writeGroovyBuildFile(Collection<String> plugins, String extraContent) {
@@ -92,7 +87,7 @@ trait FunctionalTestFixture {
             }
             w.println '}'
             w.println()
-            w.println(getOfflineRepositories(KOTLIN_DSL))
+            w.println(getOfflineRepositories(DslType.KOTLIN_DSL))
             w.println()
             w.println(extraContent)
         }

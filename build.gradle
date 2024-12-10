@@ -29,16 +29,31 @@ plugins {
     id 'net.ossindex.audit' version '0.4.11' apply false
     id 'org.kordamp.jdeps' version '0.2.0' apply false
     id 'fi.linuxbox.download.worker' version '0.4' apply false
-    id 'org.ysb33r.ivypot' version '1.0.0' apply false
-    id 'org.ysb33r.os' version '1.0.0' apply false
     id 'org.ysb33r.cloudci' version '4.0.0' apply false
-    id 'org.ysb33r.cloudci.appveyor.testreporter' version '4.0.0' apply false
-    id 'org.ysb33r.gradletest' version '3.0.0-alpha.4' apply false
     id 'idea'
+
+    id 'org.ysb33r.ivypot'
+    id 'org.ysb33r.os' apply false
+    id 'org.ysb33r.jruby.resolver' apply false
 }
 
 import org.gradle.util.GradleVersion
 import java.text.SimpleDateFormat
+
+repositories {
+    mavenCentral()
+}
+
+ivypot {
+    projectsWithDependencies { it.startsWith(':asciidoctor-gradle-') || it ==~ /^:asciidoctor5-.+-plugin$/ }
+
+    binaryRepositories {
+        source 'nodejs', {
+            rootUri = 'https://nodejs.org/dist/'
+            artifactPattern = 'v[revision]/[module]-v[revision]-[classifier].[ext]'
+        }
+    }
+}
 
 apply plugin: 'net.nemerosa.versioning'
 
@@ -52,10 +67,6 @@ ext {
 
 allprojects {
     ext {
-        offlineRepoRoot = file("${project(':testfixtures-offline-repo').buildDir}/repo")
-        offlineRepoBinariesRoot = file("${offlineRepoRoot}/binaries")
-        offlineRepoDescriptionFile = file("${offlineRepoRoot}/repositories.gradle")
-
         withoutIntegrationTests = [
             'kindlegen-gradle'
         ]
@@ -71,107 +82,109 @@ allprojects {
 
 subprojects {
 
-    apply plugin: AsciidoctorGradleModuleVersions
-    apply plugin: 'org.ysb33r.os'
-
-    if (project.name != 'testfixtures-offline-repo') {
-        apply plugin: 'groovy'
-        apply plugin: 'idea'
-
-        if (!project.name.startsWith('testfixture')) {
-
-            apply plugin: AsciidoctorGradlePluginProject
-            apply plugin: 'com.github.ben-manes.versions'
-            apply plugin: 'net.ossindex.audit'
-            apply plugin: 'org.kordamp.jdeps'
-            apply plugin: 'org.ysb33r.ivypot.binary.base'
-
-            if (!(project.name in withoutCodeCoverage)) {
-                apply plugin: 'jacoco'
-
-                jacoco {
-                    if (JavaVersion.current().isJava11Compatible() && GradleVersion.version(toolVersion) < GradleVersion.version('0.8.2')) {
-                        toolVersion = '0.8.2'
-                    }
-                }
-            }
-        }
-
-        apply from: "${rootDir}/gradle/standard-repositories.gradle"
-        apply from: "${rootDir}/gradle/code-quality.gradle"
-
-        if (!project.name.startsWith('testfixture')) {
-
-            if (!(project.name in withoutIntegrationTests)) {
-                apply from: "${rootDir}/gradle/integration-tests.gradle"
-            }
-
-            apply from: "${rootDir}/gradle/publishing.gradle"
-            apply from: "${rootDir}/gradle/gradle-plugin-documentation.gradle"
-            apply from: "${rootDir}/gradle/ci.gradle"
-
-            if (project.name.startsWith('asciidoctor-gradle-jvm')) {
-                apply from: "${rootDir}/gradle/asciidoctorj-versions.gradle"
-                apply from: "${rootDir}/gradle/jruby-versions.gradle"
-            }
-
-            dependencyUpdates.resolutionStrategy = {
-                componentSelection { rules ->
-                    rules.all { selection ->
-                        boolean rejected = ['beta', 'rc', 'cr', 'm'].any { qualifier ->
-                            selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
-                        }
-                        if (rejected) {
-                            selection.reject('Release candidate')
-                        }
-                    }
-                }
-            }
-
-            configurations.all {
-                resolutionStrategy {
-                    eachDependency { DependencyResolveDetails details ->
-                        if (details.requested.group == 'org.codehaus.groovy') {
-                            details.useVersion GroovySystem.version
-                            details.because 'The same version as Gradle Groovy is required'
-                        }
-                    }
-                }
-            }
-
-            audit {
-                failOnError = false
-            }
-
-            if (!(project.name in withoutCompatibilityTests)) {
-                apply from: "${rootDir}/gradle/compatibility-tests.gradle"
-            }
-
-            tasks.withType(Test).configureEach {
-                useJUnitPlatform()
-            }
-        }
-
-        java {
-            toolchain {
-                languageVersion = JavaLanguageVersion.of(8)
-            }
-        }
-
-        project.tasks.withType(Test) {
-            testLogging {
-                afterSuite { desc, result ->
-                    if (!desc.parent) {
-                        println "Test results ${project.name}: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} passed, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)"
-                    }
-                }
-            }
-        }
-    }
+//    apply plugin: AsciidoctorGradleModuleVersions
+//    apply plugin: 'org.ysb33r.os'
+//
+//    if (project.name != 'testfixtures-offline-repo') {
+//        apply plugin: 'groovy'
+//        apply plugin: 'idea'
+//
+//        if (!project.name.startsWith('testfixture')) {
+//
+//            apply plugin: AsciidoctorGradlePluginProject
+//            apply plugin: 'com.github.ben-manes.versions'
+//            apply plugin: 'net.ossindex.audit'
+//            apply plugin: 'org.kordamp.jdeps'
+//            apply plugin: 'org.ysb33r.ivypot'
+//
+//            if (!(project.name in withoutCodeCoverage)) {
+//                apply plugin: 'jacoco'
+//
+//                jacoco {
+//                    if (JavaVersion.current().isJava11Compatible() && GradleVersion.version(toolVersion) < GradleVersion.version('0.8.2')) {
+//                        toolVersion = '0.8.2'
+//                    }
+//                }
+//            }
+//        }
+//
+//        apply from: "${rootDir}/gradle/standard-repositories.gradle"
+//        apply from: "${rootDir}/gradle/code-quality.gradle"
+//
+//        if (!project.name.startsWith('testfixture')) {
+//
+//            if (!(project.name in withoutIntegrationTests)) {
+////                apply from: "${rootDir}/gradle/integration-tests.gradle"
+//            }
+//
+////            apply from: "${rootDir}/gradle/publishing.gradle"
+////            apply from: "${rootDir}/gradle/gradle-plugin-documentation.gradle"
+//            apply from: "${rootDir}/gradle/ci.gradle"
+//
+//            if (project.name.startsWith('asciidoctor-gradle-jvm')) {
+//                apply from: "${rootDir}/gradle/asciidoctorj-versions.gradle"
+////                apply from: "${rootDir}/gradle/jruby-versions.gradle"
+//            }
+//
+//            dependencyUpdates.resolutionStrategy = {
+//                componentSelection { rules ->
+//                    rules.all { selection ->
+//                        boolean rejected = ['beta', 'rc', 'cr', 'm'].any { qualifier ->
+//                            selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+//                        }
+//                        if (rejected) {
+//                            selection.reject('Release candidate')
+//                        }
+//                    }
+//                }
+//            }
+//
+//            configurations.all {
+//                resolutionStrategy {
+//                    eachDependency { DependencyResolveDetails details ->
+//                        if (details.requested.group == 'org.codehaus.groovy') {
+//                            details.useVersion GroovySystem.version
+//                            details.because 'The same version as Gradle Groovy is required'
+//                        }
+//                    }
+//                }
+//            }
+//
+//            audit {
+//                failOnError = false
+//            }
+//
+//            if (!(project.name in withoutCompatibilityTests)) {
+////                apply from: "${rootDir}/gradle/compatibility-tests.gradle"
+//            }
+//
+//            tasks.withType(Test).configureEach {
+//                useJUnitPlatform()
+//            }
+//        }
+//
+//        java {
+//            toolchain {
+//                languageVersion = JavaLanguageVersion.of(8)
+//            }
+//        }
+//
+//        project.tasks.withType(Test) {
+//            testLogging {
+//                afterSuite { desc, result ->
+//                    if (!desc.parent) {
+//                        println "Test results ${project.name}: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} passed, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)"
+//                    }
+//                }
+//            }
+//        }
+//    }
 }
 
-apply from: 'gradle/coveralls.gradle'
+//apply from: 'gradle/coveralls.gradle'
 
+
+// TODO: Fix these tasks - see if they are still needed
 task syncWrapper(type: Copy) {
     from 'gradle', {
         include 'wrapper/**'
