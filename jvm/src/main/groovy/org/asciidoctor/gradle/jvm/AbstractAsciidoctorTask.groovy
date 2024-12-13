@@ -480,7 +480,11 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
         }.curry(project.configurations) as Function<List<Dependency>, Configuration>
 
         inputs.files(this.asciidoctorj.configuration)
-        inputs.files { gemJarProviders }.withPathSensitivity(RELATIVE)
+            .withPathSensitivity(RELATIVE)
+            .withPropertyName('asciidoctorj-dependencies')
+        inputs.files { gemJarProviders }
+            .withPathSensitivity(RELATIVE)
+            .withPropertyName('gemJarProviders')
         inputs.property 'backends', { -> backends() }
         inputs.property 'asciidoctorj-version', { -> asciidoctorj.version }
         inputs.property 'jruby-version', { -> asciidoctorj.jrubyVersion ?: '' }
