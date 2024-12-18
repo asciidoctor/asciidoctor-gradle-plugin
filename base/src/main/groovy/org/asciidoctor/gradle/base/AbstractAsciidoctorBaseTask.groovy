@@ -665,6 +665,9 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
     @SuppressWarnings('ThisReferenceEscapesConstructor')
     protected AbstractAsciidoctorBaseTask() {
         super()
+        notCompatibleWithConfigurationCache(
+                'Asciidoctor Gradle 4.x is not compatible with CC. Wait for the 5.x release'
+        )
         this.projectOperations = ProjectOperations.find(project)
         this.intermediateArtifactPattern = project.objects.property(PatternSet)
         this.srcDir = createDirectoryProperty(project)
