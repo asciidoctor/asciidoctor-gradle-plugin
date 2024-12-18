@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle.remote
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.Options
 import org.asciidoctor.ast.Cursor
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorConfigurationContainer
@@ -64,7 +65,7 @@ abstract class ExecutorBase {
      */
     @SuppressWarnings('DuplicateStringLiteral ')
     protected
-    Map<String, Object> normalisedOptionsFor(final File file, ExecutorConfiguration runConfiguration) {
+    Options normalisedOptionsFor(final File file, ExecutorConfiguration runConfiguration) {
         setup.normalisedOptionsFor(file, runConfiguration)
     }
 
