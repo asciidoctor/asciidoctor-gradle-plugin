@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,16 +44,17 @@ class AsciidoctorRevealJSPluginSpec extends Specification {
         project.evaluate()
 
         then: 'reveal.js GEM has been added to the dependencies'
-        configurations.getByName(GEM_CONFIGURATION).dependencies.find { Dependency e ->
+        configurations.named(GEM_CONFIGURATION).get().dependencies.find { Dependency e ->
             e.group == 'rubygems'
             e.name == REVEALJS_GEM
             e.version == TestFixtureVersionLoader.VERSIONS['revealjs.gem']
         }
 
         and: 'Revels.js Asciiidoctor task is configured'
-        tasks.getByName(REVEALJS_TASK).templateRelativeDir == 'reveal.js'
-        tasks.getByName(REVEALJS_TASK).outputDir == project.file("${project.buildDir}/docs/asciidocRevealJs")
-        tasks.getByName(REVEALJS_TASK).dependsOn.find { it instanceof AsciidoctorGemPrepare }
+        AsciidoctorJRevealJSTask revealJSTask = tasks.named(REVEALJS_TASK, AsciidoctorJRevealJSTask).get()
+        revealJSTask.templateRelativeDir == 'reveal.js'
+        revealJSTask.outputDir == project.file("${project.buildDir}/docs/asciidocRevealJs")
+        revealJSTask.dependsOn.find { it instanceof AsciidoctorGemPrepare }
 
         and: 'Reveal.JS extension is created'
         extensions.getByName(RevealJSExtension.NAME) instanceof RevealJSExtension

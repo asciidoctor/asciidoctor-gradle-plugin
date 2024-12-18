@@ -124,7 +124,5 @@ trait CachingTestFixture {
 
     abstract File getAlternateProjectDir()
 
-    abstract boolean getPerformBuildScan()
-
     abstract List<String> getBuildScanArguments()
 }

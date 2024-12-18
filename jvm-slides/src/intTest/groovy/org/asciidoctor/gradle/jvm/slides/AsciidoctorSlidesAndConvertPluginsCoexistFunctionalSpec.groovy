@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ class AsciidoctorSlidesAndConvertPluginsCoexistFunctionalSpec extends Functional
 
         then:
         verifyAll {
-            new File(testProjectDir.root, 'build/docs/asciidoc/sample.html').exists()
+            new File(projectDir, 'build/docs/asciidoc/sample.html').exists()
         }
     }
 
@@ -44,7 +44,6 @@ class AsciidoctorSlidesAndConvertPluginsCoexistFunctionalSpec extends Functional
     }
 
     File createBuildFile(String extraContent = '') {
-        File buildFile = testProjectDir.newFile('build.gradle')
         buildFile << """
         plugins {
             id 'org.asciidoctor.jvm.revealjs'

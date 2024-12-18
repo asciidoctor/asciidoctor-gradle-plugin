@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,14 +28,13 @@ import org.gradle.api.file.CopySpec
 @java.lang.SuppressWarnings('NoWildcardImports')
 import org.gradle.api.tasks.*
 import org.gradle.workers.WorkerExecutor
-import org.ysb33r.grolifant.api.v4.StringUtils
 import org.ysb33r.grolifant.api.core.Version
 
 import javax.inject.Inject
 
 import static org.asciidoctor.gradle.jvm.gems.AsciidoctorGemSupportPlugin.GEMPREP_TASK
+import static org.asciidoctor.gradle.jvm.gems.AsciidoctorGemSupportPlugin.JAR_TASK
 import static org.asciidoctor.gradle.jvm.slides.RevealJSExtension.FIRST_VERSION_WITH_PLUGIN_SUPPORT
-import static org.ysb33r.grolifant.api.v4.TaskProvider.*
 import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 
 /**
@@ -45,7 +44,6 @@ import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 @CompileStatic
 class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements SlidesToExportAware {
 
-    public static final String PLUGIN_CONFIGURATION_FILENAME = 'revealjs-plugin-configuration.js'
     public static final String PLUGIN_LIST_FILENAME = 'revealjs-plugins.js'
     public final static String REVEALJS_GEM = 'asciidoctor-revealjs'
 
@@ -66,18 +64,22 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
     AsciidoctorJRevealJSTask(WorkerExecutor we) {
         super(we)
         this.revealjsOptions = new RevealJSOptions(project)
-        configuredOutputOptions.backends = [BACKEND_NAME]
+        outputOptions.backends = [BACKEND_NAME]
         copyAllResources()
-        org.ysb33r.grolifant.api.v4.TaskProvider<AsciidoctorGemPrepare> gemPrepare = taskByName(project, GEMPREP_TASK)
+        AsciidoctorGemPrepare gemPrepare = project.tasks.named(GEMPREP_TASK, AsciidoctorGemPrepare).get()
 
         asciidoctorj.with {
             requires(REVEALJS_GEM)
-            gemPaths { gemPrepare.get().outputDir }
+            dependsOn(gemPrepare)
+            withGemJar(JAR_TASK)
         }
 
         inputs.file( { RevealJSOptions opt -> opt.highlightJsThemeIfFile }.curry(this.revealjsOptions) ).optional()
         inputs.file( { RevealJSOptions opt -> opt.parallaxBackgroundImageIfFile }.
                 curry(this.revealjsOptions) ).optional()
+
+        // support cleanupPluginTempFiles() in exec()
+        awaitMode = true
     }
 
     /** Options for Reveal.JS slides.
@@ -131,7 +133,7 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
      */
     @Input
     String getTemplateRelativeDir() {
-        StringUtils.stringize(this.templateRelativeDir)
+        projectOperations.stringTools.stringize(this.templateRelativeDir)
     }
 
     /** The physical location of the template directory
@@ -205,7 +207,7 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
      */
     @Input
     List<String> getPlugins() {
-        StringUtils.stringize(this.requiredPlugins)
+        projectOperations.stringTools.stringize(this.requiredPlugins)
     }
 
     /** Toggle a built-in reveal.js plugin
@@ -243,10 +245,10 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
     }
 
     @Override
-    void processAsciidocSources() {
+    void exec() {
         checkRevealJsVersion()
         processTemplateResources()
-        super.processAsciidocSources()
+        super.exec()
         cleanupPluginTempFiles()
     }
 
@@ -261,14 +263,15 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
      * @return A collection of default attributes.
      */
     @Override
-    protected Map<String, Object> getTaskSpecificDefaultAttributes(File workingSourceDir) {
-        Map<String, Object> attrs = super.getTaskSpecificDefaultAttributes(workingSourceDir)
+    Map<String, ?> getTaskSpecificDefaultAttributes(File workingSourceDir) {
+        Map<String, String> attrs = super.getTaskSpecificDefaultAttributes(workingSourceDir) as Map<String, String>
 
-        attrs.putAll revealjsdir: getTemplateRelativeDir(),
+        attrs.putAll([revealjsdir: getTemplateRelativeDir(),
             revealjs_theme: getTheme(),
             'source-highlighter': 'highlightjs'
+        ])
 
-        attrs.putAll revealjsOptions.asAttributeMap
+        attrs.putAll(revealjsOptions.asAttributeMap)
 
         if (pluginSupportAvailable) {
             this.builtinPlugins.each { String pluginName, Boolean state ->
@@ -299,7 +302,7 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
      */
     @Override
     @SuppressWarnings('UnnecessaryPackageReference')
-    protected CopySpec getResourceCopySpec(java.util.Optional<String> lang) {
+    CopySpec getResourceCopySpec(java.util.Optional<String> lang) {
         CopySpec rcs = super.getResourceCopySpec(lang)
         revealjsOptions.enhanceCopySpec(rcs)
         rcs
@@ -321,7 +324,7 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
                 copySpec.into target
 
                 copySpec.from fromSource, { CopySpec cs ->
-                    cs.include 'js/**', 'css/**', 'lib/**', 'plugin/**'
+                    cs.include 'js/**', 'css/**', 'dist/**', 'lib/**', 'plugin/**'
                 }
 
                 fromPlugins.each { ResolvedRevealJSPlugin plugin ->
@@ -386,13 +389,13 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
     }
 
     private Set<ResolvedRevealJSPlugin> getResolvedPlugins() {
-        if (isPluginSupportAvailable()) {
+        if (pluginSupportAvailable) {
             final RevealJSPluginExtension pluginExtension = revealsjsPluginExtension
             Transform.toSet(pluginBundles) {
                 pluginExtension.getByName(it)
             }
         } else {
-            [].toSet()
+            [].toSet() as Set<ResolvedRevealJSPlugin>
         }
     }
 }

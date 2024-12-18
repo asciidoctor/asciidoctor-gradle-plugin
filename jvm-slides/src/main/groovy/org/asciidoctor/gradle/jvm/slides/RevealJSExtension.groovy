@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2023 the original author or authors.
+ * Copyright 2013-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,14 @@
 package org.asciidoctor.gradle.jvm.slides
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.base.GitHubArchive
 import org.asciidoctor.gradle.base.ModuleVersionLoader
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
+import org.ysb33r.grolifant.api.core.ProjectOperations
 import org.ysb33r.grolifant.api.core.Version
-import org.ysb33r.grolifant.api.v4.git.GitRepoArchiveDownloader
+import org.ysb33r.grolifant.api.core.git.GitRepoArchiveDownloader
+import org.ysb33r.grolifant.api.core.git.GitHubArchive
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClosure
 
@@ -64,13 +65,13 @@ class RevealJSExtension {
     }
 
     void templateGitHub(@DelegatesTo(GitHubArchive) Closure configurator) {
-        GitHubArchive archive = new GitHubArchive()
+        GitHubArchive archive = new GitHubArchive(ProjectOperations.create(project))
         executeDelegatingClosure(archive, configurator)
         resolveViaGitHub(archive)
     }
 
     void templateGitHub(Action<GitHubArchive> configurator) {
-        GitHubArchive archive = new GitHubArchive()
+        GitHubArchive archive = new GitHubArchive(ProjectOperations.create(project))
         configurator.execute(archive)
         resolveViaGitHub(archive)
     }
@@ -100,13 +101,13 @@ class RevealJSExtension {
     }
 
     private void resolveViaGitHub(final GitHubArchive archive) {
-        final GitRepoArchiveDownloader downloader = new GitRepoArchiveDownloader(archive, project)
+        final GitRepoArchiveDownloader downloader = new GitRepoArchiveDownloader(archive,
+            ProjectOperations.create(project))
 
         resolveRevealJs = { ->
             downloader.downloadRoot = project.buildDir
             final File root = downloader.archiveRoot
-            final String relativePath = archive.relativePath
-            relativePath ? new File(root, relativePath) : root
+            root
         } as Provider<File>
     }
 }
