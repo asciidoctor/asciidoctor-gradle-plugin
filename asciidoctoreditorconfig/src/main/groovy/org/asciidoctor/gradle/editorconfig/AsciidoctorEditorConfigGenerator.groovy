@@ -55,6 +55,9 @@ class AsciidoctorEditorConfigGenerator extends DefaultTask {
     private Object outputDir
 
     AsciidoctorEditorConfigGenerator() {
+        notCompatibleWithConfigurationCache(
+                'Asciidoctor Gradle 4.x is not compatible with CC. Wait for the 5.x release'
+        )
         this.projectOperations = ProjectOperations.find(project)
         this.outputDir = project.projectDir
         this.outputFile = project.provider({

@@ -58,7 +58,7 @@ class AsciidoctorJSetup implements Serializable {
      * @param runConfiguration The current executor configuration
      * @return Asciidoctor options
      */
-    @SuppressWarnings('DuplicateStringLiteral ')
+    @SuppressWarnings('UnnecessaryObjectReferences')
     Options normalisedOptionsFor(final File file, ExecutorConfiguration runConfiguration) {
         OptionsBuilder optionsBuilder = Options.builder()
 

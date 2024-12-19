@@ -175,7 +175,7 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         String sample2 = new File(buildDir, 'docs/asciidoc/subdir/sample2.html').text
 
         then:
-        sample2.contains('gradle-relative-srcdir = [..]')
+        sample2.contains('gradle-relative-srcdir = [subdir]')
     }
 
     @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/2324')
