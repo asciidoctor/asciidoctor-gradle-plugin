@@ -41,7 +41,7 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
             new File(projectDir, 'build/docs/asciidocRevealJs/revealjs.html').exists()
             new File(projectDir, 'build/docs/asciidocRevealJs/subdir/revealjs2.html').exists()
             new File(projectDir, "${DEFAULT_REVEALJS_PATH}/css").exists()
-            new File(projectDir, "${DEFAULT_REVEALJS_PATH}/lib").exists()
+            new File(projectDir, "${DEFAULT_REVEALJS_PATH}/dist").exists()
             new File(projectDir, "${DEFAULT_REVEALJS_PATH}/plugin").exists()
             new File(projectDir, "${DEFAULT_REVEALJS_PATH}/js").exists()
         }
@@ -54,7 +54,7 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
             templateGitHub {
                 organisation = 'hakimel'
                 repository = 'reveal.js'
-                tag = '3.6.0'
+                tag = '5.1.0'
             }
         }
         ''')
@@ -65,9 +65,10 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
         then:
         verifyAll {
             new File(projectDir, 'build/docs/asciidocRevealJs/revealjs.html').exists()
-            new File(projectDir, 'build/github-cache/hakimel/reveal.js/3.6.0').exists()
+            new File(projectDir, 'build/github-cache/hakimel/reveal.js/5.1.0').exists()
+            new File(projectDir, "${DEFAULT_REVEALJS_PATH}/dist").exists()
             new File(projectDir, "${DEFAULT_REVEALJS_PATH}/js/reveal.js").
-                text.contains('var VERSION = \'3.6.0\';')
+                text.contains('export const VERSION = \'5.1.0\';')
         }
     }
 
@@ -85,8 +86,7 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
 
         asciidoctorRevealJs {
             plugins 'rajgoel/chart/plugin.js'
-            pluginConfigurationFile 'src/docs/asciidoc/empty-plugin-configuration.js'
-            toggleBuiltinPlugin 'pdf', true
+            toggleBuiltinPlugin 'search', true
             toggleBuiltinPlugin 'notes', false
         }
         ''')
@@ -94,16 +94,16 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
         when:
         build()
         String revealjsHtml = new File(projectDir, 'build/docs/asciidocRevealJs/revealjs.html').text
-        String pluginConfig = new File(projectDir, 'src/docs/asciidoc/empty-plugin-configuration.js').text
         File pluginList = new File(projectDir, "${DEFAULT_REVEALJS_PATH}/revealjs-plugins.js")
 
         then:
         verifyAll {
             !pluginList.exists()
-            !revealjsHtml.contains('plugin/notes/notes')
-            revealjsHtml.contains("src: '${REVEALJS_DIR_NAME}/plugin/print-pdf/")
-            revealjsHtml.contains("src: '${REVEALJS_DIR_NAME}/plugin/rajgoel/chart/plugin.js'")
-            revealjsHtml.contains(pluginConfig)
+            !revealjsHtml.contains('plugin/notes')
+            revealjsHtml.contains("src: '${REVEALJS_DIR_NAME}/plugin/search/search.js'")
+            // plugins must be registered using presentation-docinfo-footer,
+            // see https://docs.asciidoctor.org/reveal.js-converter/5.0/converter/revealjs-plugins/#additional-plugins
+            // revealjsHtml.contains("src: '${REVEALJS_DIR_NAME}/plugin/rajgoel/chart/plugin.js'")
             new File(projectDir, "${DEFAULT_REVEALJS_PATH}/plugin/rajgoel/chart/plugin.js").exists()
         }
     }
