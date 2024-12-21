@@ -44,14 +44,12 @@ import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 @CompileStatic
 class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements SlidesToExportAware {
 
-    public static final String PLUGIN_LIST_FILENAME = 'revealjs-plugins.js'
     public final static String REVEALJS_GEM = 'asciidoctor-revealjs'
 
     private static final String BACKEND_NAME = 'revealjs'
 
     private Object templateRelativeDir = 'reveal.js'
     private String theme = 'white'
-    private Object pluginConfigurationFile
     private final Map<String, Boolean> builtinPlugins = [:]
     private final List<Object> requiredPlugins = []
 
@@ -77,9 +75,6 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
         inputs.file( { RevealJSOptions opt -> opt.highlightJsThemeIfFile }.curry(this.revealjsOptions) ).optional()
         inputs.file( { RevealJSOptions opt -> opt.parallaxBackgroundImageIfFile }.
                 curry(this.revealjsOptions) ).optional()
-
-        // support cleanupPluginTempFiles() in exec()
-        awaitMode = true
     }
 
     /** Options for Reveal.JS slides.
@@ -219,25 +214,6 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
         this.builtinPlugins.put(name, pluginState)
     }
 
-    /** Returns the location of the file for configuring external plugins.
-     *
-     * @return Location of file. Can be {@code null}
-     */
-    @Optional
-    @InputFile
-    @PathSensitive(RELATIVE)
-    File getPluginConfigurationFile() {
-        this.pluginConfigurationFile ? project.file(this.pluginConfigurationFile) : null
-    }
-
-    /** Sets the location of the project configuration file.
-     *
-     * @param f Location of the configuration file
-     */
-    void setPluginConfigurationFile(Object f) {
-        this.pluginConfigurationFile = f
-    }
-
     @Internal
     @Override
     Profile getProfile() {
@@ -249,7 +225,6 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
         checkRevealJsVersion()
         processTemplateResources()
         super.exec()
-        cleanupPluginTempFiles()
     }
 
     /** A task may add some default attributes.
@@ -281,13 +256,7 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
                 )
             }
 
-            if (!requiredPlugins.empty) {
-                attrs.put 'revealjs_plugins', pluginListFile.absolutePath
-
-                if (getPluginConfigurationFile() != null) {
-                    attrs.put 'revealjs_plugins_configuration', getPluginConfigurationFile().absolutePath
-                }
-            }
+            // 'revealjs_plugins not supported by asciidoctor-revealjs >= 5.0
         }
 
         attrs
@@ -334,15 +303,6 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
                 }
             }
         })
-
-        if (!fromPlugins.empty) {
-            final String relativePathForPlugins = "${templateRelativeDir}/plugin"
-            generatePluginList(pluginListFile, relativePathForPlugins)
-        }
-    }
-
-    private void cleanupPluginTempFiles() {
-        pluginListFile.delete()
     }
 
     @Internal
@@ -351,20 +311,8 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
     }
 
     @Internal
-    protected RevealJSPluginExtension getRevealsjsPluginExtension() {
+    protected RevealJSPluginExtension getRevealjsPluginExtension() {
         project.extensions.getByType(RevealJSPluginExtension)
-    }
-
-    private void generatePluginList(File targetFile, String relativePathForPlugins) {
-        targetFile.parentFile.mkdirs()
-
-        String pluginList = Transform.toList(plugins) { String fullName ->
-            "{ src: '${relativePathForPlugins}/${fullName}' }"
-        }.join(',\n')
-
-        targetFile.withWriter { Writer w ->
-            w.println pluginList
-        }
     }
 
     private void checkRevealJsVersion() {
@@ -378,10 +326,6 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
         Version.of(revealjsExtension.version) >= FIRST_VERSION_WITH_PLUGIN_SUPPORT
     }
 
-    private File getPluginListFile() {
-        new File(templateDir, PLUGIN_LIST_FILENAME)
-    }
-
     private Set<String> getPluginBundles() {
         Transform.toSet(plugins) {
             it.split('/', 2)[0]
@@ -390,7 +334,7 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
 
     private Set<ResolvedRevealJSPlugin> getResolvedPlugins() {
         if (pluginSupportAvailable) {
-            final RevealJSPluginExtension pluginExtension = revealsjsPluginExtension
+            final RevealJSPluginExtension pluginExtension = revealjsPluginExtension
             Transform.toSet(pluginBundles) {
                 pluginExtension.getByName(it)
             }

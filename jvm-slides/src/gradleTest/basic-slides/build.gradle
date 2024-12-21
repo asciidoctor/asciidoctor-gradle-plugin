@@ -33,9 +33,8 @@ asciidoctorRevealJs {
     }
 
     plugins 'rajgoel/chart/Chart.js'
-//    pluginConfigurationFile 'src/docs/asciidoc/empty-plugin-configuration.js'
 
-    toggleBuiltinPlugin 'pdf', true
+    toggleBuiltinPlugin 'search', true
     toggleBuiltinPlugin 'notes', false
 }
 // end::revealjs-basics[]
