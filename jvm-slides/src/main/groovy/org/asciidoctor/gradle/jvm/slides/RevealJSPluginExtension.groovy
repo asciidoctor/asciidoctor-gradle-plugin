@@ -29,17 +29,6 @@ class RevealJSPluginExtension extends AbstractDownloadableComponent<LocalRevealJ
 
     public final static String NAME = 'revealjsPlugins'
 
-    @SuppressWarnings('ClassName')
-    static class ResolvedLocalRevealJsPlguin implements ResolvedRevealJSPlugin {
-        final File location
-        final String name
-
-        ResolvedLocalRevealJsPlguin(final File location, final String name) {
-            this.location = location
-            this.name = name
-        }
-    }
-
     RevealJSPluginExtension(Project project) {
         super(project)
     }

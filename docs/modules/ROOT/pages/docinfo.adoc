@@ -1,3 +1,4 @@
+[[docinfo]]
 = Extra content for HTML & Docbook backends
 
 You may need to include extra content into the head of the exported document.

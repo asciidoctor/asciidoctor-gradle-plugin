@@ -138,9 +138,8 @@ class AsciidoctorRevealJSTaskCachingFunctionalSpec extends FunctionalSpecificati
     
             asciidoctorRevealJs {
                 plugins 'rajgoel/chart/Chart.js'
-                pluginConfigurationFile 'src/docs/asciidoc/empty-plugin-configuration.js'
-                toggleBuiltinPlugin 'pdf', true
-                toggleBuiltinPlugin 'notes', false
+                toggleBuiltinPlugin 'search', false
+                toggleBuiltinPlugin 'notes', true
             }
         ''')
 
