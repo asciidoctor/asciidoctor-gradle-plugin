@@ -111,7 +111,6 @@ Attribute values defined on the build file will win over values defined on the d
 You can change  this behavior by appending an `@` at the end of the value when defined in the build file.
 Please refer to xref:asciidoc:attributes:assignment-precedence.adoc#altering-the-assignment-precedence[Attribute assignment precedence] for more information.
 
-[[asciidoctorj-modules,{asciidoctorj-name} Modules]]
 == Versions of modules
 
 The modules block currently supports five elements:
