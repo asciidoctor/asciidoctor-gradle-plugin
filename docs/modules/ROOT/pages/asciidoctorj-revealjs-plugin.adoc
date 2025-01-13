@@ -180,7 +180,7 @@ asciidoctorRevealJs {
 }
 ----
 
-The Reveal.js plugins are be registered and configured by <<docinfo.adoc#docinfo>> files.
+The Reveal.js plugins are be registered and configured by xref:docinfo.adoc[docinfo] files.
 
 See https://docs.asciidoctor.org/reveal.js-converter/latest/converter/revealjs-plugins/[reveal.js Plugins] in https://docs.asciidoctor.org/reveal.js-converter/latest/[Asciidoctor reveal.js Documentation] for an example.
 
