@@ -277,9 +277,9 @@ asciidoctorjs { // <2>
 <1> Configuration when using {asciidoctorj-name}
 <2> Configuration when using {asciidoctorjs-name}
 
-== Choosing a Process Mode for {asciidoctorj-name}
+== Choosing an execution mode for {asciidoctorj-name}
 
-All {asciidoctorj-name}-based tasks can control how Asciidoctor conversions are being run via the `inProcess` property. This is early days, and a choice for your build will depend very much on your context, but the following has already become clear:
+All {asciidoctorj-name}-based tasks can control how Asciidoctor conversions are being run via the `executionMode` property. This is early days, and a choice for your build will depend very much on your context, but the following has already become clear:
 
 * `IN_PROCESS` and `OUT_OF_PROCESS` should theoretically run faster, especially if you continuously rebuild the same documentation. Gradle workers are the underlying implementation for these two options
 * The safe option is always `JAVA_EXEC`. For lower memory consumption this is by far the safer option. (It is also the only way we can get the Windows-based tests for this plugin to complete on Appveyor & Travis CI). It you run a lot of builds the penalty start-up time might become an issue for you.
