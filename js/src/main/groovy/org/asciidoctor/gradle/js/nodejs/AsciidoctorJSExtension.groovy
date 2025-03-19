@@ -71,7 +71,8 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
         this.projectName = project.name
         this.nodejs = project.extensions.getByType(AsciidoctorJSNodeExtension)
         this.npm = project.extensions.getByType(AsciidoctorJSNpmExtension)
-        this.dependencyFactory = new NodeJSDependencyFactory(
+        this.dependencyFactory = project.objects.newInstance(
+                NodeJSDependencyFactory,
                 projectOperations,
                 this.nodejs,
                 this.npm
@@ -95,7 +96,8 @@ class AsciidoctorJSExtension extends AbstractAsciidoctorJSExtension {
         this.projectName = task.project.name
         this.nodejs = task.extensions.getByType(AsciidoctorJSNodeExtension)
         this.npm = task.extensions.getByType(AsciidoctorJSNpmExtension)
-        this.dependencyFactory = new NodeJSDependencyFactory(
+        this.dependencyFactory = task.project.objects.newInstance(
+                NodeJSDependencyFactory,
                 projectOperations,
                 this.nodejs,
                 this.npm

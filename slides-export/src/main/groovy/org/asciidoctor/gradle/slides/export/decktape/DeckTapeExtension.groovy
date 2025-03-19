@@ -24,7 +24,6 @@ import org.asciidoctor.gradle.js.nodejs.internal.PackageDescriptor
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
-import org.gradle.api.artifacts.SelfResolvingDependency
 import org.ysb33r.gradle.nodejs.NpmPackageDescriptor
 import org.ysb33r.gradle.nodejs.utils.npm.NpmExecutor
 import org.ysb33r.grolifant.api.core.ProjectOperations
@@ -65,14 +64,16 @@ class DeckTapeExtension {
         final NodeJSDependencyFactory factory = new NodeJSDependencyFactory(po, nodejs, npm)
         final NpmExecutor npmExecutor = new NpmExecutor(po, nodejs, npm)
 
+        final NpmPackageDescriptor pregypDescriptor = new SimpleNpmPackageDescriptor(PACKAGE_PREGYP.scope, PACKAGE_PREGYP.name, pregypVersion)
+
         // Ensure puppeteer is installed first
-        final List<SelfResolvingDependency> deps = [
+        final List<Dependency> deps = [
                 factory.createDependency(PACKAGE_PUPPETEER, puppeteerVersion),
-                factory.createDependency(PACKAGE_PREGYP, pregypVersion)
+                factory.createDependency(pregypDescriptor)
         ]
 
         File preGypBinPath = new File(
-                npmExecutor.getPackageInstallationFolder((NpmPackageDescriptor) deps[1]),
+                npmExecutor.getPackageInstallationFolder(pregypDescriptor),
                 'bin'
         )
 
