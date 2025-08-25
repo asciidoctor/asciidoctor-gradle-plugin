@@ -38,31 +38,11 @@ import java.util.concurrent.Callable
  *
  * @since 3.0
  */
+@SuppressWarnings('AbstractClassWithPublicConstructor')
 @CompileStatic
 abstract class NodeJSDependencyFactory {
     private final ProjectOperations projectOperations
     private final NpmExecutor npmExecutor
-
-    /** Instantiates a factory for a specific context.
-     *
-     * @param po The Gradle project for which is is done.
-     * @param nodejs The NodeJS extension which is being used for this operation.
-     * @param npm The NPM extension that is being used for this operation.
-     *
-     * @since 4.0
-     */
-    @Inject
-    NodeJSDependencyFactory(
-            ProjectOperations po,
-            AsciidoctorJSNodeExtension nodejs,
-            AsciidoctorJSNpmExtension npm
-    ) {
-        this.projectOperations = po
-        this.npmExecutor = new NpmExecutor(po, nodejs, npm)
-    }
-
-    @Inject
-    protected abstract DependencyFactory getDependencyFactory()
 
     /** Create a NPM-based dependency.
      *
@@ -112,10 +92,31 @@ abstract class NodeJSDependencyFactory {
         Callable<FileCollection> fileCollectionSupplier = () -> {
             getPackageFiles(descriptor, withPaths)
         }
-        return dependencyFactory.create(
+        dependencyFactory.create(
                 projectOperations.fsOperations.emptyFileCollection().from(fileCollectionSupplier)
         )
     }
+
+    /** Instantiates a factory for a specific context.
+     *
+     * @param po The Gradle project for which is is done.
+     * @param nodejs The NodeJS extension which is being used for this operation.
+     * @param npm The NPM extension that is being used for this operation.
+     *
+     * @since 4.0
+     */
+    @Inject
+    NodeJSDependencyFactory(
+            ProjectOperations po,
+            AsciidoctorJSNodeExtension nodejs,
+            AsciidoctorJSNpmExtension npm
+    ) {
+        this.projectOperations = po
+        this.npmExecutor = new NpmExecutor(po, nodejs, npm)
+    }
+
+    @Inject
+    protected abstract DependencyFactory getDependencyFactory()
 
     private FileCollection getPackageFiles(
             final NpmPackageDescriptor descriptor,
@@ -138,7 +139,11 @@ abstract class NodeJSDependencyFactory {
             env[OperatingSystem.current().pathVar] = path
         }
 
-        List<String> installArgs = projectOperations.stringTools.stringize(['--no-bin-links', '--no-package-lock', '--loglevel=error'])
+        List<String> installArgs = projectOperations.stringTools.stringize([
+                '--no-bin-links',
+                '--no-package-lock',
+                '--loglevel=error']
+        )
         npmExecutor.installNpmPackage(descriptor, NpmDependencyGroup.DEVELOPMENT, installArgs, env).files
     }
 
