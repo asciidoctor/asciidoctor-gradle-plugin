@@ -17,22 +17,31 @@ package org.asciidoctor.gradle.js.nodejs.core
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.js.nodejs.internal.PackageDescriptor
-import org.gradle.api.artifacts.SelfResolvingDependency
-import org.ysb33r.gradle.nodejs.dependencies.npm.BaseNpmSelfResolvingDependency
+import org.gradle.api.artifacts.Dependency
+import org.gradle.api.artifacts.dsl.DependencyFactory
+import org.gradle.api.file.FileCollection
+import org.gradle.api.file.FileTree
+import org.ysb33r.gradle.nodejs.NpmDependencyGroup
+import org.ysb33r.gradle.nodejs.NpmPackageDescriptor
+import org.ysb33r.gradle.nodejs.SimpleNpmPackageDescriptor
+import org.ysb33r.gradle.nodejs.utils.npm.NpmExecutor
+import org.ysb33r.grolifant.api.core.OperatingSystem
 import org.ysb33r.grolifant.api.core.ProjectOperations
 
+import javax.inject.Inject
+import java.util.concurrent.Callable
+
 /**
- * A factory class for creating NPM self resolving dependencies in a Gradle context.
+ * A factory class for creating NPM dependencies in a Gradle context.
  *
  * @author Schalk W. Cronjé
  *
  * @since 3.0
  */
 @CompileStatic
-class NodeJSDependencyFactory {
+abstract class NodeJSDependencyFactory {
     private final ProjectOperations projectOperations
-    private final AsciidoctorJSNodeExtension nodejs
-    private final AsciidoctorJSNpmExtension npm
+    private final NpmExecutor npmExecutor
 
     /** Instantiates a factory for a specific context.
      *
@@ -42,28 +51,31 @@ class NodeJSDependencyFactory {
      *
      * @since 4.0
      */
+    @Inject
     NodeJSDependencyFactory(
             ProjectOperations po,
             AsciidoctorJSNodeExtension nodejs,
             AsciidoctorJSNpmExtension npm
     ) {
         this.projectOperations = po
-        this.nodejs = nodejs
-        this.npm = npm
+        this.npmExecutor = new NpmExecutor(po, nodejs, npm)
     }
 
-    /** Create a NPM-based self-resolving dependency.
+    @Inject
+    protected abstract DependencyFactory getDependencyFactory()
+
+    /** Create a NPM-based dependency.
      *
      * @param pkg Description of the NPM package
      * @param version Version (tag) of the NPM package.
      * @return A Gradle-style resolvable dependency.
      */
     @SuppressWarnings('FactoryMethodName')
-    SelfResolvingDependency createDependency(final PackageDescriptor pkg, final String version) {
-        createDependency(pkg.name, version, pkg.scope)
+    Dependency createDependency(final PackageDescriptor pkg, final String version) {
+        createDependency(pkg, version, null)
     }
 
-    /** Create a NPM-based self-resolving dependency.
+    /** Create a NPM-based dependency.
      *
      * This version allows for additional system search paths to be added in case
      * the package will require it during the installation process.
@@ -74,15 +86,16 @@ class NodeJSDependencyFactory {
      * @return A Gradle-style resolvable dependency.
      */
     @SuppressWarnings('FactoryMethodName')
-    SelfResolvingDependency createDependency(
+    Dependency createDependency(
             final PackageDescriptor pkg,
             final String version,
             final Set<File> withPaths
     ) {
-        createDependency(pkg.name, version, pkg.scope, withPaths)
+        NpmPackageDescriptor descriptor = new SimpleNpmPackageDescriptor(pkg.scope, pkg.name, version)
+        createDependency(descriptor, withPaths)
     }
 
-    /** Create a NPM-based self-resolving dependency.
+    /** Create a NPM-based dependency.
      *
      * @param name Name of NPM package.
      * @param version Version (tag) of NPM package.
@@ -91,32 +104,42 @@ class NodeJSDependencyFactory {
      * @return A Gradle-style resolvable dependency.
      */
     @SuppressWarnings('FactoryMethodName')
-    SelfResolvingDependency createDependency(
-            final String name,
-            final String version,
-            final String scope,
+    Dependency createDependency(
+            final NpmPackageDescriptor descriptor,
             final Set<File> withPaths = null
     ) {
-        Map<String, Object> description = [
-                name          : name,
-                tag           : version,
-                type          : 'dev',
-                'install-args': ['--no-bin-links', '--no-package-lock', '--loglevel=error']
-        ]
-
-        if (scope) {
-            description.put('scope', scope)
+        // Wrap actual file collection in a Callable to prevent eager installation of package
+        Callable<FileCollection> fileCollectionSupplier = () -> {
+            getPackageFiles(descriptor, withPaths)
         }
-
-        if (withPaths) {
-            description.put('path', projectOperations.fsOperations.files(withPaths).asPath)
-        }
-
-        new BaseNpmSelfResolvingDependency(
-                projectOperations,
-                nodejs,
-                npm,
-                description
+        return dependencyFactory.create(
+                projectOperations.fsOperations.emptyFileCollection().from(fileCollectionSupplier)
         )
     }
+
+    private FileCollection getPackageFiles(
+            final NpmPackageDescriptor descriptor,
+            final Set<File> withPaths
+    ) {
+        File installDir = npmExecutor.getPackageInstallationFolder(descriptor)
+        FileTree allFiles = projectOperations.fileTree(installDir)
+
+        if (allFiles.isEmpty()) {
+            installPackage(withPaths, descriptor)
+        }
+
+        allFiles
+    }
+
+    private void installPackage(Set<File> withPaths, NpmPackageDescriptor descriptor) {
+        Map<String, Object> env = [:]
+        if (withPaths) {
+            String path = projectOperations.fsOperations.files(withPaths).asPath
+            env[OperatingSystem.current().pathVar] = path
+        }
+
+        List<String> installArgs = projectOperations.stringTools.stringize(['--no-bin-links', '--no-package-lock', '--loglevel=error'])
+        npmExecutor.installNpmPackage(descriptor, NpmDependencyGroup.DEVELOPMENT, installArgs, env).files
+    }
+
 }
