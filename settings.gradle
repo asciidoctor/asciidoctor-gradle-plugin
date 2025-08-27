@@ -25,8 +25,7 @@ include 'asciidoctoreditorconfig'
 
 // New model5 plugins
 
-['core', 'js-core'].each {
-//['core', 'jvm-core'].each {
+['core', 'js-core', 'jvm-core'].each {
     include "model5/${it}"
     project(":model5/${it}").name = "asciidoctor5-${it}-plugin"
 }

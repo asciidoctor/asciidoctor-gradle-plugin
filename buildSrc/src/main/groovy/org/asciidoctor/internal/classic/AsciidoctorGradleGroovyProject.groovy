@@ -2,6 +2,8 @@ package org.asciidoctor.internal.classic
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import org.asciidoctor.internal.common.AsciidoctorGradleProjectExtension
+import org.asciidoctor.internal.common.CommonBasePlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.CopySpec
@@ -20,12 +22,9 @@ class AsciidoctorGradleGroovyProject implements Plugin<Project> {
     public final static String GENERATOR_NAME = 'generateModuleVersions'
 
     void apply(Project project) {
-        project.pluginManager.identity {
-            apply 'java-library'
-            apply 'groovy'
-            apply GrolifantServicePlugin
+        project.pluginManager.tap {
+            apply(CommonBasePlugin)
         }
-        project.extensions.create('agProject', AsciidoctorGradleProjectExtension, project)
 
         TaskProvider generateModuleVersions = project.tasks.register(GENERATOR_NAME, ModuleVersions)
 
@@ -40,26 +39,26 @@ class AsciidoctorGradleGroovyProject implements Plugin<Project> {
 
         addDefaultVersions(project)
         configureIdea(project)
-        configureRepositories(project)
-        configureJava(project)
+//        configureRepositories(project)
+//        configureJava(project)
     }
 
-    void configureRepositories(Project project) {
-        project.repositories.mavenCentral()
-        project.repositories.gradlePluginPortal()
+//    void configureRepositories(Project project) {
+//        project.repositories.mavenCentral()
+//        project.repositories.gradlePluginPortal()
+//
+//        if (project.extensions.getByType(AsciidoctorGradleProjectExtension).snapshot) {
+//            project.repositories.mavenLocal()
+//        }
+//    }
 
-        if (project.extensions.getByType(AsciidoctorGradleProjectExtension).snapshot) {
-            project.repositories.mavenLocal()
-        }
-    }
-
-    void configureJava(Project project) {
-        final java = project.extensions.getByType(JavaPluginExtension)
-        final ver = project.providers.gradleProperty('jdkVersion').orElse('8').get()
-        java.toolchain {
-            it.languageVersion.set(JavaLanguageVersion.of(ver))
-        }
-    }
+//    void configureJava(Project project) {
+//        final java = project.extensions.getByType(JavaPluginExtension)
+//        final ver = project.providers.gradleProperty('jdkVersion').orElse('8').get()
+//        java.toolchain {
+//            it.languageVersion.set(JavaLanguageVersion.of(ver))
+//        }
+//    }
 
     @CompileDynamic
     void addDefaultVersions(Project project) {

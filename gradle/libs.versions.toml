@@ -26,6 +26,7 @@ spock = "2.3-groovy-3.0"
 [libraries]
 # Keep in alphabetical order, please
 asciidoctorj = { module = "org.asciidoctor:asciidoctorj", version.ref = "asciidoctorj" }
+asciidoctorjApi = { module = "org.asciidoctor:asciidoctorj-api", version.ref = "asciidoctorj" }
 asciidoctorjDiagram = { module = "org.asciidoctor:asciidoctorj-diagram", version.ref = "asciidoctorjDiagram" }
 asciidoctorjDiagramDitaa = { module = "org.asciidoctor:asciidoctorj-diagram-ditaamini", version.ref = "asciidoctorjDiagramDitaa" }
 asciidoctorjEpub = { module = "org.asciidoctor:asciidoctorj-epub3", version.ref = "asciidoctorjEpub" }

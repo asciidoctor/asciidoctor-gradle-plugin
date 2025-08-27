@@ -1,5 +1,5 @@
 /*
- * Copyright ${year} the original author or authors.
+ * Copyright 2013 - 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,11 @@ class AsciidoctorCoreExtension {
     final ExtensiblePolymorphicDomainObjectContainer<AsciidoctorToolchain> toolchains
 
     final Provider<List<ToolchainInformation>> registeredToolchains
+
+    // TODO: Some of these attribute settings needs to be taken care of outside of this.
+//            attributesBuilder.attribute(ATTR_PROJECT_DIR, projectDir.absolutePath)
+//            attributesBuilder.attribute(ATTR_ROOT_DIR, rootDir.absolutePath)
+//            attributesBuilder.attribute(ATTR_REL_SRC_DIR, srcRelative.empty ? '.' : srcRelative)
 
     AsciidoctorCoreExtension(Project project) {
         final publicationFactory = new PublicationFactory(project, this)

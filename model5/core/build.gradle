@@ -1,5 +1,6 @@
-apply plugin: AsciidoctorGradlePluginProject
-apply plugin: 'java-test-fixtures'
+plugins {
+    id 'org.asciidoctor.internal.model5.gradle.project'
+}
 
 agProject {
     configurePlugin(

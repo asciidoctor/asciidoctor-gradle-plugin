@@ -49,10 +49,6 @@ gradlePlugin {
             id = 'org.asciidoctor.internal.classic.groovy.project'
             implementationClass = 'org.asciidoctor.internal.classic.AsciidoctorGradleGroovyProject'
         }
-        moduleVersions {
-            id = 'org.asciidoctor.internal.classic.module.versions'
-            implementationClass = 'org.asciidoctor.internal.classic.AsciidoctorGradleModuleVersions'
-        }
         gradleProject {
             id = 'org.asciidoctor.internal.classic.gradle.project'
             implementationClass = 'org.asciidoctor.internal.classic.AsciidoctorGradlePluginProject'
@@ -60,6 +56,24 @@ gradlePlugin {
         jvmGradleProject {
             id = 'org.asciidoctor.internal.classic.gradle.project.jvm'
             implementationClass = 'org.asciidoctor.internal.classic.AsciidoctorJGradlePluginProject'
+        }
+
+        moduleVersions {
+            id = 'org.asciidoctor.internal.classic.module.versions'
+            implementationClass = 'org.asciidoctor.internal.classic.AsciidoctorGradleModuleVersions'
+        }
+
+        basicGroovyProject5 {
+            id = 'org.asciidoctor.internal.model5.groovy.project'
+            implementationClass = 'org.asciidoctor.internal.model5.AsciidoctorGradleGroovyProject'
+        }
+        gradleProject5 {
+            id = 'org.asciidoctor.internal.model5.gradle.project'
+            implementationClass = 'org.asciidoctor.internal.model5.AsciidoctorGradlePluginProject'
+        }
+        jvmGradleProject5 {
+            id = 'org.asciidoctor.internal.model5.gradle.project.jvm'
+            implementationClass = 'org.asciidoctor.internal.model5.AsciidoctorJGradlePluginProject'
         }
     }
 }

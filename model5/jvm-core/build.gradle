@@ -1,6 +1,11 @@
-apply plugin: AsciidoctorGradlePluginProject
+plugins {
+    id 'org.asciidoctor.internal.model5.gradle.project.jvm'
+}
 
 agProject {
+    withJdkVersionFromProperty('jdkVersionAsciidoctorj')
+    withIntegrationTests()
+    withOfflineTestConfigurations()
     configurePlugin(
             'org.asciidoctor.jvm.core',
             'AsciidoctorJ Base Plugin',
@@ -17,9 +22,9 @@ agProject {
 }
 
 dependencies {
+    compileOnly(libs.asciidoctorjApi)
     api project(':asciidoctor5-core-plugin')
     implementation(libs.grolifantApi)
-    implementation(libs.asciidoctorj)
     runtimeOnly(libs.grolifantRuntime)
     testImplementation project(':testfixtures-jvm')
 }

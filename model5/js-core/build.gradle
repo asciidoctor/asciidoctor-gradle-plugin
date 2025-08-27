@@ -1,5 +1,5 @@
 plugins {
-    id 'org.asciidoctor.internal.classic.gradle.project'
+    id 'org.asciidoctor.internal.model5.gradle.project'
 }
 
 agProject {

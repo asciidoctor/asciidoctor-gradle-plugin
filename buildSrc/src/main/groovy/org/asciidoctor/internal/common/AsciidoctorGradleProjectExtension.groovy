@@ -1,3 +1,5 @@
+package org.asciidoctor.internal.common
+
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.gradle.api.GradleException
@@ -5,10 +7,12 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.ConfigurationContainer
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.plugins.ExtensionContainer
+import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.plugins.jvm.JvmTestSuite
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.SourceSetContainer
+import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.plugin.devel.GradlePluginDevelopmentExtension
 import org.gradle.plugin.devel.PluginDeclaration
 import org.gradle.plugin.devel.tasks.PluginUnderTestMetadata
@@ -16,7 +20,7 @@ import org.gradle.testing.base.TestingExtension
 import org.ysb33r.gradle.gradletest.GradleTestSetExtension
 import org.ysb33r.grolifant5.api.core.ProjectOperations
 
-import static ModuleVersions.INTERMEDIATE_FOLDER_PATH
+import static org.asciidoctor.internal.classic.ModuleVersions.INTERMEDIATE_FOLDER_PATH
 
 @CompileStatic
 @Slf4j
@@ -41,12 +45,18 @@ class AsciidoctorGradleProjectExtension {
                     ". (If you need a production-ready version of the AsciidoctorJ plugin for Gradle use a 4.x release of this plugin instead)."
                     : ''
         }
+        withJdkVersionFromProperty('jdkVersion')
+    }
+
+    void withJdkVersionFromProperty(String propName) {
+        final ver = project.providers.gradleProperty(propName).get()
+        extensions.getByType(JavaPluginExtension).toolchain.languageVersion.set(JavaLanguageVersion.of(ver))
     }
 
     void withIntegrationTests() {
         project.extensions.getByType(TestingExtension).suites.create('integrationTest', JvmTestSuite) { jts ->
             jts.tap {
-                useSpock()
+                useSpock(versionOf('spock'))
                 targets*.testTask*.configure { t ->
                     t.mustRunAfter('test')
                 }
@@ -83,6 +93,9 @@ class AsciidoctorGradleProjectExtension {
                 .get().split(',')
         )
         main.deprecationMessageChecksForVersion ('8.11.1', [])
+        main.deprecationMessageChecksForVersion ('8.14.3', [])
+
+        main.copyNotSymlink(true)
     }
 
     void withAdditionalPluginClasspath() {
