@@ -35,6 +35,7 @@ dependencies {
     implementation gradleApi()
     implementation libs.pluginPublishPlugin
     implementation libs.pluginGradleTest
+    implementation libs.pluginLicense
 
     runtimeOnly libs.grolifantRuntime
     runtimeOnly libs.pluginIvypot

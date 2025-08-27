@@ -1,0 +1,25 @@
+plugins {
+    id 'org.asciidoctor.internal.classic.gradle.project'
+}
+
+agProject {
+    configurePlugin(
+            'org.asciidoctor.js.core',
+            'AsciidoctorJS Base Plugin',
+            'Base plugin for all AsciidoctorJS tasks & extensions. Provides the asciidoctorjs toolchain',
+            'org.asciidoctor.gradle.model5.js.core.AsciidoctorJSBasePlugin',
+            ['asciidoctorjs']
+    )
+
+    withVersionSubstitution("${project.name}.properties", [
+            VERSION  : versionOf('asciidoctorjs'),
+    ])
+}
+
+dependencies {
+    api project(':asciidoctor5-core-plugin')
+    api(libs.pluginJavaScript)
+    implementation(libs.grolifantApi)
+    runtimeOnly(libs.grolifantRuntime)
+    testImplementation project(':testfixtures-jvm')
+}

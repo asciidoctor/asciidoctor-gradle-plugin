@@ -17,8 +17,9 @@ pluginJRubySimple = "2.0.0"
 pluginNodejs = "4.1.0"
 pluginPublishPlugin = "1.2.1"
 pluginIvypot = "2.0.3-SNAPSHOT"
-pluginJRuby = "2.1.0-SNAPSHOT"
 pluginJavaScript = "4.1.0"
+pluginJRuby = "2.1.0-SNAPSHOT"
+pluginLicense = "0.16.1"
 pluginOS = "2.0.0"
 spock = "2.3-groovy-3.0"
 
@@ -37,6 +38,7 @@ grolifantRemoteWorker = { module = "org.ysb33r.gradle:grolifant5-rawhide", versi
 jrubyComplete = { module = "org.jruby:jruby-complete", version.ref = "jruby" }
 jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 pluginGradleTest = { module = "org.ysb33r.gradletest:org.ysb33r.gradletest.gradle.plugin", version.ref = "pluginGradleTest" }
+pluginLicense = { module = "com.github.hierynomus.license:com.github.hierynomus.license.gradle.plugin", version.ref = "pluginLicense"}
 pluginPublishPlugin = { module = "com.gradle.publish:plugin-publish-plugin", version.ref = "pluginPublishPlugin" }
 pluginNodejs = { module = "org.ysb33r.gradle:nodejs-gradle-plugin", version.ref = "pluginNodejs" }
 pluginIvypot = { module = "org.ysb33r.ivypot:ivypot-gradle-plugin", version.ref = "pluginIvypot" }

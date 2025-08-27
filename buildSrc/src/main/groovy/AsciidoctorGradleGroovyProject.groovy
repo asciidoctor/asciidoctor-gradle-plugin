@@ -1,5 +1,6 @@
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import nl.javadude.gradle.plugins.license.LicenseExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.CopySpec
@@ -18,11 +19,13 @@ class AsciidoctorGradleGroovyProject implements Plugin<Project> {
     public final static String GENERATOR_NAME = 'generateModuleVersions'
 
     void apply(Project project) {
-        project.pluginManager.identity {
+        project.pluginManager.tap {
             apply 'java-library'
             apply 'groovy'
+            apply 'com.github.hierynomus.license'
             apply GrolifantServicePlugin
         }
+
         project.extensions.create('agProject', AsciidoctorGradleProjectExtension, project)
 
         TaskProvider generateModuleVersions = project.tasks.register(GENERATOR_NAME, ModuleVersions)
@@ -39,6 +42,26 @@ class AsciidoctorGradleGroovyProject implements Plugin<Project> {
         configureIdea(project)
         configureRepositories(project)
         configureJava(project)
+        configureLicense(project)
+    }
+
+    void configureLicense(Project project) {
+        final license = project.extensions.getByType(LicenseExtension)
+
+        license.tap {
+            header = project.rootProject.file('gradle/license/HEADER')
+            strictCheck = true
+            ignoreFailures = false
+            excludes([
+                    '**/*.adoc',
+                    '**/*.properties',
+                    '**/*.tar*',
+                    '**/*.zip*',
+                    '**/*.tbz',
+                    '**/*.tgz',
+                    '**/*.json',
+            ])
+        }
     }
 
     void configureRepositories(Project project) {

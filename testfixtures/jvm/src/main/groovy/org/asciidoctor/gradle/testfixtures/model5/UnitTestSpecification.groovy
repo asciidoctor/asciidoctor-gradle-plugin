@@ -22,11 +22,15 @@ import spock.lang.TempDir
 
 class UnitTestSpecification extends Specification {
     @TempDir
+    File testProjectDir
+
     File projectDir
-    Project project = ProjectBuilder.builder().withProjectDir(projectDir)build()
+    Project project
     ProjectOperations projectOperations
 
     void setup() {
+        projectDir = new File(testProjectDir,'test-project')
+        project = ProjectBuilder.builder().withProjectDir(projectDir).build()
         project.pluginManager.apply(GrolifantServicePlugin)
         projectOperations = ProjectOperations.find(project)
     }
