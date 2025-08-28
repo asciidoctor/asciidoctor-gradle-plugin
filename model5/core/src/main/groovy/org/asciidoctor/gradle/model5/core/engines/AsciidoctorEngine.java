@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2013 - 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,16 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.core
+package org.asciidoctor.gradle.model5.core.engines;
 
-import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePlugin
-import org.asciidoctor.gradle.testfixtures.model5.UnitTestSpecification
+import org.asciidoctor.gradle.model5.core.AsciidoctorLauncher;
+import org.gradle.api.Named;
+import org.gradle.api.provider.Provider;
 
-class AsciidoctorCoreExtensionSpec extends UnitTestSpecification {
+/**
+ * Methods for executing an engine
+ *
+ * @author Schalk W. Cronjé
+ *
+ * @since 5.0
+ */
+public interface AsciidoctorEngine extends Named {
 
-    void setup() {
-        project.pluginManager.apply(AsciidoctorCorePlugin)
-    }
-
-
+    /**
+     * Something that can execute Asciidoctor conversions.
+     *
+     * @return Provider to a runnable Asciidoctor engine.
+     */
+    Provider<? extends AsciidoctorLauncher> getLauncher();
 }

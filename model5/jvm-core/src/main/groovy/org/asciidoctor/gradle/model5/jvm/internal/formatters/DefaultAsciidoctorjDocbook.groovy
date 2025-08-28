@@ -13,16 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.core
+package org.asciidoctor.gradle.model5.jvm.internal.formatters
 
-import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePlugin
-import org.asciidoctor.gradle.testfixtures.model5.UnitTestSpecification
+import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjDocbook
+import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
+import org.gradle.api.Project
 
-class AsciidoctorCoreExtensionSpec extends UnitTestSpecification {
+import javax.inject.Inject
 
-    void setup() {
-        project.pluginManager.apply(AsciidoctorCorePlugin)
+/**
+ *
+ * @author Schalk W. Cronjé
+ *
+ * @since
+ */
+@CompileStatic
+class DefaultAsciidoctorjDocbook extends AbstractAsciidoctorJFormatter implements AsciidoctorjDocbook {
+
+    @Inject
+    DefaultAsciidoctorjDocbook(String name, AsciidoctorjToolchain tc, Project project) {
+        super(name,'docbook', tc,project)
     }
-
-
 }

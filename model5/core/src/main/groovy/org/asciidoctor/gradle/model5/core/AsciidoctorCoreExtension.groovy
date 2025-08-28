@@ -18,12 +18,10 @@ package org.asciidoctor.gradle.model5.core
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.internal.PublicationFactory
 import org.asciidoctor.gradle.model5.core.waitingroom.AsciidoctorPublication
-import org.asciidoctor.gradle.model5.toolchains.AsciidoctorToolchain
-import org.asciidoctor.gradle.model5.toolchains.ToolchainInformation
+import org.asciidoctor.gradle.model5.core.toolchains.AsciidoctorToolchain
 import org.gradle.api.ExtensiblePolymorphicDomainObjectContainer
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
-import org.gradle.api.provider.Provider
 
 @CompileStatic
 class AsciidoctorCoreExtension {
@@ -32,7 +30,7 @@ class AsciidoctorCoreExtension {
     final NamedDomainObjectContainer<AsciidoctorPublication> publications
     final ExtensiblePolymorphicDomainObjectContainer<AsciidoctorToolchain> toolchains
 
-    final Provider<List<ToolchainInformation>> registeredToolchains
+//    final Provider<List<ToolchainInformation>> registeredToolchains
 
     // TODO: Some of these attribute settings needs to be taken care of outside of this.
 //            attributesBuilder.attribute(ATTR_PROJECT_DIR, projectDir.absolutePath)
@@ -47,17 +45,17 @@ class AsciidoctorCoreExtension {
 
         this.toolchains = project.objects.polymorphicDomainObjectContainer(AsciidoctorToolchain)
 
-        this.registeredToolchains = project.provider { ->
-            toolchains.collect { tc  ->
-
-                new ToolchainInformation(
-                        tc.name,
-                        tc.toolchainClass.canonicalName,
-                        tc.registeredOutputFormatters.collectEntries { fmt ->
-                            [fmt.name,fmt.outputFormatterClass.canonicalName]
-                        }
-                )
-            }
-        }
+//        this.registeredToolchains = project.provider { ->
+//            toolchains.collect { tc  ->
+//
+//                new ToolchainInformation(
+//                        tc.name,
+//                        tc.toolchainClass.canonicalName,
+//                        tc.registeredOutputFormatters.collectEntries { fmt ->
+//                            [fmt.name,fmt.outputFormatterClass.canonicalName]
+//                        }
+//                )
+//            }
+//        }
     }
 }

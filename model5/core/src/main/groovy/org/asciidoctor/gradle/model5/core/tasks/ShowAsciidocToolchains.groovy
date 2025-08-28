@@ -17,7 +17,7 @@ package org.asciidoctor.gradle.model5.core.tasks
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorCoreExtension
-import org.asciidoctor.gradle.model5.toolchains.ToolchainInformation
+import org.asciidoctor.gradle.model5.core.toolchains.ToolchainInformation
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.UntrackedTask
@@ -37,7 +37,7 @@ class ShowAsciidocToolchains extends GrolifantDefaultTask {
     private final Provider<List<ToolchainInformation>> toolchains
 
     ShowAsciidocToolchains() {
-        this.toolchains = project.extensions.getByType(AsciidoctorCoreExtension).registeredToolchains
+//        this.toolchains = project.extensions.getByType(AsciidoctorCoreExtension).registeredToolchains
     }
 
     @TaskAction

@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2013 - 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,16 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.core
+package org.asciidoctor.gradle.model5.jvm.toolchains;
 
-import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePlugin
-import org.asciidoctor.gradle.testfixtures.model5.UnitTestSpecification
+/**
+ * Configuring modules for AsciidoctorJ.
+ *
+ * @author Schalk W. Cronjé
+ * @since 5.0
+ */
+public interface CoreVersions {
+    /**
+     * Overrides the default version of AsciidoctorJ.
+     *
+     * @param v New version to be used. Can be of anything that can be resolved by
+     *          {@link org.ysb33r.grolifant5.api.core.StringTools#stringize ( Object o )}
+     */
+    void useAsciidoctorj(Object v);
 
-class AsciidoctorCoreExtensionSpec extends UnitTestSpecification {
-
-    void setup() {
-        project.pluginManager.apply(AsciidoctorCorePlugin)
-    }
-
-
+    /**
+     * Overrides the default version of JRuby.
+     *
+     * @param v JRuby version
+     */
+    void useJRuby(Object v);
 }

@@ -15,6 +15,7 @@
  */
 package org.asciidoctor.gradle.model5.core
 
+import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePlugin
 import org.asciidoctor.gradle.model5.core.waitingroom.AsciidoctorPublication
 import org.asciidoctor.gradle.testfixtures.UnitTestSpecification
 

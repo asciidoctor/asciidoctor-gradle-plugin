@@ -7,7 +7,7 @@ agProject {
             'org.asciidoctor.core',
             'Asciidoctor Core Plugin',
             'Forms the core of all Asciidoctor plugins',
-            'org.asciidoctor.gradle.model5.core.AsciidoctorCorePlugin',
+            'org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePlugin',
             []
     )
 }

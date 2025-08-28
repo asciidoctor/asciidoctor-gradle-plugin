@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2013 - 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.core
+package org.asciidoctor.gradle.model5.js.toolchains;
 
-import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePlugin
-import org.asciidoctor.gradle.testfixtures.model5.UnitTestSpecification
+import org.asciidoctor.gradle.model5.core.toolchains.AsciidoctorToolchain;
 
-class AsciidoctorCoreExtensionSpec extends UnitTestSpecification {
-
-    void setup() {
-        project.pluginManager.apply(AsciidoctorCorePlugin)
-    }
-
-
+/**
+ * Toolchains running the {@code asciidoctor.js} engine.
+ *
+ * @author Schalk W. Cronjé
+ * @since 5.0
+ */
+public interface AsciidoctorjsToolchain extends AsciidoctorToolchain, CoreVersions {
 }

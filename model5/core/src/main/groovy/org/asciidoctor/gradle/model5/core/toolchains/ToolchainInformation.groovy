@@ -13,16 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.core
+package org.asciidoctor.gradle.model5.core.toolchains
 
-import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePlugin
-import org.asciidoctor.gradle.testfixtures.model5.UnitTestSpecification
+import groovy.transform.CompileStatic
 
-class AsciidoctorCoreExtensionSpec extends UnitTestSpecification {
+/**
+ * Holds information about a toolchain for display purposes.
+ *
+ * @author Schalk W. Cronjé
+ *
+ * @since 5.0
+ */
+@CompileStatic
+class ToolchainInformation implements Serializable {
 
-    void setup() {
-        project.pluginManager.apply(AsciidoctorCorePlugin)
+    final String name
+    final String className
+    final Map<String,String> formatters
+
+    ToolchainInformation(
+            String name,
+            String className,
+            Map<String,String> formatters
+    ) {
+        this.name = name
+        this.className = className
+        this.formatters = formatters.asImmutable()
     }
-
-
 }

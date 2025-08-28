@@ -10,7 +10,7 @@ agProject {
             'org.asciidoctor.jvm.core',
             'AsciidoctorJ Base Plugin',
             'Base plugin for all AsciidoctorJ tasks & extensions. Provides the asciidoctorj toolchain',
-            'org.asciidoctor.gradle.model5.jvm.core.AsciidoctorJBasePlugin',
+            'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjBasePlugin',
             ['asciidoctorj']
     )
 

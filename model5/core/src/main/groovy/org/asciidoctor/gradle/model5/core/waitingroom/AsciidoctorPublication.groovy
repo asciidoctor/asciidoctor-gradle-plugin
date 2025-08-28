@@ -24,7 +24,7 @@ import org.asciidoctor.gradle.model5.core.internal.LanguageFactory
 import org.asciidoctor.gradle.model5.core.internal.PublicationUtils
 import org.asciidoctor.gradle.model5.core.internal.attributes.DefaultAttributes
 import org.asciidoctor.gradle.model5.core.internal.basedir.DefaultBaseDirConfiguration
-import org.asciidoctor.gradle.model5.toolchains.AsciidoctorToolchain
+import org.asciidoctor.gradle.model5.core.toolchains.AsciidoctorToolchain
 import org.gradle.api.Action
 import org.gradle.api.ExtensiblePolymorphicDomainObjectContainer
 import org.gradle.api.Named
@@ -41,7 +41,7 @@ import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 
 import javax.inject.Inject
 
-import static org.asciidoctor.gradle.model5.core.AsciidoctorCorePlugin.TOOLCHAIN_DISPLAY_TASK
+import static org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePlugin.TOOLCHAIN_DISPLAY_TASK
 import static org.asciidoctor.gradle.model5.core.internal.PublicationUtils.ASCIIDOC_PATTERNS
 import static org.asciidoctor.gradle.model5.core.internal.PublicationUtils.UNDERSCORE_LED_FILES
 
@@ -352,26 +352,26 @@ class AsciidoctorPublication implements HasAsciidoctorAttributes, HasAsciidoctor
      * @param registeredFormats Names in the format {@code ToolchainName.FormatName} i.e. {@code asciidoctorj.html5}
      */
     void outputFormats(String... registeredFormats) {
-        final pub = this
-        registeredFormats.each { fmt ->
-            final naming =  fmt.split('\\.', 2)
-            if(naming.size() != 2) {
-                throw new IncorrectOutputFormatException("${fmt} is not in the form '<ToolChain>.<OutputFormat>.")
-            }
-            try {
-                toolchains.getByName(naming[0])
-                        .registeredOutputFormatters
-                        .getByName(naming[1])
-                        .registerTasksIfAbsent(pub)
-            } catch(UnknownDomainObjectException e) {
-                throw new IncorrectOutputFormatException(
-                        "Unknown toolchain or output formatter for '${fmt}'. \n" +
-                                "Run the '${TOOLCHAIN_DISPLAY_TASK}' task to see current registrations.",
-                        e
-                )
-            }
-
-        }
+//        final pub = this
+//        registeredFormats.each { fmt ->
+//            final naming =  fmt.split('\\.', 2)
+//            if(naming.size() != 2) {
+//                throw new IncorrectOutputFormatException("${fmt} is not in the form '<ToolChain>.<OutputFormat>.")
+//            }
+//            try {
+//                toolchains.getByName(naming[0])
+//                        .registeredOutputFormatters
+//                        .getByName(naming[1])
+//                        .registerTasksIfAbsent(pub)
+//            } catch(UnknownDomainObjectException e) {
+//                throw new IncorrectOutputFormatException(
+//                        "Unknown toolchain or output formatter for '${fmt}'. \n" +
+//                                "Run the '${TOOLCHAIN_DISPLAY_TASK}' task to see current registrations.",
+//                        e
+//                )
+//            }
+//
+//        }
     }
 
 //    public <T extends AsciidoctorOutputFormatter> void outputFormat(
