@@ -19,7 +19,9 @@ import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.toolchains.AsciidoctorToolchain
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjHtml5
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjOutputFormatter
+import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjOutputFormatterVersioned
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
+import org.gradle.api.Action
 import org.gradle.api.ExtensiblePolymorphicDomainObjectContainer
 import org.gradle.api.NamedDomainObjectFactory
 import org.gradle.api.model.ObjectFactory
@@ -35,12 +37,21 @@ import java.util.function.Function
  */
 @CompileStatic
 class JvmModel {
+    public static final String ASCIIDOCTORJ_GROUP = 'org.asciidoctor'
+    public static final String ASCIIDOCTORJ_CORE_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj"
+    public static final String ASCIIDOCTORJ_GROOVY_DSL_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-groovy-dsl"
+    public static final String ASCIIDOCTORJ_PDF_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-pdf"
+    public static final String ASCIIDOCTORJ_EPUB_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-epub3"
+    public static final String ASCIIDOCTORJ_DIAGRAM_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-diagram"
+    public static final String ASCIIDOCTORJ_LEANPUB_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctor-leanpub-markdown"
+
     /**
      * Name of a declarable configuration for use with a specific AsciidoctorJ engine.
      *
      * @param engineName Name of engine.
      * @return Configuration name
      */
+
     static String nameForEngineConfiguration(String engineName) {
         "asciidoctorjEngine${engineName.capitalize()}"
     }
@@ -95,6 +106,7 @@ class JvmModel {
             objectFactory.newInstance(factoryClass,tc)
         }
     }
+
     /**
      * Registers an output formatter on all the {@code asciidoctorj} toolchains.
      *
@@ -109,6 +121,40 @@ class JvmModel {
     ) {
         toolchains.withType(AsciidoctorjToolchain).configureEach { tc ->
             tc.registeredOutputFormatters.registerFactory(formatterClass,factoryFunction.apply(tc))
+        }
+    }
+
+    /**
+     * Registers a named formatter on each of the {@code asciidoctorj} toolchains
+     * @param toolchains Toolchains
+     * @param formatterClass Formatter class
+     * @param name Name of the formatter
+     */
+    static <T extends AsciidoctorjOutputFormatter> void registerOutputFormatterOnAllToolchains(
+            ExtensiblePolymorphicDomainObjectContainer<AsciidoctorToolchain> toolchains,
+            Class<T> formatterClass,
+            String name
+    ) {
+        registerOutputFormatterOnAllToolchains(toolchains,formatterClass,name) {
+        }
+    }
+
+    /**
+     * Registers a named formatter on each of the {@code asciidoctorj} toolchains.
+     * @param toolchains Toolchains.
+     * @param formatterClass Formatter class.
+     * @param name Name of the .
+     * @param configurator Configurator of the output formatter.
+     */
+    static <T extends AsciidoctorjOutputFormatter> void registerOutputFormatterOnAllToolchains(
+            ExtensiblePolymorphicDomainObjectContainer<AsciidoctorToolchain> toolchains,
+            Class<T> formatterClass,
+            String name,
+            Action<T> configurator
+    ) {
+        toolchains.withType(AsciidoctorjToolchain).configureEach { tc ->
+            final fc = tc.registeredOutputFormatters.register(name,formatterClass)
+            fc.configure(configurator)
         }
     }
 }

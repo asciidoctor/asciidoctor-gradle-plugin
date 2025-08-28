@@ -19,6 +19,7 @@ import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorLauncher
 import org.asciidoctor.gradle.model5.core.engines.AsciidoctorEngine
 import org.asciidoctor.gradle.model5.jvm.JvmModel
+import org.asciidoctor.gradle.model5.jvm.internal.PluginUtils
 import org.asciidoctor.gradle.model5.jvm.internal.engines.DefaultLauncher
 import org.asciidoctor.gradle.model5.jvm.toolchains.CoreVersions
 import org.gradle.api.Project
@@ -54,27 +55,17 @@ class AsciidoctorjEngine implements AsciidoctorEngine, CoreVersions {
     private final Provider<String> asciidoctorjProvider
     private final Property<String> jrubyVersion
 
-    private static final String ASCIIDOCTORJ_GROUP = 'org.asciidoctor'
-    private static final String ASCIIDOCTORJ_CORE_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj"
-    private static final String ASCIIDOCTORJ_GROOVY_DSL_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-groovy-dsl"
-    private static final String ASCIIDOCTORJ_PDF_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-pdf"
-    private static final String ASCIIDOCTORJ_EPUB_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-epub3"
-    private static final String ASCIIDOCTORJ_DIAGRAM_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-diagram"
-    private static final String ASCIIDOCTORJ_LEANPUB_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctor-leanpub-markdown"
-
     @Inject
     AsciidoctorjEngine(String name, Project tempProjectReference) {
         this.ccso = ConfigCacheSafeOperations.from(tempProjectReference)
         this.objectFactory = tempProjectReference.objects
-        final props = ccso.fsOperations().loadPropertiesFromResource(
-                "${INTERMEDIATE_RESOURCE_PATH}/asciidoctor5-jvm-core-plugin.properties",
-                this.class.classLoader
-        )
 
         this.name = name
         this.classpath = ccso.fsOperations().emptyFileCollection()
-        this.asciidoctorjVersion = ccso.providerTools().property(String).convention(props['asciidoctorj'].toString())
-        this.asciidoctorjProvider = asciidoctorjVersion.map { "${ASCIIDOCTORJ_CORE_DEPENDENCY}:${it}".toString() }
+        this.asciidoctorjVersion = ccso.providerTools().property(String).convention(
+                PluginUtils.loadDefaultVersion('asciidoctorj', tempProjectReference, this.class.classLoader)
+        )
+        this.asciidoctorjProvider = asciidoctorjVersion.map { "${JvmModel.ASCIIDOCTORJ_CORE_DEPENDENCY}:${it}".toString() }
         this.jrubyVersion = ccso.providerTools().property(String)
 
         final cfgName = JvmModel.nameForEngineConfiguration(name)

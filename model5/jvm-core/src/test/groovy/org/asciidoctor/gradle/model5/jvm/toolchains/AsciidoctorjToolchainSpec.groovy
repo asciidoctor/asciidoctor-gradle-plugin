@@ -18,8 +18,10 @@ package org.asciidoctor.gradle.model5.jvm.toolchains
 import org.asciidoctor.gradle.model5.core.AsciidoctorCoreExtension
 import org.asciidoctor.gradle.model5.jvm.internal.formatters.DefaultAsciidoctorjDocbook
 import org.asciidoctor.gradle.model5.jvm.internal.formatters.DefaultAsciidoctorjHtml5
+import org.asciidoctor.gradle.model5.jvm.internal.formatters.DefaultAsciidoctorjPdf
 import org.asciidoctor.gradle.model5.jvm.internal.toolchains.DefaultAsciidoctorjToolchain
 import org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjBasePlugin
+import org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjPdfPlugin
 import org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjPlugin
 import org.asciidoctor.gradle.testfixtures.model5.UnitTestSpecification
 
@@ -57,5 +59,16 @@ class AsciidoctorjToolchainSpec extends UnitTestSpecification {
         then:
         formatters.getByName('html') instanceof DefaultAsciidoctorjHtml5
         formatters.getByName('docbook') instanceof DefaultAsciidoctorjDocbook
+    }
+
+    void 'When the pdf and the standard plugin, the default toolchain will have a pdf output formatter'() {
+        when:
+        project.pluginManager.apply(AsciidoctorjPlugin)
+        project.pluginManager.apply(AsciidoctorjPdfPlugin)
+        final tc = asciidoc.toolchains.getByName(AsciidoctorjPlugin.DEFAULT_TOOLCHAIN)
+        final formatters = tc.registeredOutputFormatters
+
+        then:
+        formatters.getByName('pdf') instanceof DefaultAsciidoctorjPdf
     }
 }

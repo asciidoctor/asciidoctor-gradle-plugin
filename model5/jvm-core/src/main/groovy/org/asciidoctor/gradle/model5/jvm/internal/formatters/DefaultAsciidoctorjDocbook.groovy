@@ -29,7 +29,7 @@ import javax.inject.Inject
  * @since
  */
 @CompileStatic
-class DefaultAsciidoctorjDocbook extends AbstractAsciidoctorJFormatter implements AsciidoctorjDocbook {
+class DefaultAsciidoctorjDocbook extends AbstractAsciidoctorjFormatter implements AsciidoctorjDocbook {
 
     @Inject
     DefaultAsciidoctorjDocbook(String name, AsciidoctorjToolchain tc, Project project) {

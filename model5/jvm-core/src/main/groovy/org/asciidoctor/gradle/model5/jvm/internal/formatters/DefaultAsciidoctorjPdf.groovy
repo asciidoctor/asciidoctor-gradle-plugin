@@ -16,23 +16,33 @@
 package org.asciidoctor.gradle.model5.jvm.internal.formatters
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjHtml5
+import org.asciidoctor.gradle.model5.jvm.JvmModel
+import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjPdf
+import org.asciidoctor.gradle.model5.jvm.internal.PluginUtils
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.gradle.api.Project
 
 import javax.inject.Inject
 
 /**
+ * Implementation of {@code asciidoctorj-pdf} output formatter.
  *
  * @author Schalk W. Cronjé
  *
- * @since
+ * @since 5.0
  */
 @CompileStatic
-class DefaultAsciidoctorjHtml5 extends AbstractAsciidoctorjFormatter implements AsciidoctorjHtml5 {
+class DefaultAsciidoctorjPdf extends AbstractAsciidoctorJFormatterVersioned implements AsciidoctorjPdf {
 
     @Inject
-    DefaultAsciidoctorjHtml5(String name, AsciidoctorjToolchain tc, Project project) {
-        super(name,'html5', tc,project)
+    DefaultAsciidoctorjPdf(String name, AsciidoctorjToolchain tc, Project project) {
+        super(
+                name,
+                'pdf',
+                JvmModel.ASCIIDOCTORJ_PDF_DEPENDENCY,
+                PluginUtils.loadDefaultVersion('asciidoctorj.pdf', project, tc.class.classLoader),
+                tc,
+                project
+        )
     }
 }

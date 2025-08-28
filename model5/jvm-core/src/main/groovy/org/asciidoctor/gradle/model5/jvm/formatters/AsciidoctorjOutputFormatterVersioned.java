@@ -16,8 +16,7 @@
 package org.asciidoctor.gradle.model5.jvm.formatters;
 
 import org.asciidoctor.gradle.model5.core.AsciidoctorOutputFormatter;
-import org.asciidoctor.gradle.model5.jvm.ExecutionMode;
-import org.gradle.api.provider.Provider;
+import org.gradle.api.file.FileCollection;
 
 /**
  * Defines an output formatter that works on an {@code asciidoctorj} engine.
@@ -25,28 +24,20 @@ import org.gradle.api.provider.Provider;
  * @author Schalk W. Cronjé
  * @since 5.0
  */
-public interface AsciidoctorjOutputFormatter extends AsciidoctorOutputFormatter {
+public interface AsciidoctorjOutputFormatterVersioned extends AsciidoctorjOutputFormatter {
 
     /**
-     * Sets whether the workers should run in or out of process.
+     * The component version.
      *
-     * @param mode Execution mode.
+     * @param ver Anything convertible to a string with
+     *            {@link org.ysb33r.grolifant5.api.core.StringTools#stringize ( Object o )}.
      */
-    default void setExecutionMode(String mode) {
-        setExecutionMode(ExecutionMode.of(mode));
-    }
+    void useVersion(Object ver);
 
     /**
-     * Sets whether the workers should run in or out of the Gradle process.
+     * Additional itemns to add to the classpath when it runs.
      *
-     * @param mode Execution mode.
+     * @return Classpath.
      */
-    void setExecutionMode(ExecutionMode mode);
-
-    /**
-     * Get the execution mode for the formatter.
-     *
-     * @return Provider to execution mode.
-     */
-    Provider<ExecutionMode> getExecutionMode();
+    FileCollection getClasspath();
 }

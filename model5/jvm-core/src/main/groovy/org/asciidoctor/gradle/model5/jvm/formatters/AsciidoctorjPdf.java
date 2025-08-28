@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2013 - 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,26 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.jvm.internal.formatters
-
-import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjHtml5
-import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
-import org.gradle.api.Project
-
-import javax.inject.Inject
+package org.asciidoctor.gradle.model5.jvm.formatters;
 
 /**
+ * THe {@code asciidoctorj-pdf} output formatter.
  *
  * @author Schalk W. Cronjé
- *
- * @since
+ * @since 5.0
  */
-@CompileStatic
-class DefaultAsciidoctorjHtml5 extends AbstractAsciidoctorjFormatter implements AsciidoctorjHtml5 {
-
-    @Inject
-    DefaultAsciidoctorjHtml5(String name, AsciidoctorjToolchain tc, Project project) {
-        super(name,'html5', tc,project)
-    }
+public interface AsciidoctorjPdf extends AsciidoctorjOutputFormatterVersioned {
 }

@@ -6,19 +6,41 @@ agProject {
     withJdkVersionFromProperty('jdkVersionAsciidoctorj')
     withIntegrationTests()
     withOfflineTestConfigurations()
+
     configurePlugin(
-            'org.asciidoctor.jvm.core',
+            'org.asciidoctor.jvm.base',
             'AsciidoctorJ Base Plugin',
-            'Base plugin for all AsciidoctorJ tasks & extensions. Provides the asciidoctorj toolchain',
+            'Base plugin for all AsciidoctorJ tasks & extensions.',
             'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjBasePlugin',
+            ['asciidoctorj']
+    )
+
+    configurePlugin(
+            'org.asciidoctor.jvm',
+            'AsciidoctorJ Plugin',
+            'Provides html and docbook formatters for all AsciidoctorJ toolchains',
+            'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjPlugin',
+            ['asciidoctorj']
+    )
+
+    configurePlugin(
+            'org.asciidoctor.jvm.pdf',
+            'AsciidoctorJ Pdf Plugin',
+            'Provides pdf formatters for all AsciidoctorJ toolchains',
+            'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjPdfPlugin',
             ['asciidoctorj']
     )
 
     withVersionSubstitution("${project.name}.properties", [
             VERSION  : versionOf('asciidoctorj'),
             GROOVYDSL: versionOf('asciidoctorjGroovyDsl'),
-            DIAGRAM  : versionOf('asciidoctorjDiagram')
+            DIAGRAM  : versionOf('asciidoctorjDiagram'),
+            PDF: versionOf('asciidoctorjPdf'),
     ])
+}
+
+configurations {
+    cachingOnly
 }
 
 dependencies {
@@ -27,4 +49,6 @@ dependencies {
     implementation(libs.grolifantApi)
     runtimeOnly(libs.grolifantRuntime)
     testImplementation project(':testfixtures-jvm')
+
+    cachingOnly(libs.asciidoctorjPdf)
 }

@@ -5,6 +5,7 @@ asciidoctorjDiagram = "3.0.1"
 asciidoctorjDiagramDitaa = "1.0.3"
 asciidoctorjEpub = "2.1.3"
 asciidoctorjGroovyDsl = "2.0.2"
+asciidoctorjPdf = "2.3.19"
 asciidoctorjs = "4.0.0"
 cglib = "3.3.0"
 commonsIO = "2.15.1"
@@ -31,6 +32,7 @@ asciidoctorjDiagram = { module = "org.asciidoctor:asciidoctorj-diagram", version
 asciidoctorjDiagramDitaa = { module = "org.asciidoctor:asciidoctorj-diagram-ditaamini", version.ref = "asciidoctorjDiagramDitaa" }
 asciidoctorjEpub = { module = "org.asciidoctor:asciidoctorj-epub3", version.ref = "asciidoctorjEpub" }
 asciidoctorjGroovyDsl = { module = "org.asciidoctor:asciidoctorj-groovy-dsl", version.ref = "asciidoctorjGroovyDsl" }
+asciidoctorjPdf = { module = "org.asciidoctor:asciidoctorj-pdf", version.ref = "asciidoctorjPdf" }
 cglib = { module = "cglib:cglib-nodep", version.ref = "cglib" }
 commonsIO = { module = "commons-io:commons-io", version.ref = "commonsIO" }
 grolifantApi = { module = "org.ysb33r.gradle:grolifant5-core", version.ref = "grolifant" }

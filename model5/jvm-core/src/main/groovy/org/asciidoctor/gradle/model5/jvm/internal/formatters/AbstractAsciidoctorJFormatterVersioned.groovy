@@ -16,17 +16,34 @@
 package org.asciidoctor.gradle.model5.jvm.internal.formatters
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.model5.jvm.JvmModel
+import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjOutputFormatterVersioned
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.gradle.api.Project
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.FileCollection
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
+import org.ysb33r.grolifant5.api.core.ProjectOperations
 
 @CompileStatic
-abstract class AbstractAsciidoctorJFormatterVersioned extends AbstractAsciidoctorJFormatter {
-    private final Property<String> moduleVersion
+abstract class AbstractAsciidoctorJFormatterVersioned extends AbstractAsciidoctorjFormatter
+        implements AsciidoctorjOutputFormatterVersioned {
 
+
+    protected final Property<String> moduleVersion
+    private final ConfigurableFileCollection classpath
+
+    @Override
     void useVersion(Object ver) {
-
+        ccso.stringTools().updateStringProperty(this.moduleVersion, ver)
     }
+
+    @Override
+    FileCollection getClasspath() {
+        this.classpath
+    }
+
 //    protected final Project project
 
 //    /**
@@ -46,13 +63,36 @@ abstract class AbstractAsciidoctorJFormatterVersioned extends AbstractAsciidocto
 //        }
 //    }
 
+    /**
+     *
+     * @param name Name of the output formatter.
+     * @param backendName Name of the backend.
+     * @param componentModule THe maven module notation, excluding the version
+     * @param componentDefaultVersion THe default version of the component.
+     * @param tc The toolchain the formatter is attached to.
+     * @param tempProjectReference A temporary reference to a {@link Project} instance.
+     */
     protected AbstractAsciidoctorJFormatterVersioned(
             String name,
             String backendName,
+            String componentModule,
+            Provider<String> componentDefaultVersion,
             AsciidoctorjToolchain tc,
-            Project project
+            Project tempProjectReference
     ) {
-        super(name, backendName, tc, project)
-        this.moduleVersion = project.objects.property(String)
+        super(name, backendName, tc, tempProjectReference)
+        this.moduleVersion = tempProjectReference.objects.property(String).convention(componentDefaultVersion)
+
+        final cfgName = JvmModel.nameForOutputFormatterConfiguration(tc.name, name)
+        final runtime = JvmModel.nameForOutputFormatterConfigurationResolvable(tc.name, name)
+
+        ProjectOperations.find(tempProjectReference).configurations
+                .createLocalRoleFocusedConfiguration(cfgName, runtime, true)
+        tempProjectReference.dependencies.addProvider(
+                cfgName,
+                this.moduleVersion.map { "${componentModule}:${it}".toString()}
+        )
+        this.classpath = ccso.fsOperations().emptyFileCollection()
+        this.classpath.from(tempProjectReference.configurations.getByName(runtime))
     }
 }

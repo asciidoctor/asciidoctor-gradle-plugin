@@ -56,7 +56,6 @@ class DefaultLauncher implements AsciidoctorLauncher {
 
     @Override
     void run(AsciidoctorExecutionsSettings executionsSettings, AsciidoctorConversionSettings conversionSettings) {
-        // TODO: Can have ability to run conversion in parallel
         final wq = createWorkQueue()
         final groups = EngineUtils.groupByParent(conversionSettings.sourceFiles.get())
         final root = conversionSettings.sourceRootDir.get().asFile

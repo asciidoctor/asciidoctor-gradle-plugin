@@ -19,10 +19,14 @@ import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorCoreExtension
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjDocbook
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjHtml5
+import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjPdf
+import org.asciidoctor.gradle.model5.jvm.internal.formatters.AsciidoctorjHtml5Factory
+import org.asciidoctor.gradle.model5.jvm.internal.formatters.AsciidoctorjPdfFactory
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
+import static org.asciidoctor.gradle.model5.jvm.JvmModel.registerOutputFormatterFactory
 import static org.asciidoctor.gradle.model5.jvm.JvmModel.registerOutputFormatterOnAllToolchains
 
 /**
@@ -33,9 +37,7 @@ import static org.asciidoctor.gradle.model5.jvm.JvmModel.registerOutputFormatter
  * @since 5.0
  */
 @CompileStatic
-class AsciidoctorjPlugin implements Plugin<Project> {
-    public static final String DEFAULT_TOOLCHAIN = 'asciidoctorj'
-    public static final String PLUGIN_ID = 'org.asciidoctor.jvm'
+class AsciidoctorjPdfPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
@@ -44,10 +46,16 @@ class AsciidoctorjPlugin implements Plugin<Project> {
         }
 
         final asciidoc = project.extensions.getByType(AsciidoctorCoreExtension)
-        asciidoc.toolchains.create(DEFAULT_TOOLCHAIN, AsciidoctorjToolchain)
-        registerOutputFormatterOnAllToolchains(asciidoc.toolchains, AsciidoctorjHtml5, 'html')
-        registerOutputFormatterOnAllToolchains(asciidoc.toolchains, AsciidoctorjDocbook, 'docbook')
 
-        // TODO: Register main sourceset ??
+        registerOutputFormatterFactory(
+                asciidoc.toolchains,
+                AsciidoctorjPdf,
+                AsciidoctorjPdfFactory,
+                project.objects
+        )
+
+        project.pluginManager.withPlugin(AsciidoctorjPlugin.PLUGIN_ID) {
+            registerOutputFormatterOnAllToolchains(asciidoc.toolchains, AsciidoctorjPdf, 'pdf')
+        }
     }
 }

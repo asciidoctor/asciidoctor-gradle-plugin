@@ -17,22 +17,28 @@ package org.asciidoctor.gradle.model5.jvm.internal.formatters
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjHtml5
+import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjPdf
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
+import org.gradle.api.NamedDomainObjectFactory
 import org.gradle.api.Project
+import org.gradle.api.model.ObjectFactory
 
 import javax.inject.Inject
 
-/**
- *
- * @author Schalk W. Cronjé
- *
- * @since
- */
 @CompileStatic
-class DefaultAsciidoctorjHtml5 extends AbstractAsciidoctorjFormatter implements AsciidoctorjHtml5 {
+class AsciidoctorjPdfFactory implements NamedDomainObjectFactory<AsciidoctorjPdf> {
+
+    private final ObjectFactory objectFactory
+    private final AsciidoctorjToolchain toolchain
 
     @Inject
-    DefaultAsciidoctorjHtml5(String name, AsciidoctorjToolchain tc, Project project) {
-        super(name,'html5', tc,project)
+    AsciidoctorjPdfFactory(AsciidoctorjToolchain toolchain, Project project) {
+        this.objectFactory = project.objects
+        this.toolchain = toolchain
+    }
+
+    @Override
+    AsciidoctorjPdf create(String name) {
+        objectFactory.newInstance(DefaultAsciidoctorjPdf, name, toolchain)
     }
 }
