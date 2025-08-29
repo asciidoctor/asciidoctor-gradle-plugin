@@ -16,7 +16,7 @@
 package org.asciidoctor.gradle.model5.core.toolchains
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.AsciidoctorOutputFormatter
+import org.asciidoctor.gradle.model5.core.formatters.AsciidoctorOutputFormatter
 import org.gradle.api.ExtensiblePolymorphicDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory

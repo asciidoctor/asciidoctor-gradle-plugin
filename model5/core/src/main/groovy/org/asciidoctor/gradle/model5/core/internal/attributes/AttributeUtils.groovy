@@ -16,7 +16,7 @@
 package org.asciidoctor.gradle.model5.core.internal.attributes
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.waitingroom.AttributeType
+import org.asciidoctor.gradle.model5.core.attributes.AttributeType
 import org.asciidoctor.gradle.model5.core.errors.UnsupportedAttributeType
 import org.ysb33r.grolifant5.api.core.StringTools
 import org.ysb33r.grolifant5.api.core.Transform

@@ -16,7 +16,7 @@
 package org.asciidoctor.gradle.model5.core.internal
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.waitingroom.Attributes
+import org.asciidoctor.gradle.model5.core.attributes.Attributes
 import org.asciidoctor.gradle.model5.core.waitingroom.Language
 import org.asciidoctor.gradle.model5.core.internal.attributes.DefaultAttributes
 import org.gradle.api.Action

@@ -17,7 +17,6 @@ package org.asciidoctor.gradle.model5.jvm.internal.formatters
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorNamedBackend
-import org.asciidoctor.gradle.model5.core.AsciidoctorOutputFormatter
 import org.asciidoctor.gradle.model5.jvm.ExecutionMode
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjOutputFormatter
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain

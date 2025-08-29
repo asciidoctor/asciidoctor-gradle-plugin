@@ -1,0 +1,9 @@
+= Diagrams
+
+[ditaa]
+.Some ditaa
+----
++------------+
+| Some box   |
++------------+
+----

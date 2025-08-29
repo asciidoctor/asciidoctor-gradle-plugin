@@ -34,8 +34,6 @@ import org.ysb33r.grolifant5.api.core.ProjectOperations
 
 import javax.inject.Inject
 
-import static org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePlugin.INTERMEDIATE_RESOURCE_PATH
-
 /**
  * Runs the Asciidoctor engine
  * @author Schalk W. Cronjé

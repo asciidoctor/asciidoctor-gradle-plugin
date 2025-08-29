@@ -23,16 +23,21 @@ import org.gradle.api.Project
 import javax.inject.Inject
 
 /**
+ * HTML5 backend.
  *
  * @author Schalk W. Cronjé
  *
- * @since
+ * @since 5.0
  */
 @CompileStatic
 class DefaultAsciidoctorjHtml5 extends AbstractAsciidoctorjFormatter implements AsciidoctorjHtml5 {
+    public static final String DEFAULT_NAME = 'html'
+    public static final String BACKEND_NAME = 'html5'
+
+    final boolean copyResources = true
 
     @Inject
     DefaultAsciidoctorjHtml5(String name, AsciidoctorjToolchain tc, Project project) {
-        super(name,'html5', tc,project)
+        super(name,BACKEND_NAME, tc,project)
     }
 }

@@ -16,7 +16,7 @@
 package org.asciidoctor.gradle.model5.core.internal.attributes
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.waitingroom.AttributeType
+import org.asciidoctor.gradle.model5.core.attributes.AttributeType
 
 /**
  * Treat the attribute value as a formatted time string

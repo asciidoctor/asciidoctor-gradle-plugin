@@ -16,8 +16,8 @@
 package org.asciidoctor.gradle.model5.js.plugins
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.AsciidoctorCoreExtension
-import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePlugin
+import org.asciidoctor.gradle.model5.core.AsciidoctorExtension
+import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreBasePlugin
 import org.asciidoctor.gradle.model5.js.internal.toolchains.AsciidoctorjsToolchainFactory
 import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
 import org.gradle.api.Plugin
@@ -28,10 +28,10 @@ class AsciidoctorjsBasePlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         project.pluginManager.tap {
-            apply(AsciidoctorCorePlugin)
+            apply(AsciidoctorCoreBasePlugin)
         }
 
-        final asciidoc = project.extensions.getByType(AsciidoctorCoreExtension)
+        final asciidoc = project.extensions.getByType(AsciidoctorExtension)
 
         asciidoc.toolchains.registerFactory(
                 AsciidoctorjsToolchain,

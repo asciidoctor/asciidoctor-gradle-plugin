@@ -1,0 +1,57 @@
+= Introduction
+
+[source,groovy]
+----
+import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
+import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjHtml5
+import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
+import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjPdf
+
+asciidoc {
+    toolchains { // <.>
+        asciidoctorj2(AsciidoctorjToolchain) { // <.>
+            registeredOutputFormatters {
+                html(AsciidoctorjHtml5) {  // <.>
+
+                }
+            }
+        }
+        asciidoctorjs2(AsciidoctorjsToolchain) { // <.>
+            registeredOutputFormatters {
+                pdf(AsciidoctorjsPdf) {
+
+                }
+            }
+        }
+    }
+
+    publications { // <.>
+        main {
+            sourceSet { // <.>
+
+            }
+
+            output('asciidoctorj', 'html') // <.>
+            output('asciidoctorjs', 'pdf') // <.>
+        }
+    }
+}
+----
+<.> Manages toolchains.
+<.> Registers a toolchain that will use `asciidoctorj`.
+  If `org.asciidoctor.jvm` is applied, there will be a default toolchain called `asciidoctorj`.
+<.> Create a HTML output formatter for the `asciidoctorj` toolchains.
+ If `org.asciidoctor.jvm` is applied, there will be a `html` and a `docbook` output formatter.
+<.> Registers a toolchain that will use `asciidoctor.js`.
+If `org.asciidoctor.js` is applied, there will be a default toolchain called `asciidoctorjs`.
+<.> Create a PDF output formatter for the `asciidoctorj` toolchains.
+If `org.asciidoctor.js` is applied, there will be a `html` output formatter.
+The PDF formatter will be registered if `org.asciidoctor.js.pdf` is also applied.
+<.> Manages publications.
+<.> Defines the sources of a publication.
+<.> Defines an output.
+  In this example it says HTML output should be produced using the `asciidoctorj` toolchain.
+  An output refers to a valid toolchain and an output formatter on that toolchain.
+<.> Multiple outputs can be listed.
+  This second example says that PDF output should be produced using the `asciidoctorjs` toolchain.
+

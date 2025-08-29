@@ -20,19 +20,46 @@ import groovy.transform.CompileStatic
 /**
  * Document type.
  *
+ * <p>
+ *     See <a href="https://docs.asciidoctor.org/asciidoc/latest/document/doctype/">Document Type</a>
+ *     in the Asciidoctor documentation.
+ *     </p>
  * @author Schalk W. Cronjé
  *
  * @since 5.0
  */
 @CompileStatic
 enum DocType {
+    /**
+     * The default that is assumed by an Asciidoctor engine if nothing is supplied either from the Gradle plugin or
+     * in the document itself.
+     */
     ARTICLE,
+
+    /**
+     * Asciidoctor book structure.
+     */
     BOOK,
+
+    /**
+     * For {@code roff} or HTML-formatted man paged.
+     */
     MANPAGE,
+
+    /**
+     * Asciidoctor snippets.
+     */
     INLINE
 
-    DocType fromDsl(String val) {
-        valueOf(val.toUpperCase(Locale.US))
+    /**
+     * Provide a case-insensitive string and get a document type.
+     *
+     * @param val Case-insensitive string.
+     *
+     * @return {@link DocType}
+     */
+    static DocType from(String val) {
+        valueOf(val.replaceAll(~/-/,'_').toUpperCase(Locale.US))
     }
 
     String lc() {

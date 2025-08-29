@@ -16,18 +16,19 @@
 package org.asciidoctor.gradle.model5.core.internal.basedir
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.waitingroom.BaseDirStrategy
+import org.asciidoctor.gradle.model5.core.basedir.BaseDirStrategy
+import org.gradle.api.file.Directory
 import org.gradle.api.provider.Provider
 
 @CompileStatic
-class BaseDirFollowSourceDir implements BaseDirStrategy{
+class BaseDirFollowSourceDir implements BaseDirStrategy {
     @Override
-    Provider<File> getBaseDir(Provider<File> srcDir) {
+    Provider<Directory> getBaseDir(Provider<Directory> srcDir) {
         srcDir
     }
 
     @Override
-    Provider<File> getBaseDir(Provider<File> srcDir, String lang) {
+    Provider<Directory> getBaseDir(Provider<Directory> srcDir, String lang) {
         srcDir
     }
 }

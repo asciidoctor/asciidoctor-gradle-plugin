@@ -33,7 +33,7 @@ import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 
 import javax.inject.Inject
 
-import static org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePlugin.INTERMEDIATE_RESOURCE_PATH
+import static org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreBasePlugin.INTERMEDIATE_RESOURCE_PATH
 
 /**
  * The core engine for running {@code asciidoctor.js}.

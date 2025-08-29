@@ -31,7 +31,7 @@ public interface AsciidoctorLauncher {
      * @param conversionSettings Settings coming from the source set.
      */
     void run(
-            AsciidoctorExecutionsSettings executionsSettings,
+            AsciidoctorExecutionSettings executionsSettings,
             AsciidoctorConversionSettings conversionSettings
     );
 }

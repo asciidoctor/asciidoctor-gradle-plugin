@@ -33,12 +33,15 @@ import javax.inject.Inject
  */
 @CompileStatic
 class DefaultAsciidoctorjPdf extends AbstractAsciidoctorJFormatterVersioned implements AsciidoctorjPdf {
+    public static final String DEFAULT_NAME = 'pdf'
+    public static final String BACKEND_NAME = DEFAULT_NAME
+    final boolean copyResources = false
 
     @Inject
     DefaultAsciidoctorjPdf(String name, AsciidoctorjToolchain tc, Project project) {
         super(
                 name,
-                'pdf',
+                BACKEND_NAME,
                 JvmModel.ASCIIDOCTORJ_PDF_DEPENDENCY,
                 PluginUtils.loadDefaultVersion('asciidoctorj.pdf', project, tc.class.classLoader),
                 tc,

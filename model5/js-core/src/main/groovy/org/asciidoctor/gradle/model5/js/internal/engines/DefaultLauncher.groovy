@@ -17,7 +17,7 @@ package org.asciidoctor.gradle.model5.js.internal.engines
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorConversionSettings
-import org.asciidoctor.gradle.model5.core.AsciidoctorExecutionsSettings
+import org.asciidoctor.gradle.model5.core.AsciidoctorExecutionSettings
 import org.asciidoctor.gradle.model5.core.AsciidoctorLauncher
 import org.asciidoctor.gradle.model5.core.internal.engines.EngineUtils
 import org.gradle.api.Project
@@ -53,7 +53,7 @@ class DefaultLauncher implements AsciidoctorLauncher {
     }
 
     @Override
-    void run(AsciidoctorExecutionsSettings executionsSettings, AsciidoctorConversionSettings conversionSettings) {
+    void run(AsciidoctorExecutionSettings executionsSettings, AsciidoctorConversionSettings conversionSettings) {
 
         final groups = EngineUtils.groupByParent(conversionSettings.sourceFiles.get())
         final root = conversionSettings.sourceRootDir.get().asFile

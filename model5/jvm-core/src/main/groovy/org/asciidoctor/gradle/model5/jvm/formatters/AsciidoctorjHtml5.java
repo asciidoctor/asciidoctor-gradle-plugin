@@ -15,5 +15,12 @@
  */
 package org.asciidoctor.gradle.model5.jvm.formatters;
 
+/**
+ * HTML page generated from AsciiDoc.
+ *
+ * @author Schalk W. Cronjé
+ *
+ * @since 5.0
+ */
 public interface AsciidoctorjHtml5 extends AsciidoctorjOutputFormatter {
 }

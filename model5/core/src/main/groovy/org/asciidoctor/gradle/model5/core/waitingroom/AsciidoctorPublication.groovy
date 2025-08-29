@@ -17,20 +17,24 @@ package org.asciidoctor.gradle.model5.core.waitingroom
 
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.AsciidoctorCoreExtension
-import org.asciidoctor.gradle.model5.core.errors.IncorrectOutputFormatException
-import org.asciidoctor.gradle.model5.core.internal.DefaultProcessingOptions
+import org.asciidoctor.gradle.model5.core.AsciidoctorExtension
+import org.asciidoctor.gradle.model5.core.attributes.Attributes
+import org.asciidoctor.gradle.model5.core.basedir.HasBaseDirStrategy
+import org.asciidoctor.gradle.model5.core.internal.toolchains.DefaultProcessingOptions
 import org.asciidoctor.gradle.model5.core.internal.LanguageFactory
-import org.asciidoctor.gradle.model5.core.internal.PublicationUtils
+import org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils
 import org.asciidoctor.gradle.model5.core.internal.attributes.DefaultAttributes
 import org.asciidoctor.gradle.model5.core.internal.basedir.DefaultBaseDirConfiguration
+import org.asciidoctor.gradle.model5.core.basedir.BaseDirConfiguration
+import org.asciidoctor.gradle.model5.core.attributes.HasAsciidoctorAttributes
+import org.asciidoctor.gradle.model5.core.publications.HasAsciidoctorResources
 import org.asciidoctor.gradle.model5.core.toolchains.AsciidoctorToolchain
+import org.asciidoctor.gradle.model5.core.toolchains.ProcessingOptions
 import org.gradle.api.Action
 import org.gradle.api.ExtensiblePolymorphicDomainObjectContainer
 import org.gradle.api.Named
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
-import org.gradle.api.UnknownDomainObjectException
 import org.gradle.api.file.CopySpec
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
@@ -41,9 +45,8 @@ import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 
 import javax.inject.Inject
 
-import static org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePlugin.TOOLCHAIN_DISPLAY_TASK
-import static org.asciidoctor.gradle.model5.core.internal.PublicationUtils.ASCIIDOC_PATTERNS
-import static org.asciidoctor.gradle.model5.core.internal.PublicationUtils.UNDERSCORE_LED_FILES
+import static org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils.ASCIIDOC_PATTERNS
+import static org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils.UNDERSCORE_LED_FILES
 
 /**
  * Implementation of an asciidoc publication.
@@ -72,7 +75,7 @@ class AsciidoctorPublication implements HasAsciidoctorAttributes, HasAsciidoctor
     private final Provider<PatternFilterable> secondarySourcePatternProvider
 
     @Inject
-    AsciidoctorPublication(String name, AsciidoctorCoreExtension parent, Project project) {
+    AsciidoctorPublication(String name, AsciidoctorExtension parent, Project project) {
         this.name = name
         this.toolchains = parent.toolchains
         this.ccso = ConfigCacheSafeOperations.from(project)
@@ -315,7 +318,7 @@ class AsciidoctorPublication implements HasAsciidoctorAttributes, HasAsciidoctor
     /**
      * Direct access to basedir configuration.
      *
-     * @return Base dirrectory configuration.
+     * @return Base directory configuration.
      */
     @Override
     BaseDirConfiguration getBaseDir() {

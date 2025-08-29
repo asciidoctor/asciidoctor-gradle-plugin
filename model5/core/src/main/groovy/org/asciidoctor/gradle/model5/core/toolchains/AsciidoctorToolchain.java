@@ -15,7 +15,7 @@
  */
 package org.asciidoctor.gradle.model5.core.toolchains;
 
-import org.asciidoctor.gradle.model5.core.AsciidoctorOutputFormatter;
+import org.asciidoctor.gradle.model5.core.formatters.AsciidoctorOutputFormatter;
 import org.asciidoctor.gradle.model5.core.engines.AsciidoctorEngine;
 import org.gradle.api.ExtensiblePolymorphicDomainObjectContainer;
 
@@ -31,12 +31,12 @@ import org.gradle.api.ExtensiblePolymorphicDomainObjectContainer;
  *
  * @since 5.0
  */
-public interface AsciidoctorToolchain extends AsciidoctorEngine {
+public interface AsciidoctorToolchain extends AsciidoctorEngine, ProcessingOptions {
 
     /**
      * Output formatters registered with this toolchain.
      *
-     * @return
+     * @return Container of registered output formatters.
      */
     ExtensiblePolymorphicDomainObjectContainer<AsciidoctorOutputFormatter> getRegisteredOutputFormatters();
 //

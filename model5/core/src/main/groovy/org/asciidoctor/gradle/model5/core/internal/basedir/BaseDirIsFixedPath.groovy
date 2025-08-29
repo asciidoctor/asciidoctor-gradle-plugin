@@ -16,7 +16,9 @@
 package org.asciidoctor.gradle.model5.core.internal.basedir
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.waitingroom.BaseDirStrategy
+import org.asciidoctor.gradle.model5.core.basedir.BaseDirStrategy
+import org.gradle.api.file.Directory
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Provider
 
 /** Strategy where a lazy-evaluated fixed path is used as the base
@@ -29,19 +31,23 @@ import org.gradle.api.provider.Provider
 @CompileStatic
 class BaseDirIsFixedPath implements BaseDirStrategy {
 
-    private final Provider<File> location
+    private final DirectoryProperty location
 
-    BaseDirIsFixedPath(Provider<File> lazyResolvedLocation) {
-        this.location = lazyResolvedLocation
+    BaseDirIsFixedPath(Provider<Directory> lazyResolvedLocation) {
+        this.location.set(lazyResolvedLocation)
+    }
+
+    BaseDirIsFixedPath(File lazyResolvedLocation) {
+        this.location.set(lazyResolvedLocation)
     }
 
     @Override
-    Provider<File> getBaseDir(Provider<File> srcDir) {
+    Provider<Directory> getBaseDir(Provider<Directory> srcDir) {
         this.location
     }
 
     @Override
-    Provider<File> getBaseDir(Provider<File> srcDir, String lang) {
+    Provider<Directory> getBaseDir(Provider<Directory> srcDir, String lang) {
         this.location
     }
 }

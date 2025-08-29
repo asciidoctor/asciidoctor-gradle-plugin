@@ -15,6 +15,12 @@
  */
 package org.asciidoctor.gradle.model5.jvm.formatters;
 
-
+/**
+ * Docbook XML generated from AsciiDoc.
+ *
+ * @author Schalk W. Cronjé
+ *
+ * @since 5.0
+ */
 public interface AsciidoctorjDocbook extends AsciidoctorjOutputFormatter {
 }

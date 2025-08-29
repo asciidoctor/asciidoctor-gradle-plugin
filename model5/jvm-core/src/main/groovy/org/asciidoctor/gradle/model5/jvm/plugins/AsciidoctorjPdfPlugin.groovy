@@ -16,13 +16,10 @@
 package org.asciidoctor.gradle.model5.jvm.plugins
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.AsciidoctorCoreExtension
-import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjDocbook
-import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjHtml5
+import org.asciidoctor.gradle.model5.core.AsciidoctorExtension
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjPdf
-import org.asciidoctor.gradle.model5.jvm.internal.formatters.AsciidoctorjHtml5Factory
 import org.asciidoctor.gradle.model5.jvm.internal.formatters.AsciidoctorjPdfFactory
-import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
+import org.asciidoctor.gradle.model5.jvm.internal.formatters.DefaultAsciidoctorjPdf
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -45,17 +42,18 @@ class AsciidoctorjPdfPlugin implements Plugin<Project> {
             apply(AsciidoctorjBasePlugin)
         }
 
-        final asciidoc = project.extensions.getByType(AsciidoctorCoreExtension)
+        final asciidoc = project.extensions.getByType(AsciidoctorExtension)
+        final toolchains = asciidoc.toolchains
 
         registerOutputFormatterFactory(
-                asciidoc.toolchains,
+                toolchains,
                 AsciidoctorjPdf,
                 AsciidoctorjPdfFactory,
                 project.objects
         )
 
         project.pluginManager.withPlugin(AsciidoctorjPlugin.PLUGIN_ID) {
-            registerOutputFormatterOnAllToolchains(asciidoc.toolchains, AsciidoctorjPdf, 'pdf')
+            registerOutputFormatterOnAllToolchains(toolchains, AsciidoctorjPdf, DefaultAsciidoctorjPdf.DEFAULT_NAME)
         }
     }
 }

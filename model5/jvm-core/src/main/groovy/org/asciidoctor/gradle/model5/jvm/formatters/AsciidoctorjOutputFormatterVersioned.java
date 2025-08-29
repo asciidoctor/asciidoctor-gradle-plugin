@@ -15,7 +15,6 @@
  */
 package org.asciidoctor.gradle.model5.jvm.formatters;
 
-import org.asciidoctor.gradle.model5.core.AsciidoctorOutputFormatter;
 import org.gradle.api.file.FileCollection;
 
 /**

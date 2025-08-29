@@ -12,6 +12,7 @@ import org.gradle.api.plugins.jvm.JvmTestSuite
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.SourceSetContainer
+import org.gradle.api.tasks.testing.Test
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.plugin.devel.GradlePluginDevelopmentExtension
 import org.gradle.plugin.devel.PluginDeclaration
@@ -54,6 +55,7 @@ class AsciidoctorGradleProjectExtension {
     }
 
     void withIntegrationTests() {
+        final testProjects = new File(project.rootDir, 'testfixtures/projects')
         project.extensions.getByType(TestingExtension).suites.create('integrationTest', JvmTestSuite) { jts ->
             jts.tap {
                 useSpock(versionOf('spock'))
@@ -66,6 +68,11 @@ class AsciidoctorGradleProjectExtension {
 
         project.tasks.named('check') {
             it.dependsOn('integrationTest')
+        }
+
+        project.tasks.named('integrationTest', Test) { t ->
+            t.systemProperty('TEST_PROJECTS_DIR', testProjects.absolutePath)
+            t.inputs.dir(testProjects)
         }
 
         project.pluginManager.withPlugin('java-gradle-plugin') {
@@ -89,11 +96,11 @@ class AsciidoctorGradleProjectExtension {
         main.versions(projectOperations.providerTools.gradleProperty('minGradle'))
         main.versions(
                 projectOperations.providerTools.gradleProperty('otherGradleTestVersions')
-                .orElse('')
-                .get().split(',')
+                        .orElse('')
+                        .get().split(',')
         )
-        main.deprecationMessageChecksForVersion ('8.11.1', [])
-        main.deprecationMessageChecksForVersion ('8.14.3', [])
+        main.deprecationMessageChecksForVersion('8.11.1', [])
+        main.deprecationMessageChecksForVersion('8.14.3', [])
 
         main.copyNotSymlink(true)
     }

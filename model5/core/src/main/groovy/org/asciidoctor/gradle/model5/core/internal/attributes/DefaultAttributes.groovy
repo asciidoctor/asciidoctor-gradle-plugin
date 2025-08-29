@@ -17,8 +17,8 @@ package org.asciidoctor.gradle.model5.core.internal.attributes
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.waitingroom.AsciidoctorAttributeProvider
-import org.asciidoctor.gradle.model5.core.waitingroom.AttributeType
-import org.asciidoctor.gradle.model5.core.waitingroom.Attributes
+import org.asciidoctor.gradle.model5.core.attributes.AttributeType
+import org.asciidoctor.gradle.model5.core.attributes.Attributes
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations

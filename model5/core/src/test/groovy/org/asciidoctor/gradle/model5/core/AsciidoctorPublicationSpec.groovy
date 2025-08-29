@@ -15,7 +15,7 @@
  */
 package org.asciidoctor.gradle.model5.core
 
-import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePlugin
+import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreBasePlugin
 import org.asciidoctor.gradle.model5.core.waitingroom.AsciidoctorPublication
 import org.asciidoctor.gradle.testfixtures.UnitTestSpecification
 
@@ -27,8 +27,8 @@ class AsciidoctorPublicationSpec extends UnitTestSpecification {
     AsciidoctorPublication main
 
     void setup() {
-        project.pluginManager.apply(AsciidoctorCorePlugin)
-        main = project.extensions.getByType(AsciidoctorCoreExtension).publications.create('main')
+        project.pluginManager.apply(AsciidoctorCoreBasePlugin)
+        main = project.extensions.getByType(AsciidoctorExtension).publications.create('main')
     }
 
     void 'Can set a safe mode'() {

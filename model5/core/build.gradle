@@ -4,9 +4,16 @@ plugins {
 
 agProject {
     configurePlugin(
+            'org.asciidoctor.core.base',
+            'Asciidoctor Core Base Plugin',
+            'Forms the core of all Asciidoctor plugins',
+            'org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreBasePlugin',
+            []
+    )
+    configurePlugin(
             'org.asciidoctor.core',
             'Asciidoctor Core Plugin',
-            'Forms the core of all Asciidoctor plugins',
+            'Registers a default publication along with the asciidocAll task',
             'org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePlugin',
             []
     )

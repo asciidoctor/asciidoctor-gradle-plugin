@@ -15,6 +15,8 @@
  */
 package org.asciidoctor.gradle.model5.core.waitingroom;
 
+import org.asciidoctor.gradle.model5.core.attributes.HasAsciidoctorAttributes;
+import org.asciidoctor.gradle.model5.core.publications.HasAsciidoctorResources;
 import org.gradle.api.Named;
 
 /**

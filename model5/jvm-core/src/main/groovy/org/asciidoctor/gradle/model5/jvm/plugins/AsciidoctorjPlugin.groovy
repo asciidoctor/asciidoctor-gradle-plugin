@@ -16,9 +16,14 @@
 package org.asciidoctor.gradle.model5.jvm.plugins
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.AsciidoctorCoreExtension
+import org.asciidoctor.gradle.model5.core.AsciidoctorExtension
+import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePlugin
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjDocbook
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjHtml5
+import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjManpage
+import org.asciidoctor.gradle.model5.jvm.internal.formatters.DefaultAsciidoctorjDocbook
+import org.asciidoctor.gradle.model5.jvm.internal.formatters.DefaultAsciidoctorjHtml5
+import org.asciidoctor.gradle.model5.jvm.internal.formatters.DefaultAsciidoctorjManpage
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -41,12 +46,17 @@ class AsciidoctorjPlugin implements Plugin<Project> {
     void apply(Project project) {
         project.pluginManager.tap {
             apply(AsciidoctorjBasePlugin)
+            apply(AsciidoctorCorePlugin)
         }
 
-        final asciidoc = project.extensions.getByType(AsciidoctorCoreExtension)
-        asciidoc.toolchains.create(DEFAULT_TOOLCHAIN, AsciidoctorjToolchain)
-        registerOutputFormatterOnAllToolchains(asciidoc.toolchains, AsciidoctorjHtml5, 'html')
-        registerOutputFormatterOnAllToolchains(asciidoc.toolchains, AsciidoctorjDocbook, 'docbook')
+        final asciidoc = project.extensions.getByType(AsciidoctorExtension)
+        final toolchains = asciidoc.toolchains
+
+        toolchains.create(DEFAULT_TOOLCHAIN, AsciidoctorjToolchain)
+
+        registerOutputFormatterOnAllToolchains(toolchains, AsciidoctorjHtml5, DefaultAsciidoctorjHtml5.DEFAULT_NAME)
+        registerOutputFormatterOnAllToolchains(toolchains, AsciidoctorjDocbook, DefaultAsciidoctorjDocbook.DEFAULT_NAME)
+        registerOutputFormatterOnAllToolchains(toolchains, AsciidoctorjManpage, DefaultAsciidoctorjManpage.DEFAULT_NAME)
 
         // TODO: Register main sourceset ??
     }

@@ -23,16 +23,21 @@ import org.gradle.api.Project
 import javax.inject.Inject
 
 /**
+ * Docbook backend.
  *
  * @author Schalk W. Cronjé
  *
- * @since
+ * @since 5.0
  */
 @CompileStatic
 class DefaultAsciidoctorjDocbook extends AbstractAsciidoctorjFormatter implements AsciidoctorjDocbook {
+    public static final String DEFAULT_NAME = 'docbook'
+    public static final String BACKEND_NAME = 'docbook5'
+
+    final boolean copyResources = true
 
     @Inject
     DefaultAsciidoctorjDocbook(String name, AsciidoctorjToolchain tc, Project project) {
-        super(name,'docbook', tc,project)
+        super(name, BACKEND_NAME, tc, project)
     }
 }

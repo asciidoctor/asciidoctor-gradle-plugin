@@ -15,9 +15,11 @@
  */
 package org.asciidoctor.gradle.testfixtures.model5
 
+import org.apache.commons.io.FileUtils
 import org.asciidoctor.gradle.testfixtures.DslType
 import org.gradle.testkit.runner.GradleRunner
 import org.ysb33r.grolifant5.api.core.OperatingSystem
+import org.ysb33r.grolifant5.api.core.StringTools
 import spock.lang.Specification
 import spock.lang.TempDir
 
@@ -29,6 +31,7 @@ class IntegrationSpecification extends Specification {
     public static final boolean IS_KOTLIN_DSL = false
     public static final boolean IS_GROOVY_DSL = true
     public static final OperatingSystem OS = OperatingSystem.current()
+    public static final File TEST_PROJECTS_DIR = new File(System.getProperty('TEST_PROJECTS_DIR'))
 
     @TempDir
     File testProjectDir
@@ -62,32 +65,83 @@ class IntegrationSpecification extends Specification {
     }
 
     GradleRunner getGradleRunner(
-        boolean groovyDsl,
-        String taskName
+            boolean groovyDsl,
+            String taskName
     ) {
         getGradleRunner(groovyDsl, [taskName])
     }
 
     GradleRunner getGradleRunner(
-        boolean groovyDsl,
-        List<String> args
+            boolean groovyDsl,
+            List<String> args
     ) {
         GradleRunner.create()
-            .withProjectDir(projectDir)
-            .withArguments(args)
-            .forwardOutput()
-            .withDebug(groovyDsl)
-            .withPluginClasspath()
-            .withTestKitDir(testKitDir)
+                .withProjectDir(projectDir)
+                .withArguments(args)
+                .forwardOutput()
+                .withDebug(groovyDsl)
+                .withPluginClasspath()
+                .withTestKitDir(testKitDir)
     }
 
     GradleRunner getGradleRunnerConfigCache(
-        boolean groovyDsl,
-        List<String> args
+            boolean groovyDsl,
+            List<String> args
     ) {
         getGradleRunner(groovyDsl, args + ['--configuration-cache', '--configuration-cache-problems=fail'])
-            .withGradleVersion('8.9')
-            .withDebug(false)
+                .withGradleVersion('8.9')
+                .withDebug(false)
+    }
+
+    void copyTestProject(String projectName) {
+        File srcDir = new File(TEST_PROJECTS_DIR, projectName).absoluteFile
+        File target = projectDir
+        FileUtils.copyDirectory(srcDir, target)
+    }
+
+    void writeBasicBuildFileGroovy(Iterable<String> plugins) {
+        final pluginIds = plugins.collect {
+            "id '${it}'"
+        }.join('\n' + (StringTools.SPACE * 12))
+
+        buildFile.text = """
+        plugins {
+            ${pluginIds}
+        }
+
+        ${offlineRepositoriesGroovyDsl}
+        """.stripIndent()
+    }
+
+    void addOutputToSourceSetGroovy(String toolchainName, String formatterName, String sourceSetName) {
+        buildFile << """
+        asciidoc {
+            publications {
+                ${sourceSetName} {
+                    output('${toolchainName}', '${formatterName}')
+                }
+            }
+        }
+        """.stripIndent()
+    }
+
+    void configureSourceSetGroovy(
+            String sourceSetName,
+            String dsl
+    ) {
+        buildFile << """
+        asciidoc.publications.${sourceSetName}.sourceSet {
+            ${dsl}
+        }
+        """
+    }
+
+    boolean fileExists(File path) {
+        path.exists()
+    }
+
+    boolean fileExists(File baseDir, String path) {
+        new File(baseDir, path).exists()
     }
 
     static String getEscapedEnvPathString() {

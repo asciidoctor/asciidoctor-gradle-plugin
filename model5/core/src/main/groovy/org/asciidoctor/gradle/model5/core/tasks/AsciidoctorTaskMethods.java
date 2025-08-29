@@ -15,50 +15,50 @@
  */
 package org.asciidoctor.gradle.model5.core.tasks;
 
-import org.asciidoctor.gradle.model5.core.waitingroom.BaseDirStrategy;
-import org.asciidoctor.gradle.model5.core.SafeMode;
+import org.asciidoctor.gradle.model5.core.*;
+import org.asciidoctor.gradle.model5.core.publications.AsciidoctorOutputData;
+import org.gradle.api.file.Directory;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.util.PatternFilterable;
 
-import java.io.File;
 import java.util.Map;
 
 public interface AsciidoctorTaskMethods {
 
     /**
-     * THe attributes the task will use.
+     * Sets the conversion launcher for this task.
      *
-     * @param attrs Provider of attributes.
+     * @param launcher Provider to launcer.
      */
-    void setAttributes(Provider<Map<String, String>> attrs);
+    void setLauncher(Provider<? extends AsciidoctorLauncher> launcher);
 
     /**
-     * The {@link SafeMode} to use for processing.
+     * Configures the task according to a toolchain & output formatter combination.
      *
-     * @param safeMode Safety mode.
+     * @param outputData Output data.
+     */
+    void setOutputData(final AsciidoctorOutputData outputData);
+
+    /**
+     * The safety mode the specific task will run conversions under.
+     *
+     * @param safeMode Provider of the safety mode.
      */
     void setSafeMode(Provider<SafeMode> safeMode);
 
     /**
-     * Whether document names should be logged prior to processing.
+     * Sets the base directory for conversions.
      *
-     * @param flag Provider of the setting.
+     * @param dir Provider to a directory.
      */
-    void setLogDocuments(Provider<Boolean> flag);
+    void setBaseDir(Provider<Directory> dir);
 
     /**
-     * Set the base directory, if it is required.
+     * Sets the source directory for actual sources.
      *
-     * @param dir Provider of directory.
+     * @param dir Provider to a directory.
      */
-    void setBaseDirStrategy(Provider<BaseDirStrategy> dir);
-
-    /**
-     * The top directory where sources for this task will be located.
-     *
-     * @param dir Provider to the source directory.
-     */
-    void setSourceDir(Provider<File> dir);
+    void setSourceDir(Provider<Directory> dir);
 
     /**
      * The source patterns to look for in the source directory.
@@ -68,9 +68,33 @@ public interface AsciidoctorTaskMethods {
     void setSourcePatterns(Provider<PatternFilterable> patterns);
 
     /**
-     * The secondary source patterns to look for in the source directory.
+     * The attributes the task will use.
      *
-     * @param patterns Provider of patterns
+     * @param attrs Provider of attributes.
      */
-     void setSecondarySourcePatterns(Provider<PatternFilterable> patterns);
+    void setAttributes(Provider<Map<String,String>> attrs);
+
+//
+//    /**
+//     * Whether document names should be logged prior to processing.
+//     *
+//     * @param flag Provider of the setting.
+//     */
+//    void setLogDocuments(Provider<Boolean> flag);
+//
+//    /**
+//     * The top directory where sources for this task will be located.
+//     *
+//     * @param dir Provider to the source directory.
+//     */
+//    void setSourceDir(Provider<File> dir);
+//
+
+//
+//    /**
+//     * The secondary source patterns to look for in the source directory.
+//     *
+//     * @param patterns Provider of patterns
+//     */
+//     void setSecondarySourcePatterns(Provider<PatternFilterable> patterns);
 }

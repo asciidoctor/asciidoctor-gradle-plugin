@@ -16,12 +16,14 @@
 package org.asciidoctor.gradle.model5.jvm.plugins
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.AsciidoctorCoreExtension
-import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePlugin
+import org.asciidoctor.gradle.model5.core.AsciidoctorExtension
+import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreBasePlugin
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjDocbook
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjHtml5
+import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjManpage
 import org.asciidoctor.gradle.model5.jvm.internal.formatters.AsciidoctorjDocbookFactory
 import org.asciidoctor.gradle.model5.jvm.internal.formatters.AsciidoctorjHtml5Factory
+import org.asciidoctor.gradle.model5.jvm.internal.formatters.AsciidoctorjManpageFactory
 import org.asciidoctor.gradle.model5.jvm.internal.toolchains.AsciidoctorjToolchainFactory
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.gradle.api.Plugin
@@ -42,10 +44,10 @@ class AsciidoctorjBasePlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         project.pluginManager.tap {
-            apply(AsciidoctorCorePlugin)
+            apply(AsciidoctorCoreBasePlugin)
         }
 
-        final asciidoc = project.extensions.getByType(AsciidoctorCoreExtension)
+        final asciidoc = project.extensions.getByType(AsciidoctorExtension)
 
         asciidoc.toolchains.registerFactory(
                 AsciidoctorjToolchain,
@@ -63,6 +65,13 @@ class AsciidoctorjBasePlugin implements Plugin<Project> {
                 asciidoc.toolchains,
                 AsciidoctorjDocbook,
                 AsciidoctorjDocbookFactory,
+                project.objects
+        )
+
+        registerOutputFormatterFactory(
+                asciidoc.toolchains,
+                AsciidoctorjManpage,
+                AsciidoctorjManpageFactory,
                 project.objects
         )
     }

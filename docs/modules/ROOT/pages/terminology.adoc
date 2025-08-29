@@ -4,9 +4,16 @@ Engine:: The actual implementation that runs the conversion.
   An engine knows nothing more than running the Asciidoctor implementation underneath whether it is JRuby, JavaScript or something else.
   It is optimised to run the appropriate technology within a Gradle context.
 
+Extension:: An asciidoctor extension written in a supported language of the engine that it will execute on.
+
 Toolchain:: A toolchain is the combined technology to parse AsciiDoc documents and then to produce some form of output from it.
+A toolchain consists of an engine, output formatters and extensions.
 Examples of toolchains utilise the AsciidoctorJ and Asciidoctor.JS engines underneath.
 
 OutputFormatter:: A formatter takes an AsciiDoc syntax tree and creates the appropriate content.
 Examples include `html5`, `dockbook` and `pdf`.
 Output formatters are also known as backends in AsciidoctorJ-speak.
+
+Publication:: The conversion of Asciidoc and related resources to various formats.
+  A publication consists of a source set and a set of outputs.
+  The combination of a source set and an output will result in a collection of tasks.

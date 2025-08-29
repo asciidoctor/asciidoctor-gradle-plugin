@@ -16,7 +16,7 @@
 package org.asciidoctor.gradle.model5.core.internal.basedir
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.waitingroom.BaseDirStrategy
+import org.asciidoctor.gradle.model5.core.basedir.BaseDirStrategy
 import org.gradle.api.Project
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 
@@ -35,7 +35,7 @@ class BaseDirFollowsRootProject extends BaseDirIsFixedPath implements BaseDirStr
 
     @Inject
     BaseDirFollowsRootProject(Project project) {
-        super(ConfigCacheSafeOperations.from(project).fsOperations().provideRootDir())
+        super(project.rootDir)
     }
 
 }

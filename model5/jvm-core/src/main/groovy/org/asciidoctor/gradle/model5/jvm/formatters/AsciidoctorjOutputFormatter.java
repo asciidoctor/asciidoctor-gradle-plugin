@@ -15,7 +15,7 @@
  */
 package org.asciidoctor.gradle.model5.jvm.formatters;
 
-import org.asciidoctor.gradle.model5.core.AsciidoctorOutputFormatter;
+import org.asciidoctor.gradle.model5.core.formatters.AsciidoctorOutputFormatter;
 import org.asciidoctor.gradle.model5.jvm.ExecutionMode;
 import org.gradle.api.provider.Provider;
 

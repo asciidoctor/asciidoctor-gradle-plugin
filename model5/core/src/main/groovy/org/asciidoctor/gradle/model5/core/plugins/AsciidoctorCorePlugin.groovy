@@ -16,28 +16,31 @@
 package org.asciidoctor.gradle.model5.core.plugins
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.AsciidoctorCoreExtension
-import org.asciidoctor.gradle.model5.core.tasks.ShowAsciidocToolchains
+import org.asciidoctor.gradle.model5.core.AsciidoctorExtension
+import org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils
+import org.asciidoctor.gradle.model5.core.tasks.AsciidoctorTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.ysb33r.grolifant5.api.core.plugins.GrolifantServicePlugin
 
 @CompileStatic
 class AsciidoctorCorePlugin implements Plugin<Project> {
-    public final static String INTERMEDIATE_RESOURCE_PATH = 'META-INF/asciidoctor.gradle'
-    public final static String TOOLCHAIN_DISPLAY_TASK = 'asciidoctorToolchains'
+    public final static String CONVERT_ALL_TASK = "${PublicationUtils.TASK_PREFIX}All"
 
     @Override
     void apply(Project project) {
         project.pluginManager.tap {
-            apply(GrolifantServicePlugin)
+            apply(AsciidoctorCoreBasePlugin)
         }
 
-        project.extensions.create(AsciidoctorCoreExtension.NAME, AsciidoctorCoreExtension, project)
+        final asciidoc = project.extensions.getByType(AsciidoctorExtension)
 
-        project.tasks.register(TOOLCHAIN_DISPLAY_TASK, ShowAsciidocToolchains) {
-            it.group = 'help'
-            it.description = 'Displays registered Asciidoctor toolchains.'
+        asciidoc.publications.create(PublicationUtils.DEFAULT_PUBLICATION)
+
+        final allTasks = project.tasks.withType(AsciidoctorTask)
+        project.tasks.register(CONVERT_ALL_TASK) {
+            it.group = PublicationUtils.GROUP_NAME
+            it.description = 'Runs all asciidoc conversions'
+            it.dependsOn(allTasks)
         }
     }
 }

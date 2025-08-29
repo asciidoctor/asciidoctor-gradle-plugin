@@ -16,9 +16,10 @@
 package org.asciidoctor.gradle.model5.core.internal.basedir
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.waitingroom.BaseDirConfiguration
-import org.asciidoctor.gradle.model5.core.waitingroom.BaseDirStrategy
+import org.asciidoctor.gradle.model5.core.basedir.BaseDirConfiguration
+import org.asciidoctor.gradle.model5.core.basedir.BaseDirStrategy
 import org.gradle.api.Project
+import org.gradle.api.file.ProjectLayout
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
@@ -28,7 +29,7 @@ import org.ysb33r.grolifant5.api.core.FileSystemOperations
 import javax.inject.Inject
 
 /**
- * The default implementation for base directory copnfiguration.
+ * The default implementation for base directory configuration.
  *
  * @author Schalk W. Cronjé
  *
@@ -38,24 +39,21 @@ import javax.inject.Inject
 class DefaultBaseDirConfiguration implements BaseDirConfiguration {
     private final Property<BaseDirStrategy> baseDirStrategy
     private final ObjectFactory objectFactory
+    private final ProjectLayout layout
     private final FileSystemOperations fsOperations
 
     @Inject
     DefaultBaseDirConfiguration(Project project) {
         this.objectFactory = project.objects
+        this.layout = project.layout
         this.baseDirStrategy = project.objects.property(BaseDirStrategy)
-        this.baseDirStrategy.set(project.objects.newInstance(BaseDirIsNull))
+        this.baseDirStrategy.set(project.objects.newInstance(BaseDirFollowSourceDir))
         this.fsOperations = ConfigCacheSafeOperations.from(project).fsOperations()
     }
 
     @Override
     void baseDirFollowsSourceDir() {
         this.baseDirStrategy.set(new BaseDirFollowSourceDir())
-    }
-
-    @Override
-    void baseDirFollowsSourceFile() {
-        this.baseDirStrategy.set(objectFactory.newInstance(BaseDirIsNull))
     }
 
     @Override
@@ -80,26 +78,12 @@ class DefaultBaseDirConfiguration implements BaseDirConfiguration {
                 this.baseDirStrategy.set((BaseDirStrategy) f)
                 break
             case null:
-                baseDirFollowsSourceFile()
+                baseDirFollowsSourceDir()
                 break
             default:
-                this.baseDirStrategy.set(new BaseDirIsFixedPath(fsOperations.provideFile(f)))
+                this.baseDirStrategy.set(new BaseDirIsFixedPath(
+                        layout.dir(fsOperations.provideFile(f))
+                ))
         }
     }
-//    /**
-//     * The base dir will be the same as the source directory.
-//     * <p>
-//     * If an intermediate working directory is used, the the base dir will be where the
-//     * source directory is located within the temporary working directory.
-//     * </p>
-//     */
-//    @Override
-//    void baseDirFollowsSourceDir() {
-////        this.baseDirStrategy = new BaseDirIsFixedPath(po.provider({ AsciidoctorTaskFileOperations task ->
-////            task.hasIntermediateWorkDir() ? task.intermediateWorkDir : task.sourceDir
-////        }.curry(fileOperations) as Callable<File>))
-//    }
-//
-
-
 }

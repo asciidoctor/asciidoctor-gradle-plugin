@@ -1,0 +1,3 @@
+= Missing include
+
+include::missing-include.adoc[]

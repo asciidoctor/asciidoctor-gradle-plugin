@@ -16,10 +16,11 @@
 package org.asciidoctor.gradle.model5.jvm.internal.toolchains
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.model5.core.internal.toolchains.DefaultProcessingOptions
 import org.asciidoctor.gradle.model5.core.toolchains.AbstractAsciidoctorToolchain
+import org.asciidoctor.gradle.model5.core.toolchains.ProcessingOptions
 import org.asciidoctor.gradle.model5.jvm.engines.AsciidoctorjEngine
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
-
 import org.gradle.api.Project
 
 import javax.inject.Inject
@@ -30,76 +31,18 @@ class DefaultAsciidoctorjToolchain extends AbstractAsciidoctorToolchain implemen
     @Delegate
     private final AsciidoctorjEngine engine
 
+    @Delegate
+    private final ProcessingOptions processingOptions
+
     @Inject
     DefaultAsciidoctorjToolchain(String name, Project project) {
         super(name, project)
         final objectFactory = project.objects
 
-        this.engine = objectFactory.newInstance(AsciidoctorjEngine,name )
-
-//        registeredOutputFormatters.registerFactory(AsciidoctorJHtml5) {
-//            objectFactory.newInstance(DefaultAsciidoctorJHtml5, it, owner)
-//        }
-//        registeredOutputFormatters.registerFactory(AsciidoctorJDocbook) {
-//            objectFactory.newInstance(DefaultAsciidoctorJDocbook, it, owner)
-//        }
-//        registeredOutputFormatters.create('html5')
-//            create('html5', AsciidoctorJHtml5) {
-//
-//            }
-//            create('docbook', AsciidoctorJDocbook)
+        this.engine = objectFactory.newInstance(AsciidoctorjEngine, name)
+        this.processingOptions = objectFactory.newInstance(DefaultProcessingOptions)
     }
 
-
-//    /**
-//     * The level at which the AsciidoctorJ process should be logging.
-//     *
-//     * @return The currently configured log level. By default this is {@code project.logging.level}.
-//     */
-//    @Override
-//    LogLevel getLogLevel() {
-//        return null
-//    }
-//
-//    /**
-//     * Set the level at which the AsciidoctorJ process should be logging.
-//     *
-//     * @param logLevel LogLevel to use
-//     */
-//    @Override
-//    void setLogLevel(LogLevel logLevel) {
-//
-//    }
-//
-//    /**
-//     * Set the level at which the AsciidoctorJ process should be logging.
-//     *
-//     * @param logLevel LogLevel to use
-//     */
-//    @Override
-//    void setLogLevel(String logLevel) {
-//
-//    }
-//
-//    /**
-//     * A list of registered output formatters for this toolchain.
-//     *
-//     * @return List of registered output formats.
-//     */
-////    @Override
-//    List<AsciidoctorOutputFormatter> getRegisteredOutputFormats() {
-//        return null
-//    }
-//
-//    /**
-//     * Register a specific output formatter
-//     * @param formatter Instance of a
-//     */
-////    @Override
-//    void registerOutputFormat(AsciidoctorOutputFormatter formatter) {
-//
-//    }
-//
 //    @Override
 //    Provider<Map<String, String>> getOptions() {
 //        return null
