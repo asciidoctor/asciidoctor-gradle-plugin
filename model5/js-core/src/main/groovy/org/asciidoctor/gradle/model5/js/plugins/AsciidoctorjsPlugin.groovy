@@ -17,49 +17,53 @@ package org.asciidoctor.gradle.model5.js.plugins
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorExtension
-import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreBasePlugin
-import org.asciidoctor.gradle.model5.js.JsModel
+import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePlugin
 import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsDocbook
 import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsHtml5
 import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsManpage
-import org.asciidoctor.gradle.model5.js.internal.formatters.AsciidoctorjsDocbookFactory
-import org.asciidoctor.gradle.model5.js.internal.formatters.AsciidoctorjsHtml5Factory
-import org.asciidoctor.gradle.model5.js.internal.formatters.AsciidoctorjsManpageFactory
-import org.asciidoctor.gradle.model5.js.internal.toolchains.AsciidoctorjsToolchainFactory
+import org.asciidoctor.gradle.model5.js.internal.formatters.DefaultAsciidoctorjsDocbook
+import org.asciidoctor.gradle.model5.js.internal.formatters.DefaultAsciidoctorjsHtml5
+import org.asciidoctor.gradle.model5.js.internal.formatters.DefaultAsciidoctorjsManpage
 import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
-import static org.asciidoctor.gradle.model5.js.JsModel.registerOutputFormatterFactory
+import static org.asciidoctor.gradle.model5.js.JsModel.registerOutputFormatterOnAllToolchains
 
-
+/**
+ * The {@code asciidoctorj} plugin applies the base plugin, then creates a toolchain called {@code asciidoctorj}
+ *
+ * @author Schalk W. Cronjé
+ *
+ * @since 5.0
+ */
 @CompileStatic
-class AsciidoctorjsBasePlugin implements Plugin<Project> {
+class AsciidoctorjsPlugin implements Plugin<Project> {
+    public static final String DEFAULT_TOOLCHAIN = 'asciidoctorjs'
+    public static final String PLUGIN_ID = 'org.asciidoctor.js'
+
     @Override
     void apply(Project project) {
         project.pluginManager.tap {
-            apply(AsciidoctorCoreBasePlugin)
+            apply(AsciidoctorjsBasePlugin)
+            apply(AsciidoctorCorePlugin)
         }
 
         final asciidoc = project.extensions.getByType(AsciidoctorExtension)
+        final toolchains = asciidoc.toolchains
 
-        asciidoc.toolchains.registerFactory(
-                AsciidoctorjsToolchain,
-                project.objects.newInstance(AsciidoctorjsToolchainFactory)
-        )
+        toolchains.create(DEFAULT_TOOLCHAIN, AsciidoctorjsToolchain)
 
-        registerOutputFormatterFactory(
-                asciidoc.toolchains,
+        registerOutputFormatterOnAllToolchains(
+                toolchains,
                 AsciidoctorjsHtml5,
-                AsciidoctorjsHtml5Factory,
-                project.objects
+                DefaultAsciidoctorjsHtml5.DEFAULT_NAME
         )
 
-//        registerOutputFormatterFactory(
-//                asciidoc.toolchains,
+//        registerOutputFormatterOnAllToolchains(
+//                toolchains,
 //                AsciidoctorjsManpage,
-//                AsciidoctorjsManpageFactory,
-//                project.objects
+//                DefaultAsciidoctorjsManpage.DEFAULT_NAME
 //        )
     }
 }

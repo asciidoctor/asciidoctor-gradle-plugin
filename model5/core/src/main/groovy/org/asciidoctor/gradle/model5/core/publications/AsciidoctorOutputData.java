@@ -24,6 +24,8 @@ import org.gradle.api.file.Directory;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.util.PatternFilterable;
 
+import java.util.Set;
+
 /**
  * Holds data regarding a publication output.
  *
@@ -58,4 +60,11 @@ public interface AsciidoctorOutputData extends Named {
      * @return Documentation type. Can be empty.
      */
     Provider<DocType> getDocType();
+
+    /**
+     * List modules which need to be explicitly called out as being required.
+     *
+     * @return Provider to a list. Can be empty, but never {@code null}.
+     */
+    Provider<Set<String>> getModuleRequires();
 }

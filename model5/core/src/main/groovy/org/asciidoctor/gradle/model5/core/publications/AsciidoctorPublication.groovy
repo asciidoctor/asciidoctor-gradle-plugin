@@ -143,5 +143,7 @@ class AsciidoctorPublication implements Named {
             atm.baseDir = sources.baseDir.baseDirStrategy.flatMap { it.getBaseDir(sources.sourceDir) }
             atm.attributes = sources.attributes.attributeResolver
         }
+
+        taskFactory.addPrerequisiteTasks(taskName, toolchain.toolchainPreparationTaskNames)
     }
 }

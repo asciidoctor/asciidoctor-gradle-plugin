@@ -27,7 +27,7 @@ import org.gradle.api.provider.Provider
 import org.ysb33r.grolifant5.api.core.ProjectOperations
 
 @CompileStatic
-abstract class AbstractAsciidoctorJFormatterVersioned extends AbstractAsciidoctorjFormatter
+abstract class AbstractAsciidoctorjFormatterVersioned extends AbstractAsciidoctorjFormatter
         implements AsciidoctorjOutputFormatterVersioned {
 
 
@@ -72,7 +72,7 @@ abstract class AbstractAsciidoctorJFormatterVersioned extends AbstractAsciidocto
      * @param tc The toolchain the formatter is attached to.
      * @param tempProjectReference A temporary reference to a {@link Project} instance.
      */
-    protected AbstractAsciidoctorJFormatterVersioned(
+    protected AbstractAsciidoctorjFormatterVersioned(
             String name,
             String backendName,
             String componentModule,

@@ -56,7 +56,7 @@ class AsciidoctorjEngineSpec extends IntegrationSpecification {
         
         plugins {
             id 'org.asciidoctor.core'
-            id 'org.asciidoctor.jvm.core' apply false
+            id 'org.asciidoctor.jvm.base' apply false
         }
 
         ${getOfflineRepositories(DslType.GROOVY_DSL)}

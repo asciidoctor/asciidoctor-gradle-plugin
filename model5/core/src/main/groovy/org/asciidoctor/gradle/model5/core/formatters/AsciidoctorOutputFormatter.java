@@ -20,6 +20,7 @@ import org.asciidoctor.gradle.model5.core.DocType;
 import org.gradle.api.Named;
 import org.gradle.api.provider.Provider;
 
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -61,5 +62,14 @@ public interface AsciidoctorOutputFormatter extends Named {
      */
     default Optional<DocType> getEnforcedDocType() {
         return Optional.empty();
+    }
+
+    /**
+     * A list of {@code requires} that an output formatter places on the associated toolchain.
+     *
+     * @return List of {@code requires}. Can be empty, but never {@code null}.
+     */
+    default Iterable<String> getRequires() {
+        return Collections.EMPTY_LIST;
     }
 }

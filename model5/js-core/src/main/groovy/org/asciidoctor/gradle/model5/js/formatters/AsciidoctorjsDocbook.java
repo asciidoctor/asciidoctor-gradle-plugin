@@ -13,23 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.js.toolchains;
-
-import org.asciidoctor.gradle.model5.core.toolchains.AsciidoctorToolchain;
+package org.asciidoctor.gradle.model5.js.formatters;
 
 /**
- * Toolchains running the {@code asciidoctor.js} engine.
+ * Docbook XML generated from AsciiDoc.
  *
  * @author Schalk W. Cronjé
+ *
  * @since 5.0
  */
-public interface AsciidoctorjsToolchain extends AsciidoctorToolchain, CoreVersions {
-    /**
-     * Allows output formatters and extensions to register additional packages.
-     *
-     * @param scope Scope
-     * @param pkgName Name
-     * @param ver Lazy-evaluated version
-     */
-    void usePackage(String scope, String pkgName, Object ver);
+public interface AsciidoctorjsDocbook extends AsciidoctorjsOutputFormatter {
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013 - 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,23 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.js.toolchains;
+package org.asciidoctor.gradle.model5.js.internal.formatters
 
-import org.asciidoctor.gradle.model5.core.toolchains.AsciidoctorToolchain;
+import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
+import org.gradle.api.Project
+import org.gradle.api.model.ObjectFactory
 
 /**
- * Toolchains running the {@code asciidoctor.js} engine.
+ * A base class for {@code asciidoctor.js} factories.
  *
  * @author Schalk W. Cronjé
+ *
  * @since 5.0
  */
-public interface AsciidoctorjsToolchain extends AsciidoctorToolchain, CoreVersions {
-    /**
-     * Allows output formatters and extensions to register additional packages.
-     *
-     * @param scope Scope
-     * @param pkgName Name
-     * @param ver Lazy-evaluated version
-     */
-    void usePackage(String scope, String pkgName, Object ver);
+@CompileStatic
+class AbstractFactory {
+
+    protected final ObjectFactory objectFactory
+    protected final AsciidoctorjsToolchain toolchain
+
+    protected AbstractFactory(AsciidoctorjsToolchain toolchain, Project project) {
+        this.objectFactory = project.objects
+        this.toolchain = toolchain
+    }
 }

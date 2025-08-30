@@ -13,32 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.core.internal
+package org.asciidoctor.gradle.model5.js.internal.formatters
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.AsciidoctorExecutionSettings
-import org.asciidoctor.gradle.model5.core.SafeMode
-import org.gradle.api.model.ObjectFactory
-import org.gradle.api.provider.Property
-import org.gradle.api.provider.SetProperty
+import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsHtml5
+import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
+import org.gradle.api.Project
 
 import javax.inject.Inject
 
 /**
+ * HTML5 backend.
  *
  * @author Schalk W. Cronjé
  *
  * @since 5.0
  */
 @CompileStatic
-class DefaultAsciidoctorExecutionSettings implements AsciidoctorExecutionSettings {
+class DefaultAsciidoctorjsHtml5 extends AbstractAsciidoctorjsFormatter implements AsciidoctorjsHtml5 {
+    public static final String DEFAULT_NAME = 'html'
+    public static final String BACKEND_NAME = 'html5'
 
-    final Property<SafeMode> safeMode
-    final SetProperty<String> moduleRequires
+    final boolean copyResources = true
 
     @Inject
-    DefaultAsciidoctorExecutionSettings(ObjectFactory objectFactory) {
-        safeMode = objectFactory.property(SafeMode)
-        moduleRequires = objectFactory.setProperty(String)
+    DefaultAsciidoctorjsHtml5(String name, AsciidoctorjsToolchain tc, Project project) {
+        super(name, BACKEND_NAME, tc, project)
     }
 }

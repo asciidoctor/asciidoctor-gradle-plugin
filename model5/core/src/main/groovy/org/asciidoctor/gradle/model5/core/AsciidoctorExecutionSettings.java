@@ -17,6 +17,8 @@ package org.asciidoctor.gradle.model5.core;
 
 import org.gradle.api.provider.Provider;
 
+import java.util.Set;
+
 /**
  * Describes execution options for running a launcher.
  *
@@ -31,4 +33,11 @@ public interface AsciidoctorExecutionSettings {
      * @return Execution safe mode. Cannot be null.
      */
     Provider<SafeMode> getSafeMode();
+
+    /**
+     * Some launchers have the concept of {@code require} for external libraries.
+     *
+     * @return Provider to a list. Can be empty, but not null.
+     */
+    Provider<Set<String>> getModuleRequires();
 }

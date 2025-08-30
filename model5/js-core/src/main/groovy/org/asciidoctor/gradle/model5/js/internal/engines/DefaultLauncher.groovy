@@ -16,12 +16,20 @@
 package org.asciidoctor.gradle.model5.js.internal.engines
 
 import groovy.transform.CompileStatic
+import groovy.transform.Synchronized
 import org.asciidoctor.gradle.model5.core.AsciidoctorConversionSettings
 import org.asciidoctor.gradle.model5.core.AsciidoctorExecutionSettings
 import org.asciidoctor.gradle.model5.core.AsciidoctorLauncher
 import org.asciidoctor.gradle.model5.core.internal.engines.EngineUtils
 import org.gradle.api.Project
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Provider
+import org.ysb33r.gradle.nodejs.NodeJSConfigCacheSafeOperations
 import org.ysb33r.gradle.nodejs.NodeJSExecSpec
+import org.ysb33r.gradle.nodejs.NpmConfigCacheSafeOperations
+import org.ysb33r.gradle.nodejs.NpmDependencyGroup
+import org.ysb33r.gradle.nodejs.NpmPackageDescriptor
+import org.ysb33r.gradle.nodejs.utils.npm.NpmExecutor
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 import org.ysb33r.grolifant5.api.core.ExecTools
 import org.ysb33r.grolifant5.api.core.OperatingSystem
@@ -43,18 +51,33 @@ class DefaultLauncher implements AsciidoctorLauncher {
     private final ExecTools execTools
     private final NodeJSExecSpec execSpec
     private final ConfigCacheSafeOperations ccso
+    private final ListProperty<NpmPackageDescriptor> packages
+    private final NodeJSConfigCacheSafeOperations node
+    private final NpmConfigCacheSafeOperations npm
+
     private final static long CMD_LIMIT = OperatingSystem.current().windows ? 7000L : ((1L << 21) - 1000L)
 
     @Inject
-    DefaultLauncher(NodeJSExecSpec execSpec, Project tempProjectReference) {
+    DefaultLauncher(
+            NodeJSExecSpec execSpec,
+            NodeJSConfigCacheSafeOperations node,
+            NpmConfigCacheSafeOperations npm,
+            Project tempProjectReference
+    ) {
         this.ccso = ConfigCacheSafeOperations.from(tempProjectReference)
         this.execTools = ccso.execTools()
         this.execSpec = execSpec
+        this.packages = tempProjectReference.objects.listProperty(NpmPackageDescriptor)
+        this.node = node
+        this.npm = npm
+    }
+
+    void setPackages(Provider<List<NpmPackageDescriptor>> pkgs) {
+        this.packages.set(pkgs)
     }
 
     @Override
     void run(AsciidoctorExecutionSettings executionsSettings, AsciidoctorConversionSettings conversionSettings) {
-
         final groups = EngineUtils.groupByParent(conversionSettings.sourceFiles.get())
         final root = conversionSettings.sourceRootDir.get().asFile
         final destRoot = conversionSettings.destinationDir.get()
@@ -63,7 +86,8 @@ class DefaultLauncher implements AsciidoctorLauncher {
                 '-b', conversionSettings.backend.get().backend,
                 '-S', executionsSettings.safeMode.get().toString().toLowerCase(Locale.US),
                 '-B', conversionSettings.baseDir.get().asFile.absolutePath,
-        ]
+        ] + executionsSettings.moduleRequires.get().collectMany {['-r', it] }
+
         final attrs = conversionSettings.attributes.get().collectMany { k, v ->
             if (v) {
                 ['-a', "${k}=${v}".toString()]

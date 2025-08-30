@@ -13,39 +13,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.jvm.internal.formatters
+package org.asciidoctor.gradle.model5.js.internal.formatters
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.jvm.JvmModel
-import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjPdf
-import org.asciidoctor.gradle.model5.jvm.internal.PluginUtils
-import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
+import org.asciidoctor.gradle.model5.core.DocType
+import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsManpage
+import org.asciidoctor.gradle.model5.js.internal.PluginUtils
+import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
 import org.gradle.api.Project
 
 import javax.inject.Inject
 
+import static org.asciidoctor.gradle.model5.js.internal.PluginUtils.loadDefaultVersion
+
 /**
- * Implementation of {@code asciidoctorj-pdf} output formatter.
+ * Manpage backend.
  *
  * @author Schalk W. Cronjé
  *
  * @since 5.0
  */
 @CompileStatic
-class DefaultAsciidoctorjPdf extends AbstractAsciidoctorjFormatterVersioned implements AsciidoctorjPdf {
-    public static final String DEFAULT_NAME = 'pdf'
+class DefaultAsciidoctorjsManpage extends AbstractAsciidoctorjsFormatterVersioned implements AsciidoctorjsManpage {
+    public static final String DEFAULT_NAME = 'manpage'
     public static final String BACKEND_NAME = DEFAULT_NAME
+
     final boolean copyResources = false
+    final Optional<DocType> enforcedDocType = Optional.of(DocType.MANPAGE)
 
     @Inject
-    DefaultAsciidoctorjPdf(String name, AsciidoctorjToolchain tc, Project project) {
+    DefaultAsciidoctorjsManpage(String name, AsciidoctorjsToolchain tc, Project project) {
         super(
                 name,
                 BACKEND_NAME,
-                JvmModel.ASCIIDOCTORJ_PDF_DEPENDENCY,
-                PluginUtils.loadDefaultVersion('asciidoctorj.pdf', project, tc.class.classLoader),
+                'asciidoctor',
+                'manpage-converter',
+                loadDefaultVersion('asciidoctorjs.manpage', project, tc.class.classLoader),
                 tc,
                 project
         )
     }
+
+
 }

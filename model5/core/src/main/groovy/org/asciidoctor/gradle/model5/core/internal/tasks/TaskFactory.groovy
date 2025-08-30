@@ -48,4 +48,8 @@ class TaskFactory {
             configurator.execute(it)
         }
     }
+
+    void addPrerequisiteTasks(final String taskName,Iterable<String> prepareTasks) {
+        project.tasks.named(taskName).configure { it.dependsOn(prepareTasks)}
+    }
 }

@@ -3,16 +3,35 @@ plugins {
 }
 
 agProject {
+    withIntegrationTests()
     configurePlugin(
-            'org.asciidoctor.js.core',
+            'org.asciidoctor.js.base',
             'AsciidoctorJS Base Plugin',
             'Base plugin for all AsciidoctorJS tasks & extensions. Provides the asciidoctorjs toolchain',
-            'org.asciidoctor.gradle.model5.js.core.AsciidoctorJSBasePlugin',
+            'org.asciidoctor.gradle.model5.js.plugins.AsciidoctorJSBasePlugin',
             ['asciidoctorjs']
+    )
+    configurePlugin(
+            'org.asciidoctor.js',
+            'AsciidoctorJS Plugin',
+            'Provides html formatter for all AsciidoctorJS toolchains',
+            'org.asciidoctor.gradle.model5.js.plugins.AsciidoctorjsPlugin',
+            ['asciidoctorj']
+    )
+    configurePlugin(
+            'org.asciidoctor.js.docbook',
+            'AsciidoctorJS Docbook Plugin',
+            'Provides docbook formatter for all AsciidoctorJS toolchains',
+            'org.asciidoctor.gradle.model5.js.plugins.AsciidoctorjsDocbookPlugin',
+            ['asciidoctorj']
     )
 
     withVersionSubstitution("${project.name}.properties", [
             VERSION  : versionOf('asciidoctorjs'),
+            CLI: versionOf('asciidoctorjsCli'),
+            DOCBOOK : versionOf('asciidoctorjsDocbook'),
+            MANPAGE : versionOf('asciidoctorjsManpage'),
+            NODE: versionOf('nodejs')
     ])
 }
 

@@ -17,49 +17,48 @@ package org.asciidoctor.gradle.model5.js.plugins
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorExtension
-import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreBasePlugin
 import org.asciidoctor.gradle.model5.js.JsModel
 import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsDocbook
-import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsHtml5
-import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsManpage
 import org.asciidoctor.gradle.model5.js.internal.formatters.AsciidoctorjsDocbookFactory
-import org.asciidoctor.gradle.model5.js.internal.formatters.AsciidoctorjsHtml5Factory
-import org.asciidoctor.gradle.model5.js.internal.formatters.AsciidoctorjsManpageFactory
-import org.asciidoctor.gradle.model5.js.internal.toolchains.AsciidoctorjsToolchainFactory
-import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
+import org.asciidoctor.gradle.model5.js.internal.formatters.DefaultAsciidoctorjsDocbook
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 import static org.asciidoctor.gradle.model5.js.JsModel.registerOutputFormatterFactory
+import static org.asciidoctor.gradle.model5.js.JsModel.registerOutputFormatterOnAllToolchains
 
-
+/**
+ * Adds the {@code asciidoctor.js} Docbook formatter.
+ *
+ * @author Schalk W. Cronjé
+ *
+ * @since 5.0
+ */
 @CompileStatic
-class AsciidoctorjsBasePlugin implements Plugin<Project> {
+class AsciidoctorjsDocbookPlugin implements Plugin<Project> {
+
     @Override
     void apply(Project project) {
         project.pluginManager.tap {
-            apply(AsciidoctorCoreBasePlugin)
+            apply(AsciidoctorjsBasePlugin)
         }
 
         final asciidoc = project.extensions.getByType(AsciidoctorExtension)
-
-        asciidoc.toolchains.registerFactory(
-                AsciidoctorjsToolchain,
-                project.objects.newInstance(AsciidoctorjsToolchainFactory)
-        )
+        final toolchains = asciidoc.toolchains
 
         registerOutputFormatterFactory(
-                asciidoc.toolchains,
-                AsciidoctorjsHtml5,
-                AsciidoctorjsHtml5Factory,
+                toolchains,
+                AsciidoctorjsDocbook,
+                AsciidoctorjsDocbookFactory,
                 project.objects
         )
 
-//        registerOutputFormatterFactory(
-//                asciidoc.toolchains,
-//                AsciidoctorjsManpage,
-//                AsciidoctorjsManpageFactory,
-//                project.objects
-//        )
+        project.pluginManager.withPlugin(AsciidoctorjsPlugin.PLUGIN_ID) {
+            registerOutputFormatterOnAllToolchains(
+                    toolchains,
+                    AsciidoctorjsDocbook,
+                    DefaultAsciidoctorjsDocbook.DEFAULT_NAME
+            )
+        }
     }
 }

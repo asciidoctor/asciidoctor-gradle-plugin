@@ -17,12 +17,10 @@ package org.asciidoctor.gradle.model5.core.tasks
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorLauncher
-import org.asciidoctor.gradle.model5.core.DocType
 import org.asciidoctor.gradle.model5.core.SafeMode
 import org.asciidoctor.gradle.model5.core.internal.DefaultAsciidoctorConversionSettings
 import org.asciidoctor.gradle.model5.core.internal.DefaultAsciidoctorExecutionSettings
 import org.asciidoctor.gradle.model5.core.publications.AsciidoctorOutputData
-import org.gradle.api.file.CopySpec
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
@@ -93,6 +91,7 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
         }
         this.resourcesCopySpec.set(outputData.copyResources)
         this.conversionSettings.docType.set(outputData.docType)
+        this.exeSettings.moduleRequires.set(outputData.moduleRequires)
     }
 
     /**

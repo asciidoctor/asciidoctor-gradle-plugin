@@ -28,6 +28,7 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.ProjectLayout
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.util.PatternFilterable
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 
@@ -50,6 +51,7 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
     private final Property<AsciidoctorNamedBackend> backend
     private final Property<PatternFilterable> resourcesCopySpec
     private final Property<DocType> docType
+    private final SetProperty<String> moduleRequires
 
     @Inject
     DefaultAsciidoctorOutputData(String name, Project tempProjectReference) {
@@ -62,6 +64,7 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
         this.backend = objectFactory.property(AsciidoctorNamedBackend)
         this.resourcesCopySpec = objectFactory.property(PatternFilterable)
         this.docType = objectFactory.property(DocType)
+        this.moduleRequires = objectFactory.setProperty(String)
     }
 
     @Override
@@ -99,6 +102,16 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
         this.docType
     }
 
+    /**
+     * List modules which need to be explicitly called out as being required.
+     *
+     * @return Provider to a list. Can be empty, but never {@code null}.
+     */
+    @Override
+    Provider<Set<String>> getModuleRequires() {
+        this.moduleRequires
+    }
+
     void configureFrom(
             String publicationName,
             AsciidoctorToolchain toolchain,
@@ -118,5 +131,7 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
         } else {
             this.docType.set(sourceSet.docType)
         }
+
+        this.moduleRequires.set(formatter.requires)
     }
 }

@@ -19,6 +19,8 @@ import org.asciidoctor.gradle.model5.core.formatters.AsciidoctorOutputFormatter;
 import org.asciidoctor.gradle.model5.core.engines.AsciidoctorEngine;
 import org.gradle.api.ExtensiblePolymorphicDomainObjectContainer;
 
+import java.util.Collections;
+
 /**
  *
  * Represents an Asciidoctor toolchain.
@@ -39,6 +41,15 @@ public interface AsciidoctorToolchain extends AsciidoctorEngine, ProcessingOptio
      * @return Container of registered output formatters.
      */
     ExtensiblePolymorphicDomainObjectContainer<AsciidoctorOutputFormatter> getRegisteredOutputFormatters();
+
+    /**
+     * A list of tasks that will perform toolchain-related preparation before conversion using the toolchain can start.
+     *
+     * @return List of task names. Can be empty, but never {@code null}
+     */
+    default Iterable<String> getToolchainPreparationTaskNames() {
+        return Collections.EMPTY_LIST;
+    }
 //
 //    /**
 //     * The interface this toolchain instance represents, not the actual instance itself.

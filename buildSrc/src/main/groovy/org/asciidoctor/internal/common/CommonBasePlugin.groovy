@@ -50,7 +50,13 @@ class CommonBasePlugin implements Plugin<Project> {
             header = new File(project.rootDir, 'gradle/license/HEADER')
             strictCheck = true
             ignoreFailures = false
-            excludes(['**/*.ad', '**/*.asciidoc', '**/*.adoc', '**/fake.txt'])
+            excludes([
+                    '**/*.ad',
+                    '**/*.asciidoc',
+                    '**/*.adoc',
+                    '**/fake.txt',
+                    '**/*.properties'
+            ])
         }
 
         ((ExtensionAware) license).extensions.extraProperties.set('year', yearRange)
