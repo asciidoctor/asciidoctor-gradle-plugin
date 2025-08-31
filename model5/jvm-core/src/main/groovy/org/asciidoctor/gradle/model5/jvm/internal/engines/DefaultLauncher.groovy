@@ -23,6 +23,8 @@ import org.asciidoctor.gradle.model5.core.internal.engines.EngineUtils
 import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.FileCollection
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkQueue
 import org.gradle.workers.WorkerExecutor
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
@@ -42,16 +44,22 @@ class DefaultLauncher implements AsciidoctorLauncher {
     private final WorkerExecutor workerExecutor
     private final ConfigurableFileCollection classpath
     private final FileSystemOperations fsOperations
+    private final Property<LauncherEngineOptions> launcherEngineOptions
 
     @Inject
     DefaultLauncher(Project tempProjectRef, WorkerExecutor we) {
         this.workerExecutor = we
         this.fsOperations = ConfigCacheSafeOperations.from(tempProjectRef).fsOperations()
         this.classpath = fsOperations.emptyFileCollection()
+        this.launcherEngineOptions = tempProjectRef.objects.property(LauncherEngineOptions)
     }
 
     void classpath(FileCollection files) {
         this.classpath.from(files)
+    }
+
+    void setEngineOptions(Provider<LauncherEngineOptions> leo) {
+        this.launcherEngineOptions.set(leo)
     }
 
     @Override
@@ -65,13 +73,13 @@ class DefaultLauncher implements AsciidoctorLauncher {
             wq.submit(LauncherWorker) { lp ->
                 lp.tap {
                     sourceFiles.set(allFiles)
-                    requires.set([])
+                    requires.set(executionsSettings.moduleRequires)
                     baseDir.set(conversionSettings.baseDir)
                     destinationDir.set(relPath.empty ? destDir : destDir.map { it.dir(relPath) })
                     backend.set(conversionSettings.backend.map { b -> b.backend })
                     safeMode.set(executionsSettings.safeMode.map { it.name() })
                     attributes.set(conversionSettings.attributes)
-                    // TODO: options
+                    engineOptions.set(launcherEngineOptions)
                 }
             }
         }

@@ -12,12 +12,16 @@ asciidoc:
     asciidoctor-maven-plugin-name: Asciidoctor Maven Plugin
     asciidoctor-maven-plugin-url: https://github.com/asciidoctor/asciidoctor-maven-plugin
     asciidoctor-url: https://asciidoctor.org
+    asciidoctorj-conventions-plugin: org.asciidoctor.jvm
+    asciidoctorj-diagram-name: AsciidoctorJ Diagram
+    asciidoctorj-diagram-url: https://github.com/asciidoctor/asciidoctorj-diagram
     asciidoctorj-epub-name: AsciidoctorJ EPUB3
     asciidoctorj-epub-url: https://github.com/asciidoctor/asciidoctorj-epub3
     asciidoctorj-name: AsciidoctorJ
     asciidoctorj-pdf-name: AsciidoctorJ PDF
     asciidoctorj-pdf-url: https://github.com/asciidoctor/asciidoctorj-pdf
     asciidoctorj-url: https://github.com/asciidoctor/asciidoctorj
+    asciidoctorjs-conventions-plugin: org.asciidoctor.js
     asciidoctorjs-name: Asciidoctor.js
     asciidoctorjs-url: https://github.com/asciidoctor/asciidoctor.js
     gradle-url: https://gradle.org/

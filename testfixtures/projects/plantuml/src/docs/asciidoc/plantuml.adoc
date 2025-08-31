@@ -1,0 +1,4 @@
+= Diagrams
+
+.This is a folder
+plantuml::plantuml-example.txt[format="svg"]

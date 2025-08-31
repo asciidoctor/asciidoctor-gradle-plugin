@@ -16,7 +16,7 @@
 package org.asciidoctor.gradle.model5.core.publications
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.AsciidoctorExtension
+import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
 import org.asciidoctor.gradle.model5.core.internal.publications.DefaultAsciidoctorOutputData
 import org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils
 import org.asciidoctor.gradle.model5.core.internal.tasks.TaskFactory
@@ -48,12 +48,12 @@ class AsciidoctorPublication implements Named {
 //    private final ConfigCacheSafeOperations ccso
     private final ObjectFactory objectFactory
 
-    private final AsciidoctorExtension parent
+    private final AsciidoctorModelExtension parent
     private final AsciidoctorSourceSet sources
     private final NamedDomainObjectContainer<DefaultAsciidoctorOutputData> outputs
 
     @Inject
-    AsciidoctorPublication(String name, AsciidoctorExtension parent, Project tempProjectReference) {
+    AsciidoctorPublication(String name, AsciidoctorModelExtension parent, Project tempProjectReference) {
         this.name = name
         this.parent = parent
 //        this.ccso = ConfigCacheSafeOperations.from(tempProjectReference)

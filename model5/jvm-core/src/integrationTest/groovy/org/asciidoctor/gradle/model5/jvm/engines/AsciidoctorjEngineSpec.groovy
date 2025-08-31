@@ -78,7 +78,11 @@ class AsciidoctorjEngineSpec extends IntegrationSpecification {
             )
         }
         
-        final engine = project.objects.newInstance(AsciidoctorjEngine, 'testEngine')
+        final engine = project.objects.newInstance(AsciidoctorjEngine, 'testEngine').tap {
+            eruby = 'erubis'
+            catalogAssets = true
+            sourceMap = true
+        }
                 
         tasks.register('runEngine') {
             doLast {

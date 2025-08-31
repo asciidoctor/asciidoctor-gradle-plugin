@@ -20,8 +20,11 @@ import org.asciidoctor.gradle.model5.core.internal.toolchains.DefaultProcessingO
 import org.asciidoctor.gradle.model5.core.toolchains.AbstractAsciidoctorToolchain
 import org.asciidoctor.gradle.model5.core.toolchains.ProcessingOptions
 import org.asciidoctor.gradle.model5.jvm.engines.AsciidoctorjEngine
+import org.asciidoctor.gradle.model5.jvm.engines.EngineOptions
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
+import org.gradle.api.Action
 import org.gradle.api.Project
+import org.ysb33r.grolifant5.api.core.ClosureUtils
 
 import javax.inject.Inject
 
@@ -43,6 +46,36 @@ class DefaultAsciidoctorjToolchain extends AbstractAsciidoctorToolchain implemen
         this.processingOptions = objectFactory.newInstance(DefaultProcessingOptions)
     }
 
+    /**
+     * Configures additional engine options.
+     *
+     * @param configurator Configurator which is passed an instance of {@link EngineOptions}
+     */
+    @Override
+    void engineOptions(Action<EngineOptions> configurator) {
+        configurator.execute(engine)
+    }
+
+    /**
+     * Configures additional engine options.
+     *
+     * @param configurator Configurator which is passed an instance of {@link EngineOptions}
+     */
+    @Override
+    void engineOptions(@DelegatesTo(EngineOptions.class) Closure<?> configurator) {
+        ClosureUtils.configureItem(engine, configurator)
+    }
+
+    /**
+     * Directo access to engine options.
+     *
+     * @return Instance of something that implements {@link EngineOptions}
+     */
+    @Override
+    EngineOptions getEngineOptions() {
+        engine
+    }
+
 //    @Override
 //    Provider<Map<String, String>> getOptions() {
 //        return null
@@ -57,9 +90,5 @@ class DefaultAsciidoctorjToolchain extends AbstractAsciidoctorToolchain implemen
 //    void options(Map<String, ?> m) {
 //
 //    }
-//
-//    @Override
-//    Class<?> getToolchainClass() {
-//        return null
-//    }
+
 }

@@ -15,7 +15,7 @@
  */
 package org.asciidoctor.gradle.model5.jvm.toolchains
 
-import org.asciidoctor.gradle.model5.core.AsciidoctorExtension
+import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
 import org.asciidoctor.gradle.model5.jvm.internal.formatters.DefaultAsciidoctorjDocbook
 import org.asciidoctor.gradle.model5.jvm.internal.formatters.DefaultAsciidoctorjHtml5
 import org.asciidoctor.gradle.model5.jvm.internal.formatters.DefaultAsciidoctorjPdf
@@ -30,11 +30,11 @@ import org.asciidoctor.gradle.testfixtures.model5.UnitTestSpecification
  */
 class AsciidoctorjToolchainSpec extends UnitTestSpecification {
 
-    AsciidoctorExtension asciidoc
+    AsciidoctorModelExtension asciidoc
 
     void setup() {
         project.pluginManager.apply(AsciidoctorjBasePlugin)
-        asciidoc = project.extensions.getByType(AsciidoctorExtension)
+        asciidoc = project.extensions.getByType(AsciidoctorModelExtension)
     }
 
     void 'When the base plugin is applied, an asciidoctorj toolchain can be registered'() {

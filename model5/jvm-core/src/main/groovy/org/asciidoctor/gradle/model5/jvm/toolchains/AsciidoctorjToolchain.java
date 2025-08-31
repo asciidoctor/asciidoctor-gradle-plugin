@@ -15,7 +15,11 @@
  */
 package org.asciidoctor.gradle.model5.jvm.toolchains;
 
+import groovy.lang.Closure;
+import groovy.lang.DelegatesTo;
 import org.asciidoctor.gradle.model5.core.toolchains.AsciidoctorToolchain;
+import org.asciidoctor.gradle.model5.jvm.engines.EngineOptions;
+import org.gradle.api.Action;
 import org.gradle.api.file.FileCollection;
 
 /**
@@ -25,14 +29,28 @@ import org.gradle.api.file.FileCollection;
  *
  * @since 5.0
  */
-public interface AsciidoctorjToolchain extends AsciidoctorToolchain, CoreVersions {
+public interface AsciidoctorjToolchain extends AsciidoctorToolchain, CoreVersions, ClasspathManagement {
 
     /**
-     * Adds additional items to the runtime classpath.
+     * Configures additional engine options.
      *
-     * @param fc Files to add to classpath. Can be a {@code Configuration}.
+     * @param configurator Configurator which is passed an instance of {@link EngineOptions}
      */
-    void classpath(FileCollection fc);
+    void engineOptions(Action<EngineOptions> configurator);
+
+    /**
+     * Configures additional engine options.
+     *
+     * @param configurator Configurator which is passed an instance of {@link EngineOptions}
+     */
+    void engineOptions(@DelegatesTo(EngineOptions.class) Closure<?> configurator);
+
+    /**
+     * Directo access to engine options.
+     *
+     * @return Instance of something that implements {@link EngineOptions}
+     */
+    EngineOptions getEngineOptions();
 
 //    /**
 //     * The level at which the AsciidoctorJ process should be logging.

@@ -18,7 +18,3 @@ agProject {
             []
     )
 }
-
-tasks.named('pluginUnderTestMetadata', PluginUnderTestMetadata) {
-    pluginClasspath.from(sourceSets.getByName('testFixtures').runtimeClasspath)
-}

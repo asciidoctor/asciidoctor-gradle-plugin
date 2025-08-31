@@ -17,9 +17,8 @@ package org.asciidoctor.gradle.model5.jvm
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.toolchains.AsciidoctorToolchain
-import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjHtml5
+import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjExtension
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjOutputFormatter
-import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjOutputFormatterVersioned
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.gradle.api.Action
 import org.gradle.api.ExtensiblePolymorphicDomainObjectContainer
@@ -42,8 +41,13 @@ class JvmModel {
     public static final String ASCIIDOCTORJ_GROOVY_DSL_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-groovy-dsl"
     public static final String ASCIIDOCTORJ_PDF_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-pdf"
     public static final String ASCIIDOCTORJ_EPUB_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-epub3"
-    public static final String ASCIIDOCTORJ_DIAGRAM_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-diagram"
     public static final String ASCIIDOCTORJ_LEANPUB_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctor-leanpub-markdown"
+
+    public static final String ASCIIDOCTORJ_DIAGRAM_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-diagram"
+    public static final String ASCIIDOCTORJ_DIAGRAM_BATIK_DEPENDENCY = "${ASCIIDOCTORJ_DIAGRAM_DEPENDENCY}-batik"
+    public static final String ASCIIDOCTORJ_DIAGRAM_DITAA_DEPENDENCY = "${ASCIIDOCTORJ_DIAGRAM_DEPENDENCY}-ditaamini"
+    public static final String ASCIIDOCTORJ_DIAGRAM_JSYNTRAX_DEPENDENCY = "${ASCIIDOCTORJ_DIAGRAM_DEPENDENCY}-jsyntrax"
+    public static final String ASCIIDOCTORJ_DIAGRAM_PLANTUML_DEPENDENCY = "${ASCIIDOCTORJ_DIAGRAM_DEPENDENCY}-plantuml"
 
     /**
      * Name of a declarable configuration for use with a specific AsciidoctorJ engine.
@@ -55,6 +59,8 @@ class JvmModel {
     static String nameForEngineConfiguration(String engineName) {
         "asciidoctorjEngine${engineName.capitalize()}"
     }
+
+
 
     /**
      * Name of a resolvable configuration for use with a specific AsciidoctorJ engine.
@@ -89,6 +95,27 @@ class JvmModel {
     }
 
     /**
+     * Name of a declarable configuration for use with a specific AsciidoctorJ toolchain + output formatter.
+     *
+     * @param toolchainName Name of toolchain.
+     * @param formatterName Name of output formatter.
+     * @return Configuration name
+     */
+    static String nameForExtensionConfiguration(String toolchainName, String extensionName) {
+        "asciidoctorjExtension${toolchainName.capitalize()}${extensionName.capitalize()}"
+    }
+
+    /**
+     * Name of a resolvable configuration for use with a specific AsciidoctorJ toolchain + output formatter.
+     *
+     * @param toolchainName Name of toolchain.
+     * @param formatterName Name of output formatter.
+     * @return Configuration name
+     */
+    static String nameForExtensionConfigurationResolvable(String toolchainName, String extensionName) {
+        "${nameForExtensionConfiguration(toolchainName, extensionName)}RuntimeClasspath"
+    }
+    /**
      * Registers an output formatter on all the {@code asciidoctorj} toolchains.
      *
      * @param toolchains Toolchain container
@@ -102,8 +129,8 @@ class JvmModel {
             Class<? extends NamedDomainObjectFactory<T>> factoryClass,
             ObjectFactory objectFactory
     ) {
-        registerOutputFormatterFactory(toolchains,formatterClass) { AsciidoctorjToolchain tc ->
-            objectFactory.newInstance(factoryClass,tc)
+        registerOutputFormatterFactory(toolchains, formatterClass) { AsciidoctorjToolchain tc ->
+            objectFactory.newInstance(factoryClass, tc)
         }
     }
 
@@ -117,10 +144,10 @@ class JvmModel {
     static <T extends AsciidoctorjOutputFormatter> void registerOutputFormatterFactory(
             ExtensiblePolymorphicDomainObjectContainer<AsciidoctorToolchain> toolchains,
             Class<T> formatterClass,
-            Function<AsciidoctorjToolchain,NamedDomainObjectFactory<T>> factoryFunction
+            Function<AsciidoctorjToolchain, NamedDomainObjectFactory<T>> factoryFunction
     ) {
         toolchains.withType(AsciidoctorjToolchain).configureEach { tc ->
-            tc.registeredOutputFormatters.registerFactory(formatterClass,factoryFunction.apply(tc))
+            tc.registeredOutputFormatters.registerFactory(formatterClass, factoryFunction.apply(tc))
         }
     }
 
@@ -135,7 +162,7 @@ class JvmModel {
             Class<T> formatterClass,
             String name
     ) {
-        registerOutputFormatterOnAllToolchains(toolchains,formatterClass,name) {
+        registerOutputFormatterOnAllToolchains(toolchains, formatterClass, name) {
         }
     }
 
@@ -143,7 +170,7 @@ class JvmModel {
      * Registers a named formatter on each of the {@code asciidoctorj} toolchains.
      * @param toolchains Toolchains.
      * @param formatterClass Formatter class.
-     * @param name Name of the .
+     * @param name Name of the formatter.
      * @param configurator Configurator of the output formatter.
      */
     static <T extends AsciidoctorjOutputFormatter> void registerOutputFormatterOnAllToolchains(
@@ -153,7 +180,77 @@ class JvmModel {
             Action<T> configurator
     ) {
         toolchains.withType(AsciidoctorjToolchain).configureEach { tc ->
-            final fc = tc.registeredOutputFormatters.register(name,formatterClass)
+            final fc = tc.registeredOutputFormatters.register(name, formatterClass)
+            fc.configure(configurator)
+        }
+    }
+
+    /**
+     * Registers an extension on all the {@code asciidoctorj} toolchains.
+     *
+     * @param toolchains Toolchain container
+     * @param extensionClass The extension class
+     * @param factoryClass The factory for the extension.
+     * @param objectFactory objectFactory
+     */
+    static <T extends AsciidoctorjExtension> void registerExtensionFactory(
+            ExtensiblePolymorphicDomainObjectContainer<AsciidoctorToolchain> toolchains,
+            Class<T> extensionClass,
+            Class<? extends NamedDomainObjectFactory<T>> factoryClass,
+            ObjectFactory objectFactory
+    ) {
+        registerExtensionFactory(toolchains, extensionClass) { AsciidoctorjToolchain tc ->
+            objectFactory.newInstance(factoryClass, tc)
+        }
+    }
+
+    /**
+     * Registers an extensionr on all the {@code asciidoctorj} toolchains.
+     *
+     * @param toolchains Toolchain container
+     * @param extensionClass The extension class
+     * @param factoryFunction A function that will create a factory given a specific toolchain instance.
+     */
+    static <T extends AsciidoctorjExtension> void registerExtensionFactory(
+            ExtensiblePolymorphicDomainObjectContainer<AsciidoctorToolchain> toolchains,
+            Class<T> extensionClass,
+            Function<AsciidoctorjToolchain, NamedDomainObjectFactory<T>> factoryFunction
+    ) {
+        toolchains.withType(AsciidoctorjToolchain).configureEach { tc ->
+            tc.asciidocExtensions.registerFactory(extensionClass, factoryFunction.apply(tc))
+        }
+    }
+
+    /**
+     * Registers an extension on each of the {@code asciidoctorj} toolchains
+     * @param toolchains Toolchains
+     * @param extensionClass Extension class
+     * @param name Name of the extension
+     */
+    static <T extends AsciidoctorjExtension> void registerExtensionOnAllToolchains(
+            ExtensiblePolymorphicDomainObjectContainer<AsciidoctorToolchain> toolchains,
+            Class<T> extensionClass,
+            String name
+    ) {
+        registerExtensionOnAllToolchains(toolchains, extensionClass, name) {
+        }
+    }
+
+    /**
+     * Registers an extension on each of the {@code asciidoctorj} toolchains.
+     * @param toolchains Toolchains.
+     * @param extensionClass Extension class.
+     * @param name Name of the extension.
+     * @param configurator Configurator of the extension.
+     */
+    static <T extends AsciidoctorjExtension> void registerExtensionOnAllToolchains(
+            ExtensiblePolymorphicDomainObjectContainer<AsciidoctorToolchain> toolchains,
+            Class<T> extensionClass,
+            String name,
+            Action<T> configurator
+    ) {
+        toolchains.withType(AsciidoctorjToolchain).configureEach { tc ->
+            final fc = tc.asciidocExtensions.register(name, extensionClass)
             fc.configure(configurator)
         }
     }

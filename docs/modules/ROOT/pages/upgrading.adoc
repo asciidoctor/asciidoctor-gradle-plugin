@@ -8,6 +8,12 @@ If you are on 4.x you can continue to use the old style, but you need to append 
 
 Otherwise in 5.x, the correct way is to use the new model approach, where everything is configured in one place and there is no need to configure any tasks in the DSL.
 
+=== Notes about upgrading to the new model
+
+* The base directory is the source directory by default, whereas in the classic plugins it is still the project directory.
+* The base directory is now set prior to conversion.
+  It can no longer be modified on a per-document basis during the conversion process.
+
 === Notes about the classic model in 5.x
 
 * `docExtensions` no longer accept closures.

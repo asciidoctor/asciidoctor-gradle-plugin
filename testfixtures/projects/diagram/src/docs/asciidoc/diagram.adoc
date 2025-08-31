@@ -1,0 +1,15 @@
+= Diagrams
+
+[d2,testd2,svg]
+....
+donut: {shape: circle}
+database.shape: cylinder
+you: {
+  shape: person
+}
+....
+
+[qrcode,testqrcode,png]
+....
+https://my-link.tld/something
+....

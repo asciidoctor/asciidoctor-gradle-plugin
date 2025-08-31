@@ -16,7 +16,7 @@
 package org.asciidoctor.gradle.model5.core.internal.publications
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.AsciidoctorExtension
+import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
 import org.asciidoctor.gradle.model5.core.errors.InvalidPublicationName
 import org.asciidoctor.gradle.model5.core.publications.AsciidoctorPublication
 import org.gradle.api.NamedDomainObjectFactory
@@ -34,13 +34,13 @@ import org.gradle.api.model.ObjectFactory
 class PublicationFactory implements NamedDomainObjectFactory<AsciidoctorPublication> {
 
     private final ObjectFactory objectFactory
-    private final AsciidoctorExtension parent
+    private final AsciidoctorModelExtension parent
     private static final List<String> INVALID_NAMES = [
             'all',
             'toolchains'
     ].asImmutable()
 
-    PublicationFactory(Project project, AsciidoctorExtension parent) {
+    PublicationFactory(Project project, AsciidoctorModelExtension parent) {
         this.objectFactory = project.objects
         this.parent = parent
     }

@@ -1,0 +1,51 @@
+= Configure diagram
+
+The {asciidoctorj-name} engine supports Batik, Ditaa, JSyntrax, and PlantUml via a Diagram extension.
+This extension utilises link:{asciidoctorj-diagram-url}[asciidoctorj-diagram-url].
+When the `{asciidoctorj-conventions-plugin}` is applied, this extension is registered automatically and named `diagram`.
+It is then up to the build script author to enable the specific components so that they can appear on the classpath.
+
+[source,groovy]
+----
+org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
+import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjDiagram
+
+asciidoc {
+  toolchains {
+    asciidoctorj(AsciidoctorjToolchain) {
+      asciidocExtensions {
+        diagram(AsciidoctorjDiagram) {
+            useDiagram() // <.>
+            useDiagram('1.2.3') // <.>
+            useBatik() // <.>
+            useBatik('1.2.3') // <.>
+            useDitaa() // <.>
+            useDitaa('1.2.3') // <.>
+            useJSyntrax() // <.>
+            useJSyntrax('1.2.3') // <.>
+            usePlantUml() // <.>
+            usePlantUml('1.2.3') // <.>
+        }
+      }
+    }
+  }
+}
+----
+<.> Activate diagram usage with support for items with no additional dependencies.
+<.> Activate diagram usage with a non-default version.
+<.> Use Batik.
+  Implies `useDiagram().
+<.> Use Batik with a non-default version.
+Implies `useDiagram().
+<.> Use Ditaa.
+  Implies `useDiagram().
+<.> Use Ditaa with a non-default version.
+Implies `useDiagram().
+<.> Use JSyntrax
+Implies `useDiagram().
+<.> Use JSyntrax with a non-default version.
+Implies `useDiagram().
+<.> Use PlantUML.
+Implies `useDiagram().
+<.> Use PlantUML with a non-default version.
+Implies `useDiagram().

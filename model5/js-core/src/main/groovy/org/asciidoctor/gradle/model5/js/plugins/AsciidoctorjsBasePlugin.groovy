@@ -16,15 +16,10 @@
 package org.asciidoctor.gradle.model5.js.plugins
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.AsciidoctorExtension
+import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
 import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreBasePlugin
-import org.asciidoctor.gradle.model5.js.JsModel
-import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsDocbook
 import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsHtml5
-import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsManpage
-import org.asciidoctor.gradle.model5.js.internal.formatters.AsciidoctorjsDocbookFactory
 import org.asciidoctor.gradle.model5.js.internal.formatters.AsciidoctorjsHtml5Factory
-import org.asciidoctor.gradle.model5.js.internal.formatters.AsciidoctorjsManpageFactory
 import org.asciidoctor.gradle.model5.js.internal.toolchains.AsciidoctorjsToolchainFactory
 import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
 import org.gradle.api.Plugin
@@ -41,7 +36,7 @@ class AsciidoctorjsBasePlugin implements Plugin<Project> {
             apply(AsciidoctorCoreBasePlugin)
         }
 
-        final asciidoc = project.extensions.getByType(AsciidoctorExtension)
+        final asciidoc = project.extensions.getByType(AsciidoctorModelExtension)
 
         asciidoc.toolchains.registerFactory(
                 AsciidoctorjsToolchain,
@@ -54,12 +49,5 @@ class AsciidoctorjsBasePlugin implements Plugin<Project> {
                 AsciidoctorjsHtml5Factory,
                 project.objects
         )
-
-//        registerOutputFormatterFactory(
-//                asciidoc.toolchains,
-//                AsciidoctorjsManpage,
-//                AsciidoctorjsManpageFactory,
-//                project.objects
-//        )
     }
 }

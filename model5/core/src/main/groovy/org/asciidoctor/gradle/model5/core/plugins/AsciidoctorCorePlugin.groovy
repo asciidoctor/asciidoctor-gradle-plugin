@@ -16,7 +16,7 @@
 package org.asciidoctor.gradle.model5.core.plugins
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.AsciidoctorExtension
+import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
 import org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils
 import org.asciidoctor.gradle.model5.core.tasks.AsciidoctorTask
 import org.gradle.api.Plugin
@@ -32,7 +32,7 @@ class AsciidoctorCorePlugin implements Plugin<Project> {
             apply(AsciidoctorCoreBasePlugin)
         }
 
-        final asciidoc = project.extensions.getByType(AsciidoctorExtension)
+        final asciidoc = project.extensions.getByType(AsciidoctorModelExtension)
 
         asciidoc.publications.create(PublicationUtils.DEFAULT_PUBLICATION)
 

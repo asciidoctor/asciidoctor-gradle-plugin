@@ -16,8 +16,7 @@
 package org.asciidoctor.gradle.model5.js.plugins
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.AsciidoctorExtension
-import org.asciidoctor.gradle.model5.js.JsModel
+import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
 import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsDocbook
 import org.asciidoctor.gradle.model5.js.internal.formatters.AsciidoctorjsDocbookFactory
 import org.asciidoctor.gradle.model5.js.internal.formatters.DefaultAsciidoctorjsDocbook
@@ -43,7 +42,7 @@ class AsciidoctorjsDocbookPlugin implements Plugin<Project> {
             apply(AsciidoctorjsBasePlugin)
         }
 
-        final asciidoc = project.extensions.getByType(AsciidoctorExtension)
+        final asciidoc = project.extensions.getByType(AsciidoctorModelExtension)
         final toolchains = asciidoc.toolchains
 
         registerOutputFormatterFactory(

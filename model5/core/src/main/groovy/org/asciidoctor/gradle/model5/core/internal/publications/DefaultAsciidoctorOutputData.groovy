@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.model5.core.internal.publications
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorNamedBackend
 import org.asciidoctor.gradle.model5.core.DocType
+import org.asciidoctor.gradle.model5.core.extensions.AsciidoctorExtension
 import org.asciidoctor.gradle.model5.core.formatters.AsciidoctorOutputFormatter
 import org.asciidoctor.gradle.model5.core.publications.AsciidoctorOutputData
 import org.asciidoctor.gradle.model5.core.publications.AsciidoctorSourceSet
@@ -125,13 +126,18 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
         if (formatter.copyResources) {
             this.resourcesCopySpec.set(sourceSet.resourcesPatterns)
         }
-        
-        if(formatter.enforcedDocType.present) {
+
+        if (formatter.enforcedDocType.present) {
             this.docType.set(formatter.enforcedDocType.get())
         } else {
             this.docType.set(sourceSet.docType)
         }
 
-        this.moduleRequires.set(formatter.requires)
+        final allRequires = ccso.providerTools().listProperty(String)
+        toolchain.asciidocExtensions.all { AsciidoctorExtension it ->
+            allRequires.addAll(it.requires)
+        }
+        allRequires.addAll(formatter.requires)
+        this.moduleRequires.set(allRequires)
     }
 }

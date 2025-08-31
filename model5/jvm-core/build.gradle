@@ -32,10 +32,14 @@ agProject {
     )
 
     withVersionSubstitution("${project.name}.properties", [
-            VERSION  : versionOf('asciidoctorj'),
-            GROOVYDSL: versionOf('asciidoctorjGroovyDsl'),
+            BATIK    : versionOf('asciidoctorjDiagramBatik'),
             DIAGRAM  : versionOf('asciidoctorjDiagram'),
-            PDF: versionOf('asciidoctorjPdf'),
+            DITAA    : versionOf('asciidoctorjDiagramDitaa'),
+            GROOVYDSL: versionOf('asciidoctorjGroovyDsl'),
+            JSYNTRAX    : versionOf('asciidoctorjDiagramJSyntrax'),
+            PDF      : versionOf('asciidoctorjPdf'),
+            PLANTUML : versionOf('asciidoctorjDiagramPlantUml'),
+            VERSION  : versionOf('asciidoctorj'),
     ])
 }
 
@@ -51,4 +55,9 @@ dependencies {
     testImplementation project(':testfixtures-jvm')
 
     cachingOnly(libs.asciidoctorjPdf)
+    cachingOnly(libs.asciidoctorjDiagram)
+    cachingOnly(libs.asciidoctorjDiagramBatik)
+    cachingOnly(libs.asciidoctorjDiagramDitaa)
+    cachingOnly(libs.asciidoctorjDiagramJSyntrax)
+    cachingOnly(libs.asciidoctorjDiagramPlantUml)
 }

@@ -16,7 +16,7 @@
 package org.asciidoctor.gradle.model5.core.internal.publications
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.waitingroom.AsciidoctorPublication
+import org.asciidoctor.gradle.model5.core.publications.AsciidoctorPublication
 import org.gradle.api.tasks.util.PatternSet
 import org.ysb33r.grolifant5.api.core.FileSystemOperations
 

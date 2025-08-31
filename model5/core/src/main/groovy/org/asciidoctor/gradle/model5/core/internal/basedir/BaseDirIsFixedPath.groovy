@@ -19,7 +19,10 @@ import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.basedir.BaseDirStrategy
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Provider
+
+import javax.inject.Inject
 
 /** Strategy where a lazy-evaluated fixed path is used as the base
  * directory for asciidoctor conversions.
@@ -33,12 +36,13 @@ class BaseDirIsFixedPath implements BaseDirStrategy {
 
     private final DirectoryProperty location
 
-    BaseDirIsFixedPath(Provider<Directory> lazyResolvedLocation) {
-        this.location.set(lazyResolvedLocation)
+    @Inject
+    BaseDirIsFixedPath(Provider<Directory> lazyResolvedLocation, ObjectFactory objectFactory) {
+        this.location = objectFactory.directoryProperty().convention(lazyResolvedLocation)
     }
 
-    BaseDirIsFixedPath(File lazyResolvedLocation) {
-        this.location.set(lazyResolvedLocation)
+    protected BaseDirIsFixedPath(DirectoryProperty lazyResolvedLocation) {
+        this.location = lazyResolvedLocation
     }
 
     @Override

@@ -1,0 +1,9 @@
+folder folder [
+This is a <b>folder
+----
+You can use separator
+====
+of different kind
+....
+and style
+]

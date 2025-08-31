@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle.model5.core.formatters;
 
 import org.asciidoctor.gradle.model5.core.AsciidoctorNamedBackend;
+import org.asciidoctor.gradle.model5.core.AsciidoctorRequires;
 import org.asciidoctor.gradle.model5.core.DocType;
 import org.gradle.api.Named;
 import org.gradle.api.provider.Provider;
@@ -30,7 +31,7 @@ import java.util.Optional;
  *
  * @since 5.0
  */
-public interface AsciidoctorOutputFormatter extends Named {
+public interface AsciidoctorOutputFormatter extends Named, AsciidoctorRequires {
 
     /**
      * What this is known to Asciidoctor as the backend.
@@ -62,14 +63,5 @@ public interface AsciidoctorOutputFormatter extends Named {
      */
     default Optional<DocType> getEnforcedDocType() {
         return Optional.empty();
-    }
-
-    /**
-     * A list of {@code requires} that an output formatter places on the associated toolchain.
-     *
-     * @return List of {@code requires}. Can be empty, but never {@code null}.
-     */
-    default Iterable<String> getRequires() {
-        return Collections.EMPTY_LIST;
     }
 }

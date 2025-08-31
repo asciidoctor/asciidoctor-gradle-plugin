@@ -99,12 +99,18 @@ class IntegrationSpecification extends Specification {
         FileUtils.copyDirectory(srcDir, target)
     }
 
-    void writeBasicBuildFileGroovy(Iterable<String> plugins) {
+    void writeBasicBuildFileGroovy(Iterable<String> plugins, Iterable<String> imports = []) {
+        final importedItems = imports.collect {
+            "import ${it}"
+        }.join('\n')
+
         final pluginIds = plugins.collect {
             "id '${it}'"
         }.join('\n' + (StringTools.SPACE * 12))
 
         buildFile.text = """
+        ${importedItems}
+
         plugins {
             ${pluginIds}
         }

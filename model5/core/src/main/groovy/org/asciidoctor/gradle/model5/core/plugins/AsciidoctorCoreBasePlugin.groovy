@@ -16,9 +16,7 @@
 package org.asciidoctor.gradle.model5.core.plugins
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.AsciidoctorExtension
-import org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils
-import org.asciidoctor.gradle.model5.core.tasks.AsciidoctorTask
+import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.ysb33r.grolifant5.api.core.plugins.GrolifantServicePlugin
@@ -34,7 +32,7 @@ class AsciidoctorCoreBasePlugin implements Plugin<Project> {
             apply(GrolifantServicePlugin)
         }
 
-        project.extensions.create(AsciidoctorExtension.NAME, AsciidoctorExtension, project)
+        project.extensions.create(AsciidoctorModelExtension.NAME, AsciidoctorModelExtension, project)
 
 //        project.tasks.register(TOOLCHAIN_DISPLAY_TASK, ShowAsciidocToolchains) {
 //            it.group = 'help'

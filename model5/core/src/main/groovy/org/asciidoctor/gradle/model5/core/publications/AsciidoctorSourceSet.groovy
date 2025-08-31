@@ -98,6 +98,8 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
         this.attributes.add('gradle-project-name', ccso.projectTools().projectNameProvider)
         this.attributes.add('gradle-project-group', ccso.projectTools().groupProvider.orElse(EMPTY))
         this.attributes.add('gradle-project-version', ccso.projectTools().versionProvider.orElse(EMPTY))
+        this.attributes.add('gradle-projectdir', tempProjectReference.projectDir)
+        this.attributes.add('gradle-rootdir', tempProjectReference.rootDir)
     }
 
     /**

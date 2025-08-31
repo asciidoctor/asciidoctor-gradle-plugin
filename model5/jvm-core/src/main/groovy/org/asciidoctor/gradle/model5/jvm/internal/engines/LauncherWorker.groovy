@@ -37,6 +37,7 @@ abstract class LauncherWorker implements WorkAction<LauncherParameters> {
         final asciidoctor = Asciidoctor.Factory.create()
 
         final reqs = parameters.requires.get()
+
         if (!reqs.empty) {
             asciidoctor.requireLibraries(reqs)
         }
@@ -57,8 +58,7 @@ abstract class LauncherWorker implements WorkAction<LauncherParameters> {
 //        }
     }
 
-//    @SuppressWarnings('UnnecessaryObjectReferences')
-    private Options normalisedOptions() {//(final File file, ExecutorConfiguration runConfiguration) {
+    private Options normalisedOptions() {
         final optionsBuilder = Options.builder()
         final attributesBuilder = Attributes.builder()
 
@@ -70,8 +70,8 @@ abstract class LauncherWorker implements WorkAction<LauncherParameters> {
             }
         }
 
-        // TODO: Handle presented options.
-//        options.each { key, value -> optionsBuilder.option(key, value) }
+        final eo = parameters.engineOptions.get()
+
         optionsBuilder.tap {
             inPlace(false)
             mkDirs(true)
@@ -80,10 +80,11 @@ abstract class LauncherWorker implements WorkAction<LauncherParameters> {
             baseDir(parameters.baseDir.get().asFile)
             toDir(parameters.destinationDir.get().asFile)
             attributes(attributesBuilder.build())
+
+            catalogAssets(eo.catalogAssets)
+            eruby(eo.eruby)
+            sourcemap(eo.sourceMap)
         }
-//
-//            optionsBuilder.attributes(attributesBuilder.build())
-//        }
 
         optionsBuilder.build()
     }

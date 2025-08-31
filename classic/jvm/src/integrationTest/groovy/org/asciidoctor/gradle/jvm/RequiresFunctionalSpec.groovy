@@ -33,7 +33,7 @@ class RequiresFunctionalSpec extends FunctionalSpecification {
     static final String DITAA = 'ditaa.adoc'
 
     void setup() {
-        createTestProject('requires')
+        createTestProject('ditaa')
     }
 
     @Timeout(value=360)

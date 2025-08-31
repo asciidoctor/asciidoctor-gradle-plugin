@@ -15,10 +15,8 @@
  */
 package org.asciidoctor.gradle.model5.jvm.publications
 
-import org.asciidoctor.gradle.model5.core.AsciidoctorExtension
+import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
 import org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils
-import org.asciidoctor.gradle.model5.jvm.JvmModel
-import org.asciidoctor.gradle.model5.jvm.engines.AsciidoctorjEngine
 import org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjPlugin
 import org.asciidoctor.gradle.testfixtures.model5.UnitTestSpecification
 
@@ -27,11 +25,11 @@ import static org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjPlugin.DEFAU
 
 class PublicationSpec extends UnitTestSpecification {
 
-    AsciidoctorExtension asciidoc
+    AsciidoctorModelExtension asciidoc
 
     void setup() {
         project.pluginManager.apply(AsciidoctorjPlugin)
-        asciidoc = project.extensions.getByType(AsciidoctorExtension)
+        asciidoc = project.extensions.getByType(AsciidoctorModelExtension)
     }
 
     void 'When a publication and an output is registered, a task is added'() {

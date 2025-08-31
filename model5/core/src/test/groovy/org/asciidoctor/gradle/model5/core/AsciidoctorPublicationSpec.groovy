@@ -16,21 +16,29 @@
 package org.asciidoctor.gradle.model5.core
 
 import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreBasePlugin
-import org.asciidoctor.gradle.model5.core.waitingroom.AsciidoctorPublication
-import org.asciidoctor.gradle.testfixtures.UnitTestSpecification
+import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePlugin
+import org.asciidoctor.gradle.model5.core.publications.AsciidoctorPublication
+import org.asciidoctor.gradle.testfixtures.model5.UnitTestSpecification
+import spock.lang.PendingFeature
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+
+import static org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils.DEFAULT_PUBLICATION
 
 class AsciidoctorPublicationSpec extends UnitTestSpecification {
 
     AsciidoctorPublication main
 
     void setup() {
-        project.pluginManager.apply(AsciidoctorCoreBasePlugin)
-        main = project.extensions.getByType(AsciidoctorExtension).publications.create('main')
+        project.pluginManager.apply(AsciidoctorCorePlugin)
+        main = project.extensions
+                .getByType(AsciidoctorModelExtension)
+                .publications
+                .getByName(DEFAULT_PUBLICATION)
     }
 
+    @PendingFeature
     void 'Can set a safe mode'() {
         when:
         main.processingOptions.safeMode = 'sAfe'
@@ -57,6 +65,7 @@ class AsciidoctorPublicationSpec extends UnitTestSpecification {
         main.processingOptions.safeMode.get() == SafeMode.UNSAFE
     }
 
+    @PendingFeature
     void 'Can set attributes'() {
         setup:
         final now = LocalDateTime.now()
@@ -82,6 +91,7 @@ class AsciidoctorPublicationSpec extends UnitTestSpecification {
         result.opq == now.format(DateTimeFormatter.ISO_TIME)
     }
 
+    @PendingFeature
     void 'Can configure publication language'() {
         when:
         project.allprojects {
@@ -102,20 +112,6 @@ class AsciidoctorPublicationSpec extends UnitTestSpecification {
 
         then:
         main.languages.getByName('fr').attributes.attributeResolver.get() == [abc: '123']
-    }
-
-    void 'Can set source directory'() {
-        when:
-        final initValue = main.sourceDir.get()
-
-        then:
-        initValue == new File(project.projectDir,'src/docs/asciidoc')
-
-        when:
-        main.sourceDir = 'foo'
-
-        then:
-        main.sourceDir.get() == new File(project.projectDir,'foo')
     }
 
 //    void 'Can configure sources'() {

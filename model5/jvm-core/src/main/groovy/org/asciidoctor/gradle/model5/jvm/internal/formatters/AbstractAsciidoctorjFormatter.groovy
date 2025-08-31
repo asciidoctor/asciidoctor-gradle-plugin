@@ -34,6 +34,7 @@ abstract class AbstractAsciidoctorjFormatter implements AsciidoctorjOutputFormat
     protected final AsciidoctorjToolchain toolchain
 
     private final Property<ExecutionMode> executionMode
+    private final Provider<Set<String>> emptyRequires
 
     /**
      * Sets whether the workers should run in or out of the Gradle process.
@@ -55,11 +56,22 @@ abstract class AbstractAsciidoctorjFormatter implements AsciidoctorjOutputFormat
        this.executionMode
     }
 
+    /**
+     * A list of {@code requires} that a component places on the associated toolchain.
+     *
+     * @return List of {@code requires}. Can be empty, but never {@code null}.
+     */
+    @Override
+    Provider<Set<String>> getRequires() {
+        this.emptyRequires
+    }
+
     protected AbstractAsciidoctorjFormatter(String name, String backendName, AsciidoctorjToolchain tc, Project project) {
         this.name = name
         this.toolchain = tc
         this.ccso = ConfigCacheSafeOperations.from(project)
         this.backend = ccso.providerTools().provider { -> AsciidoctorNamedBackend.of(name, backendName) }
         this.executionMode = ccso.providerTools().property(ExecutionMode).convention(ExecutionMode.IN_PROCESS)
+        this.emptyRequires = ccso.providerTools().provider { -> Collections.EMPTY_SET }
     }
 }

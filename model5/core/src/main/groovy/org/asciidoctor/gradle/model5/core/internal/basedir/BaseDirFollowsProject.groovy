@@ -34,6 +34,10 @@ import javax.inject.Inject
 class BaseDirFollowsProject extends BaseDirIsFixedPath implements BaseDirStrategy {
     @Inject
     BaseDirFollowsProject(Project project) {
-        super(project.projectDir)
+        super(
+            project.objects.directoryProperty().convention(
+                    project.layout.projectDirectory
+            )
+        )
     }
 }

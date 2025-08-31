@@ -81,9 +81,9 @@ class DefaultBaseDirConfiguration implements BaseDirConfiguration {
                 baseDirFollowsSourceDir()
                 break
             default:
-                this.baseDirStrategy.set(new BaseDirIsFixedPath(
-                        layout.dir(fsOperations.provideFile(f))
-                ))
+                this.baseDirStrategy.set(
+                    objectFactory.newInstance(BaseDirIsFixedPath, layout.dir(fsOperations.provideFile(f)))
+                )
         }
     }
 }

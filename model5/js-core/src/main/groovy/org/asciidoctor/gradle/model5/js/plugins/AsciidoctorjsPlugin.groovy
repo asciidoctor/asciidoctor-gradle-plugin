@@ -16,14 +16,10 @@
 package org.asciidoctor.gradle.model5.js.plugins
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.AsciidoctorExtension
+import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
 import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePlugin
-import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsDocbook
 import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsHtml5
-import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsManpage
-import org.asciidoctor.gradle.model5.js.internal.formatters.DefaultAsciidoctorjsDocbook
 import org.asciidoctor.gradle.model5.js.internal.formatters.DefaultAsciidoctorjsHtml5
-import org.asciidoctor.gradle.model5.js.internal.formatters.DefaultAsciidoctorjsManpage
 import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -49,7 +45,7 @@ class AsciidoctorjsPlugin implements Plugin<Project> {
             apply(AsciidoctorCorePlugin)
         }
 
-        final asciidoc = project.extensions.getByType(AsciidoctorExtension)
+        final asciidoc = project.extensions.getByType(AsciidoctorModelExtension)
         final toolchains = asciidoc.toolchains
 
         toolchains.create(DEFAULT_TOOLCHAIN, AsciidoctorjsToolchain)
@@ -59,11 +55,5 @@ class AsciidoctorjsPlugin implements Plugin<Project> {
                 AsciidoctorjsHtml5,
                 DefaultAsciidoctorjsHtml5.DEFAULT_NAME
         )
-
-//        registerOutputFormatterOnAllToolchains(
-//                toolchains,
-//                AsciidoctorjsManpage,
-//                DefaultAsciidoctorjsManpage.DEFAULT_NAME
-//        )
     }
 }

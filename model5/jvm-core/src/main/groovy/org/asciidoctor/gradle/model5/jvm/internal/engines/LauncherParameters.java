@@ -80,4 +80,11 @@ public interface LauncherParameters extends WorkParameters {
      * @return Attributes. Always present, but can be empty.
      */
     MapProperty<String, String> getAttributes();
+
+    /**
+     * {@code asciidoctorj} specific engine options.
+     *
+     * @return Engine options. Cannot be empty.
+     */
+    Property<LauncherEngineOptions> getEngineOptions();
 }

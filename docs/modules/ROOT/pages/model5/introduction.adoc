@@ -4,6 +4,7 @@
 ----
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjHtml5
+import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjDiagram
 import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
 import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjPdf
 
@@ -13,6 +14,11 @@ asciidoc {
             registeredOutputFormatters {
                 html(AsciidoctorjHtml5) {  // <.>
 
+                }
+            }
+            asciidocExtensions { // <.>
+                diagram(AsciidoctorjDiagram) {
+                    useDitaa()
                 }
             }
         }
@@ -42,6 +48,8 @@ asciidoc {
   If `org.asciidoctor.jvm` is applied, there will be a default toolchain called `asciidoctorj`.
 <.> Create a HTML output formatter for the `asciidoctorj` toolchains.
  If `org.asciidoctor.jvm` is applied, there will be a `html` and a `docbook` output formatter.
+<.> Manages extensions.
+
 <.> Registers a toolchain that will use `asciidoctor.js`.
 If `org.asciidoctor.js` is applied, there will be a default toolchain called `asciidoctorjs`.
 <.> Create a PDF output formatter for the `asciidoctorj` toolchains.

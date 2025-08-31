@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle.model5.core.toolchains
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.model5.core.extensions.AsciidoctorExtension
 import org.asciidoctor.gradle.model5.core.formatters.AsciidoctorOutputFormatter
 import org.gradle.api.ExtensiblePolymorphicDomainObjectContainer
 import org.gradle.api.Project
@@ -25,6 +26,7 @@ import org.gradle.api.model.ObjectFactory
 abstract class AbstractAsciidoctorToolchain implements AsciidoctorToolchain {
 
     final ExtensiblePolymorphicDomainObjectContainer<AsciidoctorOutputFormatter> registeredOutputFormatters
+    final ExtensiblePolymorphicDomainObjectContainer<AsciidoctorExtension> asciidocExtensions
     final String name
 
     protected final ObjectFactory objectFactory
@@ -34,5 +36,7 @@ abstract class AbstractAsciidoctorToolchain implements AsciidoctorToolchain {
         this.objectFactory = tempProjectReference.objects
         this.registeredOutputFormatters = tempProjectReference.objects
                 .polymorphicDomainObjectContainer(AsciidoctorOutputFormatter)
+        this.asciidocExtensions = tempProjectReference.objects
+                .polymorphicDomainObjectContainer(AsciidoctorExtension)
     }
 }

@@ -35,7 +35,13 @@ class BaseDirFollowsRootProject extends BaseDirIsFixedPath implements BaseDirStr
 
     @Inject
     BaseDirFollowsRootProject(Project project) {
-        super(project.rootDir)
+        super(
+            project.objects.directoryProperty().convention(
+                    project.layout.dir(
+                            ConfigCacheSafeOperations.from(project).fsOperations().provideRootDir()
+                    )
+            )
+        )
     }
 
 }
