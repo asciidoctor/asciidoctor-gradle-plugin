@@ -40,4 +40,15 @@ public interface AsciidoctorExecutionSettings {
      * @return Provider to a list. Can be empty, but not null.
      */
     Provider<Set<String>> getModuleRequires();
+
+    /**
+     * The preferred execution mode.
+     *
+     * <p>
+     *     A launcher could decide to ignore this or override it.
+     * </p>
+     *
+     * @return The preferred execution mode. Can be empty in which case the launcher will opt for a default.
+     */
+    Provider<ExecutionMode> getPreferredExecutionMode();
 }

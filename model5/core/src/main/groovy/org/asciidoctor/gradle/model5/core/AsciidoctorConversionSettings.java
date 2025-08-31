@@ -58,6 +58,14 @@ public interface AsciidoctorConversionSettings {
     Provider<Directory> getBaseDir();
 
     /**
+     * Whether the engine should change the base directory prior to converting a file.
+     * There is performance penalty if this is set to {@code true}
+     *
+     * @return Provider to whether the base directory should be adjusted.
+     */
+    Provider<Boolean> getAdjustBaseDirPerFile();
+
+    /**
      * Destination directory.
      *
      * @return Directory for output. Must be present.

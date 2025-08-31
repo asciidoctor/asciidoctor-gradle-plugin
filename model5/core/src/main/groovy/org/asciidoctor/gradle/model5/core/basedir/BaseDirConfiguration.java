@@ -46,6 +46,16 @@ public interface BaseDirConfiguration {
     void baseDirIsRootProjectDir();
 
     /**
+     * The base directory starts with the source directory but needs to adjust to the parent file of each file it
+     * processes.
+     *
+     * <p>
+     *     Keep in mind that this will probably invoke a performance penalty.
+     * </p>
+     */
+    void baseDirFollowSourceFiles();
+
+    /**
      * Returns the current basedir strategy if it has been configured.
      *
      * @return Strategy or empty provider.

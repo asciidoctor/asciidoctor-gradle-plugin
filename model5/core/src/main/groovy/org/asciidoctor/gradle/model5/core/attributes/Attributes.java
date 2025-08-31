@@ -15,10 +15,8 @@
  */
 package org.asciidoctor.gradle.model5.core.attributes;
 
-import org.asciidoctor.gradle.model5.core.waitingroom.AsciidoctorAttributeProvider;
 import org.gradle.api.provider.Provider;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,24 +40,18 @@ public interface Attributes {
     Provider<Map<String, String>> getAttributeResolver();
 
     /**
-     * Apply a new set of Asciidoctor attributes, clearing any attributes previously set.
-     *
-     * This can be set globally for all Asciidoctor tasks in a project. If this is set in a task
-     * it will override the global attributes.
+     * Apply a new set of Asciidoctor attributes, clearing any attributes and providers previously set.
      *
      * @param m Map with new options
      */
-    void replaceAll(Map<String,Object> m);
+    void replaceAll(Map<String, Object> m);
 
     /**
      * Add additional Asciidoctor attributes.
      *
-     * This can be set globally for all Asciidoctor tasks in a project. If this is set in a task
-     * it will use this attributes in the task in addition to any global attributes.
-     *
      * @param m Map with new options
      */
-    void add(Map<String,Object> m);
+    void addAll(Map<String, Object> m);
 
     /** Add a single attribute
      *
@@ -69,34 +61,30 @@ public interface Attributes {
     void add(String key, Object value);
 
     /**
-     * Returns a list of additional attribute providers.
-     *
-     * @return List of providers. Can be empty. Never {@code null}.
-     */
-    List<AsciidoctorAttributeProvider> getAttributeProviders();
-
-    /**
-     * Adds an attribute provider.
-     *
-     * @param provider An external provder of Asciidoc attributes.
-     */
-    void attributeProvider(AsciidoctorAttributeProvider provider);
-
-    /**
      * Adds a provider as an additional attribute provider.
      *
      * @param provider A provider that returns a {@code Map<String,Object>}.
      */
-    void attributeProvider(Provider<Map<String,Object>> provider);
+    void attributeProvider(Provider<Map<String, Object>> provider);
 
     /**
      * Indicates that the value should be treated as a time value.
      *
      * @param value Value.
-     * @return Something that can be passed as value in members of {@link #add(Map)}
+     * @return Something that can be passed as value in members of {@link #addAll(Map)}
      *   or as a single value to {@link #add(String, Object)}
      */
     AttributeType asTime(Object value);
+
+    /**
+     * Indicates that the value should be treated as a time value.
+     *
+     * @param key Attribute name
+     * @param value Value.
+     */
+    default void addAsTime(String key, Object value) {
+        add(key, asTime(value));
+    }
 
     /**
      * Indicates that the value should be treated as a date value.
@@ -106,4 +94,34 @@ public interface Attributes {
      *   or as a single value to {@link #add(String, Object)}
      */
     AttributeType asDate(Object value);
+
+    /**
+     * Indicates that the value should be treated as a date value.
+     *
+     * @param key Attribute name
+     * @param value Value.
+     */
+    default void addAsDate(String key, Object value) {
+        add(key, asDate(value));
+    }
+
+    /**
+     * Indicates that the value should be treated as a boolean value.
+     *
+     * @param value Value.
+     * @return Something that can be passed as value in members of {@link #add(Map)}
+     *   or as a single value to {@link #add(String, Object)}
+     */
+    AttributeType asBoolean(Object value);
+
+    /**
+     * Indicates that the value should be treated as a time value.
+     *
+     * @param key Attribute name
+     * @param value Value.
+     */
+    default void addAsBoolean(String key, Object value) {
+        add(key, asBoolean(value));
+    }
+
 }

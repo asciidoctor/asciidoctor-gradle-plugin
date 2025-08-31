@@ -42,6 +42,7 @@ class DefaultAsciidoctorConversionSettings implements AsciidoctorConversionSetti
     final Property<AsciidoctorNamedBackend> backend
     final Property<Directory> sourceRootDir
     final Property<Directory> baseDir
+    final Property<Boolean> adjustBaseDirPerFile
     final Property<Directory> destinationDir
     final MapProperty<String, String> attributes
     final Property<DocType> docType
@@ -52,6 +53,7 @@ class DefaultAsciidoctorConversionSettings implements AsciidoctorConversionSetti
         this.backend = objectFactory.property(AsciidoctorNamedBackend)
         this.sourceRootDir = objectFactory.directoryProperty()
         this.baseDir = objectFactory.directoryProperty()
+        this.adjustBaseDirPerFile = objectFactory.property(Boolean).convention(false)
         this.destinationDir = objectFactory.directoryProperty()
         this.attributes = objectFactory.mapProperty(String, String)
         this.docType = objectFactory.property(DocType)

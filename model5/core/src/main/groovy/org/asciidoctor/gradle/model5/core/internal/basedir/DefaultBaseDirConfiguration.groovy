@@ -53,7 +53,7 @@ class DefaultBaseDirConfiguration implements BaseDirConfiguration {
 
     @Override
     void baseDirFollowsSourceDir() {
-        this.baseDirStrategy.set(new BaseDirFollowSourceDir())
+        this.baseDirStrategy.set(objectFactory.newInstance(BaseDirFollowSourceDir))
     }
 
     @Override
@@ -64,6 +64,19 @@ class DefaultBaseDirConfiguration implements BaseDirConfiguration {
     @Override
     void baseDirIsRootProjectDir() {
         this.baseDirStrategy.set(objectFactory.newInstance(BaseDirFollowsRootProject))
+    }
+
+    /**
+     * The base directory starts with the source directory but needs to adjust to the parent file of each file it
+     * processes.
+     *
+     * <p>
+     *     Keep in mind that this will probably invoke a performance penalty.
+     * </p>
+     */
+    @Override
+    void baseDirFollowSourceFiles() {
+        this.baseDirStrategy.set(objectFactory.newInstance(BaseDirFollowSourceFiles))
     }
 
     @Override

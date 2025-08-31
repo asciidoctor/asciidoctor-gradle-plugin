@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle.model5.core.extensions;
 
 import org.asciidoctor.gradle.model5.core.AsciidoctorRequires;
+import org.asciidoctor.gradle.model5.core.attributes.HasAttributeProvider;
 import org.gradle.api.Named;
 
 /**
@@ -25,5 +26,5 @@ import org.gradle.api.Named;
  *
  * @since 5.0
  */
-public interface AsciidoctorExtension extends Named, AsciidoctorRequires {
+public interface AsciidoctorExtension extends Named, AsciidoctorRequires, HasAttributeProvider {
 }

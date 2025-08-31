@@ -13,17 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.jvm.extensions;
+package org.asciidoctor.gradle.model5.core.attributes;
 
-import org.asciidoctor.gradle.model5.core.extensions.AsciidoctorExtension;
-import org.gradle.api.file.FileCollection;
+import org.gradle.api.provider.Provider;
+
+import java.util.Map;
 
 /**
- * Extensions for the {@code asciidoctorj} engine.
+ * Indicates that something can provide unresolved attributes.
+ *
+ * <p>
+ *     One example is registered Asciidoctor extensions.
+ * </p>
  *
  * @author Schalk W. Cronjé
  * @since 5.0
  */
-public interface AsciidoctorjExtension extends AsciidoctorExtension  {
+public interface HasAttributeProvider {
 
+    /**
+     * Indicates that something can provide unresolved attributes.
+     *
+     * @return Provider to a map of unresolved attributes.
+     */
+    Provider<Map<String,Object>> getAttributeProvider();
 }

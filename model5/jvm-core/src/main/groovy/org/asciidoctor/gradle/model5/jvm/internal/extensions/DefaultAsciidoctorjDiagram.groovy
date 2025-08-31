@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.model5.jvm.internal.extensions
 
 import groovy.transform.CompileStatic
 import groovy.transform.Synchronized
+import org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils
 import org.asciidoctor.gradle.model5.jvm.JvmModel
 import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjDiagram
 import org.asciidoctor.gradle.model5.jvm.internal.utils.DependencyUpdater
@@ -32,7 +33,9 @@ import org.ysb33r.grolifant5.api.core.ProjectOperations
 import javax.inject.Inject
 import java.util.function.Function
 
+import static java.util.Collections.EMPTY_MAP
 import static java.util.Collections.EMPTY_SET
+import static org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils.CACHE_SUBDIR_BASE
 import static org.asciidoctor.gradle.model5.jvm.internal.PluginUtils.loadDefaultVersion
 import static org.ysb33r.grolifant5.api.core.StringTools.EMPTY
 
@@ -68,6 +71,8 @@ class DefaultAsciidoctorjDiagram implements AsciidoctorjDiagram {
 
     final String name
     final Provider<Set<String>> requires
+    final Provider<Map<String,Object>> attributeProvider
+
     private final ConfigCacheSafeOperations ccso
     private final ObjectFactory objectFactory
     private final Property<String> diagramVersion
@@ -102,17 +107,12 @@ class DefaultAsciidoctorjDiagram implements AsciidoctorjDiagram {
         this.requires = ccso.providerTools().provider { ->
             diagramRegistered ? ['asciidoctor-diagram'].toSet() : EMPTY_SET
         }
-    }
 
-//    /**
-//     * A list of {@code requires} that a component places on the associated toolchain.
-//     *
-//     * @return List of {@code requires}. Can be empty, but never {@code null}.
-//     */
-//    @Override
-//    Iterable<String> getRequires() {
-//        diagramRegistered ? ['asciidoctor-diagram'] : EMPTY_LIST
-//    }
+        final cache = ccso.fsOperations().toSafeFileName("${tc.name}-${name}")
+        this.attributeProvider = ccso.fsOperations().buildDirDescendant("${CACHE_SUBDIR_BASE}/${cache}").map {
+            diagramRegistered ? ['diagram-cachedir' : it.absolutePath] : EMPTY_MAP
+        }
+    }
 
     /**
      * Use Diagram with default version.

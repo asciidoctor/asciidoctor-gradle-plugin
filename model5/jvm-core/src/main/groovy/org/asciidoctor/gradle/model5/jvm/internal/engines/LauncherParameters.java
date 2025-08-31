@@ -54,6 +54,13 @@ public interface LauncherParameters extends WorkParameters {
     DirectoryProperty getBaseDir();
 
     /**
+     * Whether to run batches based upon directories and adjust the basedir to each of these directories.
+     *
+     * @return Flag. Always present.
+     */
+    Property<Boolean> getAdjustBaseDirPerFile();
+
+    /**
      * Destination directory.
      *
      * @return Directory. Always present.

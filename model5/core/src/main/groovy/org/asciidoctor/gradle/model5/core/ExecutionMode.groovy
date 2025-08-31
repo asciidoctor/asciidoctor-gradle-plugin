@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013 - 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,23 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.core.waitingroom;
+package org.asciidoctor.gradle.model5.core
 
-import java.util.Map;
+import groovy.transform.CompileStatic
 
 /**
- * A provider of Asciidoctor attributes.
+ * Worker execution modes.
  *
  * @author Schalk W. Cronjé
  *
- * @since 5.0 (Similar to org.asciidoctor.gradle.base.AsciidoctorAttributeProvider which existed since 2.0).
+ * @since 5.0
  */
-public interface AsciidoctorAttributeProvider {
+@CompileStatic
+enum ExecutionMode {
 
     /**
-     * Map of (potentially unresolved) Asciidoctor attributes.
-     *
-     * @return Returns a map of Asciidoctor attributes
+     * Executes in the Gradle process, but with classpath isolation
      */
-    Map<String,Object> getAttributes();
+    IN_PROCESS,
+
+    /**
+     * Executes outside of the Gradle process.
+     */
+    OUT_OF_PROCESS
+
+    static ExecutionMode of(String ver) {
+        valueOf(ver.replaceAll(~/-/,'_').toUpperCase(Locale.US))
+    }
 }

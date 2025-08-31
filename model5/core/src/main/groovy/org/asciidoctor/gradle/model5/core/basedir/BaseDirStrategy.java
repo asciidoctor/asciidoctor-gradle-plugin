@@ -42,4 +42,11 @@ public interface BaseDirStrategy {
      * @return Base directory
      */
     Provider<Directory> getBaseDir(Provider<Directory> srcDir, String lang);
+
+    /**
+     * Whether to adjust the base directory per file.
+     *
+     * @return A provider to the mode.
+     */
+    Provider<Boolean> getAdjustBaseDirPerFile();
 }

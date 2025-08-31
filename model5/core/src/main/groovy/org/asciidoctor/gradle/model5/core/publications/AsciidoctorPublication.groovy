@@ -17,6 +17,8 @@ package org.asciidoctor.gradle.model5.core.publications
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
+import org.asciidoctor.gradle.model5.core.extensions.AsciidoctorExtension
+import org.asciidoctor.gradle.model5.core.internal.attributes.AttributeUtils
 import org.asciidoctor.gradle.model5.core.internal.publications.DefaultAsciidoctorOutputData
 import org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils
 import org.asciidoctor.gradle.model5.core.internal.tasks.TaskFactory
@@ -28,6 +30,7 @@ import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
 import org.ysb33r.grolifant5.api.core.ClosureUtils
+import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 
 import javax.inject.Inject
 
@@ -45,10 +48,10 @@ import javax.inject.Inject
 @CompileStatic
 class AsciidoctorPublication implements Named {
     final String name
-//    private final ConfigCacheSafeOperations ccso
     private final ObjectFactory objectFactory
 
     private final AsciidoctorModelExtension parent
+    private final ConfigCacheSafeOperations ccso
     private final AsciidoctorSourceSet sources
     private final NamedDomainObjectContainer<DefaultAsciidoctorOutputData> outputs
 
@@ -56,8 +59,8 @@ class AsciidoctorPublication implements Named {
     AsciidoctorPublication(String name, AsciidoctorModelExtension parent, Project tempProjectReference) {
         this.name = name
         this.parent = parent
-//        this.ccso = ConfigCacheSafeOperations.from(tempProjectReference)
         this.objectFactory = tempProjectReference.objects
+        this.ccso = ConfigCacheSafeOperations.from(tempProjectReference)
         this.sources = objectFactory.newInstance(AsciidoctorSourceSet, name)
         this.outputs = objectFactory.domainObjectContainer(DefaultAsciidoctorOutputData) { String theName ->
             objectFactory.newInstance(DefaultAsciidoctorOutputData, theName)
@@ -118,6 +121,32 @@ class AsciidoctorPublication implements Named {
         registerOutput(alias, toolchainName, outputFormatterName)
     }
 
+    /**
+     * The name of the task that performs a conversion.
+     *
+     * @param outputName The name of the output formatter. In the case of an alias, then
+     *  the alias name.
+     *
+     * @return The name of the task.
+     *   This method makes no effort to validate the the task has been registered.
+     *   It just returns the name.
+     */
+    String taskNameFor(String outputName) {
+        PublicationUtils.conversionTaskName(name, outputName)
+    }
+
+    /**
+     * The path below the build directory where output will be written to.
+     *
+     * @param outputName The name of the output formatter. In the case of an alias, then
+     *  the alias name.
+     *
+     * @return The path below the build directory
+     */
+    String outputPath(String outputName) {
+        PublicationUtils.outputPathFor(ccso.fsOperations(), name, outputName)
+    }
+
     private void registerOutput(String finalName, String toolchainName, String outputFormatterName) {
         final toolchain = parent.toolchains.getByName(toolchainName)
         final formatter = toolchain.registeredOutputFormatters.getByName(outputFormatterName)
@@ -133,7 +162,13 @@ class AsciidoctorPublication implements Named {
     ) {
         final taskFactory = objectFactory.newInstance(TaskFactory)
         final taskName = PublicationUtils.conversionTaskName(name, outputData.name)
+        final extensionAttributes = objectFactory.mapProperty(String, Object)
 
+        toolchain.asciidocExtensions.all {
+            AsciidoctorExtension it -> extensionAttributes.putAll(it.attributeProvider)
+        }
+
+        final resolvedExtensionAttributes = AttributeUtils.resolvingProvider(ccso.stringTools(), extensionAttributes)
         taskFactory.registerConversionTask(taskName) { AsciidoctorTaskMethods atm ->
             atm.outputData = outputData
             atm.launcher = toolchain.launcher
@@ -141,7 +176,13 @@ class AsciidoctorPublication implements Named {
             atm.sourceDir = sources.sourceDir
             atm.sourcePatterns = sources.sourcePatterns
             atm.baseDir = sources.baseDir.baseDirStrategy.flatMap { it.getBaseDir(sources.sourceDir) }
-            atm.attributes = sources.attributes.attributeResolver
+            atm.adjustBaseDirPerFile = sources.baseDir.baseDirStrategy.flatMap { it.adjustBaseDirPerFile }
+            atm.attributes = sources.attributes.attributeResolver.zip(resolvedExtensionAttributes) { pri, sec ->
+                final map = [:]
+                map.putAll(sec)
+                map.putAll(pri)
+                map as Map<String, String>
+            }
         }
 
         taskFactory.addPrerequisiteTasks(taskName, toolchain.toolchainPreparationTaskNames)

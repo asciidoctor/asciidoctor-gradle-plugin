@@ -40,7 +40,8 @@ class BaseDirFollowsRootProject extends BaseDirIsFixedPath implements BaseDirStr
                     project.layout.dir(
                             ConfigCacheSafeOperations.from(project).fsOperations().provideRootDir()
                     )
-            )
+            ),
+            project.providers
         )
     }
 

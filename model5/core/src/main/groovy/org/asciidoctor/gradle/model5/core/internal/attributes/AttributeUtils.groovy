@@ -18,14 +18,17 @@ package org.asciidoctor.gradle.model5.core.internal.attributes
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.attributes.AttributeType
 import org.asciidoctor.gradle.model5.core.errors.UnsupportedAttributeType
+import org.gradle.api.provider.Provider
 import org.ysb33r.grolifant5.api.core.StringTools
 import org.ysb33r.grolifant5.api.core.Transform
 
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.OffsetTime
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAccessor
@@ -46,6 +49,13 @@ class AttributeUtils {
     private static DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_DATE
     private static DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ISO_TIME
 
+    static Provider<Map<String,String>> resolvingProvider(StringTools stringTools, Provider<Map<String,Object>> attrs) {
+        attrs.map {
+            it.collectEntries { k, v ->
+                [k, resolveAttribute(stringTools, v)]
+            } as Map<String, String>
+        }
+    }
     static String resolveAttribute(StringTools str, Object value) {
         Transform.convertItem(value, x -> CONVERTER.apply(str, x))
     }

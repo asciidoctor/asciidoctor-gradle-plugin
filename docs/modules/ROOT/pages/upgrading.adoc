@@ -12,13 +12,15 @@ Otherwise in 5.x, the correct way is to use the new model approach, where everyt
 
 * The base directory is the source directory by default, whereas in the classic plugins it is still the project directory.
 * The base directory is now set prior to conversion.
-  It can no longer be modified on a per-document basis during the conversion process.
+  THe engine can still adjust the base directory per file, but there is a performance as less files can be converted at one time.
 
 === Notes about the classic model in 5.x
 
 * `docExtensions` no longer accept closures.
   Content needs to be passed as a string or loaded from a file.
   This is due to how Gradle instruments objects in Gradle 8.4+.
+* There is no `baseDirFollowSourceFiles`.
+  If you really need that behaviour, then you should migrate to the new model.
 
 == Upgrading to 4.x
 

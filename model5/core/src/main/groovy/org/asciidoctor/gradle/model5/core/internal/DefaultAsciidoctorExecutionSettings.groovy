@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.model5.core.internal
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorExecutionSettings
+import org.asciidoctor.gradle.model5.core.ExecutionMode
 import org.asciidoctor.gradle.model5.core.SafeMode
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
@@ -35,10 +36,12 @@ class DefaultAsciidoctorExecutionSettings implements AsciidoctorExecutionSetting
 
     final Property<SafeMode> safeMode
     final SetProperty<String> moduleRequires
+    final Property<ExecutionMode> preferredExecutionMode
 
     @Inject
     DefaultAsciidoctorExecutionSettings(ObjectFactory objectFactory) {
         safeMode = objectFactory.property(SafeMode)
+        preferredExecutionMode = objectFactory.property(ExecutionMode)
         moduleRequires = objectFactory.setProperty(String)
     }
 }

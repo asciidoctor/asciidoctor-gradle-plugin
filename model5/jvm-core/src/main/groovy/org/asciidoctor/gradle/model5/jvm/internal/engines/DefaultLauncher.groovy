@@ -19,6 +19,7 @@ import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorConversionSettings
 import org.asciidoctor.gradle.model5.core.AsciidoctorExecutionSettings
 import org.asciidoctor.gradle.model5.core.AsciidoctorLauncher
+import org.asciidoctor.gradle.model5.core.ExecutionMode
 import org.asciidoctor.gradle.model5.core.internal.engines.EngineUtils
 import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileCollection
@@ -64,7 +65,7 @@ class DefaultLauncher implements AsciidoctorLauncher {
 
     @Override
     void run(AsciidoctorExecutionSettings executionsSettings, AsciidoctorConversionSettings conversionSettings) {
-        final wq = createWorkQueue()
+        final wq = createWorkQueue(executionsSettings.preferredExecutionMode.getOrNull())
         final groups = EngineUtils.groupByParent(conversionSettings.sourceFiles.get())
         final root = conversionSettings.sourceRootDir.get().asFile
         final destDir = conversionSettings.destinationDir
@@ -75,6 +76,7 @@ class DefaultLauncher implements AsciidoctorLauncher {
                     sourceFiles.set(allFiles)
                     requires.set(executionsSettings.moduleRequires)
                     baseDir.set(conversionSettings.baseDir)
+                    adjustBaseDirPerFile.set(conversionSettings.adjustBaseDirPerFile)
                     destinationDir.set(relPath.empty ? destDir : destDir.map { it.dir(relPath) })
                     backend.set(conversionSettings.backend.map { b -> b.backend })
                     safeMode.set(executionsSettings.safeMode.map { it.name() })
@@ -86,17 +88,19 @@ class DefaultLauncher implements AsciidoctorLauncher {
         wq.await()
     }
 
-    private WorkQueue createWorkQueue() {
+    private WorkQueue createWorkQueue(ExecutionMode mode) {
         final cp = classpath
-        workerExecutor.classLoaderIsolation { spec ->
-            spec.classpath.from(cp)
-        }
 
-//        final wq2 = workerExecutor.processIsolation { spec ->
-//            spec.forkOptions {
-//
-//            }
-//            spec.classpath.from(cp)
-//        }
+        if(mode == null || mode == ExecutionMode.IN_PROCESS) {
+            workerExecutor.classLoaderIsolation { spec ->
+                spec.classpath.from(cp)
+            }
+        } else {
+            workerExecutor.processIsolation { spec ->
+//                spec.forkOptions {
+//                }
+                spec.classpath.from(cp)
+            }
+        }
     }
 }

@@ -54,6 +54,17 @@ public interface AsciidoctorTaskMethods {
     void setBaseDir(Provider<Directory> dir);
 
     /**
+     * Sets whether the base directory needs to be adjusted by file.
+     *
+     * <p>
+     *     Not that there will probably be a performance penatly if this is {@code true}.
+     *
+     * </p>
+     * @param flag Provider that will turn on adjustments if it contains Set {@code true}.
+     */
+    void setAdjustBaseDirPerFile(Provider<Boolean> flag);
+
+    /**
      * Sets the source directory for actual sources.
      *
      * @param dir Provider to a directory.

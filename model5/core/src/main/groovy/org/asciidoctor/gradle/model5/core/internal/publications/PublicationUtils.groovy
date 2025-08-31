@@ -30,6 +30,7 @@ import org.ysb33r.grolifant5.api.core.FileSystemOperations
 @CompileStatic
 class PublicationUtils {
     public static final String TASK_PREFIX = 'asciidoctor'
+    public static final String CACHE_SUBDIR_BASE = '.asciidoctor-cache'
     public static final String DEFAULT_PUBLICATION = 'main'
     public static final String UNDERSCORE_LED_FILES = '**/_*'
     public static final PatternSet UNDERSCORE_LED_PATTERN = new PatternSet().exclude(UNDERSCORE_LED_FILES)

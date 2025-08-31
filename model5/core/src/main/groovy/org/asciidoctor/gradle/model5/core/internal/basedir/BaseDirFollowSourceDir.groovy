@@ -18,10 +18,22 @@ package org.asciidoctor.gradle.model5.core.internal.basedir
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.basedir.BaseDirStrategy
 import org.gradle.api.file.Directory
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+
+import javax.inject.Inject
 
 @CompileStatic
 class BaseDirFollowSourceDir implements BaseDirStrategy {
+
+    protected final Property<Boolean> adjustBaseDir
+
+    @Inject
+    BaseDirFollowSourceDir(ObjectFactory objectFactory) {
+        adjustBaseDir = objectFactory.property(Boolean).convention(false)
+    }
+
     @Override
     Provider<Directory> getBaseDir(Provider<Directory> srcDir) {
         srcDir
@@ -30,5 +42,15 @@ class BaseDirFollowSourceDir implements BaseDirStrategy {
     @Override
     Provider<Directory> getBaseDir(Provider<Directory> srcDir, String lang) {
         srcDir
+    }
+
+    /**
+     * Whether to adjust the base directory per file.
+     *
+     * @return A provider to the mode.
+     */
+    @Override
+    Provider<Boolean> getAdjustBaseDirPerFile() {
+        this.adjustBaseDir
     }
 }

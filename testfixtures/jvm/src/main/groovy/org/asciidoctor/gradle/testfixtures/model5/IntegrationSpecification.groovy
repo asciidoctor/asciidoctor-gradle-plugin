@@ -150,6 +150,14 @@ class IntegrationSpecification extends Specification {
         new File(baseDir, path).exists()
     }
 
+    boolean fileContains(File path,String content) {
+        path.text.contains(content)
+    }
+
+    boolean fileContains(File baseDir,String path, String content) {
+        new File(baseDir,path).text.contains(content)
+    }
+
     static String getEscapedEnvPathString() {
         if (OS.windows) {
             System.getenv(OS.pathVar).replace(BACKSLASH, DOUBLE_BACKSLASH)

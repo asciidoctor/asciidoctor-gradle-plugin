@@ -18,7 +18,6 @@ package org.asciidoctor.gradle.model5.core.internal.basedir
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.basedir.BaseDirStrategy
 import org.gradle.api.Project
-import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 
 import javax.inject.Inject
 
@@ -37,7 +36,8 @@ class BaseDirFollowsProject extends BaseDirIsFixedPath implements BaseDirStrateg
         super(
             project.objects.directoryProperty().convention(
                     project.layout.projectDirectory
-            )
+            ),
+            project.providers
         )
     }
 }

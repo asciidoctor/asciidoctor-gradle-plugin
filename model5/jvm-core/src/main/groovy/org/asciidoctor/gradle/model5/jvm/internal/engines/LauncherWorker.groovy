@@ -50,20 +50,22 @@ abstract class LauncherWorker implements WorkAction<LauncherParameters> {
 
         destDir.mkdirs()
 
-        // If converting all source files in one go
-        asciidoctor.convertFiles(parameters.sourceFiles.get(),normalisedOptions())
+        if (parameters.adjustBaseDirPerFile.get()) {
+            partitionSourceFiles().each { bd, files ->
+                asciidoctor.convertFiles(files, normalisedOptions(bd))
+            }
+        } else {
+            asciidoctor.convertFiles(parameters.sourceFiles.get(), normalisedOptions(parameters.baseDir.get().asFile))
+        }
 
-//        parameters.sourceFiles.get().each {
-//            asciidoctor.convertFile(it,normalisedOptionsFor(it))
-//        }
     }
 
-    private Options normalisedOptions() {
+    private Options normalisedOptions(File withBaseDir) {
         final optionsBuilder = Options.builder()
         final attributesBuilder = Attributes.builder()
 
-        parameters.attributes.get().each { k,v ->
-            if(v == null) {
+        parameters.attributes.get().each { k, v ->
+            if (v == null) {
                 attributesBuilder.attribute(k, null)
             } else {
                 attributesBuilder.attribute(k, v)
@@ -77,7 +79,7 @@ abstract class LauncherWorker implements WorkAction<LauncherParameters> {
             mkDirs(true)
             backend(parameters.backend.get())
             safe(SafeMode.valueOf(parameters.safeMode.get().toUpperCase(Locale.US)))
-            baseDir(parameters.baseDir.get().asFile)
+            baseDir(withBaseDir)
             toDir(parameters.destinationDir.get().asFile)
             attributes(attributesBuilder.build())
 
@@ -87,5 +89,9 @@ abstract class LauncherWorker implements WorkAction<LauncherParameters> {
         }
 
         optionsBuilder.build()
+    }
+
+    private Map<File, List<File>> partitionSourceFiles() {
+        parameters.sourceFiles.get().groupBy { it.parentFile }
     }
 }

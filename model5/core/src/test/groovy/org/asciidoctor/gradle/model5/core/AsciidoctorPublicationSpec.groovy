@@ -15,14 +15,11 @@
  */
 package org.asciidoctor.gradle.model5.core
 
-import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreBasePlugin
+
 import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePlugin
 import org.asciidoctor.gradle.model5.core.publications.AsciidoctorPublication
 import org.asciidoctor.gradle.testfixtures.model5.UnitTestSpecification
 import spock.lang.PendingFeature
-
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 import static org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils.DEFAULT_PUBLICATION
 
@@ -65,31 +62,6 @@ class AsciidoctorPublicationSpec extends UnitTestSpecification {
         main.processingOptions.safeMode.get() == SafeMode.UNSAFE
     }
 
-    @PendingFeature
-    void 'Can set attributes'() {
-        setup:
-        final now = LocalDateTime.now()
-
-        when:
-        main.attributes {
-            replaceAll([abc: 123])
-            add([defg: 'a-string'])
-            add('hij', true)
-            add('no-hij', false)
-            attributeProvider { -> [abc: 456] }
-            attributeProvider { -> [klm: asDate(now)] }
-            attributeProvider { -> [opq: asTime(now)] }
-        }
-        final result = main.attributes.attributeResolver.get()
-
-        then:
-        result.abc == '456'
-        result.defg == 'a-string'
-        result.hij.empty
-        result.'no-hij' == null
-        result.klm == now.format(DateTimeFormatter.ISO_DATE)
-        result.opq == now.format(DateTimeFormatter.ISO_TIME)
-    }
 
     @PendingFeature
     void 'Can configure publication language'() {
@@ -114,9 +86,6 @@ class AsciidoctorPublicationSpec extends UnitTestSpecification {
         main.languages.getByName('fr').attributes.attributeResolver.get() == [abc: '123']
     }
 
-//    void 'Can configure sources'() {
-//        main.sources()
-//    }
 //    void "Should include patterns passed to sources method"() {
 //        when:
 //        def task1 = createTask('task') {
@@ -137,17 +106,6 @@ class AsciidoctorPublicationSpec extends UnitTestSpecification {
 //        task.internalSourceDocumentPattern == null
 //    }
 //
-//    void "Should support replacing the configured patterns"() {
-//        given:
-//        def task = createTask('task') {
-//            sources('myfile.adoc', 'otherfile.adoc')
-//        }
-//        when:
-//        task.clearSources()
-//        task.sources('myfile2.adoc', 'myfile3.adoc')
-//        then:
-//        task.internalSourceDocumentPattern.includes == ['myfile2.adoc', 'myfile3.adoc'] as Set
-//    }
 
 //    void 'Can set language-specific attributes at project level'() {
 //        when:
@@ -182,13 +140,6 @@ class AsciidoctorPublicationSpec extends UnitTestSpecification {
 //        !projectExtension.getAttributesForLang(EN).foo2
 //    }
 //
-//    void 'Set single attribute'() {
-//        when:
-//        projectExtension.attribute('name', 'value')
-//
-//        then:
-//        projectExtension.attributes['name'].call() == 'value'
-//    }
 
 //    void 'Integers map to correct safe modes'() {
 //        expect:

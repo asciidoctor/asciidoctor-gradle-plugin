@@ -17,10 +17,11 @@ package org.asciidoctor.gradle.model5.core.internal.basedir
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.basedir.BaseDirStrategy
+import org.gradle.api.Project
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Provider
+import org.gradle.api.provider.ProviderFactory
 
 import javax.inject.Inject
 
@@ -34,15 +35,13 @@ import javax.inject.Inject
 @CompileStatic
 class BaseDirIsFixedPath implements BaseDirStrategy {
 
+    final Provider<Boolean> adjustBaseDirPerFile
     private final DirectoryProperty location
 
     @Inject
-    BaseDirIsFixedPath(Provider<Directory> lazyResolvedLocation, ObjectFactory objectFactory) {
-        this.location = objectFactory.directoryProperty().convention(lazyResolvedLocation)
-    }
-
-    protected BaseDirIsFixedPath(DirectoryProperty lazyResolvedLocation) {
-        this.location = lazyResolvedLocation
+    BaseDirIsFixedPath(Provider<Directory> lazyResolvedLocation, Project project) {
+        this.location = project.objects.directoryProperty().convention(lazyResolvedLocation)
+        this.adjustBaseDirPerFile = project.provider { -> false }
     }
 
     @Override
@@ -53,5 +52,10 @@ class BaseDirIsFixedPath implements BaseDirStrategy {
     @Override
     Provider<Directory> getBaseDir(Provider<Directory> srcDir, String lang) {
         this.location
+    }
+
+    protected BaseDirIsFixedPath(DirectoryProperty lazyResolvedLocation, ProviderFactory pf) {
+        this.location = lazyResolvedLocation
+        this.adjustBaseDirPerFile = pf.provider { -> false}
     }
 }

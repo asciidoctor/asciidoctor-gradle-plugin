@@ -13,31 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.jvm
+package org.asciidoctor.gradle.model5.core.internal.attributes
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.model5.core.attributes.AttributeType
 
 /**
- * Worker execution modes.
+ * Treat the attribute value as a formatted date string
  *
  * @author Schalk W. Cronjé
  *
  * @since 5.0
  */
 @CompileStatic
-enum ExecutionMode {
+class BooleanType implements AttributeType {
+
+    private final Object value
+
+    BooleanType(Object value) {
+        this.value = value
+    }
 
     /**
-     * Executes in the Gradle process, but with classpath isolation
+     * Render to a string value
+     * @return String value. Can be {@code null.}
      */
-    IN_PROCESS,
-
-    /**
-     * Executes outside of the Gradle process.
-     */
-    OUT_OF_PROCESS
-
-    static ExecutionMode of(String ver) {
-        valueOf(ver.replaceAll(~/-/,'_').toUpperCase(Locale.US))
+    @Override
+    String render() {
+       if(value instanceof Boolean) {
+           value.toString()
+       } else {
+           (!!value).toString()
+       }
     }
 }

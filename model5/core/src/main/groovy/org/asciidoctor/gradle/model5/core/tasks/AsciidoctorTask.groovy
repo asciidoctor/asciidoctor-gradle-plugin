@@ -25,7 +25,7 @@ import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.util.PatternFilterable
 import org.ysb33r.grolifant5.api.core.runnable.GrolifantDefaultTask
@@ -59,11 +59,13 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
         inputs.property('doctype', conversionSettings.docType).optional(true)
         inputs.dir(this.sourceDir)
         inputs.files(conversionSettings.sourceFiles).skipWhenEmpty(true)
+
+        outputs.files(fsOperations().fileTree(conversionSettings.destinationDir))
         // TODO: How do we know to use an intermediate workdir?
         // TODO: Set rules for calculating source files for conversion.
     }
 
-    @OutputDirectory
+    @Internal
     Provider<Directory> getOutputDir() {
         conversionSettings.destinationDir
     }
@@ -112,6 +114,20 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
     @Override
     void setBaseDir(Provider<Directory> dir) {
         this.conversionSettings.baseDir.set(dir)
+    }
+
+    /**
+     * Sets whether the base directory needs to be adjusted by file.
+     *
+     * <p>
+     *     Note that there will probably be a performance penalty if this is {@code true}.
+     * </p>
+     *
+     * @param flag Provider that will turn on adjustments if it contains Set {@code true}.
+     */
+    @Override
+    void setAdjustBaseDirPerFile(Provider<Boolean> flag) {
+        conversionSettings.adjustBaseDirPerFile.set(flag)
     }
 
     /**
