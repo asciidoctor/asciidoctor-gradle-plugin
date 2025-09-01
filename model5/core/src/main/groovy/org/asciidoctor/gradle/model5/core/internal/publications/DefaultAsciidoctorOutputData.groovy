@@ -53,6 +53,8 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
     private final Property<PatternFilterable> resourcesCopySpec
     private final Property<DocType> docType
     private final SetProperty<String> moduleRequires
+    private final Property<String> formatterName
+    private final Property<String> toolchainName
 
     @Inject
     DefaultAsciidoctorOutputData(String name, Project tempProjectReference) {
@@ -66,6 +68,8 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
         this.resourcesCopySpec = objectFactory.property(PatternFilterable)
         this.docType = objectFactory.property(DocType)
         this.moduleRequires = objectFactory.setProperty(String)
+        this.formatterName = objectFactory.property(String)
+        this.toolchainName = objectFactory.property(String)
     }
 
     @Override
@@ -113,6 +117,25 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
         this.moduleRequires
     }
 
+    /**
+     * The actual name of the formatter, but not the alias name.
+     * @return Provider to the name.
+     */
+    @Override
+    Provider<String> getFormatterName() {
+        this.formatterName
+    }
+
+    /**
+     * The name of the toolchain.
+     *
+     * @return Provider to the name.
+     */
+    @Override
+    Provider<String> getToolchainName() {
+        this.toolchainName
+    }
+
     void configureFrom(
             String publicationName,
             AsciidoctorToolchain toolchain,
@@ -122,6 +145,8 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
         final outSubdir = PublicationUtils.outputPathFor(ccso.fsOperations(), publicationName, name)
         this.outDir.set(layout.buildDirectory.map { it.dir(outSubdir) })
         this.backend.set(formatter.backend.map { AsciidoctorNamedBackend.of(owner.name, it.backend) })
+        this.formatterName.set(formatter.name)
+        this.toolchainName.set(toolchain.name)
 
         if (formatter.copyResources) {
             this.resourcesCopySpec.set(sourceSet.resourcesPatterns)

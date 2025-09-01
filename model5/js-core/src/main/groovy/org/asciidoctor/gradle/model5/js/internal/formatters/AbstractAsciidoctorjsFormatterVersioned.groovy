@@ -21,27 +21,17 @@ import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.api.provider.SetProperty
 
 @CompileStatic
 abstract class AbstractAsciidoctorjsFormatterVersioned extends AbstractAsciidoctorjsFormatter
         implements AsciidoctorjsOutputFormatterVersioned {
 
     protected final Property<String> moduleVersion
-    protected final List<String> requires
 
     @Override
     void useVersion(Object ver) {
         ccso.stringTools().updateStringProperty(this.moduleVersion, ver)
-    }
-
-    /**
-     * A list of {@code requires} that an output formatter places on the associated toolchain.
-     *
-     * @return List of {@code requires}. Can be empty, but never {@code null}.
-     */
-    @Override
-    Iterable<String> getRequires() {
-        this.requires
     }
 
     /**
@@ -65,7 +55,7 @@ abstract class AbstractAsciidoctorjsFormatterVersioned extends AbstractAsciidoct
     ) {
         super(name, backendName, tc, tempProjectReference)
         this.moduleVersion = tempProjectReference.objects.property(String).convention(componentDefaultVersion)
-        this.requires = [scope ? "@${scope}/${componentName}".toString() : componentName]
+        packageRequires.add(scope ? "@${scope}/${componentName}".toString() : componentName)
         tc.usePackage(scope, componentName, moduleVersion)
     }
 }

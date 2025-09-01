@@ -17,13 +17,18 @@ package org.asciidoctor.gradle.model5.jvm.internal.formatters
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorNamedBackend
-import org.asciidoctor.gradle.model5.core.ExecutionMode
+import org.asciidoctor.gradle.model5.jvm.engines.ExecutionContext
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjOutputFormatter
+import org.asciidoctor.gradle.model5.jvm.internal.engines.DefaultExecutionContext
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
+import org.gradle.api.Action
 import org.gradle.api.Project
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.ysb33r.grolifant5.api.core.ClosureUtils
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
+import org.ysb33r.grolifant5.api.core.jvm.GrolifantSimpleSetJavaForkOptions
 
 @CompileStatic
 abstract class AbstractAsciidoctorjFormatter implements AsciidoctorjOutputFormatter {
@@ -32,29 +37,11 @@ abstract class AbstractAsciidoctorjFormatter implements AsciidoctorjOutputFormat
 
     protected final ConfigCacheSafeOperations ccso
     protected final AsciidoctorjToolchain toolchain
+    protected final ObjectFactory objectFactory
+    protected final String projectPath
+    protected final Property<ExecutionContext> executionContext
 
-    private final Property<ExecutionMode> executionMode
     private final Provider<Set<String>> emptyRequires
-
-    /**
-     * Sets whether the workers should run in or out of the Gradle process.
-     *
-     * @param mode Execution mode.
-     */
-    @Override
-    void setExecutionMode(ExecutionMode mode) {
-        this.executionMode.set(mode)
-    }
-
-    /**
-     * Get the execution mode for the formatter.
-     *
-     * @return Provider to execution mode.
-     */
-    @Override
-    Provider<ExecutionMode> getExecutionMode() {
-       this.executionMode
-    }
 
     /**
      * A list of {@code requires} that a component places on the associated toolchain.
@@ -66,12 +53,50 @@ abstract class AbstractAsciidoctorjFormatter implements AsciidoctorjOutputFormat
         this.emptyRequires
     }
 
+    /**
+     * When running this output formatter, do it in-process, but with classpath isolation.
+     *
+     * <p>This is the default behaviour.</p>
+     */
+    @Override
+    void useClassloaderIsolation() {
+        this.executionContext.set((ExecutionContext)null)
+    }
+
+    /**
+     * Use process isolation when using this output formatter to perform conversions.
+     *
+     * @param forkOptions Reduced set of fork options.
+     */
+    @Override
+    void useProcessIsolation(Action<GrolifantSimpleSetJavaForkOptions> forkOptions) {
+        final ec = objectFactory.newInstance(DefaultExecutionContext)
+        forkOptions.execute(ec)
+        this.executionContext.set(ec)
+    }
+
+    /**
+     * Use process isolation when using this output formatter to perform conversions.
+     *
+     * @param forkOptions Reduced set of fork options.
+     */
+    @Override
+    void useProcessIsolation(@DelegatesTo(GrolifantSimpleSetJavaForkOptions.class) Closure<?> forkOptions) {
+        final ec = objectFactory.newInstance(DefaultExecutionContext)
+        ClosureUtils.configureItem(ec, forkOptions)
+        this.executionContext.set(ec)
+    }
+
     protected AbstractAsciidoctorjFormatter(String name, String backendName, AsciidoctorjToolchain tc, Project project) {
         this.name = name
         this.toolchain = tc
         this.ccso = ConfigCacheSafeOperations.from(project)
+        this.objectFactory = project.objects
+        this.projectPath = ccso.projectTools().fullProjectPath
         this.backend = ccso.providerTools().provider { -> AsciidoctorNamedBackend.of(name, backendName) }
-        this.executionMode = ccso.providerTools().property(ExecutionMode).convention(ExecutionMode.IN_PROCESS)
         this.emptyRequires = ccso.providerTools().provider { -> Collections.EMPTY_SET }
+        this.executionContext = ccso.providerTools().property(ExecutionContext)
+
+        tc.registerExecutionContext(name, executionContext)
     }
 }

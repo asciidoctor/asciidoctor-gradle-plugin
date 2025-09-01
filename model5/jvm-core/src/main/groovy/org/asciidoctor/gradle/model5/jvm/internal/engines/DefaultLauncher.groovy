@@ -16,11 +16,13 @@
 package org.asciidoctor.gradle.model5.jvm.internal.engines
 
 import groovy.transform.CompileStatic
+import groovy.util.logging.Slf4j
 import org.asciidoctor.gradle.model5.core.AsciidoctorConversionSettings
 import org.asciidoctor.gradle.model5.core.AsciidoctorExecutionSettings
 import org.asciidoctor.gradle.model5.core.AsciidoctorLauncher
-import org.asciidoctor.gradle.model5.core.ExecutionMode
 import org.asciidoctor.gradle.model5.core.internal.engines.EngineUtils
+import org.asciidoctor.gradle.model5.jvm.engines.ExecutionContext
+import org.asciidoctor.gradle.model5.jvm.internal.buildservices.AsciidoctorjEngineContextService
 import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.FileCollection
@@ -32,6 +34,8 @@ import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 import org.ysb33r.grolifant5.api.core.FileSystemOperations
 
 import javax.inject.Inject
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentMap
 
 /**
  * Launches conversion jobs on JVM workers.
@@ -41,18 +45,25 @@ import javax.inject.Inject
  * @since 5.0
  */
 @CompileStatic
+@Slf4j
 class DefaultLauncher implements AsciidoctorLauncher {
     private final WorkerExecutor workerExecutor
     private final ConfigurableFileCollection classpath
     private final FileSystemOperations fsOperations
     private final Property<LauncherEngineOptions> launcherEngineOptions
+    private final String projectPath
+    private final ConcurrentMap<String, Provider<ExecutionContext>> executionsContexts
 
     @Inject
     DefaultLauncher(Project tempProjectRef, WorkerExecutor we) {
         this.workerExecutor = we
-        this.fsOperations = ConfigCacheSafeOperations.from(tempProjectRef).fsOperations()
+
+        final ccso = ConfigCacheSafeOperations.from(tempProjectRef)
+        this.projectPath = ccso.projectTools().fullProjectPath
+        this.fsOperations = ccso.fsOperations()
         this.classpath = fsOperations.emptyFileCollection()
         this.launcherEngineOptions = tempProjectRef.objects.property(LauncherEngineOptions)
+        this.executionsContexts = new ConcurrentHashMap<>()
     }
 
     void classpath(FileCollection files) {
@@ -63,9 +74,20 @@ class DefaultLauncher implements AsciidoctorLauncher {
         this.launcherEngineOptions.set(leo)
     }
 
+    void registerExecutionContext(
+            String toolchainName,
+            String formatterName,
+            Provider<ExecutionContext> executionContext
+    ) {
+        executionsContexts.put(
+            executionContextKey(toolchainName,formatterName),
+            executionContext
+        )
+    }
+
     @Override
     void run(AsciidoctorExecutionSettings executionsSettings, AsciidoctorConversionSettings conversionSettings) {
-        final wq = createWorkQueue(executionsSettings.preferredExecutionMode.getOrNull())
+        final wq = createWorkQueue(executionsSettings)
         final groups = EngineUtils.groupByParent(conversionSettings.sourceFiles.get())
         final root = conversionSettings.sourceRootDir.get().asFile
         final destDir = conversionSettings.destinationDir
@@ -88,19 +110,39 @@ class DefaultLauncher implements AsciidoctorLauncher {
         wq.await()
     }
 
-    private WorkQueue createWorkQueue(ExecutionMode mode) {
+    private Optional<ExecutionContext> getExecutionContext(String toolchainName, String formatterName) {
+        final ec = executionsContexts[executionContextKey(toolchainName,formatterName)]
+        if(ec == null || !ec.present) {
+            Optional.empty()
+        } else {
+            Optional.of(ec.get())
+        }
+    }
+
+    private WorkQueue createWorkQueue(AsciidoctorExecutionSettings executionsSettings) {
+        final toolchain = executionsSettings.toolchainName.get()
+        final formatter = executionsSettings.formatterName.get()
+        final ec = getExecutionContext(toolchain, formatter)
         final cp = classpath
 
-        if(mode == null || mode == ExecutionMode.IN_PROCESS) {
-            workerExecutor.classLoaderIsolation { spec ->
+        if (ec.present) {
+            log.info("Engine context found for ${toolchain}-${formatter}. Running workers out of process.")
+            final context = ec.get()
+            workerExecutor.processIsolation { spec ->
+                spec.forkOptions {
+                    context.copyTo(it)
+                }
                 spec.classpath.from(cp)
             }
         } else {
-            workerExecutor.processIsolation { spec ->
-//                spec.forkOptions {
-//                }
+            log.info("No engine context found for ${toolchain}-${formatter}. Running workers in process.")
+            workerExecutor.classLoaderIsolation { spec ->
                 spec.classpath.from(cp)
             }
         }
+    }
+
+    private String executionContextKey(String toolchainName, String formatterName) {
+        "${toolchainName}-${formatterName}"
     }
 }

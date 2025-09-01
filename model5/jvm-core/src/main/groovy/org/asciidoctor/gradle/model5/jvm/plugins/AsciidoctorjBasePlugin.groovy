@@ -22,6 +22,7 @@ import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjDiagram
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjDocbook
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjHtml5
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjManpage
+import org.asciidoctor.gradle.model5.jvm.internal.buildservices.AsciidoctorjEngineContextService
 import org.asciidoctor.gradle.model5.jvm.internal.extensions.DefaultAsciidoctorjDiagram
 import org.asciidoctor.gradle.model5.jvm.internal.formatters.AsciidoctorjDocbookFactory
 import org.asciidoctor.gradle.model5.jvm.internal.formatters.AsciidoctorjHtml5Factory
@@ -44,6 +45,7 @@ import static org.asciidoctor.gradle.model5.jvm.JvmModel.registerOutputFormatter
  */
 @CompileStatic
 class AsciidoctorjBasePlugin implements Plugin<Project> {
+
     @Override
     void apply(Project project) {
         project.pluginManager.tap {

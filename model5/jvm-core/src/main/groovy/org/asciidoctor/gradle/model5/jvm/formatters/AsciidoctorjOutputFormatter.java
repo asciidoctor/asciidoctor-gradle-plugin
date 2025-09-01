@@ -15,9 +15,11 @@
  */
 package org.asciidoctor.gradle.model5.jvm.formatters;
 
+import groovy.lang.Closure;
+import groovy.lang.DelegatesTo;
 import org.asciidoctor.gradle.model5.core.formatters.AsciidoctorOutputFormatter;
-import org.asciidoctor.gradle.model5.core.ExecutionMode;
-import org.gradle.api.provider.Provider;
+import org.gradle.api.Action;
+import org.ysb33r.grolifant5.api.core.jvm.GrolifantSimpleSetJavaForkOptions;
 
 /**
  * Defines an output formatter that works on an {@code asciidoctorj} engine.
@@ -28,25 +30,23 @@ import org.gradle.api.provider.Provider;
 public interface AsciidoctorjOutputFormatter extends AsciidoctorOutputFormatter {
 
     /**
-     * Sets whether the workers should run in or out of process.
+     * When running this output formatter, do it in-process, but with classpath isolation.
      *
-     * @param mode Execution mode.
+     * <p>This is the default behaviour.</p>
      */
-    default void setExecutionMode(String mode) {
-        setExecutionMode(ExecutionMode.of(mode));
-    }
+    void useClassloaderIsolation();
 
     /**
-     * Sets whether the workers should run in or out of the Gradle process.
+     * Use process isolation when using this output formatter to perform conversions.
      *
-     * @param mode Execution mode.
+     * @param forkOptions Reduced set of fork options.
      */
-    void setExecutionMode(ExecutionMode mode);
+    void useProcessIsolation(Action<GrolifantSimpleSetJavaForkOptions> forkOptions);
 
     /**
-     * Get the execution mode for the formatter.
+     * Use process isolation when using this output formatter to perform conversions.
      *
-     * @return Provider to execution mode.
+     * @param forkOptions Reduced set of fork options.
      */
-    Provider<ExecutionMode> getExecutionMode();
+    void useProcessIsolation(@DelegatesTo(GrolifantSimpleSetJavaForkOptions.class) Closure<?> forkOptions);
 }

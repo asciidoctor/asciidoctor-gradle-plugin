@@ -55,7 +55,7 @@ class AsciidoctorjsDocbookSpec extends IntegrationSpecification {
     }
 
     void writeBuildFile() {
-        writeBasicBuildFileGroovy([PLUGIN_ID])
+        writeBasicBuildFileGroovy(['org.asciidoctor.js', 'org.asciidoctor.js.docbook'])
         addOutputToSourceSetGroovy(DEFAULT_TOOLCHAIN, DefaultAsciidoctorjsDocbook.DEFAULT_NAME, DEFAULT_PUBLICATION)
     }
 }

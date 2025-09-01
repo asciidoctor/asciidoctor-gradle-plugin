@@ -42,13 +42,16 @@ public interface AsciidoctorExecutionSettings {
     Provider<Set<String>> getModuleRequires();
 
     /**
-     * The preferred execution mode.
+     * The name of the formatter.
      *
-     * <p>
-     *     A launcher could decide to ignore this or override it.
-     * </p>
-     *
-     * @return The preferred execution mode. Can be empty in which case the launcher will opt for a default.
+     * @return Provider to the name.
      */
-    Provider<ExecutionMode> getPreferredExecutionMode();
+    Provider<String> getFormatterName();
+
+    /**
+     * The name of the toolchain.
+     *
+     * @return Provider to the name.
+     */
+    Provider<String> getToolchainName();
 }

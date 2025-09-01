@@ -13,26 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.core.internal.basedir
+package org.asciidoctor.gradle.model5.jvm.internal.engines
 
 import groovy.transform.CompileStatic
-import org.gradle.api.model.ObjectFactory
+import org.asciidoctor.gradle.model5.jvm.engines.ExecutionContext
+import org.gradle.api.Project
+import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
+import org.ysb33r.grolifant5.api.core.jvm.GrolifantSimpleJavaForkOptions
 
 import javax.inject.Inject
 
 /**
- * Allows base directory to be adjusted on a per-source file basis.
+ * Execution context for an {@code asciidoctorj} launcher.
  *
  * @author Schalk W. Cronjé
  *
  * @since 5.0
  */
 @CompileStatic
-class BaseDirFollowSourceFiles extends BaseDirFollowSourceDir {
+class DefaultExecutionContext implements ExecutionContext {
+
+    @Delegate
+    private final GrolifantSimpleJavaForkOptions forkOptions
 
     @Inject
-    BaseDirFollowSourceFiles(ObjectFactory objectFactory) {
-        super(objectFactory)
-        adjustBaseDir.set(true)
+    DefaultExecutionContext(Project project) {
+        this.forkOptions = ConfigCacheSafeOperations.from(project).jvmTools().simpleJavaForkOptions()
     }
 }

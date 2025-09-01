@@ -25,8 +25,6 @@ import static org.asciidoctor.gradle.model5.core.internal.publications.Publicati
  * @author Schalk W. Cronjé
  */
 class RelativeIncludeSpec extends AsciidoctorjHtmlIntegrationSpecification {
-    static final List DEFAULT_ARGS = ['asciidoctor', '-s']
-
     void setup() {
         writeHtmlBasedBuildFile()
         copyTestProject('relative-include')

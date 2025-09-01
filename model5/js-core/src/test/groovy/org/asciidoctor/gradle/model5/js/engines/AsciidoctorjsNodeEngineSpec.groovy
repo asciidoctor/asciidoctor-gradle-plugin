@@ -20,7 +20,9 @@ import org.asciidoctor.gradle.model5.core.SafeMode
 import org.asciidoctor.gradle.model5.core.internal.DefaultAsciidoctorConversionSettings
 import org.asciidoctor.gradle.model5.core.internal.DefaultAsciidoctorExecutionSettings
 import org.asciidoctor.gradle.testfixtures.model5.UnitTestSpecification
+import spock.lang.Ignore
 
+@Ignore('Can probably delete this test now that we can execute AsciidoctorTask')
 class AsciidoctorjsNodeEngineSpec extends UnitTestSpecification {
 
     public static final String ENGINE_NAME = 'default-engine'
@@ -50,6 +52,7 @@ class AsciidoctorjsNodeEngineSpec extends UnitTestSpecification {
         final bd = baseDir
         exeSettings.tap {
             safeMode.set(SafeMode.UNSAFE)
+
         }
         conversionSettings.tap {
             sourceFiles.set(

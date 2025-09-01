@@ -21,6 +21,7 @@ import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsOutputFormatter
 import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
+import org.gradle.api.provider.SetProperty
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 
 @CompileStatic
@@ -28,13 +29,25 @@ abstract class AbstractAsciidoctorjsFormatter implements AsciidoctorjsOutputForm
     final String name
     final Provider<AsciidoctorNamedBackend> backend
 
+    /**
+     * A list of {@code requires} that a component places on the associated toolchain.
+     *
+     * @return List of {@code requires}. Can be empty, but never {@code null}.
+     */
+    @Override
+    Provider<Set<String>> getRequires() {
+        this.packageRequires
+    }
+
     protected final ConfigCacheSafeOperations ccso
     protected final AsciidoctorjsToolchain toolchain
+    protected final SetProperty<String> packageRequires
 
     protected AbstractAsciidoctorjsFormatter(String name, String backendName, AsciidoctorjsToolchain tc, Project project) {
         this.name = name
         this.toolchain = tc
         this.ccso = ConfigCacheSafeOperations.from(project)
         this.backend = ccso.providerTools().provider { -> AsciidoctorNamedBackend.of(name, backendName) }
+        this.packageRequires = project.objects.setProperty(String)
     }
 }

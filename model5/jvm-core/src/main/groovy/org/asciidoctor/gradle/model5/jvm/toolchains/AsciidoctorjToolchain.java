@@ -19,8 +19,11 @@ import groovy.lang.Closure;
 import groovy.lang.DelegatesTo;
 import org.asciidoctor.gradle.model5.core.toolchains.AsciidoctorToolchain;
 import org.asciidoctor.gradle.model5.jvm.engines.EngineOptions;
+import org.asciidoctor.gradle.model5.jvm.engines.ExecutionContext;
+import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjOutputFormatter;
 import org.gradle.api.Action;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.provider.Provider;
 
 /**
  * A toolchain for running asciidoctorj.
@@ -46,11 +49,20 @@ public interface AsciidoctorjToolchain extends AsciidoctorToolchain, CoreVersion
     void engineOptions(@DelegatesTo(EngineOptions.class) Closure<?> configurator);
 
     /**
-     * Directo access to engine options.
+     * Direct access to engine options.
      *
      * @return Instance of something that implements {@link EngineOptions}
      */
     EngineOptions getEngineOptions();
+
+    /**
+     * An interface primarily used by output formatters to register context.
+     *
+     * @param formatter An active {@code asciidoctorj} formatter.
+     * @param executionContext Valid execution context. The provider can be empty which will mean the same as no
+     *                         execution  context.
+     */
+    void registerExecutionContext(String formatterName, Provider<ExecutionContext> executionContext);
 
 //    /**
 //     * The level at which the AsciidoctorJ process should be logging.

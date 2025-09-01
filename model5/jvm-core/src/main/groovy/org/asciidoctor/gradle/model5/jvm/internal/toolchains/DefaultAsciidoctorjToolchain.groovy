@@ -21,9 +21,11 @@ import org.asciidoctor.gradle.model5.core.toolchains.AbstractAsciidoctorToolchai
 import org.asciidoctor.gradle.model5.core.toolchains.ProcessingOptions
 import org.asciidoctor.gradle.model5.jvm.engines.AsciidoctorjEngine
 import org.asciidoctor.gradle.model5.jvm.engines.EngineOptions
+import org.asciidoctor.gradle.model5.jvm.engines.ExecutionContext
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.gradle.api.Action
 import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 import org.ysb33r.grolifant5.api.core.ClosureUtils
 
 import javax.inject.Inject
@@ -76,19 +78,15 @@ class DefaultAsciidoctorjToolchain extends AbstractAsciidoctorToolchain implemen
         engine
     }
 
-//    @Override
-//    Provider<Map<String, String>> getOptions() {
-//        return null
-//    }
-//
-//    @Override
-//    void setOptions(Map<String, ?> m) {
-//
-//    }
-//
-//    @Override
-//    void options(Map<String, ?> m) {
-//
-//    }
-
+    /**
+     * An interface primarily used by output formatters to register context.
+     *
+     * @param formatter An active {@code asciidoctorj} formatter.
+     * @param executionContext Valid execution context. The provider can be empty which will mean the same as no
+     *                         execution  context.
+     */
+    @Override
+    void registerExecutionContext(String formatter, Provider<ExecutionContext> executionContext) {
+        engine.registerExecutionContext(name, formatter, executionContext)
+    }
 }

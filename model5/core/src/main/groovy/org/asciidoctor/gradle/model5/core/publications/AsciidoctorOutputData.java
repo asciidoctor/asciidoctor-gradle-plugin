@@ -67,4 +67,17 @@ public interface AsciidoctorOutputData extends Named {
      * @return Provider to a list. Can be empty, but never {@code null}.
      */
     Provider<Set<String>> getModuleRequires();
+
+    /**
+     * The actual name of the formatter, but not the alias name.
+     * @return Provider to the name.
+     */
+    Provider<String> getFormatterName();
+
+    /**
+     * The name of the toolchain.
+     *
+     * @return Provider to the name.
+     */
+    Provider<String> getToolchainName();
 }

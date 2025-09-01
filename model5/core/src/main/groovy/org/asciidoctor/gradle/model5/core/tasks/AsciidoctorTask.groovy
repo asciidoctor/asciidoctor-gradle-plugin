@@ -94,6 +94,8 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
         this.resourcesCopySpec.set(outputData.copyResources)
         this.conversionSettings.docType.set(outputData.docType)
         this.exeSettings.moduleRequires.set(outputData.moduleRequires)
+        this.exeSettings.toolchainName.set(outputData.toolchainName)
+        this.exeSettings.formatterName.set(outputData.formatterName)
     }
 
     /**

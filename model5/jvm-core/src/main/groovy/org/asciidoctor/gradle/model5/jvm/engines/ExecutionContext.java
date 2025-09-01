@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2013 - 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,31 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.core
+package org.asciidoctor.gradle.model5.jvm.engines;
 
-import groovy.transform.CompileStatic
+import org.ysb33r.grolifant5.api.core.jvm.GrolifantSimpleJavaForkOptions;
 
 /**
- * Worker execution modes.
+ * Engine execution context used by {@code easciidoctorj} output formatters.
  *
  * @author Schalk W. Cronjé
- *
  * @since 5.0
  */
-@CompileStatic
-enum ExecutionMode {
-
-    /**
-     * Executes in the Gradle process, but with classpath isolation
-     */
-    IN_PROCESS,
-
-    /**
-     * Executes outside of the Gradle process.
-     */
-    OUT_OF_PROCESS
-
-    static ExecutionMode of(String ver) {
-        valueOf(ver.replaceAll(~/-/,'_').toUpperCase(Locale.US))
-    }
+public interface ExecutionContext extends GrolifantSimpleJavaForkOptions {
 }
