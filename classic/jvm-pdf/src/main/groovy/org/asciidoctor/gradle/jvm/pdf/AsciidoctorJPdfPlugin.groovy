@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2024 the original author or authors.
+ * Copyright 2013 - 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.setConvention
-import static org.ysb33r.grolifant5.api.v4.TaskProvider.registerTask
 
 /** Provides additional conventions for building PDFs.
  *
@@ -58,7 +57,7 @@ class AsciidoctorJPdfPlugin implements Plugin<Project> {
                     }
                 }
             }
-            registerTask(project, 'asciidoctorPdf', AsciidoctorPdfTask, pdfDefaults)
+            tasks.register( 'asciidoctorPdf', AsciidoctorPdfTask, pdfDefaults)
         }
     }
 }

@@ -1,5 +1,11 @@
+plugins {
+    id 'org.asciidoctor.internal.classic.gradle.project.jvm'
+}
+
 agProject {
     withOfflineTestConfigurations()
+    withIntegrationTests()
+    withCompatibilityTests()
 
     configurePlugin(
             'org.asciidoctor.jvm.pdf',
@@ -10,17 +16,24 @@ agProject {
     )
 }
 
+configurations {
+    cachingOnly
+}
+
 dependencies {
     api project(':asciidoctor-gradle-jvm')
-    intTestOfflineRepo "org.asciidoctor:asciidoctorj:${compileOnlyAsciidoctorJVersion}"
-    intTestOfflineRepo "org.asciidoctor:asciidoctorj-pdf:${downloadOnlyPdfVersion}"
+    api(libs.grolifantRemoteWorker)
+    intTestOfflineRepo "org.asciidoctor:asciidoctorj:${agProject.versionOf('asciidoctorj')}"
+    intTestOfflineRepo "org.asciidoctor:asciidoctorj-pdf:${agProject.versionOf('asciidoctorjPdf')}"
+
+    cachingOnly(libs.asciidoctorjPdf) { transitive = false }
 }
 
 tasks.named('test', Test) {
     systemProperties TEST_THEMES_DIR: file('src/test/resources/themes')
 }
 
-tasks.named('intTest', Test) {
+tasks.named('integrationTest', Test) {
     maxParallelForks = 2
     forkEvery = 1
     maxHeapSize = '2048m'

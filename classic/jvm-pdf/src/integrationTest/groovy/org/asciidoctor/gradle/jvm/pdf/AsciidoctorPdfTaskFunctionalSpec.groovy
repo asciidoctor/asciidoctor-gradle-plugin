@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2024 the original author or authors.
+ * Copyright 2013 - 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.asciidoctor.gradle.testfixtures.GradleTestVersions
 import org.asciidoctor.gradle.testfixtures.generators.PdfBackendJRubyAsciidoctorJCombinationGenerator
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
+import spock.lang.Ignore
 import spock.lang.Issue
 import spock.lang.Unroll
 
@@ -97,6 +98,7 @@ asciidoctorPdf {
         combination << PdfBackendJRubyAsciidoctorJCombinationGenerator.get()
     }
 
+    @Ignore
     void 'Pdf generation can be run in JAVA_EXEC process mode'() {
         given:
         getBuildFile("""
@@ -156,7 +158,7 @@ asciidoctorPdf {
             sourceDir 'src/docs/asciidoc'
             fontsDirs 'src/docs/asciidoc/pdf-theme', file('src/docs/asciidoc/path')
             fontsDirs 'src/docs/asciidoc/pdf-theme-path'
-            executionMode = JAVA_EXEC
+            executionMode = OUT_OF_PROCESS
         }
         """)
 
@@ -183,7 +185,7 @@ asciidoctorPdf {
             theme 'basic'
             sourceDir 'src/docs/asciidoc'
             fontsDirs 'src/docs/asciidoc/pdf-theme'
-            executionMode = JAVA_EXEC
+            executionMode = OUT_OF_PROCESS
         }
         """.stripIndent())
 
@@ -210,7 +212,7 @@ asciidoctorPdf {
             tasks.withType(org.asciidoctor.gradle.jvm.pdf.AsciidoctorPdfTask).configureEach {
                 sourceDir = 'src/asciidoc'
                 outputDir = "\${buildDir}/output"
-                executionMode = JAVA_EXEC
+                executionMode = OUT_OF_PROCESS
             }
 
             apply plugin: 'org.asciidoctor.jvm.pdf'

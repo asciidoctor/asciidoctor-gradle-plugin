@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2024 the original author or authors.
+ * Copyright 2013 - 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,12 +51,8 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
 
         outputOptions.backends = ['pdf']
         copyNoResources()
-        projectOperations.tasks.inputFiles(
-                inputs,
-                { -> pdfFontDirs },
-                PathSensitivity.RELATIVE,
-                IGNORE_EMPTY_DIRECTORIES, OPTIONAL
-        )
+        inputs.files({ -> pdfFontDirs }).withPathSensitivity(PathSensitivity.RELATIVE)
+                .ignoreEmptyDirectories().optional()
     }
 
     /** Returns the directories or single directory for the fonts
@@ -65,7 +61,7 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
      * */
     @Internal
     FileCollection getFontsDirs() {
-        projectOperations.fsOperations.files(this.pdfFontDirs)
+        fsOperations().files(this.pdfFontDirs)
     }
 
     /** Specify a directory or directories where to load custom fonts from.

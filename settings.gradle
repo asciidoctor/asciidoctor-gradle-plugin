@@ -42,10 +42,11 @@ include 'asciidoctoreditorconfig'
     project(":classic/${it}").name = "asciidoctor-gradle-${it}"
 }
 
+['pdf', ].each {
 //['pdf', 'epub'/*,  'leanpub' */].each {
-//    include "classic/jvm-${it}"
-//    project(":classic/jvm-${it}").name = "asciidoctor-gradle-jvm-${it}"
-//}
+    include "classic/jvm-${it}"
+    project(":classic/jvm-${it}").name = "asciidoctor-gradle-jvm-${it}"
+}
 
 ////[  'slides-export' ].each {
 ////    include "classic/${it}"

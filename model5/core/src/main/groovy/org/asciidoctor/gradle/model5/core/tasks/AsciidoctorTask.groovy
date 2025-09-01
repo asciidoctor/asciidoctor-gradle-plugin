@@ -26,9 +26,12 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.util.PatternFilterable
 import org.ysb33r.grolifant5.api.core.runnable.GrolifantDefaultTask
+
+import static org.gradle.api.tasks.PathSensitivity.*
 
 /**
  * Base task for converting Asciidoc sources into content.
@@ -58,7 +61,7 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
 
         inputs.property('doctype', conversionSettings.docType).optional(true)
         inputs.dir(this.sourceDir)
-        inputs.files(conversionSettings.sourceFiles).skipWhenEmpty(true)
+        inputs.files(conversionSettings.sourceFiles).skipWhenEmpty(true).withPathSensitivity(RELATIVE)
 
         outputs.files(fsOperations().fileTree(conversionSettings.destinationDir))
         // TODO: How do we know to use an intermediate workdir?
