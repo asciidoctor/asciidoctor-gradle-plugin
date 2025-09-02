@@ -26,6 +26,7 @@ import org.asciidoctor.gradle.model5.core.toolchains.AsciidoctorToolchain
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.FileCollection
 import org.gradle.api.file.ProjectLayout
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
@@ -55,6 +56,7 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
     private final SetProperty<String> moduleRequires
     private final Property<String> formatterName
     private final Property<String> toolchainName
+    private FileCollection additionalClasspath
 
     @Inject
     DefaultAsciidoctorOutputData(String name, Project tempProjectReference) {
@@ -136,6 +138,16 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
         this.toolchainName
     }
 
+    /**
+     * Additional classpath to add for execution.
+     *
+     * @return Classpath. Nullable.
+     */
+    @Override
+    FileCollection getAdditionalClasspath() {
+        this.additionalClasspath
+    }
+
     void configureFrom(
             String publicationName,
             AsciidoctorToolchain toolchain,
@@ -147,6 +159,10 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
         this.backend.set(formatter.backend.map { AsciidoctorNamedBackend.of(owner.name, it.backend) })
         this.formatterName.set(formatter.name)
         this.toolchainName.set(toolchain.name)
+
+        if (formatter.classpath) {
+            this.additionalClasspath = formatter.classpath
+        }
 
         if (formatter.copyResources) {
             this.resourcesCopySpec.set(sourceSet.resourcesPatterns)

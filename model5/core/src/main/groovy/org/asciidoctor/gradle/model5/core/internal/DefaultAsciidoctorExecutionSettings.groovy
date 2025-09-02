@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.model5.core.internal
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorExecutionSettings
 import org.asciidoctor.gradle.model5.core.SafeMode
+import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
@@ -37,6 +38,7 @@ class DefaultAsciidoctorExecutionSettings implements AsciidoctorExecutionSetting
     final SetProperty<String> moduleRequires
     final Property<String> formatterName
     final Property<String> toolchainName
+    final ConfigurableFileCollection additionalClasspath
 
     @Inject
     DefaultAsciidoctorExecutionSettings(ObjectFactory objectFactory) {
@@ -44,5 +46,6 @@ class DefaultAsciidoctorExecutionSettings implements AsciidoctorExecutionSetting
         moduleRequires = objectFactory.setProperty(String)
         formatterName = objectFactory.property(String)
         toolchainName = objectFactory.property(String)
+        additionalClasspath = objectFactory.fileCollection()
     }
 }

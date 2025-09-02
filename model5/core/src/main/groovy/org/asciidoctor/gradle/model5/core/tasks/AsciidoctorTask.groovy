@@ -65,7 +65,6 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
 
         outputs.files(fsOperations().fileTree(conversionSettings.destinationDir))
         // TODO: How do we know to use an intermediate workdir?
-        // TODO: Set rules for calculating source files for conversion.
     }
 
     @Internal
@@ -99,6 +98,10 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
         this.exeSettings.moduleRequires.set(outputData.moduleRequires)
         this.exeSettings.toolchainName.set(outputData.toolchainName)
         this.exeSettings.formatterName.set(outputData.formatterName)
+
+        if(outputData.additionalClasspath != null) {
+            this.exeSettings.additionalClasspath.from(outputData.additionalClasspath)
+        }
     }
 
     /**

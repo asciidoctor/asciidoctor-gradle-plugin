@@ -33,10 +33,4 @@ public interface AsciidoctorjOutputFormatterVersioned extends AsciidoctorjOutput
      */
     void useVersion(Object ver);
 
-    /**
-     * Additional itemns to add to the classpath when it runs.
-     *
-     * @return Classpath.
-     */
-    FileCollection getClasspath();
 }

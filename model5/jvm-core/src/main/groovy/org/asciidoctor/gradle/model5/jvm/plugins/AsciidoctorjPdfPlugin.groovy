@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.model5.jvm.plugins
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
+import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePdfThemesPlugin
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjPdf
 import org.asciidoctor.gradle.model5.jvm.internal.formatters.AsciidoctorjPdfFactory
 import org.asciidoctor.gradle.model5.jvm.internal.formatters.DefaultAsciidoctorjPdf
@@ -39,7 +40,8 @@ class AsciidoctorjPdfPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         project.pluginManager.tap {
-            apply(AsciidoctorjBasePlugin)
+            apply(AsciidoctorjPlugin)
+            apply(AsciidoctorCorePdfThemesPlugin)
         }
 
         final asciidoc = project.extensions.getByType(AsciidoctorModelExtension)

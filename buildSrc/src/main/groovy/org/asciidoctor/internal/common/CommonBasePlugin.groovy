@@ -5,6 +5,7 @@ import nl.javadude.gradle.plugins.license.LicenseExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
+import org.gradle.api.tasks.testing.Test
 import org.ysb33r.grolifant5.api.core.plugins.GrolifantServicePlugin
 
 import java.time.LocalDate
@@ -30,6 +31,7 @@ class CommonBasePlugin implements Plugin<Project> {
         project.extensions.create('agProject', AsciidoctorGradleProjectExtension, project)
         configureRepositories(project)
         configureLicense(project)
+        configureTestCommons(project)
     }
 
     private void configureRepositories(Project project) {
@@ -44,7 +46,7 @@ class CommonBasePlugin implements Plugin<Project> {
     private void configureLicense(Project project) {
         final currentYear = LocalDate.now().year.toString()
         final inceptionYear = project.providers.gradleProperty('projectInceptionYear').get()
-        final yearRange =  "${inceptionYear} - ${currentYear}"
+        final yearRange = "${inceptionYear} - ${currentYear}"
 
         final license = project.extensions.getByType(LicenseExtension).tap {
             header = new File(project.rootDir, 'gradle/license/HEADER')
@@ -60,5 +62,12 @@ class CommonBasePlugin implements Plugin<Project> {
         }
 
         ((ExtensionAware) license).extensions.extraProperties.set('year', yearRange)
+    }
+
+    private void configureTestCommons(Project project) {
+        final offline = project.gradle.startParameter.offline.toString()
+        project.tasks.withType(Test).configureEach {
+            it.systemProperty('IS_OFFLINE', offline)
+        }
     }
 }

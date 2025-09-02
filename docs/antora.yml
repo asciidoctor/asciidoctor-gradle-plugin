@@ -1,9 +1,9 @@
 name: gradle-plugin
 title: Gradle Plugin Suite
-version: '4.0'
+version: '5.0'
 asciidoc:
   attributes:
-    release-version: 4.0.2
+    release-version: 5.0.0-alpha.1
     project-full-path: asciidoctor/asciidoctor-gradle-plugin
     project-name: asciidoctor-gradle-plugin
     project-repo-url: https://github.com/asciidoctor/asciidoctor-gradle-plugin
@@ -24,6 +24,7 @@ asciidoc:
     asciidoctorjs-conventions-plugin: org.asciidoctor.js
     asciidoctorjs-name: Asciidoctor.js
     asciidoctorjs-url: https://github.com/asciidoctor/asciidoctor.js
+    examples-model5-core-test: model5/core/test/groovy/org/asciidoctor/gradle/model5/core
     gradle-url: https://gradle.org/
     issues-asciidoctorj: https://github.com/asciidoctor/asciidoctorj/issues/
     issues-jruby: https://github.com/asciidoctor/asciidoctorj/issues/

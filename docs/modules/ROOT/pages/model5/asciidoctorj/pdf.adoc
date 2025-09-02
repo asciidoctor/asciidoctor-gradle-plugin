@@ -1,0 +1,48 @@
+= The PDF plugin
+
+.Minimal example
+[source,groovy,subs=+attributes]
+----
+plugins {
+  id 'org.asciidoctor.jvm.pdf' version '{release-version}'
+}
+
+asciidoc {
+  publications {
+    main {
+      output('asciidoctorj', 'pdf')
+    }
+  }
+}
+----
+
+This will make the `asciidoctorPdf` available to generate PDF output.
+
+include::partial$pdfthemes.adoc[leveloffset=+1]
+
+== Using a theme
+
+[source,groovy]
+----
+import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjPdf
+
+asciidoc {
+  toolchains {
+    aciidoctorj {
+      registeredOutputFormatters {
+        pdf(AsciidoctorjPdf) {
+          useTheme('default-with-font-fallbacks') // <.>
+          useTheme('myLocal') // <.>
+        }
+      }
+    }
+  }
+  publications {
+    main {
+      output('asciidoctorj', 'pdf')
+    }
+  }
+}
+----
+<.> Use a built-in theme.
+<.> Use the `myLocal` theme from `asciidocPdfThemes`.

@@ -22,4 +22,18 @@ package org.asciidoctor.gradle.model5.jvm.formatters;
  * @since 5.0
  */
 public interface AsciidoctorjPdf extends AsciidoctorjOutputFormatterVersioned {
+
+    /**
+     * Use the named theme from {@code asciidocPdfThemes}.
+     *
+     * @param name Name of theme
+     */
+    void useTheme(String name);
+
+    /**
+     * Supply an alternative location for fonts.
+     *
+     * @param dir Anything convertible to a file.
+     */
+    void setFontsDir(Object dir);
 }

@@ -90,7 +90,7 @@ public interface Attributes {
      * Indicates that the value should be treated as a date value.
      *
      * @param value Value.
-     * @return Something that can be passed as value in members of {@link #add(Map)}
+     * @return Something that can be passed as value in members of {@link #addAll(Map)}
      *   or as a single value to {@link #add(String, Object)}
      */
     AttributeType asDate(Object value);
@@ -109,7 +109,7 @@ public interface Attributes {
      * Indicates that the value should be treated as a boolean value.
      *
      * @param value Value.
-     * @return Something that can be passed as value in members of {@link #add(Map)}
+     * @return Something that can be passed as value in members of {@link #addAll(Map)}
      *   or as a single value to {@link #add(String, Object)}
      */
     AttributeType asBoolean(Object value);

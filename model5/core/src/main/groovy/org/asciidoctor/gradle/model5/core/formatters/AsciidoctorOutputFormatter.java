@@ -18,7 +18,9 @@ package org.asciidoctor.gradle.model5.core.formatters;
 import org.asciidoctor.gradle.model5.core.AsciidoctorNamedBackend;
 import org.asciidoctor.gradle.model5.core.AsciidoctorRequires;
 import org.asciidoctor.gradle.model5.core.DocType;
+import org.asciidoctor.gradle.model5.core.attributes.HasAttributeProvider;
 import org.gradle.api.Named;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.provider.Provider;
 
 import java.util.Collections;
@@ -31,7 +33,7 @@ import java.util.Optional;
  *
  * @since 5.0
  */
-public interface AsciidoctorOutputFormatter extends Named, AsciidoctorRequires {
+public interface AsciidoctorOutputFormatter extends Named, AsciidoctorRequires, HasAttributeProvider {
 
     /**
      * What this is known to Asciidoctor as the backend.
@@ -64,4 +66,15 @@ public interface AsciidoctorOutputFormatter extends Named, AsciidoctorRequires {
     default Optional<DocType> getEnforcedDocType() {
         return Optional.empty();
     }
+
+    /**
+     * Additional items to add to the classpath when a conversion involving the output formatter is executed.
+     *
+     * <p>
+     *     The classpath is empty by default.
+     * </p>
+     *
+     * @return Classpath. Can be {@code null} to indicate that the formatter does not support additional classpath.
+     */
+    FileCollection getClasspath();
 }

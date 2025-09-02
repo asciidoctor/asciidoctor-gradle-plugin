@@ -1,0 +1,44 @@
+= Configuring PDF themes
+
+PDF themes are configured in the `asciidocPdfThemes` extensions and have two main tenets:
+
+themeCollections:: These are directories or downloadable packages that can contain more than one theme.
+themes:: These are named themes, which are each related to one theme from any named collection.
+  They are used by PDF output formatters to tie a specific theme to an output.
+
+== Local themes
+
+[source,groovy]
+----
+import org.asciidoctor.gradle.model5.core.pdfthemes.LocalThemeCollection
+
+include::example${examples-model5-core-test}/pdfthemes/PdfThemesPluginSpec.groovy[tags=local-theme,indent=0]
+
+----
+<.> Declares a local collection called `myLocal`
+<.> Provide the directory where the themes are located.
+  This is anything convertible to a file.
+<.> Create a theme that uses a theme called `myLocal` from the `myLocal` collection.
+  In this convention it will look for a file called `src/pdfThemes/myLocal/myLocal-theme.yml`.
+
+== Themes from Github and Gitlab
+
+Themes stored in repositories on Github and Gitlab can also be used.
+
+[source,groovy]
+----
+import org.asciidoctor.gradle.model5.core.pdfthemes.GithubThemeCollection
+import org.asciidoctor.gradle.model5.core.pdfthemes.GitlabThemeCollection
+
+include::example${examples-model5-core-test}/pdfthemes/PdfThemesPluginSpec.groovy[tags=github-theme,indent=0]
+----
+<.> Declares a collection called `kuboaki` that can be retrieved from Github.
+  For a Gitlab-based collection replace `GithubThemeCollection` with `GitlabThemeCollection`.
+<.> Declare the Github organisation or the Gitlab group namespace.
+<.> Declare the repository name.
+<.> Declare a reference.
+  Use `branch`, `commit` or `tag` DSL methods to do so.
+<.> Declare the subpath in the downloaded package where the themes are located.
+  This will be the same as the subpath from the repository root.
+<.> Declare a theme called `myTheme` that is related to the `kuboaki` collection.
+<.> Declare that in the collection the actual theme is called `mystyle`.

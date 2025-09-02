@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013 - 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,29 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.jvm.toolchains;
-
-import org.gradle.api.file.FileCollection;
+package org.asciidoctor.gradle.model5.core.pdfthemes
 
 /**
- * Manages the classpath for {@code asciidoctorj} executions.
+ * Built-in themes.
  *
  * @author Schalk W. Cronjé
  *
  * @since 5.0
  */
-public interface ClasspathManagement {
-    /**
-     * Adds additional items to the runtime classpath.
-     *
-     * @param fc Files to add to classpath. Can be a {@code Configuration}.
-     */
-    void classpath(FileCollection fc);
+enum BuiltInThemes {
+    BASE('base'),
+    DEFAULT('default'),
+    DEFAULT_WITH_FONT_FALLBACKS('default-with-font-fallbacks'),
+    DEFAULT_FOR_PRINT('default-for-print'),
+    DEFAULT_SANS('default-sans'),
+    DEFAULT_SANS_WITH_FONT_FALLBACKS('default-sans-with-font-fallbacks')
 
-    /**
-     * The toolchain's configuration should extend from the given configuration as well.
-     *
-     * @param configurationName Name of configuration.
-     */
-    void classpathExtendsFrom(String configurationName);
+    final String themeName
+
+    private BuiltInThemes(String val) {
+        this.themeName = val
+    }
 }

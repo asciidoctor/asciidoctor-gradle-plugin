@@ -20,6 +20,8 @@ import org.asciidoctor.gradle.model5.core.AsciidoctorNamedBackend
 import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsOutputFormatter
 import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
 import org.gradle.api.Project
+import org.gradle.api.file.FileCollection
+import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
@@ -28,6 +30,22 @@ import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 abstract class AbstractAsciidoctorjsFormatter implements AsciidoctorjsOutputFormatter {
     final String name
     final Provider<AsciidoctorNamedBackend> backend
+    final FileCollection classpath = null
+
+    protected final ConfigCacheSafeOperations ccso
+    protected final AsciidoctorjsToolchain toolchain
+
+    private final FileCollection emptyFileCollection
+
+    /**
+     * Can be modified by derived classes when additional requires are needed.
+     */
+    protected final SetProperty<String> packageRequires
+
+    /**
+     * Can be modified by derived classes when attributes need to be made available.
+     */
+    protected final MapProperty<String,Object> attributes
 
     /**
      * A list of {@code requires} that a component places on the associated toolchain.
@@ -39,15 +57,27 @@ abstract class AbstractAsciidoctorjsFormatter implements AsciidoctorjsOutputForm
         this.packageRequires
     }
 
-    protected final ConfigCacheSafeOperations ccso
-    protected final AsciidoctorjsToolchain toolchain
-    protected final SetProperty<String> packageRequires
+    /**
+     * Indicates that something can provide unresolved attributes.
+     *
+     * @return Provider to a map of unresolved attributes.
+     */
+    @Override
+    Provider<Map<String, Object>> getAttributeProvider() {
+       this.attributes
+    }
 
-    protected AbstractAsciidoctorjsFormatter(String name, String backendName, AsciidoctorjsToolchain tc, Project project) {
+    protected AbstractAsciidoctorjsFormatter(
+            String name,
+            String backendName,
+            AsciidoctorjsToolchain tc,
+            Project project
+    ) {
         this.name = name
         this.toolchain = tc
         this.ccso = ConfigCacheSafeOperations.from(project)
         this.backend = ccso.providerTools().provider { -> AsciidoctorNamedBackend.of(name, backendName) }
         this.packageRequires = project.objects.setProperty(String)
+        this.attributes = project.objects.mapProperty(String,Object)
     }
 }

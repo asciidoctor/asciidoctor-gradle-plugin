@@ -16,15 +16,15 @@
 package org.asciidoctor.gradle.model5.core.plugins
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
+import org.asciidoctor.gradle.model5.core.pdfthemes.AsciidoctorPdfThemeExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.ysb33r.grolifant5.api.core.plugins.GrolifantServicePlugin
 
 @CompileStatic
-class AsciidoctorCoreBasePlugin implements Plugin<Project> {
-    public final static String INTERMEDIATE_RESOURCE_PATH = 'META-INF/asciidoctor.gradle'
-    public final static String TOOLCHAIN_DISPLAY_TASK = 'showAsciidoctorToolchains'
+class AsciidoctorCorePdfThemesPlugin implements Plugin<Project> {
+
+    public static final String PDF_THEMES_NAME = AsciidoctorPdfThemeExtension.NAME
 
     @Override
     void apply(Project project) {
@@ -32,11 +32,6 @@ class AsciidoctorCoreBasePlugin implements Plugin<Project> {
             apply(GrolifantServicePlugin)
         }
 
-        project.extensions.create(AsciidoctorModelExtension.NAME, AsciidoctorModelExtension, project)
-
-//        project.tasks.register(TOOLCHAIN_DISPLAY_TASK, ShowAsciidocToolchains) {
-//            it.group = 'help'
-//            it.description = 'Displays registered Asciidoctor toolchains.'
-//        }
+        project.extensions.create(PDF_THEMES_NAME,AsciidoctorPdfThemeExtension,project)
     }
 }

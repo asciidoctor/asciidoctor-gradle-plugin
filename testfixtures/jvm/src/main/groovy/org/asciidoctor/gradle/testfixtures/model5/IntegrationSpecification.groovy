@@ -32,6 +32,7 @@ class IntegrationSpecification extends Specification {
     public static final boolean IS_GROOVY_DSL = true
     public static final OperatingSystem OS = OperatingSystem.current()
     public static final File TEST_PROJECTS_DIR = new File(System.getProperty('TEST_PROJECTS_DIR'))
+    public static final Boolean IS_OFFLINE = System.getProperty('IS_OFFLINE','false').toBoolean()
 
     @TempDir
     File testProjectDir

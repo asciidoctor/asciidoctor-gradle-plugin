@@ -58,7 +58,7 @@ public interface AsciidoctorjToolchain extends AsciidoctorToolchain, CoreVersion
     /**
      * An interface primarily used by output formatters to register context.
      *
-     * @param formatter An active {@code asciidoctorj} formatter.
+     * @param formatterName An active {@code asciidoctorj} formatter.
      * @param executionContext Valid execution context. The provider can be empty which will mean the same as no
      *                         execution  context.
      */

@@ -17,4 +17,12 @@ agProject {
             'org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePlugin',
             []
     )
+    configurePlugin(
+            'org.asciidoctor.pdf-themes',
+            'Asciidoctor PDF Themes management plugin',
+            'Manages themes for PDF generation from AsciiDoc source',
+            'org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePdfThemesPlugin',
+            []
+    )
+
 }

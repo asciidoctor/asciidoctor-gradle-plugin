@@ -15,6 +15,7 @@
  */
 package org.asciidoctor.gradle.model5.core;
 
+import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.provider.Provider;
 
 import java.util.Set;
@@ -54,4 +55,11 @@ public interface AsciidoctorExecutionSettings {
      * @return Provider to the name.
      */
     Provider<String> getToolchainName();
+
+    /**
+     * Additional classpath to be added.
+     *
+     * @return Classpath. Never {@code null}
+     */
+    ConfigurableFileCollection getAdditionalClasspath();
 }

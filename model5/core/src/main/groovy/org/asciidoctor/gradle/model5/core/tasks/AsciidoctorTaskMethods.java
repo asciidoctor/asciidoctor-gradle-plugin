@@ -33,7 +33,7 @@ public interface AsciidoctorTaskMethods {
     void setLauncher(Provider<? extends AsciidoctorLauncher> launcher);
 
     /**
-     * Configures the task according to a toolchain & output formatter combination.
+     * Configures the task according to a toolchain and output formatter combination.
      *
      * @param outputData Output data.
      */

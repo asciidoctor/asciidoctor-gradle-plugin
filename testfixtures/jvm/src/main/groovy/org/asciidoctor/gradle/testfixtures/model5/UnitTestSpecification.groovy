@@ -23,6 +23,9 @@ import spock.lang.Specification
 import spock.lang.TempDir
 
 class UnitTestSpecification extends Specification {
+    public static final Boolean IS_OFFLINE = System.getProperty('IS_OFFLINE','false').toBoolean()
+    public static final String OFFLINE_REASON = 'Gradle is in offline mode'
+
     @TempDir
     File testProjectDir
 

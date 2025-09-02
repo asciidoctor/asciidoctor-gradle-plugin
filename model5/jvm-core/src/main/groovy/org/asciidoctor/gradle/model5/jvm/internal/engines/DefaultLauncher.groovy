@@ -123,8 +123,8 @@ class DefaultLauncher implements AsciidoctorLauncher {
         final toolchain = executionsSettings.toolchainName.get()
         final formatter = executionsSettings.formatterName.get()
         final ec = getExecutionContext(toolchain, formatter)
-        final cp = classpath
-
+        final cp = classpath + executionsSettings.additionalClasspath
+        log.info("Classpath files for ${toolchain}-${formatter}: ${cp.files*.name}")
         if (ec.present) {
             log.info("Engine context found for ${toolchain}-${formatter}. Running workers out of process.")
             final context = ec.get()

@@ -23,7 +23,9 @@ import org.asciidoctor.gradle.model5.jvm.internal.engines.DefaultExecutionContex
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.gradle.api.Action
 import org.gradle.api.Project
+import org.gradle.api.file.FileCollection
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.ysb33r.grolifant5.api.core.ClosureUtils
@@ -40,6 +42,11 @@ abstract class AbstractAsciidoctorjFormatter implements AsciidoctorjOutputFormat
     protected final ObjectFactory objectFactory
     protected final String projectPath
     protected final Property<ExecutionContext> executionContext
+
+    /**
+     * Can be modified by derived classes when attributes need to be made available.
+     */
+    protected final MapProperty<String,Object> attributes
 
     private final Provider<Set<String>> emptyRequires
 
@@ -87,6 +94,30 @@ abstract class AbstractAsciidoctorjFormatter implements AsciidoctorjOutputFormat
         this.executionContext.set(ec)
     }
 
+    /**
+     * Indicates that something can provide unresolved attributes.
+     *
+     * @return Provider to a map of unresolved attributes.
+     */
+    @Override
+    Provider<Map<String, Object>> getAttributeProvider() {
+        this.attributes
+    }
+
+    /**
+     * Additional items to add to the classpath when a conversion involving the output formatter is executed.
+     *
+     * <p>
+     *     The classpath is empty by default.
+     * </p>
+     *
+     * @return Always {@code null} as the default is not to support additional classpath.
+     */
+    @Override
+    FileCollection getClasspath() {
+        null
+    }
+
     protected AbstractAsciidoctorjFormatter(String name, String backendName, AsciidoctorjToolchain tc, Project project) {
         this.name = name
         this.toolchain = tc
@@ -96,6 +127,7 @@ abstract class AbstractAsciidoctorjFormatter implements AsciidoctorjOutputFormat
         this.backend = ccso.providerTools().provider { -> AsciidoctorNamedBackend.of(name, backendName) }
         this.emptyRequires = ccso.providerTools().provider { -> Collections.EMPTY_SET }
         this.executionContext = ccso.providerTools().property(ExecutionContext)
+        this.attributes = project.objects.mapProperty(String,Object)
 
         tc.registerExecutionContext(name, executionContext)
     }

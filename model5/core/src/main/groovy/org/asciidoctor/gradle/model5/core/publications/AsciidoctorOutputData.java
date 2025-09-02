@@ -21,6 +21,7 @@ import org.asciidoctor.gradle.model5.core.SafeMode;
 import org.gradle.api.Named;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.Directory;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.util.PatternFilterable;
 
@@ -80,4 +81,11 @@ public interface AsciidoctorOutputData extends Named {
      * @return Provider to the name.
      */
     Provider<String> getToolchainName();
+
+    /**
+     * Additional classpath to add for execution.
+     *
+     * @return Classpath
+     */
+    FileCollection getAdditionalClasspath();
 }

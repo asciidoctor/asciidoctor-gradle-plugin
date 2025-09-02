@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013 - 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,29 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.jvm.toolchains;
+package org.asciidoctor.gradle.model5.core.errors
 
-import org.gradle.api.file.FileCollection;
+import groovy.transform.CompileStatic
+import groovy.transform.InheritConstructors
 
 /**
- * Manages the classpath for {@code asciidoctorj} executions.
+ * Thrown by illegal operations on built-in PDF themes.
  *
  * @author Schalk W. Cronjé
  *
  * @since 5.0
  */
-public interface ClasspathManagement {
-    /**
-     * Adds additional items to the runtime classpath.
-     *
-     * @param fc Files to add to classpath. Can be a {@code Configuration}.
-     */
-    void classpath(FileCollection fc);
-
-    /**
-     * The toolchain's configuration should extend from the given configuration as well.
-     *
-     * @param configurationName Name of configuration.
-     */
-    void classpathExtendsFrom(String configurationName);
+@CompileStatic
+@InheritConstructors
+class BuiltInThemeException extends RuntimeException {
 }

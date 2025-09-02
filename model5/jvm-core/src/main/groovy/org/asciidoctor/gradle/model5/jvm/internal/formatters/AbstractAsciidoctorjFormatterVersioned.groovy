@@ -30,7 +30,6 @@ import org.ysb33r.grolifant5.api.core.ProjectOperations
 abstract class AbstractAsciidoctorjFormatterVersioned extends AbstractAsciidoctorjFormatter
         implements AsciidoctorjOutputFormatterVersioned {
 
-
     protected final Property<String> moduleVersion
     private final ConfigurableFileCollection classpath
 
@@ -43,25 +42,6 @@ abstract class AbstractAsciidoctorjFormatterVersioned extends AbstractAsciidocto
     FileCollection getClasspath() {
         this.classpath
     }
-
-//    protected final Project project
-
-//    /**
-//     * Registers the tasks associated with this given output formatter, its toolchain and the corresponding publication.
-//     *
-//     * @param publication Publication
-//     */
-//    @Override
-//    void registerTasksIfAbsent(AsciidoctorPublication publication) {
-//        final taskName = ToolchainUtils.asciidoctorTaskName(toolchain,this,publication)
-//        // Register the task by that name
-//        project.tasks.register(taskName/*,AsciidoctorJTask*/) {t ->
-//            t.group = PublicationUtils.GROUP_NAME
-//            t.description = "Convert Asdiidoc source to format identified as '${name}'"
-//
-//            // configure a bunch of stuff from the publication.
-//        }
-//    }
 
     /**
      *

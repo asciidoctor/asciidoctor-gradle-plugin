@@ -38,6 +38,13 @@ public interface AsciidoctorjOutputFormatter extends AsciidoctorOutputFormatter 
 
     /**
      * Use process isolation when using this output formatter to perform conversions.
+     */
+    default void useProcessIsolation() {
+        useProcessIsolation( x -> {} );
+    }
+
+    /**
+     * Use process isolation when using this output formatter to perform conversions.
      *
      * @param forkOptions Reduced set of fork options.
      */

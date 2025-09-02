@@ -13,29 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.jvm.toolchains;
-
-import org.gradle.api.file.FileCollection;
+package org.asciidoctor.gradle.model5.core.pdfthemes;
 
 /**
- * Manages the classpath for {@code asciidoctorj} executions.
+ * A PDF theme on the local system.
  *
  * @author Schalk W. Cronjé
- *
  * @since 5.0
  */
-public interface ClasspathManagement {
-    /**
-     * Adds additional items to the runtime classpath.
-     *
-     * @param fc Files to add to classpath. Can be a {@code Configuration}.
-     */
-    void classpath(FileCollection fc);
+public interface LocalThemeCollection extends PdfThemeCollection {
 
     /**
-     * The toolchain's configuration should extend from the given configuration as well.
+     * Define the directory where the theme is located.
      *
-     * @param configurationName Name of configuration.
+     * @param dir Anything convertible to a file.
      */
-    void classpathExtendsFrom(String configurationName);
+    void setThemeDir(Object dir);
+
 }
