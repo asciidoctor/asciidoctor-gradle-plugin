@@ -1,20 +1,24 @@
-import org.ysb33r.gradle.gradletest.GradleTest
+plugins {
+    id 'org.asciidoctor.internal.classic.gradle.project.jvm'
+}
 
 agProject {
     withOfflineTestConfigurations()
+    withIntegrationTests()
+    withCompatibilityTests()
 
     configurePlugin(
-        'org.asciidoctor.jvm.revealjs.base',
-        'AsciidoctorJ Reveal.js Base Plugin',
-        'Base plugin for all AsciidoctorJ Reveal.js tasks & extensions. Provides the revealjs and revealjsPlugins project extensions.',
+        'org.asciidoctor.jvm.revealjs.base.classic',
+        'AsciidoctorJ (Deprecated) Reveal.js Base Plugin',
+        'Deprecated Base plugin for all AsciidoctorJ Reveal.js tasks & extensions. Provides the revealjs and revealjsPlugins project extensions.',
         'org.asciidoctor.gradle.jvm.slides.AsciidoctorRevealJSBasePlugin',
         ['asciidoctorj', 'reveal.js', 'slides']
     )
 
     configurePlugin(
-        'org.asciidoctor.jvm.revealjs',
-        'AsciidoctorJ Reveal.js Plugin',
-        'Plugin for generating Reveal.JS based slides from  Asciidoc source using AsciidoctorJ. Provides the asciidoctorRevealJs task.',
+        'org.asciidoctor.jvm.revealjs.classic',
+        'AsciidoctorJ (Deprecated) Reveal.js Plugin',
+        'Deprecated plugin for generating Reveal.JS based slides from  Asciidoc source using AsciidoctorJ. Provides the asciidoctorRevealJs task.',
         'org.asciidoctor.gradle.jvm.slides.AsciidoctorRevealJSPlugin',
         ['asciidoctorj', 'reveal.js', 'slides']
     )
@@ -29,23 +33,20 @@ dependencies {
     api project(':asciidoctor-gradle-jvm')
     implementation project(':asciidoctor-gradle-base')
     implementation project(':asciidoctor-gradle-jvm-gems')
-    implementation "org.ysb33r.gradle.jruby:jrubygradle-resolver:${pluginJrubySimpleVersion}"
+    implementation (libs.pluginJRuby)
+    implementation (libs.grolifantRemoteWorker)
 }
 
-tasks.named('intTest', Test) {
-    systemProperties TEST_PROJECTS_DIR: file('src/intTest/projects')
+tasks.named('integrationTest', Test) {
+    systemProperties TEST_PROJECTS_DIR: file('src/integrationTest/projects')
     maxParallelForks = 4
     forkEvery = 7
 }
 
-tasks.named('test', Test) {
-    dependsOn ':testfixtures-offline-repo:buildOfflineRepositories'
-    systemProperties OFFLINE_REPO: offlineRepoRoot.absolutePath
-}
 
-tasks.named('gradleTest', GradleTest) {
-    systemProperties ASCIIDOCTORJ_VERSION: compileOnlyAsciidoctorJVersion
-    systemProperties GROOVY_VERSION: GroovySystem.version
-
-    gradleArguments '-i', '-s'
-}
+//tasks.named('gradleTest', GradleTest) {
+//    systemProperties ASCIIDOCTORJ_VERSION: compileOnlyAsciidoctorJVersion
+//    systemProperties GROOVY_VERSION: GroovySystem.version
+//
+//    gradleArguments '-i', '-s'
+//}

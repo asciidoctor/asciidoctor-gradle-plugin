@@ -2,11 +2,11 @@ import org.asciidoctor.gradle.jvm.slides.RevealJSOptions
 
 // tag::revealjs-basics[]
 plugins {
-    id 'org.asciidoctor.jvm.revealjs' // <1>
+    id 'org.asciidoctor.jvm.revealjs.classic' // <1>
 }
 // end::revealjs-basics[]
 
-apply from: "${System.getProperty('OFFLINE_REPO')}/repositories.gradle"
+apply from: "${System.getProperty('OFFLINE_REPO')}/repository.gradle"
 
 // tag::revealjs-basics[]
 repositories {

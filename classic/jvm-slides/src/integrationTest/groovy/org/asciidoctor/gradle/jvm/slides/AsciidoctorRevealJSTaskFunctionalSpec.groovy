@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2024 the original author or authors.
+ * Copyright 2013 - 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,7 +115,7 @@ class AsciidoctorRevealJSTaskFunctionalSpec extends FunctionalSpecification {
     File getBuildFile(String extraContent) {
         buildFile << """
         plugins {
-            id 'org.asciidoctor.jvm.revealjs'
+            id 'org.asciidoctor.jvm.revealjs.classic'
         }
 
         ${offlineRepositories}

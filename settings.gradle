@@ -41,11 +41,11 @@ include 'asciidoctoreditorconfig'
     include "classic/${it}"
     project(":classic/${it}").name = "asciidoctor-gradle-${it}"
 }
-['pdf', 'epub'].each {
+['pdf', 'epub', 'slides'].each {
     include "classic/jvm-${it}"
     project(":classic/jvm-${it}").name = "asciidoctor-gradle-jvm-${it}"
 }
-['gems' /*, 'slides'*/].each {
+['gems'].each {
     include "classic/${it}"
     project(":classic/${it}").name = "asciidoctor-gradle-jvm-${it}"
 }

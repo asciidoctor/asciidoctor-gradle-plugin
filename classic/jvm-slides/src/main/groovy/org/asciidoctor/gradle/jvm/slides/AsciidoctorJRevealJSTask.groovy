@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2024 the original author or authors.
+ * Copyright 2013 - 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.gradle.api.file.CopySpec
 @java.lang.SuppressWarnings('NoWildcardImports')
 import org.gradle.api.tasks.*
 import org.gradle.workers.WorkerExecutor
-import org.ysb33r.grolifant.api.core.Version
+import org.ysb33r.grolifant5.api.core.Version
 
 import javax.inject.Inject
 
@@ -128,7 +128,7 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
      */
     @Input
     String getTemplateRelativeDir() {
-        projectOperations.stringTools.stringize(this.templateRelativeDir)
+        stringTools().stringize(this.templateRelativeDir)
     }
 
     /** The physical location of the template directory
@@ -202,7 +202,7 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
      */
     @Input
     List<String> getPlugins() {
-        projectOperations.stringTools.stringize(this.requiredPlugins)
+        stringTools().stringize(this.requiredPlugins)
     }
 
     /** Toggle a built-in reveal.js plugin

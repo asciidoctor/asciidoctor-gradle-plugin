@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2024 the original author or authors.
+ * Copyright 2013 - 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ import org.gradle.api.file.CopySpec
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.PathSensitive
-import org.ysb33r.grolifant.api.core.ProjectOperations
-import org.ysb33r.grolifant.api.core.StringTools
+import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
+import org.ysb33r.grolifant5.api.core.StringTools
 
 import java.nio.file.FileSystems
 import java.nio.file.Path
@@ -142,7 +142,7 @@ class RevealJSOptions {
 
     RevealJSOptions(Project project) {
         this.project = project
-        this.stringTools = ProjectOperations.create(project).stringTools
+        this.stringTools = ConfigCacheSafeOperations.from(project).stringTools()
     }
 
     /** Display controls in the bottom right corner.

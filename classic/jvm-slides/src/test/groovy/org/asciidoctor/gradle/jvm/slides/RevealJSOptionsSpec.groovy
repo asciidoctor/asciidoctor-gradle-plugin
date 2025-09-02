@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2024 the original author or authors.
+ * Copyright 2013 - 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.jvm.slides
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.ysb33r.grolifant5.api.core.plugins.GrolifantServicePlugin
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -30,6 +31,7 @@ class RevealJSOptionsSpec extends Specification {
     RevealJSOptions options
 
     void setup() {
+        project.pluginManager.apply(GrolifantServicePlugin)
         options = new RevealJSOptions(project)
     }
 

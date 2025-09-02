@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2024 the original author or authors.
+ * Copyright 2013 - 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import org.apache.commons.io.FileUtils
 import org.asciidoctor.gradle.testfixtures.FunctionalTestFixture
 import org.asciidoctor.gradle.testfixtures.FunctionalTestSetup
 import org.gradle.testkit.runner.GradleRunner
-import org.ysb33r.grolifant.api.core.OperatingSystem
+import org.ysb33r.grolifant5.api.core.OperatingSystem
 import spock.lang.Specification
 import spock.lang.TempDir
 
@@ -53,20 +53,5 @@ class FunctionalSpecification extends Specification implements FunctionalTestFix
     @SuppressWarnings(['BuilderMethodWithSideEffects'])
     void createTestProject(String docGroup = 'normal') {
         FileUtils.copyDirectory(new File(TEST_PROJECTS_DIR, docGroup), projectDir)
-    }
-
-    String getOfflineRepositories() {
-        File repo = new File(TEST_REPO_DIR, 'repositories.gradle')
-        if (!repo.exists()) {
-            throw new FileNotFoundException(
-                "${repo} not found. Run ':testfixture-offline-repo:buildOfflineRepositories' build task"
-            )
-        }
-
-        if (OS.windows) {
-            "apply from: /${repo.absolutePath}/"
-        } else {
-            "apply from: '${repo.absolutePath}'"
-        }
     }
 }

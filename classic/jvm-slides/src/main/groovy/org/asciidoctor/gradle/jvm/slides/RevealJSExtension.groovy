@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2024 the original author or authors.
+ * Copyright 2013 - 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import org.asciidoctor.gradle.base.ModuleVersionLoader
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
-import org.ysb33r.grolifant.api.core.ProjectOperations
-import org.ysb33r.grolifant.api.core.Version
-import org.ysb33r.grolifant.api.core.git.GitRepoArchiveDownloader
-import org.ysb33r.grolifant.api.core.git.GitHubArchive
+import org.ysb33r.grolifant5.api.core.ProjectOperations
+import org.ysb33r.grolifant5.api.core.Version
+import org.ysb33r.grolifant5.api.core.git.GitRepoArchiveDownloader
+import org.ysb33r.grolifant5.api.core.git.GitHubArchive
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClosure
 
@@ -101,8 +101,7 @@ class RevealJSExtension {
     }
 
     private void resolveViaGitHub(final GitHubArchive archive) {
-        final GitRepoArchiveDownloader downloader = new GitRepoArchiveDownloader(archive,
-            ProjectOperations.create(project))
+        final GitRepoArchiveDownloader downloader = new GitRepoArchiveDownloader(archive,project)
 
         resolveRevealJs = { ->
             downloader.downloadRoot = project.buildDir
