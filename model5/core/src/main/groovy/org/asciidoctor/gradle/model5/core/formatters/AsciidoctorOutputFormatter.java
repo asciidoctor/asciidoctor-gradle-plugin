@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.model5.core.formatters;
 import org.asciidoctor.gradle.model5.core.AsciidoctorNamedBackend;
 import org.asciidoctor.gradle.model5.core.AsciidoctorRequires;
 import org.asciidoctor.gradle.model5.core.DocType;
+import org.asciidoctor.gradle.model5.core.HasDisplayType;
 import org.asciidoctor.gradle.model5.core.attributes.HasAttributeProvider;
 import org.gradle.api.Named;
 import org.gradle.api.file.FileCollection;
@@ -33,7 +34,7 @@ import java.util.Optional;
  *
  * @since 5.0
  */
-public interface AsciidoctorOutputFormatter extends Named, AsciidoctorRequires, HasAttributeProvider {
+public interface AsciidoctorOutputFormatter extends Named, AsciidoctorRequires, HasAttributeProvider, HasDisplayType {
 
     /**
      * What this is known to Asciidoctor as the backend.

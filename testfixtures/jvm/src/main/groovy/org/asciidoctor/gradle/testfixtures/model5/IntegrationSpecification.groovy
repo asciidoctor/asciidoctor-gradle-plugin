@@ -24,8 +24,8 @@ import spock.lang.Specification
 import spock.lang.TempDir
 
 import static org.asciidoctor.gradle.testfixtures.DslType.GROOVY_DSL
-import static org.asciidoctor.gradle.testfixtures.FunctionalTestSetup.getOfflineRepositoriesGroovyDsl
-import static org.asciidoctor.gradle.testfixtures.FunctionalTestSetup.getOfflineRepositoriesKotlinDsl
+import static org.asciidoctor.gradle.testfixtures.model5.FunctionalTestSetup.getOfflineRepositoriesGroovyDsl
+import static org.asciidoctor.gradle.testfixtures.model5.FunctionalTestSetup.getOfflineRepositoriesKotlinDsl
 
 class IntegrationSpecification extends Specification {
     public static final boolean IS_KOTLIN_DSL = false

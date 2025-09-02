@@ -89,4 +89,14 @@ class DefaultAsciidoctorjToolchain extends AbstractAsciidoctorToolchain implemen
     void registerExecutionContext(String formatter, Provider<ExecutionContext> executionContext) {
         engine.registerExecutionContext(name, formatter, executionContext)
     }
+
+    /**
+     * A string representing the class name as it should be used in the DSL.
+     *
+     * @return Display type for report. Can be {code null}.
+     */
+    @Override
+    String getDisplayType() {
+        AsciidoctorjToolchain.class.canonicalName
+    }
 }

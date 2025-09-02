@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.model5.js.internal.formatters
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsDocbook
+import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsHtml5
 import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
 import org.gradle.api.Project
 
@@ -49,5 +50,15 @@ class DefaultAsciidoctorjsDocbook extends AbstractAsciidoctorjsFormatterVersione
             tc,
             project
         )
+    }
+
+    /**
+     * The type that this implements and which should be displayed.
+     *
+     * @return A type that needs to be displayed.
+     */
+    @Override
+    protected Class<?> getDslType() {
+        AsciidoctorjsDocbook
     }
 }

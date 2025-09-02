@@ -13,32 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.js.internal.formatters
+package org.asciidoctor.gradle.model5.jvm.internal.extensions
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsHtml5
-import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
-import org.gradle.api.Project
-
-import javax.inject.Inject
+import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjExtension
 
 /**
- * HTML5 backend.
  *
  * @author Schalk W. Cronjé
  *
- * @since 5.0
+ * @since
  */
 @CompileStatic
-class DefaultAsciidoctorjsHtml5 extends AbstractAsciidoctorjsFormatter implements AsciidoctorjsHtml5 {
-    public static final String DEFAULT_NAME = 'html'
-    public static final String BACKEND_NAME = 'html5'
-
-    final boolean copyResources = true
-
-    @Inject
-    DefaultAsciidoctorjsHtml5(String name, AsciidoctorjsToolchain tc, Project project) {
-        super(name, BACKEND_NAME, tc, project)
+abstract class AbstractAsciidoctorjExtension implements AsciidoctorjExtension {
+    /**
+     * A string representing the class name as it should be used in the DSL.
+     *
+     * @return Display type for report.
+     */
+    @Override
+    String getDisplayType() {
+        dslType.canonicalName
     }
 
     /**
@@ -46,8 +41,5 @@ class DefaultAsciidoctorjsHtml5 extends AbstractAsciidoctorjsFormatter implement
      *
      * @return A type that needs to be displayed.
      */
-    @Override
-    protected Class<?> getDslType() {
-        AsciidoctorjsHtml5
-    }
+    abstract protected Class<?> getDslType()
 }

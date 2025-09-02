@@ -16,11 +16,13 @@
 package org.asciidoctor.gradle.model5.core.waitingroom
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.toolchains.ToolchainInformation
+import org.asciidoctor.gradle.model5.core.internal.toolchains.ToolchainInfo
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.UntrackedTask
 import org.ysb33r.grolifant5.api.core.runnable.GrolifantDefaultTask
+
+import javax.inject.Inject
 
 /**
  * Displays detected Asciidoctor toolchains
@@ -33,28 +35,39 @@ import org.ysb33r.grolifant5.api.core.runnable.GrolifantDefaultTask
 @UntrackedTask(because = 'Produces only non-cacheable console output')
 class ShowAsciidocToolchains extends GrolifantDefaultTask {
 
-    private final Provider<List<ToolchainInformation>> toolchains
+    private final Provider<ToolchainInfo> toolchains
 
-    ShowAsciidocToolchains() {
-//        this.toolchains = project.extensions.getByType(AsciidoctorCoreExtension).registeredToolchains
+    @Inject
+    ShowAsciidocToolchains(Provider<ToolchainInfo> tc) {
+        this.toolchains = tc
     }
 
     @TaskAction
     void exec() {
-        toolchains.get()
-            .sort { lhs, rhs -> lhs.name <=> rhs.name }
-            .each {
-                println ''
-                println " + ${it.name}:"
-                println "   Type: ${it.className.replaceFirst(~/_Decorated$/, '')}"
+        final allToolchains = toolchains.get().toolchains
 
-                if (!it.formatters.isEmpty()) {
-                    println "   Formatters:"
-                    it.formatters.each { fmt ->
-                        println "     | ${fmt.key} (${fmt.value.replaceFirst(~/_Decorated$/, '')})"
-                    }
+        allToolchains.each { k, tc ->
+            println ''
+            println " + ${k}:"
+            println " |  Type: ${tc.type}"
+
+            if (!tc.formatters.isEmpty()) {
+                println " |  Formatters:"
+                tc.formatters.each { fName, fmt ->
+                    println " |   | ${fName} (${fmt.type})"
+                    println " |   +---- Backend: ${fmt.backend}"
                 }
-                println ''
             }
+            if (!tc.asciidocExtensions.isEmpty()) {
+                println " |  Extensions:"
+                tc.asciidocExtensions.each { eName, ext ->
+                    println " |   + ${eName} (${ext.type})"
+                }
+            }
+            println ' |'
+        }
+        if(allToolchains.size()) {
+            println ' \\--------------------'
+        }
     }
 }

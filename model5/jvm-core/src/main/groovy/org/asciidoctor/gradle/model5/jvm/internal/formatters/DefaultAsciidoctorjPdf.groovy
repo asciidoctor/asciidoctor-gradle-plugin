@@ -20,6 +20,7 @@ import org.asciidoctor.gradle.model5.core.pdfthemes.AsciidoctorPdfThemeExtension
 import org.asciidoctor.gradle.model5.core.pdfthemes.BuiltInThemes
 import org.asciidoctor.gradle.model5.core.pdfthemes.PdfTheme
 import org.asciidoctor.gradle.model5.jvm.JvmModel
+import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjManpage
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjPdf
 import org.asciidoctor.gradle.model5.jvm.internal.PluginUtils
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
@@ -104,5 +105,10 @@ class DefaultAsciidoctorjPdf extends AbstractAsciidoctorjFormatterVersioned impl
     @Override
     void setFontsDir(Object dir) {
         fsOperations.updateFileProperty(this.fontsDir, dir)
+    }
+
+    @Override
+    protected final Class<?> getDslType() {
+        AsciidoctorjPdf
     }
 }

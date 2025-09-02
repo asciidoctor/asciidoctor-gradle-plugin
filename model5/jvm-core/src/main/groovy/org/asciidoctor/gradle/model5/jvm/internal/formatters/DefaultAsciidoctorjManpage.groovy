@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.model5.jvm.internal.formatters
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.DocType
+import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjDocbook
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjHtml5
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjManpage
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
@@ -43,5 +44,10 @@ class DefaultAsciidoctorjManpage extends AbstractAsciidoctorjFormatter implement
     @Inject
     DefaultAsciidoctorjManpage(String name, AsciidoctorjToolchain tc, Project project) {
         super(name,BACKEND_NAME, tc,project)
+    }
+
+    @Override
+    protected final Class<?> getDslType() {
+        AsciidoctorjManpage
     }
 }

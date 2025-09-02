@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.core.extensions;
-
-import org.asciidoctor.gradle.model5.core.AsciidoctorRequires;
-import org.asciidoctor.gradle.model5.core.HasDisplayType;
-import org.asciidoctor.gradle.model5.core.attributes.HasAttributeProvider;
-import org.gradle.api.Named;
+package org.asciidoctor.gradle.model5.core;
 
 /**
- * Defines an Asciddoctor extension.
+ * Display type.
  *
  * @author Schalk W. Cronjé
- *
  * @since 5.0
  */
-public interface AsciidoctorExtension extends Named, AsciidoctorRequires, HasAttributeProvider, HasDisplayType {
+public interface HasDisplayType {
+    /**
+     * A string representing the class name as it should be used in the DSL.
+     *
+     * @return Display type for report. Can be {code null}.
+     */
+    default String getDisplayType() {return this.getClass().getCanonicalName(); }
 }

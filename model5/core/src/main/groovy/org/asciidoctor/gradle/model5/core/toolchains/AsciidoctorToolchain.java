@@ -15,6 +15,7 @@
  */
 package org.asciidoctor.gradle.model5.core.toolchains;
 
+import org.asciidoctor.gradle.model5.core.HasDisplayType;
 import org.asciidoctor.gradle.model5.core.engines.AsciidoctorEngine;
 import org.asciidoctor.gradle.model5.core.extensions.AsciidoctorExtension;
 import org.asciidoctor.gradle.model5.core.formatters.AsciidoctorOutputFormatter;
@@ -34,7 +35,7 @@ import java.util.Collections;
  *
  * @since 5.0
  */
-public interface AsciidoctorToolchain extends AsciidoctorEngine, ProcessingOptions {
+public interface AsciidoctorToolchain extends AsciidoctorEngine, ProcessingOptions, HasDisplayType {
 
     /**
      * Output formatters registered with this toolchain.

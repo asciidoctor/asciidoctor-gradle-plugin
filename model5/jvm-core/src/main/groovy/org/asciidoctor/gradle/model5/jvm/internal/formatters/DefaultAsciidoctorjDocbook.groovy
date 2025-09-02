@@ -40,4 +40,8 @@ class DefaultAsciidoctorjDocbook extends AbstractAsciidoctorjFormatter implement
     DefaultAsciidoctorjDocbook(String name, AsciidoctorjToolchain tc, Project project) {
         super(name, BACKEND_NAME, tc, project)
     }
+
+    protected final Class<?> getDslType() {
+        AsciidoctorjDocbook
+    }
 }

@@ -28,6 +28,7 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.api.reflect.TypeOf
 import org.ysb33r.grolifant5.api.core.ClosureUtils
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 import org.ysb33r.grolifant5.api.core.jvm.GrolifantSimpleSetJavaForkOptions
@@ -118,6 +119,16 @@ abstract class AbstractAsciidoctorjFormatter implements AsciidoctorjOutputFormat
         null
     }
 
+    /**
+     * A string representing the class name as it should be used in the DSL.
+     *
+     * @return Display type for report.
+     */
+    @Override
+    String getDisplayType() {
+        dslType.canonicalName
+    }
+
     protected AbstractAsciidoctorjFormatter(String name, String backendName, AsciidoctorjToolchain tc, Project project) {
         this.name = name
         this.toolchain = tc
@@ -131,4 +142,11 @@ abstract class AbstractAsciidoctorjFormatter implements AsciidoctorjOutputFormat
 
         tc.registerExecutionContext(name, executionContext)
     }
+
+    /**
+     * The type that this implements and which should be displayed.
+     *
+     * @return A type that needs to be displayed.
+     */
+    abstract protected Class<?> getDslType()
 }

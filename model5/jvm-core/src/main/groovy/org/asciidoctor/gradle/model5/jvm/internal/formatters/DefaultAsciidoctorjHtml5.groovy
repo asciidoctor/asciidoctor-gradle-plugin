@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle.model5.jvm.internal.formatters
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjDocbook
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjHtml5
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.gradle.api.Project
@@ -39,5 +40,9 @@ class DefaultAsciidoctorjHtml5 extends AbstractAsciidoctorjFormatter implements 
     @Inject
     DefaultAsciidoctorjHtml5(String name, AsciidoctorjToolchain tc, Project project) {
         super(name,BACKEND_NAME, tc,project)
+    }
+
+    protected final Class<?> getDslType() {
+        AsciidoctorjHtml5
     }
 }

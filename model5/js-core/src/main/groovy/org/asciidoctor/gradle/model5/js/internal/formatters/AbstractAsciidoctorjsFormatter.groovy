@@ -67,6 +67,16 @@ abstract class AbstractAsciidoctorjsFormatter implements AsciidoctorjsOutputForm
        this.attributes
     }
 
+    /**
+     * A string representing the class name as it should be used in the DSL.
+     *
+     * @return Display type for report.
+     */
+    @Override
+    String getDisplayType() {
+        dslType.canonicalName
+    }
+
     protected AbstractAsciidoctorjsFormatter(
             String name,
             String backendName,
@@ -80,4 +90,11 @@ abstract class AbstractAsciidoctorjsFormatter implements AsciidoctorjsOutputForm
         this.packageRequires = project.objects.setProperty(String)
         this.attributes = project.objects.mapProperty(String,Object)
     }
+
+    /**
+     * The type that this implements and which should be displayed.
+     *
+     * @return A type that needs to be displayed.
+     */
+    abstract protected Class<?> getDslType()
 }

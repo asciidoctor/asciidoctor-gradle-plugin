@@ -46,7 +46,7 @@ import static org.ysb33r.grolifant5.api.core.StringTools.EMPTY
  * @since
  */
 @CompileStatic
-class DefaultAsciidoctorjDiagram implements AsciidoctorjDiagram {
+class DefaultAsciidoctorjDiagram extends AbstractAsciidoctorjExtension implements AsciidoctorjDiagram {
 
     static class Factory extends AbstractFactory implements NamedDomainObjectFactory<AsciidoctorjDiagram> {
 
@@ -215,6 +215,16 @@ class DefaultAsciidoctorjDiagram implements AsciidoctorjDiagram {
     void useJSyntrax(Object ver) {
         ccso.stringTools().updateStringProperty(jsyntraxVersion, ver)
         useJSyntrax()
+    }
+
+    /**
+     * The type that this implements and which should be displayed.
+     *
+     * @return A type that needs to be displayed.
+     */
+    @Override
+    protected Class<?> getDslType() {
+        AsciidoctorjDiagram
     }
 
     private void registerConfiguration(AsciidoctorjToolchain tc, Project tempProjectReference) {

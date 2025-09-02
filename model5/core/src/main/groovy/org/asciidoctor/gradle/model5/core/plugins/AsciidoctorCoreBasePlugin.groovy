@@ -17,14 +17,19 @@ package org.asciidoctor.gradle.model5.core.plugins
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
+import org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils
+import org.asciidoctor.gradle.model5.core.internal.toolchains.ToolchainInfo
+import org.asciidoctor.gradle.model5.core.waitingroom.ShowAsciidocToolchains
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.ysb33r.grolifant5.api.core.plugins.GrolifantServicePlugin
 
+import static org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils.TASK_PREFIX
+
 @CompileStatic
 class AsciidoctorCoreBasePlugin implements Plugin<Project> {
     public final static String INTERMEDIATE_RESOURCE_PATH = 'META-INF/asciidoctor.gradle'
-    public final static String TOOLCHAIN_DISPLAY_TASK = 'showAsciidoctorToolchains'
+    public final static String TOOLCHAIN_DISPLAY_TASK = "show${TASK_PREFIX.capitalize()}Toolchains"
 
     @Override
     void apply(Project project) {
@@ -32,11 +37,20 @@ class AsciidoctorCoreBasePlugin implements Plugin<Project> {
             apply(GrolifantServicePlugin)
         }
 
-        project.extensions.create(AsciidoctorModelExtension.NAME, AsciidoctorModelExtension, project)
+        final asciidoc = project.extensions.create(
+                AsciidoctorModelExtension.NAME,
+                AsciidoctorModelExtension,
+                project
+        )
 
-//        project.tasks.register(TOOLCHAIN_DISPLAY_TASK, ShowAsciidocToolchains) {
-//            it.group = 'help'
-//            it.description = 'Displays registered Asciidoctor toolchains.'
-//        }
+        final satp = project.provider { ->
+            ToolchainInfo.buildFrom(asciidoc)
+        }
+
+        final satTask = project.tasks.register(TOOLCHAIN_DISPLAY_TASK, ShowAsciidocToolchains, satp)
+        satTask.configure {
+            it.group = 'help'
+            it.description = 'Displays registered Asciidoctor toolchains.'
+        }
     }
 }
