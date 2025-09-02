@@ -8,9 +8,9 @@ agProject {
     withCompatibilityTests()
 
     configurePlugin(
-            'org.asciidoctor.jvm.pdf',
-            'AsciidoctorJ PDF Conversion Plugin',
-            'Simplifies conversion of asciidoc documents to PDF',
+            'org.asciidoctor.jvm.pdf.classic',
+            'AsciidoctorJ (Deprecated) PDF Conversion Plugin',
+            'Simplifies conversion of asciidoc documents to PDF (Deprecated)',
             'org.asciidoctor.gradle.jvm.pdf.AsciidoctorJPdfPlugin',
             ['asciidoctorj', 'pdf']
     )
@@ -23,8 +23,8 @@ configurations {
 dependencies {
     api project(':asciidoctor-gradle-jvm')
     api(libs.grolifantRemoteWorker)
-    intTestOfflineRepo "org.asciidoctor:asciidoctorj:${agProject.versionOf('asciidoctorj')}"
-    intTestOfflineRepo "org.asciidoctor:asciidoctorj-pdf:${agProject.versionOf('asciidoctorjPdf')}"
+    intTestOfflineRepo(libs.asciidoctorj)
+    intTestOfflineRepo(libs.asciidoctorjPdf)
 
     cachingOnly(libs.asciidoctorjPdf) { transitive = false }
 }

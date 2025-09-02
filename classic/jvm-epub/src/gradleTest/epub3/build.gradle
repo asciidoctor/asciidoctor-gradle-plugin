@@ -1,9 +1,8 @@
 plugins {
-    id 'org.asciidoctor.jvm.epub'
+    id 'org.asciidoctor.jvm.epub.classic'
 }
 
-apply from: "${System.getProperty('OFFLINE_REPO')}/repositories.gradle"
-
+apply from: "${System.getProperty('OFFLINE_REPO')}/repository.gradle"
 
 asciidoctorEpub {
     ebookFormats = [EPUB3]

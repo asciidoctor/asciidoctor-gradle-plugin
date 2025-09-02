@@ -68,6 +68,7 @@ class CommonBasePlugin implements Plugin<Project> {
         final offline = project.gradle.startParameter.offline.toString()
         project.tasks.withType(Test).configureEach {
             it.systemProperty('IS_OFFLINE', offline)
+            it.systemProperty('OFFLINE_REPO', new File(project.rootDir,'.offline-repo').absolutePath)
         }
     }
 }

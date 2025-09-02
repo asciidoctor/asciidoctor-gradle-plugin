@@ -1,11 +1,9 @@
 // tag::using-two-plugins-three-backends[]
 plugins {
-    id 'org.asciidoctor.jvm.pdf'
+    id 'org.asciidoctor.jvm.pdf.classic'
 }
 
-repositories {
-    mavenCentral()
-}
+apply from: "${System.getProperty('OFFLINE_REPO')}/repository.gradle"
 
 asciidoctorj {
     modules {

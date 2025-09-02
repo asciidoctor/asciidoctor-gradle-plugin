@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2024 the original author or authors.
+ * Copyright 2013 - 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,6 @@ class AsciidoctorEpubTask extends AbstractAsciidoctorTask {
 
         outputOptions.backends = [BACKEND]
         copyNoResources()
-//        inProcess = JAVA_EXEC
     }
 
     /**
@@ -147,28 +146,5 @@ class AsciidoctorEpubTask extends AbstractAsciidoctorTask {
             }
             newConfigurations
         }
-    }
-
-//    /** Selects a final process mode.
-//     *
-//     * Selects JAVA_EXEC on any Gradle version that has classpath ;eakage issues.
-//     *
-//     * @return Process mode to use for execution.
-//     */
-//    @Override
-//    protected ProcessMode getFinalProcessMode() {
-//        if (GradleVersion.current() <= LAST_GRADLE_WITH_CLASSPATH_LEAKAGE) {
-//            if (inProcess != JAVA_EXEC) {
-//                logger.warn 'EPUB processing on this version of Gradle will fail due to classpath issues. ' +
-//                    'Switching to JAVA_EXEC instead.'
-//            }
-//            return JAVA_EXEC
-//        }
-//        super.finalProcessMode
-//    }
-
-    @CompileDynamic
-    private Version getVersion(Matcher matcher) {
-        Version.of(matcher[0][1])
     }
 }

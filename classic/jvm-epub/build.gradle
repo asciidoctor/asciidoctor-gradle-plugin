@@ -1,10 +1,16 @@
+plugins {
+    id 'org.asciidoctor.internal.classic.gradle.project.jvm'
+}
+
 agProject {
     withOfflineTestConfigurations()
+    withIntegrationTests()
+    withCompatibilityTests()
 
     configurePlugin(
-            'org.asciidoctor.jvm.epub',
-            'AsciidoctorJ EPUB Plugin',
-            'Asciidoctor task for creating EPUB3 documents',
+            'org.asciidoctor.jvm.epub.classic',
+            'AsciidoctorJ (Deprecated) EPUB Plugin',
+            'Deprecated Asciidoctor task for creating EPUB3 documents',
             'org.asciidoctor.gradle.jvm.epub.AsciidoctorJEpubPlugin',
             ['asciidoctorj', 'epub', 'epub3']
     )
@@ -12,16 +18,20 @@ agProject {
 
 generateModuleVersions {
     basename = 'asciidoctorj-epub'
-    propertyNames ~/^kindlegen$/
+}
+
+configurations {
+    cachingOnly
 }
 
 dependencies {
     api project(':asciidoctor-gradle-jvm')
+    api(libs.grolifantRemoteWorker)
 
-    intTestOfflineRepo "org.asciidoctor:asciidoctorj:${compileOnlyAsciidoctorJVersion}"
-    intTestOfflineRepo "org.asciidoctor:asciidoctorj-epub3:${downloadOnlyEpubVersion}"
+    intTestOfflineRepo(libs.asciidoctorj)
+    intTestOfflineRepo(libs.asciidoctorjEpub)
+
+    cachingOnly (libs.asciidoctorjEpub) { transitive = false }
 }
 
-intTest {
-    systemProperties TEST_PROJECTS_DIR: file('src/intTest/projects')
-}
+

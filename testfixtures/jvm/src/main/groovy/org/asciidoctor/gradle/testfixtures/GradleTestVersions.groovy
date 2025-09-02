@@ -19,7 +19,7 @@ import groovy.transform.CompileStatic
 import org.gradle.util.GradleVersion
 
 /**
- * Verisons of Gradle that can be used for testing with TestKit.
+ * Versions of Gradle that can be used for testing with TestKit.
  *
  * @author Schalk W. Cronjé
  *
@@ -27,8 +27,8 @@ import org.gradle.util.GradleVersion
  */
 @CompileStatic
 class GradleTestVersions {
-    public final static String MIN_VERSION = '7.0.1'
-    public final static String MAX_VERSION = '8.5'
+    public final static String MIN_VERSION = '8.0.2'
+    public final static String MAX_VERSION = '8.14.3'
 
     static String latestMinimumOrThis(final String ver) {
         [GradleVersion.version(MIN_VERSION), GradleVersion.version(ver)].max().version

@@ -3,15 +3,16 @@ import org.asciidoctor.gradle.base.process.ProcessMode
 
 // tag::using-two-plugins-three-backends[]
 plugins {
-    id("org.asciidoctor.jvm.pdf")
+    id("org.asciidoctor.jvm.pdf.classic")
 }
 
-repositories {
-    mavenCentral()
-}
+apply(from = "${System.getProperty("OFFLINE_REPO")}/repository.gradle.kts")
+//repositories {
+//    mavenCentral()
+//}
 
 asciidoctorj {
-    modules.getDiagram().setVersion("1.5.16")
+    modules.getDiagram().setVersion("3.0.1")
     logLevel = LogLevel.INFO
 }
 

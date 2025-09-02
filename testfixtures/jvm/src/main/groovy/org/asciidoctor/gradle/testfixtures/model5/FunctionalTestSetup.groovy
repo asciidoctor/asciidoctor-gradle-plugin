@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.testfixtures
+package org.asciidoctor.gradle.testfixtures.model5
 
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import org.asciidoctor.gradle.testfixtures.DslType
 import org.asciidoctor.gradle.testfixtures.internal.TestFixtureVersionLoader
 import org.gradle.testkit.runner.GradleRunner
 import org.ysb33r.grolifant5.api.core.OperatingSystem

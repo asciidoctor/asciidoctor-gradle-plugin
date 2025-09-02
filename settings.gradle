@@ -41,12 +41,14 @@ include 'asciidoctoreditorconfig'
     include "classic/${it}"
     project(":classic/${it}").name = "asciidoctor-gradle-${it}"
 }
-
-['pdf', ].each {
-//['pdf', 'epub'/*,  'leanpub' */].each {
+['pdf', 'epub'].each {
     include "classic/jvm-${it}"
     project(":classic/jvm-${it}").name = "asciidoctor-gradle-jvm-${it}"
 }
+//['gems' /*, 'slides'*/].each {
+//    include "classic/${it}"
+//    project(":classic/${it}").name = "asciidoctor-gradle-jvm-${it}"
+//}
 
 ////[  'slides-export' ].each {
 ////    include "classic/${it}"
@@ -54,8 +56,3 @@ include 'asciidoctoreditorconfig'
 ////}
 //
 
-
-//['gems' /*, 'slides'*/].each {
-//    include "classic/${it}"
-//    project(":classic/${it}").name = "asciidoctor-gradle-jvm-${it}"
-//}

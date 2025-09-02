@@ -206,7 +206,7 @@ asciidoctorPdf {
         assert new File(projectDir, 'src/docs/asciidoc').renameTo(newSourceDir)
         buildFile.text = """
             plugins {
-                id 'org.asciidoctor.jvm.pdf' apply false
+                id 'org.asciidoctor.jvm.pdf.classic' apply false
             }
 
             tasks.withType(org.asciidoctor.gradle.jvm.pdf.AsciidoctorPdfTask).configureEach {
@@ -215,7 +215,7 @@ asciidoctorPdf {
                 executionMode = OUT_OF_PROCESS
             }
 
-            apply plugin: 'org.asciidoctor.jvm.pdf'
+            apply plugin: 'org.asciidoctor.jvm.pdf.classic'
             
             ${offlineRepositories}
         """.stripIndent()
@@ -255,7 +255,7 @@ asciidoctorPdf {
     }
 
     File getBuildFile(String extraContent) {
-        writeGroovyBuildFile('org.asciidoctor.jvm.pdf', extraContent)
+        writeGroovyBuildFile('org.asciidoctor.jvm.pdf.classic', extraContent)
     }
 
     String getResolutionStrategy(final String asciidoctorjVer, final String jrubyVer) {

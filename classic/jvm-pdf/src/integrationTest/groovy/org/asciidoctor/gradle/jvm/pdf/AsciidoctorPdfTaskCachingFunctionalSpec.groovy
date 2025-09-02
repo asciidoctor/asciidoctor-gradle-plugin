@@ -112,7 +112,7 @@ class AsciidoctorPdfTaskCachingFunctionalSpec extends FunctionalSpecification
     }
 
     File getBuildFile(String extraContent) {
-        writeGroovyBuildFile('org.asciidoctor.jvm.pdf', extraContent).withWriterAppend { w ->
+        writeGroovyBuildFile('org.asciidoctor.jvm.pdf.classic', extraContent).withWriterAppend { w ->
             w.println(performBuildScan ? buildScanConfiguration : '')
         }
     }
