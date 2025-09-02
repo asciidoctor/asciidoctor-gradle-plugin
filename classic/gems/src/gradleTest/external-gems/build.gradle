@@ -1,11 +1,11 @@
 // tag::use-gems[]
 plugins {
-    id 'org.asciidoctor.jvm.convert'
-    id 'org.asciidoctor.jvm.gems'
+    id 'org.asciidoctor.jvm.convert.classic'
+    id 'org.asciidoctor.jvm.gems.classic'
 }
 // end::use-gems[]
 
-apply from: "${System.getProperty('OFFLINE_REPO')}/repositories.gradle"
+apply from: "${System.getProperty('OFFLINE_REPO')}/repository.gradle"
 
 // tag::use-gems[]
 repositories {

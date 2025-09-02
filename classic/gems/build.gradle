@@ -1,25 +1,25 @@
+plugins {
+    id 'org.asciidoctor.internal.classic.gradle.project.jvm'
+}
+
 agProject {
-    configurePlugin 'org.asciidoctor.jvm.gems',
-            'Simplifies support for using external GEMs with AsciidoctorJ',
-            'Provides appropriate tasks and configurations for adding GEMs to AsciidoctorJ conversions',
+    withOfflineTestConfigurations()
+    withIntegrationTests()
+    withCompatibilityTests()
+
+    configurePlugin 'org.asciidoctor.jvm.gems.classic',
+            'Simplifies support for using external GEMs with AsciidoctorJ (Deprecated)',
+            'Provides appropriate tasks and configurations for adding GEMs to AsciidoctorJ conversions (Deprecated)',
             'org.asciidoctor.gradle.jvm.gems.AsciidoctorGemSupportPlugin',
             ['asciidoctorj', 'gems', 'jruby']
 }
 
 dependencies {
-    implementation "org.ysb33r.gradle.jruby:jrubygradle-resolver:${pluginJrubySimpleVersion}"
+    implementation(libs.pluginJRuby)
     api project(':asciidoctor-gradle-jvm')
+    api (libs.grolifantApi)
 }
 
-tasks.named('test', Test) {
-    dependsOn ':testfixtures-offline-repo:buildOfflineRepositories'
-    systemProperties OFFLINE_REPO: offlineRepoRoot.absolutePath
-}
 
-//tasks.named('gradleTest', GradleTest) {
-//    if (OS.windows) {
-//        // Expecting external-gems to fail due to JRuby issue
-//        expectFailure ~/external-gems/
-//    }
-//}
+
 
