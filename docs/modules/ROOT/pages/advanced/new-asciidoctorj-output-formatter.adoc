@@ -185,3 +185,10 @@ include::example${examples-model5-jvm-main}/internal/formatters/DefaultAsciidoct
 ----
 <.> `ccso.fsOperations` is available from the base class.
   `updateDirectoryProperty` is an invaluable utility to set a `DirectoryProperty` from any object that is convertible to a file.
+<.> When changes in these settings could change the structure and content, it is worth making them task inputs.
+
+==== Documentation
+
+. Document the formatter by placing a new document in `docs/modules/ROOT/pages/model5/asciidoctorj`.
+. Update `docs/modules/ROOT/nav.adoc` to link to your document.
+. Update `docs/modules/ROOT/pages/bootstrap.adoc` to add information about the plugin.

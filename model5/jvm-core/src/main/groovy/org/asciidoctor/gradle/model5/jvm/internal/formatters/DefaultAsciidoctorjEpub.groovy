@@ -28,6 +28,8 @@ import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.tasks.TaskInputs
 
 import javax.inject.Inject
 
@@ -85,6 +87,7 @@ class DefaultAsciidoctorjEpub extends AbstractAsciidoctorjFormatterVersioned imp
         // end::hacking-asciidoctorj-output-formatter-attrs-ctor[]
         // tag::hacking-asciidoctorj-output-formatter[]
     }
+    // end::hacking-asciidoctorj-output-formatter[]
 
     /**
      * The path to a directory that contains frontmatter files.
@@ -126,10 +129,20 @@ class DefaultAsciidoctorjEpub extends AbstractAsciidoctorjFormatterVersioned imp
     }
     // end::hacking-asciidoctorj-output-formatter-attrs[]
 
+    // tag::hacking-asciidoctorj-output-formatter-attrs[]
+    @Override
+    void configureTaskInputs(TaskInputs taskInputs) { // <.>
+        taskInputs.property('chapter-level', this.level).optional(true)
+        taskInputs.dir(this.stylesDir).optional(true).withPathSensitivity(PathSensitivity.RELATIVE)
+        taskInputs.dir(this.frontmatterDir).optional(true).withPathSensitivity(PathSensitivity.RELATIVE)
+    }
+    // end::hacking-asciidoctorj-output-formatter-attrs[]
+
     @Override
     protected final Class<?> getDslType() {
         AsciidoctorjEpub // <.>
     }
+// tag::hacking-asciidoctorj-output-formatter[]
 }
 // end::hacking-asciidoctorj-output-formatter[]
 

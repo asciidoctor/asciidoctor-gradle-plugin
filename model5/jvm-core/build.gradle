@@ -33,6 +33,14 @@ agProject {
             ['asciidoctorj', 'pdf']
     )
 
+    configurePlugin(
+            'org.asciidoctor.jvm.revealjs',
+            'AsciidoctorJ Reveal.js Plugin',
+            'Provides Reveal.js formatters for all AsciidoctorJ toolchains',
+            'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjRevealjsPlugin',
+            ['asciidoctorj', 'revealjs']
+    )
+
     // tag::hacking-asciidoctorj-output-formatter[]
     configurePlugin(
             'org.asciidoctor.jvm.epub', // <.>
@@ -53,9 +61,10 @@ agProject {
             EPUB     : versionOf('asciidoctorjEpub'), // <.>
             // end::hacking-asciidoctorj-output-formatter[]
             GROOVYDSL: versionOf('asciidoctorjGroovyDsl'),
-            JSYNTRAX    : versionOf('asciidoctorjDiagramJSyntrax'),
+            JSYNTRAX : versionOf('asciidoctorjDiagramJSyntrax'),
             PDF      : versionOf('asciidoctorjPdf'),
             PLANTUML : versionOf('asciidoctorjDiagramPlantUml'),
+            REVEALJS : versionOf('asciidoctorjRevealjs'),
             VERSION  : versionOf('asciidoctorj'),
             // tag::hacking-asciidoctorj-output-formatter[]
     ])
@@ -80,6 +89,7 @@ dependencies {
     cachingOnly(libs.asciidoctorjDiagramDitaa)
     cachingOnly(libs.asciidoctorjDiagramJSyntrax)
     cachingOnly(libs.asciidoctorjDiagramPlantUml)
+    cachingOnly(libs.asciidoctorjRevealjs)
 
     // tag::hacking-asciidoctorj-output-formatter[]
     cachingOnly(libs.asciidoctorjEpub) // <.>

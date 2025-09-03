@@ -27,6 +27,9 @@ import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Classpath
+import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.tasks.TaskInputs
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 import org.ysb33r.grolifant5.api.core.FileSystemOperations
 
@@ -105,6 +108,14 @@ class DefaultAsciidoctorjPdf extends AbstractAsciidoctorjFormatterVersioned impl
     @Override
     void setFontsDir(Object dir) {
         fsOperations.updateFileProperty(this.fontsDir, dir)
+    }
+
+    @Classpath
+    @Override
+    void configureTaskInputs(TaskInputs taskInputs) {
+        taskInputs.dir(fontsDir).optional(true).withPathSensitivity(PathSensitivity.RELATIVE)
+        taskInputs.dir(theme.flatMap { it.themeDir}).optional(true)
+                .withPathSensitivity(PathSensitivity.RELATIVE)
     }
 
     @Override

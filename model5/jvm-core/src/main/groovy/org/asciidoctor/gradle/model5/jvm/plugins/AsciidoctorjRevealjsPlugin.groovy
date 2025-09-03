@@ -17,10 +17,9 @@ package org.asciidoctor.gradle.model5.jvm.plugins
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
-import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePdfThemesPlugin
-import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjPdf
-import org.asciidoctor.gradle.model5.jvm.internal.formatters.AsciidoctorjPdfFactory
-import org.asciidoctor.gradle.model5.jvm.internal.formatters.DefaultAsciidoctorjPdf
+import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjRevealjs
+import org.asciidoctor.gradle.model5.jvm.internal.formatters.AsciidoctorjRevealjsFactory
+import org.asciidoctor.gradle.model5.jvm.internal.formatters.DefaultAsciidoctorjRevealjs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -28,21 +27,19 @@ import static org.asciidoctor.gradle.model5.jvm.JvmModel.registerOutputFormatter
 import static org.asciidoctor.gradle.model5.jvm.JvmModel.registerOutputFormatterOnAllToolchains
 
 /**
- * Applies {@link AsciidoctorjPlugin} and {@link AsciidoctorCorePdfThemesPlugin}, then adds an output formatter for
- * {@code asciidoctorj-pdf}.
+ * Applies the {@link AsciidoctorjPlugin}, then adds an output formatter for {@code asciidoctorj-revealjs}.
  *
  * @author Schalk W. Cronjé
  *
  * @since 5.0
  */
 @CompileStatic
-class AsciidoctorjPdfPlugin implements Plugin<Project> {
+class AsciidoctorjRevealjsPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
         project.pluginManager.tap {
             apply(AsciidoctorjPlugin)
-            apply(AsciidoctorCorePdfThemesPlugin)
         }
 
         final asciidoc = project.extensions.getByType(AsciidoctorModelExtension)
@@ -50,13 +47,17 @@ class AsciidoctorjPdfPlugin implements Plugin<Project> {
 
         registerOutputFormatterFactory(
                 toolchains,
-                AsciidoctorjPdf,
-                AsciidoctorjPdfFactory,
+                AsciidoctorjRevealjs,
+                AsciidoctorjRevealjsFactory,
                 project.objects
         )
 
         project.pluginManager.withPlugin(AsciidoctorjPlugin.PLUGIN_ID) {
-            registerOutputFormatterOnAllToolchains(toolchains, AsciidoctorjPdf, DefaultAsciidoctorjPdf.DEFAULT_NAME)
+            registerOutputFormatterOnAllToolchains(
+                    toolchains,
+                    AsciidoctorjRevealjs,
+                    DefaultAsciidoctorjRevealjs.DEFAULT_NAME
+            )
         }
     }
 }

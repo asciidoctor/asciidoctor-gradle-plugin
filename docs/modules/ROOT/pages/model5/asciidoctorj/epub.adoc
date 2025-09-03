@@ -27,6 +27,7 @@ asciidoc {
     aciidoctorj {
       registeredOutputFormatters {
         epub(AsciidoctorjEpub) {
+          useVersion('1.2.3') // <.>
           chapterLevel = 2 // <.>
           stylesDir = '/path/to/styles' // <.>
           frontmatterDir = 'src/docs/asciidoc/frontmatter' // <.>
@@ -36,6 +37,7 @@ asciidoc {
   }
 }
 ----
+<.> Use a version of `asciidoctorj-epub` other than the default.
 <.> Set the chapter level (1-5).
 <.> Set an alternative style dir.
 <.> Specify a frontmatter directory.

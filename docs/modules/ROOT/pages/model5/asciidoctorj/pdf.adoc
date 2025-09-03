@@ -46,3 +46,23 @@ asciidoc {
 ----
 <.> Use a built-in theme.
 <.> Use the `myLocal` theme from `asciidocPdfThemes`.
+
+== Setting other parameters
+
+[source,groovy]
+----
+import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjPdf
+
+asciidoc {
+  toolchains {
+    aciidoctorj {
+      registeredOutputFormatters {
+        pdf(AsciidoctorjPdf) {
+          useVersion('1.2.3') // <.>
+        }
+      }
+    }
+  }
+}
+----
+<.> Use a version of `asciidoctorj-pdf` other than the default.

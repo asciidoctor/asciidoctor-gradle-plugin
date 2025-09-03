@@ -22,6 +22,7 @@ import org.asciidoctor.gradle.model5.core.internal.attributes.AttributeUtils
 import org.asciidoctor.gradle.model5.core.internal.publications.DefaultAsciidoctorOutputData
 import org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils
 import org.asciidoctor.gradle.model5.core.internal.tasks.TaskFactory
+import org.asciidoctor.gradle.model5.core.tasks.AsciidoctorTask
 import org.asciidoctor.gradle.model5.core.tasks.AsciidoctorTaskMethods
 import org.asciidoctor.gradle.model5.core.toolchains.AsciidoctorToolchain
 import org.gradle.api.Action
@@ -29,6 +30,7 @@ import org.gradle.api.Named
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.tasks.TaskProvider
 import org.ysb33r.grolifant5.api.core.ClosureUtils
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 
@@ -153,10 +155,12 @@ class AsciidoctorPublication implements Named {
         final newOutput = this.outputs.create(finalName).tap { DefaultAsciidoctorOutputData it ->
             configureFrom(owner.name, toolchain, formatter, sourceSet)
         }
-        registerConversionTask(toolchain, newOutput)
+        final task = registerConversionTask(toolchain, newOutput)
+
+        task.configure {AsciidoctorTask t -> formatter.configureTaskInputs(t.inputs)}
     }
 
-    private void registerConversionTask(
+    private TaskProvider<? extends AsciidoctorTask> registerConversionTask(
             AsciidoctorToolchain toolchain,
             AsciidoctorOutputData outputData
     ) {
@@ -169,7 +173,7 @@ class AsciidoctorPublication implements Named {
         }
 
         final resolvedExtensionAttributes = AttributeUtils.resolvingProvider(ccso.stringTools(), extensionAttributes)
-        taskFactory.registerConversionTask(taskName) { AsciidoctorTaskMethods atm ->
+        final task = taskFactory.registerConversionTask(taskName) { AsciidoctorTaskMethods atm ->
             atm.outputData = outputData
             atm.launcher = toolchain.launcher
             atm.safeMode = toolchain.safeMode
@@ -186,5 +190,7 @@ class AsciidoctorPublication implements Named {
         }
 
         taskFactory.addPrerequisiteTasks(taskName, toolchain.toolchainPreparationTaskNames)
+
+        task
     }
 }

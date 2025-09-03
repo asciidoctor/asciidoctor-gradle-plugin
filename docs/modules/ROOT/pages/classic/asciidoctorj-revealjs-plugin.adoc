@@ -51,7 +51,7 @@ revealjs {
 }
 ----
 <1> Reveal.js GEM version
-<2> Obtain the Reveal.js template from GitHub.
+<2> Get the Reveal.js template from GitHub.
 
 If not specified, sensible defaults are provided.
 

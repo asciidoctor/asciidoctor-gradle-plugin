@@ -13,6 +13,7 @@ asciidoctorjEpub = "2.2.0"
 # end::hacking-asciidoctorj-output-formatter[]
 asciidoctorjGroovyDsl = "2.0.2"
 asciidoctorjPdf = "2.3.19"
+asciidoctorjRevealjs = "5.2.0"
 asciidoctorjs = "3.0.0"
 asciidoctorjsCli = "4.0.0"
 asciidoctorjsDocbook = "3.0.0"
@@ -50,6 +51,7 @@ asciidoctorjEpub = { module = "org.asciidoctor:asciidoctorj-epub3", version.ref 
 # end::hacking-asciidoctorj-output-formatter[]
 asciidoctorjGroovyDsl = { module = "org.asciidoctor:asciidoctorj-groovy-dsl", version.ref = "asciidoctorjGroovyDsl" }
 asciidoctorjPdf = { module = "org.asciidoctor:asciidoctorj-pdf", version.ref = "asciidoctorjPdf" }
+asciidoctorjRevealjs = { module = "org.asciidoctor:asciidoctorj-revealjs", version.ref = "asciidoctorjRevealjs" }
 cglib = { module = "cglib:cglib-nodep", version.ref = "cglib" }
 commonsIO = { module = "commons-io:commons-io", version.ref = "commonsIO" }
 grolifantApi = { module = "org.ysb33r.gradle:grolifant5-core", version.ref = "grolifant" }

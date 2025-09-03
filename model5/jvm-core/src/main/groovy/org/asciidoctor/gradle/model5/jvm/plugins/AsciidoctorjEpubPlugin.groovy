@@ -32,7 +32,7 @@ import static org.asciidoctor.gradle.model5.jvm.JvmModel.registerOutputFormatter
 // end::hacking-asciidoctorj-output-formatter[]
 
 /**
- * The {@code asciidoctorj} plugin applies the base plugin, then creates a toolchain called {@code asciidoctorj}
+ * Applies the {@link AsciidoctorjPlugin}, then adds an output formatter for {@code asciidoctorj-epub}.
  *
  * @author Schalk W. Cronjé
  *

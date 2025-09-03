@@ -48,6 +48,7 @@ class JvmModel {
     public static final String ASCIIDOCTORJ_EPUB_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-epub3"
     // end::hacking-asciidoctorj-output-formatter[]
     public static final String ASCIIDOCTORJ_LEANPUB_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctor-leanpub-markdown"
+    public static final String ASCIIDOCTORJ_REVEALJS_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-revealjs"
 
     public static final String ASCIIDOCTORJ_DIAGRAM_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-diagram"
     public static final String ASCIIDOCTORJ_DIAGRAM_BATIK_DEPENDENCY = "${ASCIIDOCTORJ_DIAGRAM_DEPENDENCY}-batik"
