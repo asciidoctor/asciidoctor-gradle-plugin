@@ -13,39 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.core.pdfthemes
+package org.asciidoctor.gradle.model5.core.extensions
 
-import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePdfThemesPlugin
+import org.asciidoctor.gradle.model5.core.pdfthemes.GithubThemeCollection
+import org.asciidoctor.gradle.model5.core.pdfthemes.GitlabThemeCollection
+import org.asciidoctor.gradle.model5.core.pdfthemes.LocalThemeCollection
+import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreThemesPlugin
 import org.asciidoctor.gradle.testfixtures.model5.UnitTestSpecification
 import spock.lang.IgnoreIf
 import spock.lang.PendingFeature
 
-/**
- *
- * @author Schalk W. Cronjé
- *
- * @since
- */
-class PdfThemesPluginSpec extends UnitTestSpecification {
+class AsciidoctorThemeExtensionSpec extends UnitTestSpecification {
 
-    AsciidoctorPdfThemeExtension extPdfThemes
+    AsciidoctorThemeExtension extThemes
 
     void setup() {
-        project.pluginManager.apply(AsciidoctorCorePdfThemesPlugin)
-        extPdfThemes = project.extensions.getByType(AsciidoctorPdfThemeExtension)
+        project.pluginManager.apply(AsciidoctorCoreThemesPlugin)
+        extThemes = project.extensions.getByType(AsciidoctorThemeExtension)
     }
 
-    void 'Can add a local theme'() {
+    void 'Can add a local PDF theme'() {
         setup:
         project.allprojects {
             // tag::local-theme[]
-            asciidocPdfThemes {
-                themeCollections {
+            asciidocThemes {
+                pdfThemeCollections {
                     myLocal(LocalThemeCollection) { // <.>
                         themeDir = 'src/pdfThemes/myLocal'  // <.>
                     }
                 }
-                themes {
+                pdfThemes {
                     myLocal {
                         fromCollection('myLocal') // <.>
                     }
@@ -55,16 +52,16 @@ class PdfThemesPluginSpec extends UnitTestSpecification {
         }
 
         expect:
-        extPdfThemes.themes.myLocal.themeDir.get().asFile == project.file('src/pdfThemes/myLocal')
+        extThemes.pdfThemes.myLocal.themeDir.get().asFile == project.file('src/pdfThemes/myLocal')
     }
 
     @IgnoreIf(value = {IS_OFFLINE }, reason = OFFLINE_REASON)
-    void 'Can load a package from Github'() {
+    void 'Can load a PDF package from Github'() {
         setup:
         project.allprojects {
             // tag::github-theme[]
-            asciidocPdfThemes {
-                themeCollections {
+            asciidocThemes {
+                pdfThemeCollections {
                     kuboaki(GithubThemeCollection) { // <.>
                         from {
                             organisation = 'kuboaki' // <.>
@@ -74,7 +71,7 @@ class PdfThemesPluginSpec extends UnitTestSpecification {
                         pathInRepo = 'theme' // <.>
                     }
                 }
-                themes {
+                pdfThemes {
                     myTheme {
                         fromCollection('kuboaki') // <.>
                         themeName = 'mystyle' // <.>
@@ -85,8 +82,8 @@ class PdfThemesPluginSpec extends UnitTestSpecification {
         }
 
         when:
-        final dir = extPdfThemes.themes.myTheme.themeDir.get().asFile
-        final themeName = extPdfThemes.themes.myTheme.themeName.get()
+        final dir = extThemes.pdfThemes.myTheme.themeDir.get().asFile
+        final themeName = extThemes.pdfThemes.myTheme.themeName.get()
 
         then:
         dir.exists()
@@ -99,8 +96,8 @@ class PdfThemesPluginSpec extends UnitTestSpecification {
     void 'Can load a package from Gitlab'() {
         setup:
         project.allprojects {
-            asciidocPdfThemes {
-                themeCollections {
+            asciidocThemes {
+                pdfThemeCollections {
                     asciidoc4555321(GitlabThemeCollection) {
                         from {
                             organisation = 'asciidoc'
@@ -109,7 +106,7 @@ class PdfThemesPluginSpec extends UnitTestSpecification {
                         }
                     }
                 }
-                themes {
+                pdfThemes {
                     myTheme {
                         fromCollection('asciidoc4555321')
                         themeName = 'pcb-blue'
@@ -119,8 +116,8 @@ class PdfThemesPluginSpec extends UnitTestSpecification {
         }
 
         when:
-        final dir = extPdfThemes.themes.myTheme.themeDir.get().asFile
-        final themeName = extPdfThemes.themes.myTheme.themeName.get()
+        final dir = extThemes.pdfThemes.myTheme.themeDir.get().asFile
+        final themeName = extThemes.pdfThemes.myTheme.themeName.get()
 
         then:
         dir.exists()

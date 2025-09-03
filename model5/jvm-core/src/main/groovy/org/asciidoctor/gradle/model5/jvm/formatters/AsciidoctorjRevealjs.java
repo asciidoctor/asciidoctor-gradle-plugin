@@ -15,6 +15,12 @@
  */
 package org.asciidoctor.gradle.model5.jvm.formatters;
 
+import groovy.lang.Closure;
+import groovy.lang.DelegatesTo;
+import org.asciidoctor.gradle.model5.core.revealjs.RevealjsOptions;
+import org.gradle.api.Action;
+import org.ysb33r.grolifant5.api.core.ClosureUtils;
+
 /**
  * THe {@code asciidoctorj-reveal.js} output formatter.
  *
@@ -23,4 +29,28 @@ package org.asciidoctor.gradle.model5.jvm.formatters;
  */
 public interface AsciidoctorjRevealjs extends AsciidoctorjOutputFormatterVersioned {
 
+    /**
+     * Direct access to configuring {@code reveal.js} options.
+     *
+     * @return Access to an instance of {@link RevealjsOptions}
+     */
+    RevealjsOptions getRevealjsOptions();
+
+    /**
+     * Configures an instance of {@link RevealjsOptions}
+     *
+     * @param configurator Configurator.
+     */
+    default void revealjsOptions(Action<RevealjsOptions> configurator) {
+        configurator.execute(getRevealjsOptions());
+    }
+
+    /**
+     * Configures an instance of {@link RevealjsOptions}
+     *
+     * @param configurator Configurator.
+     */
+    default void revealjsOptions(@DelegatesTo(RevealjsOptions.class) Closure<?> configurator) {
+        ClosureUtils.configureItem(getRevealjsOptions(), configurator);
+    }
 }

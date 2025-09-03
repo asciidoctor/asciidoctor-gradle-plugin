@@ -17,7 +17,7 @@ package org.asciidoctor.gradle.model5.jvm.plugins
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
-import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePdfThemesPlugin
+import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreThemesPlugin
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjPdf
 import org.asciidoctor.gradle.model5.jvm.internal.formatters.AsciidoctorjPdfFactory
 import org.asciidoctor.gradle.model5.jvm.internal.formatters.DefaultAsciidoctorjPdf
@@ -28,7 +28,7 @@ import static org.asciidoctor.gradle.model5.jvm.JvmModel.registerOutputFormatter
 import static org.asciidoctor.gradle.model5.jvm.JvmModel.registerOutputFormatterOnAllToolchains
 
 /**
- * Applies {@link AsciidoctorjPlugin} and {@link AsciidoctorCorePdfThemesPlugin}, then adds an output formatter for
+ * Applies {@link AsciidoctorjPlugin} and {@link AsciidoctorCoreThemesPlugin}, then adds an output formatter for
  * {@code asciidoctorj-pdf}.
  *
  * @author Schalk W. Cronjé
@@ -42,7 +42,7 @@ class AsciidoctorjPdfPlugin implements Plugin<Project> {
     void apply(Project project) {
         project.pluginManager.tap {
             apply(AsciidoctorjPlugin)
-            apply(AsciidoctorCorePdfThemesPlugin)
+            apply(AsciidoctorCoreThemesPlugin)
         }
 
         final asciidoc = project.extensions.getByType(AsciidoctorModelExtension)

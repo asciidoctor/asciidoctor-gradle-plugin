@@ -16,11 +16,10 @@
 package org.asciidoctor.gradle.model5.jvm.internal.formatters
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.pdfthemes.AsciidoctorPdfThemeExtension
+import org.asciidoctor.gradle.model5.core.extensions.AsciidoctorThemeExtension
 import org.asciidoctor.gradle.model5.core.pdfthemes.BuiltInThemes
 import org.asciidoctor.gradle.model5.core.pdfthemes.PdfTheme
 import org.asciidoctor.gradle.model5.jvm.JvmModel
-import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjManpage
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjPdf
 import org.asciidoctor.gradle.model5.jvm.internal.PluginUtils
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
@@ -70,7 +69,7 @@ class DefaultAsciidoctorjPdf extends AbstractAsciidoctorjFormatterVersioned impl
 
         this.fsOperations = ConfigCacheSafeOperations.from(project).fsOperations()
         this.theme = project.objects.property(PdfTheme)
-        availableThemes = project.extensions.getByType(AsciidoctorPdfThemeExtension).themes
+        availableThemes = project.extensions.getByType(AsciidoctorThemeExtension).pdfThemes
         useTheme(BuiltInThemes.DEFAULT.themeName)
 
         final themeAttrs = this.theme.flatMap { pt ->

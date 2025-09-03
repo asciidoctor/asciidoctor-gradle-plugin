@@ -16,15 +16,15 @@
 package org.asciidoctor.gradle.model5.core.plugins
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.pdfthemes.AsciidoctorPdfThemeExtension
+import org.asciidoctor.gradle.model5.core.extensions.AsciidoctorThemeExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.ysb33r.grolifant5.api.core.plugins.GrolifantServicePlugin
 
 @CompileStatic
-class AsciidoctorCorePdfThemesPlugin implements Plugin<Project> {
+class AsciidoctorCoreThemesPlugin implements Plugin<Project> {
 
-    public static final String PDF_THEMES_NAME = AsciidoctorPdfThemeExtension.NAME
+    public static final String THEMES_NAME = AsciidoctorThemeExtension.NAME
 
     @Override
     void apply(Project project) {
@@ -32,6 +32,6 @@ class AsciidoctorCorePdfThemesPlugin implements Plugin<Project> {
             apply(GrolifantServicePlugin)
         }
 
-        project.extensions.create(PDF_THEMES_NAME,AsciidoctorPdfThemeExtension,project)
+        project.extensions.create(THEMES_NAME,AsciidoctorThemeExtension,project)
     }
 }

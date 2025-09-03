@@ -19,7 +19,6 @@ package org.asciidoctor.gradle.model5.jvm.plugins
 import groovy.transform.CompileStatic
 
 import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
-import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePdfThemesPlugin
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjEpub
 import org.asciidoctor.gradle.model5.jvm.internal.formatters.AsciidoctorjEpubFactory
 import org.asciidoctor.gradle.model5.jvm.internal.formatters.DefaultAsciidoctorjEpub

@@ -39,7 +39,8 @@ class AsciidoctorjRevealjsSpec extends IntegrationSpecification {
         """.stripIndent())
 
         when:
-        final result = getGradleRunnerConfigCache(IS_GROOVY_DSL, [taskName]).build()
+//        final result = getGradleRunnerConfigCache(IS_GROOVY_DSL, [taskName,'-s']).build()
+        final result = getGradleRunner(IS_GROOVY_DSL, [taskName,'-s']).build()
 
         then: 'Task completed successfully'
         result.task(":${taskName}").outcome == SUCCESS

@@ -1,9 +1,9 @@
 = Configuring PDF themes
 
-PDF themes are configured in the `asciidocPdfThemes` extensions and have two main tenets:
+PDF themes are configured in the `asciidocThemes` extensions and have two main tenets:
 
-themeCollections:: These are directories or downloadable packages that can contain more than one theme.
-themes:: These are named themes, which are each related to one theme from any named collection.
+pdfThemeCollections:: These are directories or downloadable packages that can contain more than one theme.
+pdfThemes:: These are named themes, which are each related to one theme from any named collection.
   They are used by PDF output formatters to tie a specific theme to an output.
 
 == Local themes
@@ -12,8 +12,7 @@ themes:: These are named themes, which are each related to one theme from any na
 ----
 import org.asciidoctor.gradle.model5.core.pdfthemes.LocalThemeCollection
 
-include::example${examples-model5-core-test}/pdfthemes/PdfThemesPluginSpec.groovy[tags=local-theme,indent=0]
-
+include::example${examples-model5-core-test}/extensions/AciidoctorThemeExtensionSpec.groovy[tags=local-theme,indent=0]
 ----
 <.> Declares a local collection called `myLocal`
 <.> Provide the directory where the themes are located.
@@ -30,7 +29,7 @@ Themes stored in repositories on Github and Gitlab can also be used.
 import org.asciidoctor.gradle.model5.core.pdfthemes.GithubThemeCollection
 import org.asciidoctor.gradle.model5.core.pdfthemes.GitlabThemeCollection
 
-include::example${examples-model5-core-test}/pdfthemes/PdfThemesPluginSpec.groovy[tags=github-theme,indent=0]
+include::example${examples-model5-core-test}/extensions/AciidoctorThemeExtensionSpec.groovy[tags=github-theme,indent=0]
 ----
 <.> Declares a collection called `kuboaki` that can be retrieved from Github.
   For a Gitlab-based collection replace `GithubThemeCollection` with `GitlabThemeCollection`.

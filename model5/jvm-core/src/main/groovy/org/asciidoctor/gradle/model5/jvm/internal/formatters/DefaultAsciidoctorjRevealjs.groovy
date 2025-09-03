@@ -16,11 +16,13 @@
 package org.asciidoctor.gradle.model5.jvm.internal.formatters
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.model5.core.revealjs.RevealjsOptions
 import org.asciidoctor.gradle.model5.jvm.JvmModel
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjRevealjs
 import org.asciidoctor.gradle.model5.jvm.internal.PluginUtils
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.gradle.api.Project
+import org.gradle.api.tasks.TaskInputs
 
 import javax.inject.Inject
 
@@ -37,6 +39,7 @@ class DefaultAsciidoctorjRevealjs extends AbstractAsciidoctorjFormatterVersioned
     public static final String BACKEND_NAME = DEFAULT_NAME
 
     final boolean copyResources = true
+    final RevealjsOptions revealjsOptions
 
     @Inject
     DefaultAsciidoctorjRevealjs(String name, AsciidoctorjToolchain tc, Project project) {
@@ -48,10 +51,19 @@ class DefaultAsciidoctorjRevealjs extends AbstractAsciidoctorjFormatterVersioned
                 tc,
                 project
         )
+
+        this.revealjsOptions = project.objects.newInstance(RevealjsOptions)
+
+        attributes.putAll(revealjsOptions.attributeProvider)
     }
 
     @Override
     protected Class<?> getDslType() {
         AsciidoctorjRevealjs
+    }
+
+    @Override
+    void configureTaskInputs(TaskInputs taskInputs) {
+        revealjsOptions.configureTaskInputs(taskInputs)
     }
 }

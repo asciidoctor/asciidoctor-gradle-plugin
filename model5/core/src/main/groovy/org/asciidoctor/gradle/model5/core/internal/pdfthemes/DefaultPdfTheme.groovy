@@ -16,7 +16,7 @@
 package org.asciidoctor.gradle.model5.core.internal.pdfthemes
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.pdfthemes.AsciidoctorPdfThemeExtension
+import org.asciidoctor.gradle.model5.core.extensions.AsciidoctorThemeExtension
 import org.asciidoctor.gradle.model5.core.pdfthemes.BuiltInThemes
 import org.asciidoctor.gradle.model5.core.pdfthemes.PdfTheme
 import org.asciidoctor.gradle.model5.core.pdfthemes.PdfThemeCollection
@@ -45,10 +45,10 @@ class DefaultPdfTheme implements PdfTheme {
     private final StringTools stringTools
     private final Property<String> themeName
     private final DirectoryProperty themeDir
-    private final AsciidoctorPdfThemeExtension parent
+    private final AsciidoctorThemeExtension parent
 
     @Inject
-    DefaultPdfTheme(String name, AsciidoctorPdfThemeExtension parent, Project project) {
+    DefaultPdfTheme(String name, AsciidoctorThemeExtension parent, Project project) {
         this.name = name
         this.parent = parent
         this.stringTools = ConfigCacheSafeOperations.from(project).stringTools()
@@ -73,7 +73,7 @@ class DefaultPdfTheme implements PdfTheme {
      */
     @Override
     void fromCollection(String collectionName) {
-        fromCollection(parent.themeCollections.named(collectionName))
+        fromCollection(parent.pdfThemeCollections.named(collectionName))
     }
 
     /**
@@ -113,10 +113,10 @@ class DefaultPdfTheme implements PdfTheme {
 
     static class Factory implements NamedDomainObjectFactory<PdfTheme> {
         private final ObjectFactory objectFactory
-        private final AsciidoctorPdfThemeExtension parent
+        private final AsciidoctorThemeExtension parent
 
         @Inject
-        Factory(AsciidoctorPdfThemeExtension parent, ObjectFactory objectFactory) {
+        Factory(AsciidoctorThemeExtension parent, ObjectFactory objectFactory) {
             this.objectFactory = objectFactory
             this.parent = parent
         }

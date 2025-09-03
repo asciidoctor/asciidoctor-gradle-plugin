@@ -17,7 +17,6 @@ package org.asciidoctor.gradle.model5.core.internal.pdfthemes
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.errors.BuiltInThemeException
-import org.asciidoctor.gradle.model5.core.pdfthemes.AsciidoctorPdfThemeExtension
 import org.asciidoctor.gradle.model5.core.pdfthemes.PdfTheme
 import org.asciidoctor.gradle.model5.core.pdfthemes.PdfThemeCollection
 import org.gradle.api.Project
