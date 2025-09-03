@@ -26,6 +26,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
 
 import javax.inject.Inject
+import java.util.regex.Pattern
 
 /**
  * Default implementation of conversion settings used by a an
@@ -46,6 +47,7 @@ class DefaultAsciidoctorConversionSettings implements AsciidoctorConversionSetti
     final Property<Directory> destinationDir
     final MapProperty<String, String> attributes
     final Property<DocType> docType
+    final SetProperty<Pattern> fatalWarnings
 
     @Inject
     DefaultAsciidoctorConversionSettings(ObjectFactory objectFactory) {
@@ -57,5 +59,6 @@ class DefaultAsciidoctorConversionSettings implements AsciidoctorConversionSetti
         this.destinationDir = objectFactory.directoryProperty()
         this.attributes = objectFactory.mapProperty(String, String)
         this.docType = objectFactory.property(DocType)
+        this.fatalWarnings = objectFactory.setProperty(Pattern)
     }
 }

@@ -1,0 +1,37 @@
+/*
+ * Copyright 2013 - 2025 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.asciidoctor.gradle.model5.js.testfixtures
+
+import org.asciidoctor.gradle.model5.js.internal.formatters.DefaultAsciidoctorjsHtml5
+import org.asciidoctor.gradle.testfixtures.model5.IntegrationSpecification
+
+import static org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils.DEFAULT_PUBLICATION
+import static org.asciidoctor.gradle.model5.js.plugins.AsciidoctorjsPlugin.DEFAULT_TOOLCHAIN
+
+class AsciidoctorjsHtmlIntegrationSpecification extends IntegrationSpecification {
+
+    File outputDir
+    String taskName = 'asciidoctorHtml'
+
+    void setup() {
+        outputDir = new File(buildDir, 'docs/asciidoc/html')
+    }
+
+    void writeHtmlBasedBuildFile() {
+        writeBasicBuildFileGroovy(['org.asciidoctor.js'])
+        addOutputToSourceSetGroovy(DEFAULT_TOOLCHAIN, DefaultAsciidoctorjsHtml5.DEFAULT_NAME, DEFAULT_PUBLICATION)
+    }
+}

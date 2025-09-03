@@ -15,16 +15,21 @@
  */
 package org.asciidoctor.gradle.model5.jvm.internal.engines
 
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.asciidoctor.gradle.model5.core.AsciidoctorConversionSettings
 import org.asciidoctor.gradle.model5.core.AsciidoctorExecutionSettings
 import org.asciidoctor.gradle.model5.core.AsciidoctorLauncher
+import org.asciidoctor.gradle.model5.core.errors.ConversionWarningException
 import org.asciidoctor.gradle.model5.core.internal.engines.EngineUtils
+import org.asciidoctor.gradle.model5.core.internal.tasks.LogProcessor
 import org.asciidoctor.gradle.model5.jvm.engines.ExecutionContext
-import org.asciidoctor.gradle.model5.jvm.internal.buildservices.AsciidoctorjEngineContextService
 import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.Directory
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileCollection
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
@@ -32,10 +37,12 @@ import org.gradle.workers.WorkQueue
 import org.gradle.workers.WorkerExecutor
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 import org.ysb33r.grolifant5.api.core.FileSystemOperations
+import org.ysb33r.grolifant5.api.core.StringTools
 
 import javax.inject.Inject
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
+import java.util.regex.Pattern
 
 /**
  * Launches conversion jobs on JVM workers.
@@ -49,10 +56,13 @@ import java.util.concurrent.ConcurrentMap
 class DefaultLauncher implements AsciidoctorLauncher {
     private final WorkerExecutor workerExecutor
     private final ConfigurableFileCollection classpath
+    private final StringTools stringTools
     private final FileSystemOperations fsOperations
     private final Property<LauncherEngineOptions> launcherEngineOptions
     private final String projectPath
     private final ConcurrentMap<String, Provider<ExecutionContext>> executionsContexts
+    private final DirectoryProperty logDir
+    private final static String LOG_EVENTS_FILE_PREFIX = LogProcessor.LOG_EVENTS_FILE_PREFIX
 
     @Inject
     DefaultLauncher(Project tempProjectRef, WorkerExecutor we) {
@@ -61,9 +71,13 @@ class DefaultLauncher implements AsciidoctorLauncher {
         final ccso = ConfigCacheSafeOperations.from(tempProjectRef)
         this.projectPath = ccso.projectTools().fullProjectPath
         this.fsOperations = ccso.fsOperations()
+        this.stringTools = ccso.stringTools()
         this.classpath = fsOperations.emptyFileCollection()
         this.launcherEngineOptions = tempProjectRef.objects.property(LauncherEngineOptions)
         this.executionsContexts = new ConcurrentHashMap<>()
+        this.logDir = tempProjectRef.objects.directoryProperty().value(
+            tempProjectRef.layout.buildDirectory.dir(LogProcessor.LOG_SUBPATH)
+        )
     }
 
     void classpath(FileCollection files) {
@@ -75,12 +89,12 @@ class DefaultLauncher implements AsciidoctorLauncher {
     }
 
     void registerExecutionContext(
-            String toolchainName,
-            String formatterName,
-            Provider<ExecutionContext> executionContext
+        String toolchainName,
+        String formatterName,
+        Provider<ExecutionContext> executionContext
     ) {
         executionsContexts.put(
-            executionContextKey(toolchainName,formatterName),
+            executionContextKey(toolchainName, formatterName),
             executionContext
         )
     }
@@ -91,6 +105,17 @@ class DefaultLauncher implements AsciidoctorLauncher {
         final groups = EngineUtils.groupByParent(conversionSettings.sourceFiles.get())
         final root = conversionSettings.sourceRootDir.get().asFile
         final destDir = conversionSettings.destinationDir
+        final aliasName = conversionSettings.backend.map { b -> b.name }
+        final backendName = conversionSettings.backend.map { b -> b.backend }
+        final jobLogDir = logDir.zip(executionsSettings.toolchainName) { ldir, tc ->
+            ldir.dir(tc)
+        }.zip(aliasName) { ldir, alias ->
+            ldir.dir(alias)
+        }
+
+        jobLogDir.get().asFile.deleteDir()
+
+        int index = 1
         groups.each { parent, allFiles ->
             final relPath = fsOperations.relativize(root, parent)
             wq.submit(LauncherWorker) { lp ->
@@ -100,19 +125,23 @@ class DefaultLauncher implements AsciidoctorLauncher {
                     baseDir.set(conversionSettings.baseDir)
                     adjustBaseDirPerFile.set(conversionSettings.adjustBaseDirPerFile)
                     destinationDir.set(relPath.empty ? destDir : destDir.map { it.dir(relPath) })
-                    backend.set(conversionSettings.backend.map { b -> b.backend })
+                    backend.set(backendName)
                     safeMode.set(executionsSettings.safeMode.map { it.name() })
                     attributes.set(conversionSettings.attributes)
                     engineOptions.set(launcherEngineOptions)
+                    logFile.set(jobLogDir.map { it.file("${LOG_EVENTS_FILE_PREFIX}.${index}") })
                 }
             }
+            ++index
         }
         wq.await()
+
+        LogProcessor.parseLogs(stringTools, jobLogDir.get(), conversionSettings.fatalWarnings.get(), index)
     }
 
     private Optional<ExecutionContext> getExecutionContext(String toolchainName, String formatterName) {
-        final ec = executionsContexts[executionContextKey(toolchainName,formatterName)]
-        if(ec == null || !ec.present) {
+        final ec = executionsContexts[executionContextKey(toolchainName, formatterName)]
+        if (ec == null || !ec.present) {
             Optional.empty()
         } else {
             Optional.of(ec.get())

@@ -19,8 +19,10 @@ import org.gradle.api.file.Directory;
 import org.gradle.api.provider.Provider;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Described the source documents, attributes etc required for a conversion.
@@ -85,4 +87,11 @@ public interface AsciidoctorConversionSettings {
      * @return Optional document type. Provider does not need to be present.
      */
     Provider<DocType> getDocType();
+
+    /**
+     * Patterns of warnings which must be treated as errors.
+     *
+     * @return List of patterns. Must be present, but list can be empty.
+     */
+    Provider<Set<Pattern>> getFatalWarnings();
 }

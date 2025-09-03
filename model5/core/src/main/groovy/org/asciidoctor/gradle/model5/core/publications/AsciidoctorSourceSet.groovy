@@ -19,7 +19,6 @@ import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.DocType
 import org.asciidoctor.gradle.model5.core.attributes.Attributes
 import org.asciidoctor.gradle.model5.core.attributes.HasAsciidoctorAttributes
-import org.asciidoctor.gradle.model5.core.attributes.HasAttributeProvider
 import org.asciidoctor.gradle.model5.core.basedir.BaseDirConfiguration
 import org.asciidoctor.gradle.model5.core.basedir.HasBaseDirStrategy
 import org.asciidoctor.gradle.model5.core.internal.attributes.DefaultAttributes
@@ -32,12 +31,14 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.ProjectLayout
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.api.tasks.util.PatternSet
 import org.ysb33r.grolifant5.api.core.ClosureUtils
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 
 import javax.inject.Inject
+import java.util.regex.Pattern
 
 import static org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils.ASCIIDOC_PATTERNS
 import static org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils.UNDERSCORE_LED_FILES
@@ -52,7 +53,7 @@ import static org.ysb33r.grolifant5.api.core.StringTools.EMPTY
  */
 @CompileStatic
 class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttributes, HasAsciidoctorSource,
-        HasAsciidoctorResources {
+    HasAsciidoctorResources {
 
     private final BaseDirConfiguration baseDirConfiguration
     private final ConfigCacheSafeOperations ccso
@@ -64,6 +65,7 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
     private final Provider<PatternFilterable> sourcePatternProvider
     private final PatternSet resourcePatterns
     private final Provider<PatternFilterable> resourcePatternProvider
+    private final SetProperty<Pattern> fatalWarningPatterns
 //    private final CopySpec resourcesCopySpec
 //    private final PatternSet secondarySourceDocumentPattern
 //    private final Provider<PatternFilterable> secondarySourcePatternProvider
@@ -78,22 +80,24 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
         this.doctype = tempProjectReference.objects.property(DocType)
         this.sourceDocumentPattern = new PatternSet().exclude(UNDERSCORE_LED_FILES)
         this.resourcePatterns = new PatternSet()
+        this.fatalWarningPatterns = tempProjectReference.objects.setProperty(Pattern)
+
 //        this.resourcesCopySpec = ccso.fsOperations().copySpec()
 //        this.secondarySourceDocumentPattern = new PatternSet()
 
         this.srcDir = tempProjectReference.objects.directoryProperty().convention(
-                tempProjectReference.layout.projectDirectory.dir(srcDirPath)
+            tempProjectReference.layout.projectDirectory.dir(srcDirPath)
         )
 
         this.sourcePatternProvider = ccso.providerTools().provider { ->
             final ret = owner.sourceDocumentPattern.includes.empty ?
-                    new PatternSet().copyFrom(owner.sourceDocumentPattern).include(ASCIIDOC_PATTERNS) :
-                    owner.sourceDocumentPattern
+                new PatternSet().copyFrom(owner.sourceDocumentPattern).include(ASCIIDOC_PATTERNS) :
+                owner.sourceDocumentPattern
             (PatternFilterable) ret
         }
 
         this.resourcePatternProvider = ccso.providerTools().provider { ->
-            (PatternFilterable)(owner.resourcePatterns.includes.empty ? null : owner.resourcePatterns)
+            (PatternFilterable) (owner.resourcePatterns.includes.empty ? null : owner.resourcePatterns)
         }
 
         this.attributes.add('gradle-project-name', ccso.projectTools().projectNameProvider)
@@ -365,5 +369,49 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
      */
     void setDocType(DocType mode) {
         this.doctype.set(mode)
+    }
+
+    /**
+     * Warnings from {@code asciidoctorj} log messages that should be treating as fatal errors.
+     *
+     * @param patterns Anything convertible to a pattern using
+     * {@link org.ysb33r.grolifant5.api.core.StringTools#patternize}
+     */
+    void fatalWarnings(Object... patterns) {
+        this.fatalWarningPatterns.addAll {
+            ccso.providerTools().provider { ->
+                ccso.stringTools().patternize(patterns.toList())
+            }
+        }
+    }
+
+    /**
+     * Warnings from Asciidoctor log messages that should be treating as fatal errors.
+     *
+     * @param patterns Anything convertible to a pattern using
+     * {@link org.ysb33r.grolifant5.api.core.StringTools#patternize}
+     */
+    void fatalWarnings(Iterable<?> patterns) {
+        this.fatalWarningPatterns.addAll {
+            ccso.providerTools().provider { ->
+                ccso.stringTools().patternize(patterns.toList())
+            }
+        }
+    }
+
+    /**
+     * Indicates that missing includes will fail the conversion process.
+     */
+    void missingIncludesAreFatal() {
+        this.fatalWarningPatterns.add(~/include file not found/)
+    }
+
+    /**
+     * List of patterns that will be checked against log messages.
+     *
+     * @return Provider to a set of patterns.
+     */
+    Provider<Set<Pattern>> getFatalWarnings() {
+        this.fatalWarningPatterns
     }
 }

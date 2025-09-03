@@ -1,41 +1,42 @@
-name: gradle-plugin
-title: Gradle Plugin Suite
-version: '5.0'
+---
+name: "gradle-plugin"
+title: "Gradle Plugin Suite"
+version: "5.0"
 asciidoc:
   attributes:
-    release-version: 5.0.0-alpha.1
-    project-full-path: asciidoctor/asciidoctor-gradle-plugin
-    project-name: asciidoctor-gradle-plugin
-    project-repo-url: https://github.com/asciidoctor/asciidoctor-gradle-plugin
-    plugin-name: Asciidoctor Gradle plugin
-    asciidoc-url: https://asciidoc.org
-    asciidoctor-maven-plugin-name: Asciidoctor Maven Plugin
-    asciidoctor-maven-plugin-url: https://github.com/asciidoctor/asciidoctor-maven-plugin
-    asciidoctor-url: https://asciidoctor.org
-    asciidoctorj-conventions-plugin: org.asciidoctor.jvm
-    asciidoctorj-diagram-name: AsciidoctorJ Diagram
-    asciidoctorj-diagram-url: https://github.com/asciidoctor/asciidoctorj-diagram
-    asciidoctorj-epub-name: AsciidoctorJ EPUB3
-    asciidoctorj-epub-url: https://github.com/asciidoctor/asciidoctorj-epub3
-    asciidoctorj-name: AsciidoctorJ
-    asciidoctorj-pdf-name: AsciidoctorJ PDF
-    asciidoctorj-pdf-url: https://github.com/asciidoctor/asciidoctorj-pdf
-    asciidoctorj-url: https://github.com/asciidoctor/asciidoctorj
-    asciidoctorjs-conventions-plugin: org.asciidoctor.js
-    asciidoctorjs-name: Asciidoctor.js
-    asciidoctorjs-url: https://github.com/asciidoctor/asciidoctor.js
-    development-branch: development-4.x
-    examples-model5-core-test: model5/core/test/groovy/org/asciidoctor/gradle/model5/core
-    examples-model5-jvm-integration-test: model5/jvm-core/integrationTest/groovy/org/asciidoctor/gradle/model5/jvm
-    examples-model5-jvm-main: model5/jvm-core/main/groovy/org/asciidoctor/gradle/model5/jvm
-    examples-model5-jvm-main-resources: model5/jvm-core/main/resources/META-INF/asciidoctor.gradle
-    gradle-url: https://gradle.org/
-    issues-asciidoctorj: https://github.com/asciidoctor/asciidoctorj/issues/
-    issues-jruby: https://github.com/asciidoctor/asciidoctorj/issues/
-    jruby-name: JRuby
-    kotlindsl: https://github.com/gradle/kotlin-dsl[Gradle Kotlin DSL]
-    lightguard: https://github.com/LightGuard[Jason Porter]
-    lordofthejars: https://github.com/lordofthejars[Alex Soto]
+    release-version: "5.0.0-alpha.1-SNAPSHOT"
+    project-full-path: "asciidoctor/asciidoctor-gradle-plugin"
+    project-name: "asciidoctor-gradle-plugin"
+    project-repo-url: "https://github.com/asciidoctor/asciidoctor-gradle-plugin"
+    plugin-name: "Asciidoctor Gradle plugin"
+    asciidoc-url: "https://asciidoc.org"
+    asciidoctor-maven-plugin-name: "Asciidoctor Maven Plugin"
+    asciidoctor-maven-plugin-url: "https://github.com/asciidoctor/asciidoctor-maven-plugin"
+    asciidoctor-url: "https://asciidoctor.org"
+    asciidoctorj-conventions-plugin: "org.asciidoctor.jvm"
+    asciidoctorj-diagram-name: "AsciidoctorJ Diagram"
+    asciidoctorj-diagram-url: "https://github.com/asciidoctor/asciidoctorj-diagram"
+    asciidoctorj-epub-name: "AsciidoctorJ EPUB3"
+    asciidoctorj-epub-url: "https://github.com/asciidoctor/asciidoctorj-epub3"
+    asciidoctorj-name: "AsciidoctorJ"
+    asciidoctorj-pdf-name: "AsciidoctorJ PDF"
+    asciidoctorj-pdf-url: "https://github.com/asciidoctor/asciidoctorj-pdf"
+    asciidoctorj-url: "https://github.com/asciidoctor/asciidoctorj"
+    asciidoctorjs-conventions-plugin: "org.asciidoctor.js"
+    asciidoctorjs-name: "Asciidoctor.js"
+    asciidoctorjs-url: "https://github.com/asciidoctor/asciidoctor.js"
+    development-branch: "development-4.x"
+    examples-model5-core-test: "model5/core/test/groovy/org/asciidoctor/gradle/model5/core"
+    examples-model5-jvm-integration-test: "model5/jvm-core/integrationTest/groovy/org/asciidoctor/gradle/model5/jvm"
+    examples-model5-jvm-main: "model5/jvm-core/main/groovy/org/asciidoctor/gradle/model5/jvm"
+    examples-model5-jvm-main-resources: "model5/jvm-core/main/resources/META-INF/asciidoctor.gradle"
+    gradle-url: "https://gradle.org/"
+    issues-asciidoctorj: "https://github.com/asciidoctor/asciidoctorj/issues/"
+    issues-jruby: "https://github.com/asciidoctor/asciidoctorj/issues/"
+    jruby-name: "JRuby"
+    kotlindsl: "https://github.com/gradle/kotlin-dsl[Gradle Kotlin DSL]"
+    lightguard: "https://github.com/LightGuard[Jason Porter]"
+    lordofthejars: "https://github.com/lordofthejars[Alex Soto]"
 nav:
-  - modules/ROOT/nav.adoc
-  - modules/appendices/nav.adoc
+- "modules/ROOT/nav.adoc"
+- "modules/appendices/nav.adoc"

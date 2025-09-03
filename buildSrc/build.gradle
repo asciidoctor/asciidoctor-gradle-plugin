@@ -36,15 +36,22 @@ dependencies {
     implementation libs.pluginPublishPlugin
     implementation libs.pluginGradleTest
     implementation libs.pluginLicense
+    implementation "org.codehaus.groovy:groovy-yaml:${GroovySystem.version}"
 
     runtimeOnly libs.grolifantRuntime
     runtimeOnly libs.pluginIvypot
     runtimeOnly libs.pluginJRuby
     runtimeOnly libs.pluginOS
+
+
 }
 
 gradlePlugin {
     plugins {
+        rootPlugin {
+            id = 'org.asciidoctor.internal.root'
+            implementationClass = 'org.asciidoctor.internal.common.RootPlugin'
+        }
         basicGroovyProject {
             id = 'org.asciidoctor.internal.classic.groovy.project'
             implementationClass = 'org.asciidoctor.internal.classic.AsciidoctorGradleGroovyProject'

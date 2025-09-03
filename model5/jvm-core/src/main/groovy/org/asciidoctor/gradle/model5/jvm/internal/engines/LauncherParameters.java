@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle.model5.jvm.internal.engines;
 
 import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
@@ -94,4 +95,11 @@ public interface LauncherParameters extends WorkParameters {
      * @return Engine options. Cannot be empty.
      */
     Property<LauncherEngineOptions> getEngineOptions();
+
+    /**
+     * Where logs are written to.
+     *
+     * @return Location of a log file.
+     */
+    RegularFileProperty getLogFile();
 }

@@ -22,6 +22,8 @@ import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.util.PatternFilterable;
 
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 public interface AsciidoctorTaskMethods {
 
@@ -85,6 +87,12 @@ public interface AsciidoctorTaskMethods {
      */
     void setAttributes(Provider<Map<String,String>> attrs);
 
+    /**
+     * The set of patterns to check for fatal warnings.
+     *
+     * @param patterns Set of patterns
+     */
+    void setFatalWarnings(Provider<Set<Pattern>> patterns);
 //
 //    /**
 //     * Whether document names should be logged prior to processing.

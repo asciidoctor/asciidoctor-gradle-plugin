@@ -181,6 +181,7 @@ class AsciidoctorPublication implements Named {
             atm.sourcePatterns = sources.sourcePatterns
             atm.baseDir = sources.baseDir.baseDirStrategy.flatMap { it.getBaseDir(sources.sourceDir) }
             atm.adjustBaseDirPerFile = sources.baseDir.baseDirStrategy.flatMap { it.adjustBaseDirPerFile }
+            atm.fatalWarnings = sources.fatalWarnings
             atm.attributes = sources.attributes.attributeResolver.zip(resolvedExtensionAttributes) { pri, sec ->
                 final map = [:]
                 map.putAll(sec)

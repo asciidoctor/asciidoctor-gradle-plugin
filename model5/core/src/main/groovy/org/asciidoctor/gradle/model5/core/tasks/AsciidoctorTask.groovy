@@ -26,10 +26,11 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.util.PatternFilterable
 import org.ysb33r.grolifant5.api.core.runnable.GrolifantDefaultTask
+
+import java.util.regex.Pattern
 
 import static org.gradle.api.tasks.PathSensitivity.*
 
@@ -170,6 +171,11 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
                     fsOperations().fileTree(dir).matching(pats).files
                 }
         )
+    }
+
+    @Override
+    void setFatalWarnings(Provider<Set<Pattern>> patterns) {
+        conversionSettings.fatalWarnings.set(patterns)
     }
 
     @TaskAction
