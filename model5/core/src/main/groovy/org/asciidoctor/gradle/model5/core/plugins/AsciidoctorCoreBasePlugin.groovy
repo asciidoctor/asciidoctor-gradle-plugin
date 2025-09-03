@@ -19,7 +19,10 @@ import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
 import org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils
 import org.asciidoctor.gradle.model5.core.internal.toolchains.ToolchainInfo
+import org.asciidoctor.gradle.model5.core.publications.AsciidoctorPublication
 import org.asciidoctor.gradle.model5.core.waitingroom.ShowAsciidocToolchains
+import org.asciidoctor.gradle.model5.editorconfig.AsciidoctorEditorConfigGenerator
+import org.asciidoctor.gradle.model5.editorconfig.AsciidoctorEditorConfigPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.ysb33r.grolifant5.api.core.plugins.GrolifantServicePlugin
@@ -51,6 +54,18 @@ class AsciidoctorCoreBasePlugin implements Plugin<Project> {
         satTask.configure {
             it.group = 'help'
             it.description = 'Displays registered Asciidoctor toolchains.'
+        }
+
+        configureForAsciidoctorEditorConfig(project, asciidoc)
+    }
+
+    private void configureForAsciidoctorEditorConfig(Project project,AsciidoctorModelExtension asciidoc) {
+        project.pluginManager.withPlugin('org.asciidoctor.editorconfig') {
+            asciidoc.publications.whenObjectAdded { AsciidoctorPublication pub ->
+                project.tasks.named(AsciidoctorEditorConfigPlugin.DEFAULT_TASK_NAME,AsciidoctorEditorConfigGenerator) {
+                    it.attributes(pub.sourceSet.attributes.attributeResolver)
+                }
+            }
         }
     }
 }

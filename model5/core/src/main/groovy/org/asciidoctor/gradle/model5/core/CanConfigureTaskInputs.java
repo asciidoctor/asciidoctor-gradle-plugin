@@ -20,7 +20,7 @@ import org.asciidoctor.gradle.model5.core.formatters.AsciidoctorOutputFormatter;
 import org.gradle.api.tasks.TaskInputs;
 
 /**
- * INidactes that the entity can configure task inputs.
+ * Indicates that the entity can configure task inputs.
  *
  * @author Schalk W. Cronjé
  * @since 5.0
@@ -38,6 +38,8 @@ public interface CanConfigureTaskInputs {
      *     {@link org.asciidoctor.gradle.model5.core.tasks.AsciidoctorTask} can correctly deal with the classpath.
      *     The main intent here is for additional configuration directories etc. to be passed as inputs.
      * </p>
+     *
+     * @param taskInputs The {@link TaskInputs} of a specific task instance.
      */
     default void configureTaskInputs(TaskInputs taskInputs) {}
 }

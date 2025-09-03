@@ -1,0 +1,56 @@
+= Asciidoctor Editor Config Plugin
+
+This plugin can be used on its own to generate an `.asciidoctoreditorconfig` file.
+It does not rely on any {asciidoctorj-name} or {asciidoctorjs-name} support.
+It will, however, perform additional configuration if it is applied alongside any of the AsciiDoc conversion plugins.
+
+[source,groovy,role="primary"]
+[subs=attributes+]
+.build.gradle
+----
+plugins {
+    id 'org.asciidoctor.editorconfig' version '{release-version}'
+}
+----
+
+[source,kotlin,role="secondary"]
+[subs=attributes+]
+.build.gradle.kts
+----
+plugins {
+    id("org.asciidoctor.editorconfig") version "{release-version}"
+}
+----
+
+Writes an `.asciidoctorconfig` file so that supporting IDEs can render Asciidoctor-based documentation correctly.
+
+== Adding attributes
+
+[source,groovy,role="primary"]
+----
+asciidoctorEditorConfig {
+  attributes foo1: 'bar1', foo2: 'bar2' // <.>
+  attributes project.provider { -> [ foo3 : 'bar3'] } // <.>
+  attributesFromFile 'src/docs/asciidoc/attributes.adoc' // <.>
+}
+----
+<.> Adds predefined attributes. These attributes are added first to the generated file.
+<.> Add the content of a provider of `Map<String,?>`.
+  The task will take care of resolving the values to strings.
+  It will keep null values and output them as empty string.
+<.> Appends the context of the specified file to the generated file. Context such as this is added last. This method also allows you to define a number of attributes in your source directory and include them in your main AsciiDoc file as well as send them to `.asciidoctorconfig`.
+
+== Automatically provided attributes
+
+When this plugin is applied with other plugins in this suite, all the defined attributes from the source sets are automatically added.
+When a project has more than one source set and the values of specific attributes differ, this plugin cannot distinguish which one should prevale.
+In that case an explicit value can be set with `attributes` on the task, which will determine that value that needs to be used by the IDE.
+
+== Changing the output directory
+
+[source,groovy,role="primary"]
+----
+asciidoctorEditorConfig {
+  destinationDir = 'docs'
+}
+----

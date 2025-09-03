@@ -1,0 +1,21 @@
+plugins {
+    id 'org.asciidoctor.internal.model5.gradle.project'
+}
+
+agProject {
+//    withAdditionalPluginClasspath()
+    withIntegrationTests()
+    configurePlugin(
+            'org.asciidoctor.editorconfig',
+            'Asciidoctor Editor Config Plugin',
+            'Generate .asciidoctorconfig files for use by supported IDEs',
+            'org.asciidoctor.gradle.model5.editorconfig.AsciidoctorEditorConfigPlugin',
+            ['intellij', 'idea']
+    )
+}
+
+dependencies {
+}
+
+
+

@@ -30,6 +30,7 @@ They are listed here as they might prove useful in special cases
 [source,groovy,subs=+attributes]
 ----
 plugins {
+    id 'org.asciidoctor.editorconfig' version '{release-version}' // <.>
     id 'org.asciidoctor.core.base' version '{release-version}' // <.>
     id 'org.asciidoctor.core' version '{release-version}' // <.>
     id 'org.asciidoctor.core.pdf-themes' version '{release-version}' // <.>
@@ -37,6 +38,7 @@ plugins {
     id 'org.asciidoctor.js.base' version '{release-version}' // <.>
 }
 ----
+<.> Produces an `.asciidoctoreditorconfig` file for IDE purposes.
 <.> The Asciidoctor base plugin, which is engine free. Only provides the `asciidoc` extension and the `showAsciidoctorToolchains` task.
 <.> The Asciidoctor core plugin, which is engine free. Adds a single publication called `main` and a task called `asciidoctorAll`.
 <.> Adds the `asciidocPdfThemes` extension.
@@ -58,6 +60,7 @@ asciidoctorjEpub = { id ="org.asciidoctor.jvm.epub", version.ref = "asciidoctorP
 asciidoctorjPdf = { id ="org.asciidoctor.jvm.pdf", version.ref = "asciidoctorPlugin" }
 asciidoctorjs = { id ="org.asciidoctor.js", version.ref = "asciidoctorPlugin" }
 asciidoctorjsDocbook = { id ="org.asciidoctor.js.docbook", version.ref = "asciidoctorPlugin" }
+asciidoctorEditorConfig = { id ="org.asciidoctor.editorconfig", version.ref = "asciidoctorPlugin" }
 ----
 
 .build.gradle
@@ -69,5 +72,6 @@ plugins {
     id alias(libs.plugins.asciidoctorjPdf)
     id alias(libs.plugins.asciidoctorjs)
     id alias(libs.plugins.asciidoctorjsDocbook)
+    id alias(libs.plugins.asciidoctorEditorConfig)
 }
 ----

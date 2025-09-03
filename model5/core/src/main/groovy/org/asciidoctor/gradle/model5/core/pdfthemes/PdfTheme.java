@@ -53,9 +53,9 @@ public interface PdfTheme extends Named {
      *
      * <p>
      *     By default, this is the name under which the theme was registered, but the location may contain more than
-     *     one theme, and then the name can be set.
+     *     one theme, and if so, the specific theme name can be set here.
      * </p>
-     * @return
+     * @return Provider to a theme name.
      */
     Provider<String> getThemeName();
 

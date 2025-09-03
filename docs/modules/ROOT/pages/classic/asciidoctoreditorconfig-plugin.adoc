@@ -5,7 +5,7 @@
 .build.gradle
 ----
 plugins {
-    id 'org.asciidoctor.editorconfig' version '{release-version}'
+    id 'org.asciidoctor.editorconfig.classic' version '{release-version}'
 }
 ----
 
@@ -14,7 +14,7 @@ plugins {
 .build.gradle.kts
 ----
 plugins {
-    id("org.asciidoctor.editorconfig") version "{release-version}"
+    id("org.asciidoctor.editorconfig.classic") version "{release-version}"
 }
 ----
 

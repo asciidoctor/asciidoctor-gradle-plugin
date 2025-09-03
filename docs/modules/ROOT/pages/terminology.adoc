@@ -1,4 +1,4 @@
-== Terminology
+= Terminology
 
 Engine:: The actual implementation that runs the conversion.
   An engine knows nothing more than running the Asciidoctor implementation underneath whether it is JRuby, JavaScript or something else.

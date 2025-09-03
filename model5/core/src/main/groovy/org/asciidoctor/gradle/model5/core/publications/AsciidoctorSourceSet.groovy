@@ -19,6 +19,7 @@ import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.DocType
 import org.asciidoctor.gradle.model5.core.attributes.Attributes
 import org.asciidoctor.gradle.model5.core.attributes.HasAsciidoctorAttributes
+import org.asciidoctor.gradle.model5.core.attributes.HasAttributeProvider
 import org.asciidoctor.gradle.model5.core.basedir.BaseDirConfiguration
 import org.asciidoctor.gradle.model5.core.basedir.HasBaseDirStrategy
 import org.asciidoctor.gradle.model5.core.internal.attributes.DefaultAttributes

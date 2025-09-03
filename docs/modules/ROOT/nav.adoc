@@ -1,6 +1,5 @@
 * xref:index.adoc[Overview]
 * xref:bootstrap.adoc[Bootstrap]
-* xref:asciidoctoreditorconfig-plugin.adoc[Asciidoctor Editor Config plugin]
 * xref:docinfo.adoc[]
 * xref:upgrading.adoc[Upgrading]
 * xref:terminology.adoc[]
@@ -11,6 +10,7 @@
 * xref:model5/asciidoctorj/configure-diagram.adoc[]
 * xref:model5/asciidoctorj/epub.adoc[]
 * xref:model5/asciidoctorj/pdf.adoc[]
+* xref:model5/asciidoctoreditorconfig-plugin.adoc[]
 
 .Classic (Deprecated) mode
 * xref:classic/quick-start.adoc[Quick start]
@@ -26,6 +26,7 @@
 // * xref:kindlegen-plugin.adoc[]
 * xref:classic/asciidoctorj-custom-extensions.adoc[]
 * xref:classic/common-task-configuration.adoc[]
+* xref:classic/asciidoctoreditorconfig-plugin.adoc[Asciidoctor Editor Config plugin]
 
 .Advanced
 * xref:advanced/implementing-a-new-toolchain.adoc[Implementing a new toolchain]

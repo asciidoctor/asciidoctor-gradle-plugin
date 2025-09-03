@@ -21,9 +21,11 @@ develocity {
 
 rootProject.name = 'asciidoctor-gradle-plugin'
 
-include 'asciidoctoreditorconfig'
 
 // New model5 plugins
+
+include 'asciidoctoreditorconfig'
+project(":asciidoctoreditorconfig").projectDir = file("model5/asciidoctoreditorconfig")
 
 ['core', 'js-core', 'jvm-core'].each {
     include "model5/${it}"
@@ -49,7 +51,8 @@ include 'asciidoctoreditorconfig'
     include "classic/${it}"
     project(":classic/${it}").name = "asciidoctor-gradle-jvm-${it}"
 }
-
+include 'asciidoctoreditorconfig-classic'
+project(":asciidoctoreditorconfig-classic").projectDir = file("classic/asciidoctoreditorconfig")
 ////[  'slides-export' ].each {
 ////    include "classic/${it}"
 ////    project(":classic/${it}").name = "asciidoctor-gradle-${it}"

@@ -24,5 +24,8 @@ agProject {
             'org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreThemesPlugin',
             []
     )
+}
 
+dependencies {
+    compileOnly(project(':asciidoctoreditorconfig'))
 }
