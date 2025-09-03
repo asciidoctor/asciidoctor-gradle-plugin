@@ -21,8 +21,8 @@ asciidoc {
             useBatik('1.2.3') // <.>
             useDitaa() // <.>
             useDitaa('1.2.3') // <.>
-            useJSyntrax() // <.>
-            useJSyntrax('1.2.3') // <.>
+            useSyntrax() // <.>
+            useSyntrax('1.2.3') // <.>
             usePlantUml() // <.>
             usePlantUml('1.2.3') // <.>
         }

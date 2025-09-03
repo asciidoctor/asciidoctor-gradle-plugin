@@ -72,12 +72,12 @@ public interface AsciidoctorjDiagram extends AsciidoctorjExtension {
     /**
      * Use JSyntrax,
      */
-    void useJSyntrax();
+    void useSyntrax();
 
     /**
      * Use JSyntrax and override the default version.
      *
      * @param ver New version
      */
-    void useJSyntrax(Object ver);
+    void useSyntrax(Object ver);
 }

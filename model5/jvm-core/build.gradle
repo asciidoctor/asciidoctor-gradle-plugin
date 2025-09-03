@@ -2,10 +2,12 @@ plugins {
     id 'org.asciidoctor.internal.model5.gradle.project.jvm'
 }
 
+// tag::hacking-asciidoctorj-output-formatter[]
 agProject {
+    // end::hacking-asciidoctorj-output-formatter[]
     withJdkVersionFromProperty('jdkVersionAsciidoctorj')
     withIntegrationTests()
-    withOfflineTestConfigurations()
+    withOfflineCacheConfiguration()
 
     configurePlugin(
             'org.asciidoctor.jvm.base',
@@ -28,26 +30,44 @@ agProject {
             'AsciidoctorJ Pdf Plugin',
             'Provides pdf formatters for all AsciidoctorJ toolchains',
             'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjPdfPlugin',
-            ['asciidoctorj']
+            ['asciidoctorj', 'pdf']
     )
 
+    // tag::hacking-asciidoctorj-output-formatter[]
+    configurePlugin(
+            'org.asciidoctor.jvm.epub', // <.>
+            'AsciidoctorJ EPUB Plugin', // <.>
+            'Provides EPUB formatters for all AsciidoctorJ toolchains', // <.>
+            'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjEpubPlugin', // <.>
+            ['asciidoctorj', 'epub', 'epub3'] // <.>
+    )
+    // end::hacking-asciidoctorj-output-formatter[]
+
+    // tag::hacking-asciidoctorj-output-formatter[]
     withVersionSubstitution("${project.name}.properties", [
+            // end::hacking-asciidoctorj-output-formatter[]
             BATIK    : versionOf('asciidoctorjDiagramBatik'),
             DIAGRAM  : versionOf('asciidoctorjDiagram'),
             DITAA    : versionOf('asciidoctorjDiagramDitaa'),
+            // tag::hacking-asciidoctorj-output-formatter[]
+            EPUB     : versionOf('asciidoctorjEpub'), // <.>
+            // end::hacking-asciidoctorj-output-formatter[]
             GROOVYDSL: versionOf('asciidoctorjGroovyDsl'),
             JSYNTRAX    : versionOf('asciidoctorjDiagramJSyntrax'),
             PDF      : versionOf('asciidoctorjPdf'),
             PLANTUML : versionOf('asciidoctorjDiagramPlantUml'),
             VERSION  : versionOf('asciidoctorj'),
+            // tag::hacking-asciidoctorj-output-formatter[]
     ])
-}
+    // end::hacking-asciidoctorj-output-formatter[]
 
-configurations {
-    cachingOnly
+// tag::hacking-asciidoctorj-output-formatter[]
 }
+// end::hacking-asciidoctorj-output-formatter[]
 
+// tag::hacking-asciidoctorj-output-formatter[]
 dependencies {
+    // end::hacking-asciidoctorj-output-formatter[]
     compileOnly(libs.asciidoctorjApi)
     api project(':asciidoctor5-core-plugin')
     implementation(libs.grolifantApi)
@@ -60,4 +80,8 @@ dependencies {
     cachingOnly(libs.asciidoctorjDiagramDitaa)
     cachingOnly(libs.asciidoctorjDiagramJSyntrax)
     cachingOnly(libs.asciidoctorjDiagramPlantUml)
+
+    // tag::hacking-asciidoctorj-output-formatter[]
+    cachingOnly(libs.asciidoctorjEpub) // <.>
 }
+// end::hacking-asciidoctorj-output-formatter[]

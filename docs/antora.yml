@@ -24,7 +24,11 @@ asciidoc:
     asciidoctorjs-conventions-plugin: org.asciidoctor.js
     asciidoctorjs-name: Asciidoctor.js
     asciidoctorjs-url: https://github.com/asciidoctor/asciidoctor.js
+    development-branch: development-4.x
     examples-model5-core-test: model5/core/test/groovy/org/asciidoctor/gradle/model5/core
+    examples-model5-jvm-integration-test: model5/jvm-core/integrationTest/groovy/org/asciidoctor/gradle/model5/jvm
+    examples-model5-jvm-main: model5/jvm-core/main/groovy/org/asciidoctor/gradle/model5/jvm
+    examples-model5-jvm-main-resources: model5/jvm-core/main/resources/META-INF/asciidoctor.gradle
     gradle-url: https://gradle.org/
     issues-asciidoctorj: https://github.com/asciidoctor/asciidoctorj/issues/
     issues-jruby: https://github.com/asciidoctor/asciidoctorj/issues/

@@ -55,7 +55,7 @@ class AsciidoctorjDiagramSpec extends IntegrationSpecification {
         'plantuml' | 'usePlantUml' | ~/^plantuml-example\.svg$/       | 1
         'diagram'  | 'useDiagram'  | ~/^(testd2.svg|testqrcode.png)$/ | 1
 //        'diagram'  | 'useDiagram'  | ~/^(testd2.svg|testqrcode.png)$/ | 2
-//        'jsyntrax' | 'useJSyntrax' | ~/foo/ | 1
+        'jsyntrax' | 'useSyntrax' | ~/^diag-syntrax-.+\.png$/ | 1
 //        'batik'    | 'useBatik'    | ~/foo/ | 1
     }
 

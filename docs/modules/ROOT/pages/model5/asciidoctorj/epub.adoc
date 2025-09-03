@@ -1,0 +1,41 @@
+= The {asciidoctorj-name} EPUB plugin
+
+.Minimal example
+[source,groovy,subs=+attributes]
+----
+plugins {
+  id 'org.asciidoctor.jvm.epub' version '{release-version}'
+}
+
+asciidoc {
+  publications {
+    main {
+      output('asciidoctorj', 'epub')
+    }
+  }
+}
+----
+
+== Configuring the output formatter
+
+[source,groovy]
+----
+import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjPdf
+
+asciidoc {
+  toolchains {
+    aciidoctorj {
+      registeredOutputFormatters {
+        epub(AsciidoctorjEpub) {
+          chapterLevel = 2 // <.>
+          stylesDir = '/path/to/styles' // <.>
+          frontmatterDir = 'src/docs/asciidoc/frontmatter' // <.>
+        }
+      }
+    }
+  }
+}
+----
+<.> Set the chapter level (1-5).
+<.> Set an alternative style dir.
+<.> Specify a frontmatter directory.

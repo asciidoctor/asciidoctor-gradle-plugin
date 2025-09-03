@@ -9,6 +9,7 @@
 * xref:model5/configure-publication.adoc[Configure publications]
 * xref:model5/configure-toolchains.adoc[Configure toolchains]
 * xref:model5/asciidoctorj/configure-diagram.adoc[]
+* xref:model5/asciidoctorj/epub.adoc[]
 * xref:model5/asciidoctorj/pdf.adoc[]
 
 .Classic (Deprecated) mode
@@ -28,4 +29,5 @@
 
 .Advanced
 * xref:advanced/implementing-a-new-toolchain.adoc[Implementing a new toolchain]
+* xref:advanced/new-asciidoctorj-output-formatter.adoc[Implementing an AsciidoctorJ output formatter]
 

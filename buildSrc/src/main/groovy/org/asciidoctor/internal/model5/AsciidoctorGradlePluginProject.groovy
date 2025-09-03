@@ -27,16 +27,6 @@ class AsciidoctorGradlePluginProject implements Plugin<Project> {
         }
 
         configureJava(project)
-
-//        final agProject = project.extensions.getByType(AsciidoctorGradleProjectExtension)
-//        final sourceSets = project.extensions.getByType(SourceSetContainer)
-//        final main = sourceSets.getByName(MAIN_SOURCE_SET_NAME)
-//
-//        project.dependencies.identity {
-//            add(main.implementationConfigurationName, gradleApi())
-//            add(main.apiConfigurationName, "org.ysb33r.gradle:grolifant5-herd:${agProject.versionOf('grolifant')}")
-//        }
-
         addMainDependencies(project)
         addTestDependencies(project)
 

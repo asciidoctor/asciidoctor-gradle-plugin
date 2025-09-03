@@ -1,4 +1,4 @@
-= The PDF plugin
+= The {asciidoctorj-name} PDF plugin
 
 .Minimal example
 [source,groovy,subs=+attributes]

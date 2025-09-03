@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// tag::hacking-asciidoctorj-output-formatter[]
 package org.asciidoctor.gradle.model5.jvm
 
+// end::hacking-asciidoctorj-output-formatter[]
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.toolchains.AsciidoctorToolchain
 import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjExtension
@@ -34,13 +36,17 @@ import java.util.function.Function
  *
  * @since 5.0
  */
+// tag::hacking-asciidoctorj-output-formatter[]
 @CompileStatic
 class JvmModel {
+    // end::hacking-asciidoctorj-output-formatter[]
     public static final String ASCIIDOCTORJ_GROUP = 'org.asciidoctor'
     public static final String ASCIIDOCTORJ_CORE_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj"
     public static final String ASCIIDOCTORJ_GROOVY_DSL_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-groovy-dsl"
     public static final String ASCIIDOCTORJ_PDF_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-pdf"
+    // tag::hacking-asciidoctorj-output-formatter[]
     public static final String ASCIIDOCTORJ_EPUB_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-epub3"
+    // end::hacking-asciidoctorj-output-formatter[]
     public static final String ASCIIDOCTORJ_LEANPUB_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctor-leanpub-markdown"
 
     public static final String ASCIIDOCTORJ_DIAGRAM_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-diagram"
@@ -254,4 +260,6 @@ class JvmModel {
             fc.configure(configurator)
         }
     }
+// tag::hacking-asciidoctorj-output-formatter[]
 }
+// end::hacking-asciidoctorj-output-formatter[]

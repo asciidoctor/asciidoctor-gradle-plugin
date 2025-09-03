@@ -201,7 +201,7 @@ class DefaultAsciidoctorjDiagram extends AbstractAsciidoctorjExtension implement
      * Use JSyntrax,
      */
     @Override
-    void useJSyntrax() {
+    void useSyntrax() {
         useDiagram()
         addToClasspath(JvmModel.ASCIIDOCTORJ_DIAGRAM_JSYNTRAX_DEPENDENCY, jsyntraxVersion)
     }
@@ -212,9 +212,9 @@ class DefaultAsciidoctorjDiagram extends AbstractAsciidoctorjExtension implement
      * @param ver New version
      */
     @Override
-    void useJSyntrax(Object ver) {
+    void useSyntrax(Object ver) {
         ccso.stringTools().updateStringProperty(jsyntraxVersion, ver)
-        useJSyntrax()
+        useSyntrax()
     }
 
     /**

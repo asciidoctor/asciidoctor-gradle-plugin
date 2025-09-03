@@ -81,10 +81,16 @@ class AsciidoctorGradleProjectExtension {
         }
     }
 
-    void withOfflineTestConfigurations() {
+    void withClassicOfflineTestConfigurations() {
         ['intTestOfflineRepo', 'intTestOfflineRepo2'].each {
             projectOperations.configurations.createLocalRoleFocusedConfiguration(it, "${it}Resolved")
             configurations.getByName(it).extendsFrom(configurations.getByName('compileOnly'))
+        }
+    }
+
+    void withOfflineCacheConfiguration() {
+        project.configurations.create('cachingOnly').tap {
+            canBeConsumed = false
         }
     }
 
@@ -124,6 +130,9 @@ class AsciidoctorGradleProjectExtension {
                     fcd.filter org.apache.tools.ant.filters.ReplaceTokens,
                             beginToken: '@@', endToken: '@@',
                             tokens: values
+                    fcd.filter { String line ->
+                        line.startsWith('#') ? null : line
+                    }
                 }
             }
         }

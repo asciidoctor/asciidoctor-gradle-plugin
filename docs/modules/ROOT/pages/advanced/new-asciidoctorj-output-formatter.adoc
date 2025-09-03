@@ -1,0 +1,187 @@
+= New output formatter for {asciidoctorj-name}
+
+== Adding an internal output formatter
+
+This section describes the minimum requirements of adding a new output formatter to the `model5/jvm-core` subproject.
+
+And by example this will show how to add the EPUB backend as an output formatter.
+
+=== Add the output formatter
+
+==== Add the interface
+
+Firstly, add the interface to `org.asciidoctor.gradle.model5.jvm.formatters`.
+By convention, the name is prefixed with `Asciidoctorj`.
+
+.AsciidoctorjEpub.java
+[source,java]
+----
+include::example${examples-model5-jvm-main}/formatters/AsciidoctorjEpub.java[tags=hacking-asciidoctorj-output-formatter]
+----
+<.> Extend the `AsciidoctorjOutputFormatterVersioned` interface so that build script authors can override the version of `asciidoctorj-epub` if they so wish.
+
+==== Add the Maven coordinate to code
+
+Go to the `org.asciidoctor.gradle.model5.jvm.JvmModel` class and add a constant for the Maven module coordinate.
+
+.JvmModel
+[source,groovy]
+----
+include::example${examples-model5-jvm-main}/JvmModel.groovy[tags=hacking-asciidoctorj-output-formatter]
+----
+
+==== Add the artifact to the version catalog
+
+.gradle/libs.versions.toml
+[source,toml]
+----
+include::example$libs.versions.toml[tags=hacking-asciidoctorj-output-formatter]
+----
+
+==== Update the version properties file
+
+Edit the `asciidoctor5-jvm-core-plugin.properties` file and add a version token.
+
+.resources/META-INF/asciidoctor.gradle/asciidoctor5-jvm-core-plugin.properties
+[source,properties]
+----
+include::example${examples-model5-jvm-main-resources}/asciidoctor5-jvm-core-plugin.properties[tags=hacking-asciidoctorj-output-formatter]
+----
+
+==== Update the build script
+
+Go to the subproject's `build.gradle` and add the substitutions and plugin details.
+(The plugin itself will be implemented further down in these steps).
+
+.jvm-core/build.gradle
+[source,groovy]
+----
+include::example$model5/jvm-core-build.gradle[tags=hacking-asciidoctorj-output-formatter]
+----
+<.> The identifier of the plugin.
+<.> A name for the plugin that will provide this output formatter.
+<.> A description of the plugin.
+<.> The actual class that will implement that plugin.
+  Note that the convention is to prefix with `Asciidoctorj` and postfix with `Plugin`.
+<.> Add some useful tags.
+<.> Get the version from the version catalog.
+<.> Ensure that the artifact is cached for offline testing.
+
+==== Add the implementation
+
+Now add the implementation which by convention is prefixed with `DefaultAsciidoctorj` and placed in `org.asciidoctor.gradle.model5.jvm.internal.formatters`.
+
+.DefaultAsciidoctorjEpub.groovy
+[source,groovy]
+----
+include::example${examples-model5-jvm-main}/internal/formatters/DefaultAsciidoctorjEpub.groovy[tags=hacking-asciidoctorj-output-formatter]
+----
+<.> Extend `AbstractAsciidoctorjFormatterVersioned` which is the implementation of  `AsciidoctorjOutputFormatterVersioned`.
+  Also implement the interface that you defined previously - being `AsciidoctorjEpub` in this example.
+<.> Define the default name for when the output formatter is registered by the `org.asciidoctor.jvm` plugin.
+<.> Define the {asciidoctorj-name} backend name.
+  If it is the same as the default output formatter name, then just assign the one to the other.
+<.> If the backend does not require additional resources to be copied to the output directory, then set this to `false`.
+  Otherwise, in cases like HTML backends, set it to `true`.
+<.> This needs to be the backend name.
+<.> Set the name of the Maven coordinate, that was defined above.
+<.> Set the type that the `showAsciidoctorToolchains` task must display.
+  This is also the type that build script users will use to perform configuration.
+  Normally it is just the type of the interface.
+
+==== Add a factory
+
+The factory class is so that instances of the output formatter can be created and placed in the container of registered output formatters.
+This factory is also places inside `org.asciidoctor.gradle.model5.jvm.internal.formatters` and by convention is prefixed with `Asciidoctorj` and postfixed with `Factory.
+
+.AsciidoctorjEpubFactory.groovy
+[source,groovy]
+----
+include::example${examples-model5-jvm-main}/internal/formatters/AsciidoctorjEpubFactory.groovy[tags=hacking-asciidoctorj-output-formatter]
+----
+<.> Reference the interface name
+<.> The return type of the `create` method is the interface name.
+<.> Pass the implementation class as that is what we really need to instantiate.
+
+==== Add a plugin
+
+A plugin needs to be added to `org.asciidoctor.gradle.model5.jvm.plugins`.
+By convention, this class is prefixed with `Asciidoctorj` and postfixed with `Plugin`.
+
+.AsciidoctorJEpubPlugin.groovy
+[source,groovy]
+----
+include::example${examples-model5-jvm-main}/plugins/AsciidoctorjEpubPlugin.groovy[tags=hacking-asciidoctorj-output-formatter]
+----
+<.> Reference the interface of the output formatter
+<.> Reference the factory of the output formatter
+<.> Once again, reference the interface of the output formatter
+<.> Provide the name of the default output formatter that will be registered on the toolchains.
+
+==== Add an integration test
+
+Go to the `jvm-core/src/integrationTest/groovy` directory and add an integration test in the `org.asciidoctor.gradle.model5.jvm.formatters` package.
+
+.AsciidoctorjEpubSpec
+[source,groovy]
+----
+include::example${examples-model5-jvm-integration-test}/formatters/AsciidoctorjEpubSpec.groovy[tags=hacking-asciidoctorj-output-formatter]
+----
+<.> Set the name of the task.
+<.> Set the output directory.
+<.> Check that the document was created.
+<.> Check that resources were not copied if you set `copyResources = false` in the implementation class.
+  If you did the opposite, then invert the logic of this test.
+<.> Set the correct plugin name.
+<.> This configures the build script to create an output.
+  Set the second parameter to the correct value.
+
+You can extend this class with further tests as you expand the output formatter with additional functionality.
+
+==== Configure specific attributes
+
+An output formatter might require attributes that are specific to that output formatter.
+You can add additional configuration to the class and then configure a provider to send those to the {asciidoctorj-name} engine during the conversion process.
+
+To further this example the `epub-chapter-level`, `epub3-frontmatterdir` and `epub3-stylesdir` will be made configurable from the DSL.
+Return to the interface first and add methods for these.
+
+.AsciidoctorjEpub.java
+[source,java]
+----
+include::example${examples-model5-jvm-main}/formatters/AsciidoctorjEpub.java[tags=hacking-asciidoctorj-output-formatter-attrs]
+----
+<.> Add methods to the interface.
+
+Now go to the implementation class and configure these methods.
+
+
+.DefaultAsciidoctorjEpub.groovy
+[source,groovy]
+----
+include::example${examples-model5-jvm-main}/internal/formatters/DefaultAsciidoctorjEpub.groovy[tags=hacking-asciidoctorj-output-formatter-attrs-fields,indent=0]
+----
+<.> Store the optional level as a property.
+<.> Store the optional style directory as a directory property.
+<.> Store the optional frontmatter directory as a directory property.
+
+Initialise these values in the injected constructor.
+
+.DefaultAsciidoctorjEpub.groovy
+[source,groovy]
+----
+include::example${examples-model5-jvm-main}/internal/formatters/DefaultAsciidoctorjEpub.groovy[tags=hacking-asciidoctorj-output-formatter-attrs-ctor,indent=0]
+----
+<.> Add the chapter level to the attributes only if the property was set.
+<.> Set the styles directory to the attributes only if the property was set.
+<.> Set the frontmatter directory to the attributes only if the property was set.
+
+Finally, allow the properties to be configured.
+
+.DefaultAsciidoctorjEpub.groovy
+[source,groovy]
+----
+include::example${examples-model5-jvm-main}/internal/formatters/DefaultAsciidoctorjEpub.groovy[tags=hacking-asciidoctorj-output-formatter-attrs,indent=0]
+----
+<.> `ccso.fsOperations` is available from the base class.
+  `updateDirectoryProperty` is an invaluable utility to set a `DirectoryProperty` from any object that is convertible to a file.

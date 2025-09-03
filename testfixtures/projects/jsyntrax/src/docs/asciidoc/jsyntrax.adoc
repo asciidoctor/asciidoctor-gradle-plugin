@@ -1,7 +1,7 @@
 = Diagrams
 
 .This is a graph
-[jsyntrax]
+[syntrax]
 ....
 indentstack(10,
   line(opt('-'), choice('0', line('1-9', loop(None, '0-9'))),

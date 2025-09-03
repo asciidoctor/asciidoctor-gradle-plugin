@@ -1,4 +1,6 @@
+# tag::hacking-asciidoctorj-output-formatter[]
 [versions]
+# end::hacking-asciidoctorj-output-formatter[]
 # Keep in alphabetical order, please
 asciidoctorj = "3.0.0"
 asciidoctorjDiagram = "3.0.1"
@@ -6,7 +8,9 @@ asciidoctorjDiagramBatik = "1.17"
 asciidoctorjDiagramDitaa = "1.0.3"
 asciidoctorjDiagramJSyntrax = "1.38.2"
 asciidoctorjDiagramPlantUml = "1.2025.3"
+# tag::hacking-asciidoctorj-output-formatter[]
 asciidoctorjEpub = "2.2.0"
+# end::hacking-asciidoctorj-output-formatter[]
 asciidoctorjGroovyDsl = "2.0.2"
 asciidoctorjPdf = "2.3.19"
 asciidoctorjs = "3.0.0"
@@ -30,7 +34,9 @@ pluginLicense = "0.16.1"
 pluginOS = "2.0.0"
 spock = "2.3-groovy-3.0"
 
+# tag::hacking-asciidoctorj-output-formatter[]
 [libraries]
+# end::hacking-asciidoctorj-output-formatter[]
 # Keep in alphabetical order, please
 asciidoctorj = { module = "org.asciidoctor:asciidoctorj", version.ref = "asciidoctorj" }
 asciidoctorjApi = { module = "org.asciidoctor:asciidoctorj-api", version.ref = "asciidoctorj" }
@@ -39,7 +45,9 @@ asciidoctorjDiagramBatik = { module = "org.asciidoctor:asciidoctorj-diagram-bati
 asciidoctorjDiagramDitaa = { module = "org.asciidoctor:asciidoctorj-diagram-ditaamini", version.ref = "asciidoctorjDiagramDitaa" }
 asciidoctorjDiagramJSyntrax = { module = "org.asciidoctor:asciidoctorj-diagram-jsyntrax", version.ref = "asciidoctorjDiagramJSyntrax" }
 asciidoctorjDiagramPlantUml = { module = "org.asciidoctor:asciidoctorj-diagram-plantuml", version.ref = "asciidoctorjDiagramPlantUml" }
+# tag::hacking-asciidoctorj-output-formatter[]
 asciidoctorjEpub = { module = "org.asciidoctor:asciidoctorj-epub3", version.ref = "asciidoctorjEpub" }
+# end::hacking-asciidoctorj-output-formatter[]
 asciidoctorjGroovyDsl = { module = "org.asciidoctor:asciidoctorj-groovy-dsl", version.ref = "asciidoctorjGroovyDsl" }
 asciidoctorjPdf = { module = "org.asciidoctor:asciidoctorj-pdf", version.ref = "asciidoctorjPdf" }
 cglib = { module = "cglib:cglib-nodep", version.ref = "cglib" }
