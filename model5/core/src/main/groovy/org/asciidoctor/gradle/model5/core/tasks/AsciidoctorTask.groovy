@@ -93,6 +93,7 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
         conversionSettings.tap {
             backend.set(outputData.backend)
             destinationDir.set(outputData.outputDir)
+            embedded.set(outputData.embedded)
         }
         this.resourcesCopySpec.set(outputData.copyResources)
         this.conversionSettings.docType.set(outputData.docType)

@@ -102,4 +102,10 @@ public interface LauncherParameters extends WorkParameters {
      * @return Location of a log file.
      */
     RegularFileProperty getLogFile();
+
+    /**
+     * Whether embedded processing should be performed.
+     * @return Embedded flag.
+     */
+    Property<Boolean> getEmbedded();
 }

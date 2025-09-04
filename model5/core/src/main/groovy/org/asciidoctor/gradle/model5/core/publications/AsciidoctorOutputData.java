@@ -17,9 +17,7 @@ package org.asciidoctor.gradle.model5.core.publications;
 
 import org.asciidoctor.gradle.model5.core.AsciidoctorNamedBackend;
 import org.asciidoctor.gradle.model5.core.DocType;
-import org.asciidoctor.gradle.model5.core.SafeMode;
 import org.gradle.api.Named;
-import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.Directory;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.provider.Provider;
@@ -88,4 +86,11 @@ public interface AsciidoctorOutputData extends Named {
      * @return Classpath
      */
     FileCollection getAdditionalClasspath();
+
+    /**
+     * Whether embedded processing should be performed.
+     *
+     * @return Embedded provider
+     */
+    Provider<Boolean> getEmbedded();
 }

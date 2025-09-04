@@ -20,6 +20,8 @@ import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjDocbook
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjHtml5
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.gradle.api.Project
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 
 import javax.inject.Inject
 
@@ -36,10 +38,22 @@ class DefaultAsciidoctorjHtml5 extends AbstractAsciidoctorjFormatter implements 
     public static final String BACKEND_NAME = 'html5'
 
     final boolean copyResources = true
+    private final Property<Boolean> embedded
 
     @Inject
     DefaultAsciidoctorjHtml5(String name, AsciidoctorjToolchain tc, Project project) {
         super(name,BACKEND_NAME, tc,project)
+        this.embedded = project.objects.property(Boolean).convention(false)
+    }
+
+    @Override
+    void setEmbedded(boolean flag) {
+        this.embedded.set(flag)
+    }
+
+    @Override
+    Provider<Boolean> getEmbedded() {
+        this.embedded
     }
 
     protected final Class<?> getDslType() {

@@ -15,6 +15,8 @@
  */
 package org.asciidoctor.gradle.model5.js.formatters;
 
+import org.asciidoctor.gradle.model5.core.formatters.HasEmbedded;
+
 /**
  * HTML page generated from AsciiDoc.
  *
@@ -22,5 +24,5 @@ package org.asciidoctor.gradle.model5.js.formatters;
  *
  * @since 5.0
  */
-public interface AsciidoctorjsHtml5 extends AsciidoctorjsOutputFormatter {
+public interface AsciidoctorjsHtml5 extends AsciidoctorjsOutputFormatter, HasEmbedded {
 }

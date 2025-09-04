@@ -55,6 +55,27 @@ class AsciidoctorjsHtml5Spec extends IntegrationSpecification {
         !fileExists(outputDir, 'images2/fake2.txt')
     }
 
+    void 'HTML formatter can produce document fragments'() {
+        setup:
+        final taskName = 'asciidoctorHtml'
+        final outputDir = new File(buildDir, 'docs/asciidoc/html')
+
+        writeBuildFile()
+        copyTestProject('resources')
+
+        buildFile << '''
+        asciidoc.toolchains.asciidoctorjs.registeredOutputFormatters.html.embedded = true
+        '''
+
+        when:
+        final result = getGradleRunner(IS_GROOVY_DSL, [taskName]).build()
+
+        then: 'Task completed successfully'
+        result.task(":${taskName}").outcome == SUCCESS
+
+        and: 'Content exists'
+        fileExists(outputDir, 'simple.html')
+    }
     void writeBuildFile() {
         writeBasicBuildFileGroovy([PLUGIN_ID])
         addOutputToSourceSetGroovy(DEFAULT_TOOLCHAIN, DefaultAsciidoctorjsHtml5.DEFAULT_NAME, DEFAULT_PUBLICATION)

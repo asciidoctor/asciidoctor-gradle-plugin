@@ -20,6 +20,7 @@ import org.asciidoctor.gradle.model5.core.AsciidoctorNamedBackend
 import org.asciidoctor.gradle.model5.core.DocType
 import org.asciidoctor.gradle.model5.core.extensions.AsciidoctorExtension
 import org.asciidoctor.gradle.model5.core.formatters.AsciidoctorOutputFormatter
+import org.asciidoctor.gradle.model5.core.formatters.HasEmbedded
 import org.asciidoctor.gradle.model5.core.publications.AsciidoctorOutputData
 import org.asciidoctor.gradle.model5.core.publications.AsciidoctorSourceSet
 import org.asciidoctor.gradle.model5.core.toolchains.AsciidoctorToolchain
@@ -56,6 +57,7 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
     private final SetProperty<String> moduleRequires
     private final Property<String> formatterName
     private final Property<String> toolchainName
+    private final Property<Boolean> embedded
     private FileCollection additionalClasspath
 
     @Inject
@@ -72,6 +74,7 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
         this.moduleRequires = objectFactory.setProperty(String)
         this.formatterName = objectFactory.property(String)
         this.toolchainName = objectFactory.property(String)
+        this.embedded = objectFactory.property(Boolean).convention(false)
     }
 
     @Override
@@ -148,11 +151,16 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
         this.additionalClasspath
     }
 
+    @Override
+    Provider<Boolean> getEmbedded() {
+        this.embedded
+    }
+
     void configureFrom(
-            String publicationName,
-            AsciidoctorToolchain toolchain,
-            AsciidoctorOutputFormatter formatter,
-            AsciidoctorSourceSet sourceSet
+        String publicationName,
+        AsciidoctorToolchain toolchain,
+        AsciidoctorOutputFormatter formatter,
+        AsciidoctorSourceSet sourceSet
     ) {
         final outSubdir = PublicationUtils.outputPathFor(ccso.fsOperations(), publicationName, name)
         this.outDir.set(layout.buildDirectory.map { it.dir(outSubdir) })
@@ -180,5 +188,9 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
         }
         allRequires.addAll(formatter.requires)
         this.moduleRequires.set(allRequires)
+
+        if (formatter instanceof HasEmbedded) {
+            this.embedded.set(((HasEmbedded) formatter).embedded)
+        }
     }
 }

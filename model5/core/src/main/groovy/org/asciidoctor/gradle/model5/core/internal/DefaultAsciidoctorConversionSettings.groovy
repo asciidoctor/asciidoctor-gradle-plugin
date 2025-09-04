@@ -48,6 +48,7 @@ class DefaultAsciidoctorConversionSettings implements AsciidoctorConversionSetti
     final MapProperty<String, String> attributes
     final Property<DocType> docType
     final SetProperty<Pattern> fatalWarnings
+    final Property<Boolean> embedded
 
     @Inject
     DefaultAsciidoctorConversionSettings(ObjectFactory objectFactory) {
@@ -60,5 +61,6 @@ class DefaultAsciidoctorConversionSettings implements AsciidoctorConversionSetti
         this.attributes = objectFactory.mapProperty(String, String)
         this.docType = objectFactory.property(DocType)
         this.fatalWarnings = objectFactory.setProperty(Pattern)
+        this.embedded = objectFactory.property(Boolean).convention(false)
     }
 }

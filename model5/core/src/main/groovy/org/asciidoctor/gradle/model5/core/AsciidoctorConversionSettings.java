@@ -25,7 +25,12 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * Described the source documents, attributes etc required for a conversion.
+ * Describes the source documents, attributes etc. required for a conversion.
+ *
+ * <p>
+ *     This is a focus on the conversions themselves, and not the engine for
+ *     running the conversion.
+ * </p>
  *
  * @author Schalk W. Cronjé
  * @since 5.0
@@ -94,4 +99,16 @@ public interface AsciidoctorConversionSettings {
      * @return List of patterns. Must be present, but list can be empty.
      */
     Provider<Set<Pattern>> getFatalWarnings();
+
+    /**
+     * Whether embedded processing should be performed.
+     *
+     * <p>
+     *  This is an option that only makes sense for certain backends.
+     * </p>
+     *
+     * @return Provider that will return {@code true} if embedded processing
+     * should be performed
+     */
+    Provider<Boolean> getEmbedded();
 }

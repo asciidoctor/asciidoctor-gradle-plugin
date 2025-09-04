@@ -53,7 +53,6 @@ abstract class LauncherWorker implements WorkAction<LauncherParameters> {
         }
 
         // TODO: Handle extensions
-        // TODO: Handle errors (fatal messages)
 
         final destDir = parameters.destinationDir.get().asFile
         destDir.mkdirs()
@@ -98,6 +97,7 @@ abstract class LauncherWorker implements WorkAction<LauncherParameters> {
             catalogAssets(eo.catalogAssets)
             eruby(eo.eruby)
             sourcemap(eo.sourceMap)
+            standalone(!parameters.embedded.get())
         }
 
         optionsBuilder.build()

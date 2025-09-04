@@ -130,6 +130,7 @@ class DefaultLauncher implements AsciidoctorLauncher {
                     attributes.set(conversionSettings.attributes)
                     engineOptions.set(launcherEngineOptions)
                     logFile.set(jobLogDir.map { it.file("${LOG_EVENTS_FILE_PREFIX}.${index}") })
+                    embedded.set(conversionSettings.embedded.orElse(false))
                 }
             }
             ++index

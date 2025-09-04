@@ -40,11 +40,11 @@ import org.ysb33r.grolifant5.api.core.StringTools
 import javax.inject.Inject
 import java.util.regex.Pattern
 
+import static java.util.Collections.EMPTY_LIST
 import static org.asciidoctor.gradle.model5.core.internal.tasks.LogProcessor.LOG_EVENTS_FILE_PREFIX
 import static org.asciidoctor.gradle.model5.core.internal.tasks.LogProcessor.parseLogs
 import static org.ysb33r.grolifant5.api.core.ExecTools.OutputType.CAPTURE
 import static org.ysb33r.grolifant5.api.core.StringTools.COLON
-import static org.ysb33r.grolifant5.api.core.StringTools.EMPTY
 import static org.ysb33r.grolifant5.api.core.StringTools.EMPTY
 
 /**
@@ -104,6 +104,7 @@ class DefaultLauncher implements AsciidoctorLauncher {
         }.zip(aliasName) { ldir, alias ->
             ldir.dir(alias)
         }
+        // -e, -s
         final fixedArgs = [
             '-v',
             '-b', conversionSettings.backend.get().backend,
@@ -111,13 +112,17 @@ class DefaultLauncher implements AsciidoctorLauncher {
             '-B', conversionSettings.baseDir.get().asFile.absolutePath,
         ] + executionsSettings.moduleRequires.get().collectMany { ['-r', it] }
 
+        final embedded = conversionSettings.embedded.orElse(false).map {
+            it ? ['-e', '-s'] : EMPTY_LIST
+        }.get()
+
         final attrs = conversionSettings.attributes.get().collectMany { k, v ->
             if (v) {
                 ['-a', "${k}=${v}".toString()]
             } else {
                 ['-a', k]
             }
-        } + (conversionSettings.docType.present ? ['-d', conversionSettings.docType.get().lc()] : [])
+        } + (conversionSettings.docType.present ? ['-d', conversionSettings.docType.get().lc()] : EMPTY_LIST)
 
         int index = 1
         groups.each { parent, files ->
@@ -128,6 +133,7 @@ class DefaultLauncher implements AsciidoctorLauncher {
             sourcePaths.each { partition ->
                 final result = execTools.exec(CAPTURE, CAPTURE) { spec ->
                     execSpec.copyTo(spec)
+                    spec.args(embedded)
                     spec.args(fixedArgs)
                     spec.args(destArgs)
                     spec.args(attrs)
@@ -152,26 +158,24 @@ class DefaultLauncher implements AsciidoctorLauncher {
             it.find(LOG_LINE_MATCHER)
         }
 
-        if (!logLines.empty) {
-            final logFile = dir.file("${LOG_EVENTS_FILE_PREFIX}.${index}").asFile
-            logFile.parentFile.mkdirs()
-            logFile.withWriter { w ->
-                w.println(LogProcessor.OPEN_RECORDS)
-                logLines.each { line ->
-                    final parts = line.split(COLON)
-                    if (parts.size() >= 5) {
-                        final data = [
-                            severity: parts[1].trim(),
-                            message : parts[4].trim(),
-                            path    : parts[3].trim(),
-                            file    : parts.size() >= 6 ? parts[5].trim() : EMPTY,
-                            line    : parts[2].replaceFirst(~/\s?line\s/, EMPTY)
-                        ]
-                        w.println(JsonOutput.toJson(data))
-                    }
+        final logFile = dir.file("${LOG_EVENTS_FILE_PREFIX}.${index}").asFile
+        logFile.parentFile.mkdirs()
+        logFile.withWriter { w ->
+            w.println(LogProcessor.OPEN_RECORDS)
+            logLines.each { line ->
+                final parts = line.split(COLON)
+                if (parts.size() >= 5) {
+                    final data = [
+                        severity: parts[1].trim(),
+                        message : parts[4].trim(),
+                        path    : parts[3].trim(),
+                        file    : parts.size() >= 6 ? parts[5].trim() : EMPTY,
+                        line    : parts[2].replaceFirst(~/\s?line\s/, EMPTY)
+                    ]
+                    w.println(JsonOutput.toJson(data))
                 }
-                w.println(LogProcessor.CLOSE_RECORDS)
             }
+            w.println(LogProcessor.CLOSE_RECORDS)
         }
     }
 
