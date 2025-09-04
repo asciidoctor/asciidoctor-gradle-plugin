@@ -5,6 +5,7 @@ import nl.javadude.gradle.plugins.license.LicenseExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
+import org.gradle.api.tasks.javadoc.Groovydoc
 import org.gradle.api.tasks.testing.Test
 import org.ysb33r.grolifant5.api.core.plugins.GrolifantServicePlugin
 
@@ -32,6 +33,7 @@ class CommonBasePlugin implements Plugin<Project> {
         configureRepositories(project)
         configureLicense(project)
         configureTestCommons(project)
+        configureGroovydocLinks(project)
     }
 
     private void configureRepositories(Project project) {
@@ -69,6 +71,21 @@ class CommonBasePlugin implements Plugin<Project> {
         project.tasks.withType(Test).configureEach {
             it.systemProperty('IS_OFFLINE', offline)
             it.systemProperty('OFFLINE_REPO', new File(project.rootDir, '.offline-repo').absolutePath)
+        }
+    }
+
+    private void configureGroovydocLinks(Project project) {
+        final agProject = project.extensions.getByType(AsciidoctorGradleProjectExtension)
+        project.tasks.withType(Groovydoc).configureEach { t ->
+            t.include('**/*.java')
+            t.link(
+                "https://grolifant.ysb33r.org/grolifant-plugin-development/${agProject.versionOf('grolifant')}/project-artifacts/_attachments/-grolifant5-core/groovydoc/",
+                'org.ysb33r.grolifant5.api'
+            )
+            t.link(
+                "https://docs.gradle.org/${project.gradle.gradleVersion}/javadoc",
+                'org.gradle'
+            )
         }
     }
 }

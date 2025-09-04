@@ -39,26 +39,8 @@ class AsciidoctorGradleGroovyProject implements Plugin<Project> {
 
         addDefaultVersions(project)
         configureIdea(project)
-//        configureRepositories(project)
-//        configureJava(project)
     }
 
-//    void configureRepositories(Project project) {
-//        project.repositories.mavenCentral()
-//        project.repositories.gradlePluginPortal()
-//
-//        if (project.extensions.getByType(AsciidoctorGradleProjectExtension).snapshot) {
-//            project.repositories.mavenLocal()
-//        }
-//    }
-
-//    void configureJava(Project project) {
-//        final java = project.extensions.getByType(JavaPluginExtension)
-//        final ver = project.providers.gradleProperty('jdkVersion').orElse('8').get()
-//        java.toolchain {
-//            it.languageVersion.set(JavaLanguageVersion.of(ver))
-//        }
-//    }
 
     @CompileDynamic
     void addDefaultVersions(Project project) {

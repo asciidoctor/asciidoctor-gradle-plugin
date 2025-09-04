@@ -190,13 +190,14 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
     @Internal
     boolean parallelMode = true
 
-    /** Set fork options for {@link #JAVA_EXEC} and {@link #OUT_OF_PROCESS} modes.
+    /**
+     * Set fork options for {@link #JAVA_EXEC} and {@link #OUT_OF_PROCESS} modes.
      *
      * These options are ignored if {@link #inProcess} {@code ==} {@link #IN_PROCESS}.
      *
      * @param configurator Closure that configures a {@link JavaForkOptions} instance.
      *
-     * @deprecated Use {@link #jvm} instead.
+     * @deprecated Use {@link org.ysb33r.grolifant5.api.core.runnable.AbstractJvmModelExecTask#jvm} instead.
      */
     @Deprecated
     void forkOptions(@DelegatesTo(JavaForkOptionsWithEnvProvider) Closure configurator) {
@@ -209,7 +210,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
      *
      * @param configurator Action that configures a {@link JavaForkOptions} instance.
      *
-     * @deprecated Use {@link #jvm} instead.
+     * @deprecated Use {@link org.ysb33r.grolifant5.api.core.runnable.AbstractJvmModelExecTask#jvm} instead.
      */
     @Deprecated
     void forkOptions(Action<JavaForkOptionsWithEnvProvider> configurator) {
