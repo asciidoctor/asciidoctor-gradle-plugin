@@ -36,8 +36,11 @@ class PublicationFactory implements NamedDomainObjectFactory<AsciidoctorPublicat
     private final ObjectFactory objectFactory
     private final AsciidoctorModelExtension parent
     private static final List<String> INVALID_NAMES = [
-            'all',
-            'toolchains'
+        'all',
+        'toolchains',
+        'gemjar',
+        'gems'
+
     ].asImmutable()
 
     PublicationFactory(Project project, AsciidoctorModelExtension parent) {
@@ -47,8 +50,8 @@ class PublicationFactory implements NamedDomainObjectFactory<AsciidoctorPublicat
 
     @Override
     AsciidoctorPublication create(String name) {
-        if(name.toLowerCase(Locale.US) in INVALID_NAMES) {
-            throw new InvalidPublicationName("'${name}' cannot be used as a publication name")
+        if (name.toLowerCase(Locale.US) in INVALID_NAMES) {
+            throw new InvalidPublicationName("'${name}' is reserved and cannot be used as a publication name")
         }
         objectFactory.newInstance(AsciidoctorPublication, name, parent)
     }

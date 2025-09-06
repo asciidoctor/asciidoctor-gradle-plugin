@@ -22,16 +22,23 @@ import org.asciidoctor.gradle.model5.core.toolchains.ProcessingOptions
 import org.asciidoctor.gradle.model5.jvm.engines.AsciidoctorjEngine
 import org.asciidoctor.gradle.model5.jvm.engines.EngineOptions
 import org.asciidoctor.gradle.model5.jvm.engines.ExecutionContext
+import org.asciidoctor.gradle.model5.jvm.internal.gems.GemUtils
+import org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjGemsPlugin
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.gradle.api.Action
 import org.gradle.api.Project
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Provider
 import org.ysb33r.grolifant5.api.core.ClosureUtils
 
 import javax.inject.Inject
 
+import static java.util.Collections.EMPTY_LIST
+
 @CompileStatic
 class DefaultAsciidoctorjToolchain extends AbstractAsciidoctorToolchain implements AsciidoctorjToolchain {
+
+    private final ListProperty<String> prepareTasks
 
     @Delegate
     private final AsciidoctorjEngine engine
@@ -46,6 +53,14 @@ class DefaultAsciidoctorjToolchain extends AbstractAsciidoctorToolchain implemen
 
         this.engine = objectFactory.newInstance(AsciidoctorjEngine, name)
         this.processingOptions = objectFactory.newInstance(DefaultProcessingOptions)
+        this.prepareTasks = objectFactory.listProperty(String).convention(EMPTY_LIST)
+
+        project.pluginManager.withPlugin(AsciidoctorjGemsPlugin.PLUGIN_ID) {
+            addPrepareTasks(
+                GemUtils.nameForGemPrepareTask(name),
+                GemUtils.nameForJarPrepareTask(name)
+            )
+        }
     }
 
     /**
@@ -98,5 +113,24 @@ class DefaultAsciidoctorjToolchain extends AbstractAsciidoctorToolchain implemen
     @Override
     String getDisplayType() {
         AsciidoctorjToolchain.class.canonicalName
+    }
+
+    /**
+     * By default this is empty, but if the GEM plugin is applied, two more tasks will appear in this list.
+     *
+     * @return List of preparation tasks.
+     */
+    @Override
+    Iterable<String> getToolchainPreparationTaskNames() {
+        prepareTasks.get()
+    }
+
+    /**
+     * Add additional prepare tasks.
+     *
+     * @param tasks One of more tasks to add.
+     */
+    void addPrepareTasks(String... tasks) {
+        this.prepareTasks.addAll(tasks)
     }
 }

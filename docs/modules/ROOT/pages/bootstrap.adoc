@@ -10,6 +10,7 @@ For classic operation see xref:classic/quick-start.adoc[] instead.
 plugins {
     id 'org.asciidoctor.jvm' version '{release-version}' // <.>
     id 'org.asciidoctor.jvm.epub' version '{release-version}' // <.>
+    id 'org.asciidoctor.jvm.gems' version '{release-version}' // <.>
     id 'org.asciidoctor.jvm.pdf' version '{release-version}' // <.>
     id 'org.asciidoctor.js' version '{release-version}' // <.>
     id 'org.asciidoctor.js.docbook' version '{release-version}' // <.>
@@ -18,6 +19,7 @@ plugins {
 <.> The convention plugin for working with {asciidoctorj-name}.
   Applies `org.asciidoctor.jvm.base` and also creates a default toolchain called `asciidoctorj`.
 <.> Registers the output formatter for creating EPUB files.
+<.> Adds support for adding additional GEMs to the execution classpath.
 <.> Applies `org.asciidoctor.core.pdf-themes` and also registers the output formatter for creating PDF files.
 <.> The convention plugin for working with {asciidoctorjs-name}.
   Applies `org.asciidoctor.jvm.base` and also creates a default toolchain called `asciidoctorjs`.
@@ -57,6 +59,7 @@ asciidoctorPlugin = "{release-version}"
 [plugins]
 asciidoctorj = { id ="org.asciidoctor.jvm", version.ref = "asciidoctorPlugin" }
 asciidoctorjEpub = { id ="org.asciidoctor.jvm.epub", version.ref = "asciidoctorPlugin" }
+asciidoctorjGems = { id ="org.asciidoctor.jvm.gems", version.ref = "asciidoctorPlugin" }
 asciidoctorjPdf = { id ="org.asciidoctor.jvm.pdf", version.ref = "asciidoctorPlugin" }
 asciidoctorjs = { id ="org.asciidoctor.js", version.ref = "asciidoctorPlugin" }
 asciidoctorjsDocbook = { id ="org.asciidoctor.js.docbook", version.ref = "asciidoctorPlugin" }
@@ -69,6 +72,7 @@ asciidoctorEditorConfig = { id ="org.asciidoctor.editorconfig", version.ref = "a
 plugins {
     id alias(libs.plugins.asciidoctorj)
     id alias(libs.plugins.asciidoctorjEpub)
+    id alias(libs.plugins.asciidoctorjGems)
     id alias(libs.plugins.asciidoctorjPdf)
     id alias(libs.plugins.asciidoctorjs)
     id alias(libs.plugins.asciidoctorjsDocbook)

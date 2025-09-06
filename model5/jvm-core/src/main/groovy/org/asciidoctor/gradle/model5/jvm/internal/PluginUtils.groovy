@@ -20,6 +20,8 @@ import org.asciidoctor.gradle.model5.core.errors.BadPluginException
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
+import org.ysb33r.grolifant5.api.core.FileSystemOperations
+import org.ysb33r.grolifant5.api.core.ProviderTools
 
 import static org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreBasePlugin.INTERMEDIATE_RESOURCE_PATH
 
@@ -33,13 +35,23 @@ import static org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreBasePlug
 @CompileStatic
 class PluginUtils {
     static Provider<String> loadDefaultVersion(String entity, Project project, ClassLoader classLoader) {
-        final props = ConfigCacheSafeOperations.from(project).fsOperations().loadPropertiesFromResource(
-                "${INTERMEDIATE_RESOURCE_PATH}/asciidoctor5-jvm-core-plugin.properties",
-                classLoader
+        final ccso = ConfigCacheSafeOperations.from(project)
+        loadDefaultVersion(entity, ccso.fsOperations(), ccso.providerTools(), classLoader)
+    }
+
+    static Provider<String> loadDefaultVersion(
+        String entity,
+        FileSystemOperations fsOperations,
+        ProviderTools providerTools,
+        ClassLoader classLoader
+    ) {
+        final props = fsOperations.loadPropertiesFromResource(
+            "${INTERMEDIATE_RESOURCE_PATH}/asciidoctor5-jvm-core-plugin.properties",
+            classLoader
         )
-        if(props[entity] == null) {
+        if (props[entity] == null) {
             throw new BadPluginException("'${entity}' is missing from properties file.")
         }
-        project.provider { -> props[entity].toString() }
+        providerTools.provider { -> props[entity].toString() }
     }
 }

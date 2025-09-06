@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.model5.core.internal
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorConversionSettings
 import org.asciidoctor.gradle.model5.core.AsciidoctorNamedBackend
+import org.asciidoctor.gradle.model5.core.ConversionTemplate
 import org.asciidoctor.gradle.model5.core.DocType
 import org.gradle.api.file.Directory
 import org.gradle.api.model.ObjectFactory
@@ -49,6 +50,7 @@ class DefaultAsciidoctorConversionSettings implements AsciidoctorConversionSetti
     final Property<DocType> docType
     final SetProperty<Pattern> fatalWarnings
     final Property<Boolean> embedded
+    final Property<ConversionTemplate> templates
 
     @Inject
     DefaultAsciidoctorConversionSettings(ObjectFactory objectFactory) {
@@ -62,5 +64,6 @@ class DefaultAsciidoctorConversionSettings implements AsciidoctorConversionSetti
         this.docType = objectFactory.property(DocType)
         this.fatalWarnings = objectFactory.setProperty(Pattern)
         this.embedded = objectFactory.property(Boolean).convention(false)
+        this.templates = objectFactory.property(ConversionTemplate)
     }
 }

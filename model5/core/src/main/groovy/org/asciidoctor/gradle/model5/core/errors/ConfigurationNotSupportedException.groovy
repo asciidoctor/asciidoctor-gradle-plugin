@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013 - 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,24 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.jvm.engines;
+package org.asciidoctor.gradle.model5.core.errors
 
-import java.util.Locale;
+import groovy.transform.CompileStatic
+import groovy.transform.InheritConstructors
 
 /**
- * Options for the setting eRuby engine.
+ * Indicates that the plugin has not been correctly configured.
+ * <p>
+ *     Should only occur during testing and not actual runnning.
+ * </p>
  *
  * @author Schalk W. Cronjé
+ *
  * @since 5.0
  */
-public enum ErbEngine {
-    ERB, ERUBI, ERUBIS;
-
-    public static ErbEngine from(String value) {
-        return ErbEngine.valueOf(value.toUpperCase(Locale.US));
-    }
-
-    public String getOptionValue() {
-        return name().toLowerCase(Locale.US);
-    }
+@CompileStatic
+@InheritConstructors
+class ConfigurationNotSupportedException extends RuntimeException {
 }

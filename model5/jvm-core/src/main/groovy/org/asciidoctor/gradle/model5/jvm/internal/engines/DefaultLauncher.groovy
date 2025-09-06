@@ -15,20 +15,17 @@
  */
 package org.asciidoctor.gradle.model5.jvm.internal.engines
 
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
+
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.asciidoctor.gradle.model5.core.AsciidoctorConversionSettings
 import org.asciidoctor.gradle.model5.core.AsciidoctorExecutionSettings
 import org.asciidoctor.gradle.model5.core.AsciidoctorLauncher
-import org.asciidoctor.gradle.model5.core.errors.ConversionWarningException
 import org.asciidoctor.gradle.model5.core.internal.engines.EngineUtils
 import org.asciidoctor.gradle.model5.core.internal.tasks.LogProcessor
 import org.asciidoctor.gradle.model5.jvm.engines.ExecutionContext
 import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileCollection
-import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileCollection
 import org.gradle.api.provider.Property
@@ -42,7 +39,6 @@ import org.ysb33r.grolifant5.api.core.StringTools
 import javax.inject.Inject
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
-import java.util.regex.Pattern
 
 /**
  * Launches conversion jobs on JVM workers.
@@ -131,6 +127,12 @@ class DefaultLauncher implements AsciidoctorLauncher {
                     engineOptions.set(launcherEngineOptions)
                     logFile.set(jobLogDir.map { it.file("${LOG_EVENTS_FILE_PREFIX}.${index}") })
                     embedded.set(conversionSettings.embedded.orElse(false))
+
+                    if(conversionSettings.templates.present) {
+                        final t = conversionSettings.templates.get()
+                        templateEngine.set(t.templateEngines.first())
+                        templateDirs.set(t.templateDirs)
+                    }
                 }
             }
             ++index

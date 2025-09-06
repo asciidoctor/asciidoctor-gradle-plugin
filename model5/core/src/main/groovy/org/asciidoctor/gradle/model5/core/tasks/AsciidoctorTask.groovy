@@ -104,6 +104,8 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
         if(outputData.additionalClasspath != null) {
             this.exeSettings.additionalClasspath.from(outputData.additionalClasspath)
         }
+
+        this.conversionSettings.templates.set(outputData.conversionTemplate)
     }
 
     /**

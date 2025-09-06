@@ -111,4 +111,12 @@ public interface AsciidoctorConversionSettings {
      * should be performed
      */
     Provider<Boolean> getEmbedded();
+
+    /**
+     * When an output formatter supports templates, this may be populated.
+     * For other cases this will always be empty.
+     *
+     * @return Provider to templates.
+     */
+    Provider<ConversionTemplate> getTemplates();
 }

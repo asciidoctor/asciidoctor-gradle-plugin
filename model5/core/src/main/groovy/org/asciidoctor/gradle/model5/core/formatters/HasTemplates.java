@@ -13,36 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.jvm.toolchains;
+package org.asciidoctor.gradle.model5.core.formatters;
 
+import org.asciidoctor.gradle.model5.core.ConversionTemplate;
 import org.gradle.api.provider.Provider;
 
+import java.util.Collection;
+
 /**
- * Configuring modules for AsciidoctorJ.
+ * Declares that the output formatter supports templates.
  *
  * @author Schalk W. Cronjé
  * @since 5.0
  */
-public interface CoreVersions {
+public interface HasTemplates {
     /**
-     * Overrides the default version of AsciidoctorJ.
+     * One of more directories that serve as template directories
      *
-     * @param v New version to be used. Can be of anything that can be resolved by
-     *          {@link org.ysb33r.grolifant5.api.core.StringTools#stringize ( Object o )}
+     * @param dirs Anything recursively convertible to a list of files.
      */
-    void useAsciidoctorj(Object v);
+    void templateDirs(Object... dirs);
 
     /**
-     * Overrides the default version of JRuby.
+     * One of more directories that serve as template directories
      *
-     * @param v JRuby version
+     * @param dirs Anything recursively convertible to a list of files.
      */
-    void useJRuby(Object v);
+    void templateDirs(Collection<Object> dirs);
 
     /**
-     * A provider to a JRuby version.
+     * Configured templates.
      *
-     * @return It can be empty meaning that the default JRuby that is a transitive of {@code asciidoctorj} is in use.
+     * @return Information about configured templates. Probably empty.
      */
-    Provider<String> getJRubyVersion();
+    Provider<ConversionTemplate> getConversionTemplate();
 }

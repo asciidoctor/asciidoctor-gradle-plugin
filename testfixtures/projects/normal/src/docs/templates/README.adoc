@@ -1,0 +1,1 @@
+Templates in this folder were taken from https://github.com/asciidoctor/asciidoctor-backend.

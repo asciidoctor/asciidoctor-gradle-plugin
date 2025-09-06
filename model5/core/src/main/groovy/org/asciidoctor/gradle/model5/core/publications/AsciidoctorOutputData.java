@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle.model5.core.publications;
 
 import org.asciidoctor.gradle.model5.core.AsciidoctorNamedBackend;
+import org.asciidoctor.gradle.model5.core.ConversionTemplate;
 import org.asciidoctor.gradle.model5.core.DocType;
 import org.gradle.api.Named;
 import org.gradle.api.file.Directory;
@@ -93,4 +94,11 @@ public interface AsciidoctorOutputData extends Named {
      * @return Embedded provider
      */
     Provider<Boolean> getEmbedded();
+
+    /**
+     * If the formatter has configured templates, it can be set here.
+     *
+     * @return Template information when available, mostly empty.
+     */
+    Provider<ConversionTemplate> getConversionTemplate();
 }

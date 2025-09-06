@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.model5.jvm
 
 // end::hacking-asciidoctorj-output-formatter[]
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils
 import org.asciidoctor.gradle.model5.core.toolchains.AsciidoctorToolchain
 import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjExtension
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjOutputFormatter
@@ -40,6 +41,7 @@ import java.util.function.Function
 @CompileStatic
 class JvmModel {
     // end::hacking-asciidoctorj-output-formatter[]
+    public static final String TASK_PREFIX = PublicationUtils.TASK_PREFIX
     public static final String ASCIIDOCTORJ_GROUP = 'org.asciidoctor'
     public static final String ASCIIDOCTORJ_CORE_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj"
     public static final String ASCIIDOCTORJ_GROOVY_DSL_DEPENDENCY = "${ASCIIDOCTORJ_GROUP}:asciidoctorj-groovy-dsl"
@@ -66,8 +68,6 @@ class JvmModel {
     static String nameForEngineConfiguration(String engineName) {
         "asciidoctorjEngine${engineName.capitalize()}"
     }
-
-
 
     /**
      * Name of a resolvable configuration for use with a specific AsciidoctorJ engine.

@@ -1,4 +1,4 @@
-= Configure diagram
+= The Diagram extension
 
 The {asciidoctorj-name} engine supports Batik, Ditaa, JSyntrax, and PlantUml via a Diagram extension.
 This extension utilises link:{asciidoctorj-diagram-url}[asciidoctorj-diagram-url].

@@ -1,0 +1,37 @@
+= The HTML output formatter
+
+HTML output is the most common usage of {asciidoctorj-name} and is also bundled with `org.asciidoctor.jvm`.
+There are a number of items that can be configured on the output formatter itself.
+
+[source,groovy,roole="primary"]
+----
+import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjHtml
+
+asciidoc {
+    toolchains {
+        aciidoctorj {
+            registeredOutputFormatters {
+                html(AsciidoctorjHtml) { // <.>
+                    embedded = true // <.>
+                    templateDirs 'src/myAsciidocTemplate1', 'src/myAsciidocTemplate2' // <.>
+                    forceEngine =  'erb' // <.>
+                    useEngine 'slim' // <.>
+                }
+            }
+        }
+    }
+}
+----
+<.> The `org.asciidoctor.jvm` plugin adds an HTML output formatter called `html`.
+<.> Output an embeddable document, which excludes the header, the footer, and everything outside the body of the document. This option is useful for producing documents that can be inserted into an external template.
+<.> Define one or more templates that can be used for conversion.
+<.> Force {asciidoctorj-name} to use the specific engine irrespective of the extensions detected in the
+  template directories.
+<.> Adds an engine to the GEM classpath.
+  Only `erb`, `slim` and `haml` is supported.
+<.> Adds any engine by https://github.com/jeremyevans/tilt[tilt] along with the version of the GEM.
+
+NOTE: `templateDirs` must be provided, otherwise template setting will be ignored.
+  If the engine is not provided, it will auto-detect engines from the file extensions found in the template directories.
+
+

@@ -1,0 +1,40 @@
+= The GEM plugin
+
+Adding the GEMs plugin brings additional functionality to the {asciidoctorj-name} set of plugins.
+It allows additional GEMs to be added to a toolchain-specific configuration.
+Each toolchain that is based on {asciidoctorj-name} will have a GEM specific configuration that is automatically created with the application of this plugin.
+
+[source,groovy,subs=+attributes]
+----
+plugins {
+    id 'org.asciidoctor.jvm'  version '{release-version}'
+    id 'org.asciidoctor.jvm.gems' version '{release-version}'
+}
+
+repositories {
+  ruby.gems() // <.>
+}
+
+dependencies {
+  asciidocGemAsciidoctorj 'rubygems:asciidoctor-bibtex:0.9.0' // <.>
+}
+----
+<.> Add a repository so that Gradle knows where to resolve GEMs from.
+  See [JRuby Simple Gradle plugin] for more details.
+<.> Add the specific GEM to the toolchain.
+  The configuration name is of the format `asciidoctorGem<TOOLCHAIN_NAME>`.
+
+
+// Requires?
+
+== How it works
+
+As mentioned previously, adding the plugin will add configurations and tasks on a per-toolchain basis.
+The toolchain is responsible for adding the appropriate classpath to the conversion task.
+It manages the GEM configuration and associated classpath separately and will combine it with the classpath that is used to run {asciidoctorj-name}.
+
+Output formatters and extensions that require GEMs will add to the GEM configuration and rely on the toolchain to prepare those GEMs.
+For cases where the functionality in the GEM needs to be passed as `requires`, the output formatters and extensions will add those automatically.
+This means that for two different output formatters attached to the same toolchain, the same GEMs will be on the classpath for both the conversion tasks associated with these them, but the `requires` parameter passed to {asciidoctorj-name} will differ.
+
+Build script users can add GEMs directly to the GEM configuration.

@@ -29,8 +29,8 @@ class AsciidoctorjHtmlIntegrationSpecification extends IntegrationSpecification 
         outputDir = new File(buildDir, 'docs/asciidoc/html')
     }
 
-    void writeHtmlBasedBuildFile() {
-        writeBasicBuildFileGroovy(['org.asciidoctor.jvm'])
+    void writeHtmlBasedBuildFile(List<String> plugins = ['org.asciidoctor.jvm']) {
+        writeBasicBuildFileGroovy(plugins)
         addOutputToSourceSetGroovy(DEFAULT_TOOLCHAIN, DefaultAsciidoctorjHtml5.DEFAULT_NAME, DEFAULT_PUBLICATION)
     }
 }

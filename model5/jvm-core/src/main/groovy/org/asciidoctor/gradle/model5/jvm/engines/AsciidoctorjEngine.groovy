@@ -146,6 +146,11 @@ class AsciidoctorjEngine implements AsciidoctorEngine, CoreVersions, ClasspathMa
         this.jvmLauncher
     }
 
+    @Override
+    Provider<String> getJRubyVersion() {
+        this.jrubyVersion
+    }
+
     void registerExecutionContext(
             String toolchainName,
             String formatterName,

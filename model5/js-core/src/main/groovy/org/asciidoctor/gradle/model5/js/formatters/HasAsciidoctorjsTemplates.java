@@ -13,24 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.jvm.engines;
+package org.asciidoctor.gradle.model5.js.formatters;
 
-import java.util.Locale;
+import org.asciidoctor.gradle.model5.core.formatters.HasTemplates;
 
 /**
- * Options for the setting eRuby engine.
+ * {@code asciidoctor.js} output formatters that support templates implement this interface.
  *
  * @author Schalk W. Cronjé
  * @since 5.0
  */
-public enum ErbEngine {
-    ERB, ERUBI, ERUBIS;
-
-    public static ErbEngine from(String value) {
-        return ErbEngine.valueOf(value.toUpperCase(Locale.US));
-    }
-
-    public String getOptionValue() {
-        return name().toLowerCase(Locale.US);
-    }
+public interface HasAsciidoctorjsTemplates extends HasTemplates  {
 }

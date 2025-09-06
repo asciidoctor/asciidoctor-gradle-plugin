@@ -15,6 +15,7 @@
  */
 package org.asciidoctor.gradle.model5.jvm.internal.engines;
 
+import org.gradle.api.file.Directory;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
@@ -108,4 +109,20 @@ public interface LauncherParameters extends WorkParameters {
      * @return Embedded flag.
      */
     Property<Boolean> getEmbedded();
+
+    /**
+     * Template directories for supporting backends.
+     *
+     * @return If templates are supported and were configured, this will contain one or more directories.
+     *   If not supported, then this will be empty.
+     */
+    ListProperty<Directory> getTemplateDirs();
+
+    /**
+     * Template engine for supporting backends.
+     *
+     * @return If templates are supported and were configured, this will contain the engine.
+     *   If not supported, then this will be empty.
+     */
+    Property<String> getTemplateEngine();
 }

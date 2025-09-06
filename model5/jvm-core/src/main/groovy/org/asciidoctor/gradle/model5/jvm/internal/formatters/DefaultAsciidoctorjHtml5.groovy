@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.model5.jvm.internal.formatters
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjDocbook
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjHtml5
+import org.asciidoctor.gradle.model5.jvm.internal.gems.GemUtils
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
@@ -40,10 +41,17 @@ class DefaultAsciidoctorjHtml5 extends AbstractAsciidoctorjFormatter implements 
     final boolean copyResources = true
     private final Property<Boolean> embedded
 
+    @Delegate
+    private final DefaultAsciidoctorjTemplates templates
+
     @Inject
     DefaultAsciidoctorjHtml5(String name, AsciidoctorjToolchain tc, Project project) {
         super(name,BACKEND_NAME, tc,project)
         this.embedded = project.objects.property(Boolean).convention(false)
+        this.templates = project.objects.newInstance(
+            DefaultAsciidoctorjTemplates,
+            GemUtils.nameForToolchainConfiguration(tc.name)
+        )
     }
 
     @Override

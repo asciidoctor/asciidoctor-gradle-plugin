@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013 - 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,28 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.core.formatters;
+package org.asciidoctor.gradle.model5.core.internal
 
-import org.gradle.api.provider.Provider;
+import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.model5.core.ConversionTemplate
+import org.gradle.api.file.Directory
 
 /**
- * Indicates that the backend can produce output without headers and footers.
+ * Implementation of conversion templates.
  *
  * @author Schalk W. Cronjé
+ *
  * @since 5.0
  */
-public interface NoHeaderFooter {
-    /**
-     * Removes header and footer output.
-     *
-     * @param flag {@code true} will not add headers and footers to output.
-     */
-    void setNoHeaderFooter(boolean flag);
+@CompileStatic
+class DefaultConversionTemplate implements ConversionTemplate {
+    final List<Directory> templateDirs
+    final List<String> templateEngines
 
-    /**
-     * Header-footer conversion setting.
-     *
-     * @return Provider to the Header-footer setting.
-     */
-    Provider<Boolean> getNoHeaderFooter();
+    DefaultConversionTemplate(Collection<Directory> dirs, Collection<String> engines) {
+        this.templateDirs = dirs.toList().asImmutable()
+        this.templateEngines = engines.toList().asImmutable()
+    }
 }

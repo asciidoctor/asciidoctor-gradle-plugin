@@ -93,11 +93,20 @@ abstract class LauncherWorker implements WorkAction<LauncherParameters> {
             baseDir(withBaseDir)
             toDir(parameters.destinationDir.get().asFile)
             attributes(attributesBuilder.build())
-
-            catalogAssets(eo.catalogAssets)
             eruby(eo.eruby)
+            catalogAssets(eo.catalogAssets)
+            
             sourcemap(eo.sourceMap)
             standalone(!parameters.embedded.get())
+
+            if(parameters.templateDirs.present) {
+                parameters.templateDirs.get()*.asFile.each { templateDirs(it)}
+            }
+
+            if(parameters.templateEngine.present) {
+                final engine = parameters.templateEngine.get()
+                templateEngine(engine)
+            }
         }
 
         optionsBuilder.build()

@@ -17,10 +17,12 @@ package org.asciidoctor.gradle.model5.core.internal.publications
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorNamedBackend
+import org.asciidoctor.gradle.model5.core.ConversionTemplate
 import org.asciidoctor.gradle.model5.core.DocType
 import org.asciidoctor.gradle.model5.core.extensions.AsciidoctorExtension
 import org.asciidoctor.gradle.model5.core.formatters.AsciidoctorOutputFormatter
 import org.asciidoctor.gradle.model5.core.formatters.HasEmbedded
+import org.asciidoctor.gradle.model5.core.formatters.HasTemplates
 import org.asciidoctor.gradle.model5.core.publications.AsciidoctorOutputData
 import org.asciidoctor.gradle.model5.core.publications.AsciidoctorSourceSet
 import org.asciidoctor.gradle.model5.core.toolchains.AsciidoctorToolchain
@@ -58,6 +60,7 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
     private final Property<String> formatterName
     private final Property<String> toolchainName
     private final Property<Boolean> embedded
+    private final Property<ConversionTemplate> templates
     private FileCollection additionalClasspath
 
     @Inject
@@ -75,6 +78,7 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
         this.formatterName = objectFactory.property(String)
         this.toolchainName = objectFactory.property(String)
         this.embedded = objectFactory.property(Boolean).convention(false)
+        this.templates = objectFactory.property(ConversionTemplate)
     }
 
     @Override
@@ -156,6 +160,11 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
         this.embedded
     }
 
+    @Override
+    Provider<ConversionTemplate> getConversionTemplate() {
+        this.templates
+    }
+
     void configureFrom(
         String publicationName,
         AsciidoctorToolchain toolchain,
@@ -191,6 +200,11 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
 
         if (formatter instanceof HasEmbedded) {
             this.embedded.set(((HasEmbedded) formatter).embedded)
+        }
+
+        if(formatter instanceof HasTemplates) {
+            final templateFormatter = (HasTemplates)formatter
+            this.templates.set(templateFormatter.conversionTemplate)
         }
     }
 }
