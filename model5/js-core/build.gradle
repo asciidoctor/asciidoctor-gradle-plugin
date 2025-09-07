@@ -30,8 +30,12 @@ agProject {
             VERSION  : versionOf('asciidoctorjs'),
             CLI: versionOf('asciidoctorjsCli'),
             DOCBOOK : versionOf('asciidoctorjsDocbook'),
+            EJS: versionOf('asciidoctorjsEjs'),
+            HANDLEBARS: versionOf('asciidoctorjsHandlebars'),
             MANPAGE : versionOf('asciidoctorjsManpage'),
-            NODE: versionOf('nodejs')
+            NODE: versionOf('nodejs'),
+            NUNJUCKS: versionOf('asciidoctorjsNunjucks'),
+            PUG: versionOf('asciidoctorjsPug'),
     ])
 }
 

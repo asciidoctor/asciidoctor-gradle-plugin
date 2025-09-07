@@ -24,4 +24,26 @@ import org.asciidoctor.gradle.model5.core.formatters.HasTemplates;
  * @since 5.0
  */
 public interface HasAsciidoctorjsTemplates extends HasTemplates  {
+    /**
+     * Registers an NPM package.
+     *
+     * <p>
+     *     The engine needs to be one of {@code js}, {@code handlebars}, {@code ejs}, {@code nunjucks} or {@code pug}.
+     * </p>
+     *
+     * @param engineName Engine name.
+     */
+    void useEngine(String engineName);
+
+    /**
+     * Registers an NPM package overriding the default version
+     *
+     * <p>
+     *     This can be used to override the default version of the supported engines except {@code js}
+     * </p>
+     *
+     * @param engineName Engine name. It must be an engine that is supported by {@code asciidoctor.js}.
+     * @param version NPM version. Anything convertible to a string.
+     */
+    void useEngine(String engineName, Object version);
 }

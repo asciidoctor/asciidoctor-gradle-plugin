@@ -1,0 +1,36 @@
+= The HTML output formatter
+
+HTML output is the most common usage of {asciidoctorjd-name} and is also bundled with `org.asciidoctor.jd`.
+There are a number of items that can be configured on the output formatter itself.
+
+[source,groovy,roole="primary"]
+----
+import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsHtml
+
+asciidoc {
+    toolchains {
+        aciidoctorj {
+            registeredOutputFormatters {
+                html(AsciidoctorjsHtml) { // <.>
+                    embedded = true // <.>
+                    templateDirs 'src/myAsciidocTemplate1', 'src/myAsciidocTemplate2' // <.>
+                    useEngine 'nunjucks' // <.>
+                    useEngine 'handlebars',  '1.2.3'// <.>
+                }
+            }
+        }
+    }
+}
+----
+<.> The `org.asciidoctor.jvm` plugin adds an HTML output formatter called `html`.
+<.> Output an embeddable document, which excludes the header, the footer, and everything outside the body of the document. This option is useful for producing documents that can be inserted into an external template.
+<.> Define one or more templates that can be used for conversion.
+<.> Adds an engine from NPM using the default version.
+  Only `ejs`, `handlebars`, `js`, `nunjucks` and `pug` are supported.
+  `js` is a NOOP as template-js is a built-in.
+<.> Adds an engine from NPM using the specified version.
+
+NOTE: `templateDirs` Must be provided, otherwise template setting will be ignored.
+  It will auto-detect engines from the file extensions found in the template directories.
+
+

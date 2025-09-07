@@ -104,7 +104,7 @@ class DefaultLauncher implements AsciidoctorLauncher {
         }.zip(aliasName) { ldir, alias ->
             ldir.dir(alias)
         }
-        // -e, -s
+
         final fixedArgs = [
             '-v',
             '-b', conversionSettings.backend.get().backend,
@@ -115,6 +115,10 @@ class DefaultLauncher implements AsciidoctorLauncher {
         final embedded = conversionSettings.embedded.orElse(false).map {
             it ? ['-e', '-s'] : EMPTY_LIST
         }.get()
+
+        final templateDirs = conversionSettings.templates.map {
+            it.templateDirs.collectMany { ['-T', it.asFile.absolutePath] }
+        }.getOrElse(EMPTY_LIST)
 
         final attrs = conversionSettings.attributes.get().collectMany { k, v ->
             if (v) {
@@ -137,6 +141,7 @@ class DefaultLauncher implements AsciidoctorLauncher {
                     spec.args(fixedArgs)
                     spec.args(destArgs)
                     spec.args(attrs)
+                    spec.args(templateDirs)
                     spec.args(partition)
                     spec.ignoreExitValue = true
                 }
@@ -214,16 +219,7 @@ class DefaultLauncher implements AsciidoctorLauncher {
         }
         index
     }
-//    -o, --out-file          output file (default: based on path of input file) use '' to output to STDOUT  [string]
-//    -e, --embedded          suppress enclosing document structure and output an embedded document  [boolean]
-//    -s, --no-header-footer  suppress enclosing document structure and output an embedded document  [boolean]
-//    -n, --section-numbers   auto-number section titles in the HTML backend disabled by default  [boolean] [default: false]
-//    --failure-level     set minimum logging level that triggers non-zero exit code  [choices: "info", "INFO", "warn", "WARN", "warning", "WARNING", "error", "ERROR", "fatal", "FATAL"] [default: "FATAL"]
-//    -q, --quiet             suppress warnings  [boolean] [default: false]
-//    --trace             include backtrace information on errors  [boolean] [default: false]
-//    -v, --verbose           enable verbose mode  [boolean] [default: false]
-//    -t, --timings           enable timings mode  [boolean] [default: false]
+
 //    -T, --template-dir      a directory containing custom converter templates that override the built-in converter (may be specified multiple times)  [array]
 //    -E, --template-engine   template engine to use for the custom converter templates  [string]
-//    -r, --require           require the specified library before executing the processor, using the standard Node require  [array]
 }

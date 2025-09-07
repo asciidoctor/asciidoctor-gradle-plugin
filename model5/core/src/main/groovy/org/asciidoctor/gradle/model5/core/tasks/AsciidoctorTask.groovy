@@ -64,6 +64,10 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
         inputs.dir(this.sourceDir)
         inputs.files(conversionSettings.sourceFiles).skipWhenEmpty(true).withPathSensitivity(RELATIVE)
 
+        inputs.files(conversionSettings.templates.map {
+            it.templateDirs
+        }).optional().withPathSensitivity(RELATIVE)
+
         outputs.files(fsOperations().fileTree(conversionSettings.destinationDir))
         // TODO: How do we know to use an intermediate workdir?
     }

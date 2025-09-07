@@ -24,5 +24,5 @@ import org.asciidoctor.gradle.model5.core.formatters.HasEmbedded;
  *
  * @since 5.0
  */
-public interface AsciidoctorjsHtml5 extends AsciidoctorjsOutputFormatter, HasEmbedded {
+public interface AsciidoctorjsHtml5 extends AsciidoctorjsOutputFormatter, HasEmbedded, HasAsciidoctorjsTemplates {
 }

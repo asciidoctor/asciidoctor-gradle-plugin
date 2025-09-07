@@ -20,6 +20,7 @@ import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
+import org.ysb33r.grolifant5.api.core.FileSystemOperations
 
 import static org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreBasePlugin.INTERMEDIATE_RESOURCE_PATH
 
@@ -32,11 +33,35 @@ import static org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreBasePlug
  */
 @CompileStatic
 class PluginUtils {
+    /**
+     * Loads a given configuration entity as a lazy-evaluated value
+     *
+     * @param entity Entity to load
+     * @param project Associated project
+     * @param classLoader The class loader.
+     * @return A provider to the value.
+     */
     static Provider<String> loadDefaultVersion(String entity, Project project, ClassLoader classLoader) {
-        final props = ConfigCacheSafeOperations.from(project).fsOperations().loadPropertiesFromResource(
-                "${INTERMEDIATE_RESOURCE_PATH}/asciidoctor5-js-core-plugin.properties",
-                classLoader
+        loadDefaultVersion(entity,ConfigCacheSafeOperations.from(project),classLoader)
+    }
+
+    /**
+     * Loads a given configuration entity as a lazy-evaluated value
+     *
+     * @param entity Entity to load
+     * @param ccsp Instance of {@link ConfigCacheSafeOperations}.
+     * @param classLoader The class loader.
+     * @return A provider to the value.
+     */
+    static Provider<String> loadDefaultVersion(
+        String entity,
+        ConfigCacheSafeOperations configCacheSafeOperations,
+        ClassLoader classLoader
+    ) {
+        final props = configCacheSafeOperations.fsOperations().loadPropertiesFromResource(
+            "${INTERMEDIATE_RESOURCE_PATH}/asciidoctor5-js-core-plugin.properties",
+            classLoader
         )
-        project.provider { -> props[entity].toString() }
+        configCacheSafeOperations.providerTools().provider { -> props[entity].toString() }
     }
 }

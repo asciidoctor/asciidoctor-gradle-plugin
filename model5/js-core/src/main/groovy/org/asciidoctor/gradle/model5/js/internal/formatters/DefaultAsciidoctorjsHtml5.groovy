@@ -21,8 +21,10 @@ import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.TaskInputs
 
 import javax.inject.Inject
+import java.util.function.Consumer
 
 /**
  * HTML5 backend.
@@ -39,10 +41,16 @@ class DefaultAsciidoctorjsHtml5 extends AbstractAsciidoctorjsFormatter implement
     final boolean copyResources = true
     private final Property<Boolean> embedded
 
+    @Delegate
+    private final DefaultAsciidoctorjsTemplates templates
+
     @Inject
     DefaultAsciidoctorjsHtml5(String name, AsciidoctorjsToolchain tc, Project project) {
         super(name, BACKEND_NAME, tc, project)
         this.embedded = project.objects.property(Boolean).convention(false)
+        this.templates = project.objects.newInstance(DefaultAsciidoctorjsTemplates,tc, { String r ->
+            packageRequires.add(r)
+        } as Consumer<String>)
     }
 
     /**
@@ -64,4 +72,5 @@ class DefaultAsciidoctorjsHtml5 extends AbstractAsciidoctorjsFormatter implement
     Provider<Boolean> getEmbedded() {
         this.embedded
     }
+
 }
