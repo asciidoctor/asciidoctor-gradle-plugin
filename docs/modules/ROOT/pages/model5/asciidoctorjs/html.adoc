@@ -1,6 +1,6 @@
 = The HTML output formatter
 
-HTML output is the most common usage of {asciidoctorjd-name} and is also bundled with `org.asciidoctor.jd`.
+HTML output is the most common usage of {asciidoctorjs-name} and is also bundled with `org.asciidoctor.js`.
 There are a number of items that can be configured on the output formatter itself.
 
 [source,groovy,roole="primary"]

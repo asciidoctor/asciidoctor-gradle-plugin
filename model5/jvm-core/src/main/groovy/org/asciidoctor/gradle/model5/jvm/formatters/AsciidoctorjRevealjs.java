@@ -27,7 +27,7 @@ import org.ysb33r.grolifant5.api.core.ClosureUtils;
  * @author Schalk W. Cronjé
  * @since 5.0
  */
-public interface AsciidoctorjRevealjs extends AsciidoctorjOutputFormatterVersioned {
+public interface AsciidoctorjRevealjs extends AsciidoctorjOutputFormatterVersioned, HasAsciidoctorjTemplates {
 
     /**
      * Direct access to configuring {@code reveal.js} options.

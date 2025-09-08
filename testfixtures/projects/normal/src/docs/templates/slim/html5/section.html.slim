@@ -1,0 +1,14 @@
+- sect0 = section_level == 0
+= html_tag_if !sect0, :div, class: [%(sect#{section_level}), role]
+  *{tag: %(h#{section_level + 1}), id: id, class: ('sect0' if sect0)}
+    - if id && (document.attr? :sectanchors)
+      a.anchor href="##{id}"
+      =section_title
+    - elsif id && (document.attr? :sectlinks)
+      a.link href="##{id}" =section_title
+    - else
+      =section_title
+  - if section_level == 1
+    .sectionbody =content
+  - else
+    =content

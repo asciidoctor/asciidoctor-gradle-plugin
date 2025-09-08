@@ -1,0 +1,88 @@
+== Reveal.js options
+
+[source,groovy,role="primary"]
+----
+revealjsOptions{
+    autoSlideInterval = 200 // <.>
+    autoSlideStoppable = true // <.>
+    backgroundTransition = 'none' // <.>
+    backgroundTransition =  ReveljsOptions.Transition.FADE // <.>
+    builtinThemeName = 'black' // <.>
+    builtinThemeName = RevealjsOptions.BuiltInThemes.BEIGE // <.>
+    controls = true // <.>
+    flagEmbedded = true // <.>
+    fragments = true // <.>
+    hideAddressBarOnMobile = true // <.>
+    keyboardShortcuts // <.>
+    loop = true // <.>
+    mouseWheel = true // <.>
+    overviewMode = true // <.>
+    previewLinks = true // <.>
+    progressBar = true // <.>
+    pushToHistory = true // <.>
+    rightToLeft = true // <.>
+    slideNumber = RevealjsOptions.SlideNumber.DEFAULT // <.>
+    slideNumber = 'h/v' // <.>
+    touchMode = true // <.>
+    transition = 'slide' // <.>
+    transition = RevealjsOptions.Transition.FADE // <.>
+    transitionSpeed = 'fast' // <.>
+    transitionSpeed = RevealjsOptions.Transition.SLOW // <.>
+    verticalCenter = true // <.>
+    viewDistance = 3 // <.>
+
+    customTheme {  // <.>
+        uri = 'https:/somewhere.example/there/is/a/revealjs/theme' // <.>
+        location = '/path/to/dir'
+        relativePath = 'my/theme'
+    }
+}
+----
+<.> Delay in milliseconds between automatically proceeding to the next slide.
+  Disabled when set to `0` (the default).
+  This value can still be overwritten on a per-slide basis by setting a `data-autoslide` attribute on a slide.
+<.> Stop auto-sliding after user input.
+<.> Transition style for full page slide backgrounds.
+  One of `none`, `fade`, `slide`, `convex`, `concave`, or `zoom`.
+  If not set then an internal default of `FADE` will be used.
+<.> Set the background transition via the enumeration instead.
+<.> Select a built-in theme.
+  Unsets any custom theme.
+<.> Select a built-in theme using the enumeration instead.
+Unsets any custom theme.
+<.> Display controls in the bottom right corner.
+<.> Flags if the presentation is running in an embedded mode.
+  (Contained within a limited portion of the screen).
+<.> Use fragments globally.
+<.> Hides the address bar on mobile devices.
+<.> Enable keyboard shortcuts for navigation.
+<.> Loop the presentation.
+<.> Enable slide navigation via mouse wheel.
+<.> Enable the slide overview mode.
+<.> Opens links in an iframe preview overlay.
+<.> Display a presentation progress bar.
+<.> Push each slide change to the browser history.
+<.> Change the presentation direction to be RTL.
+<.> Displays the slide number.
+  Set via the `RevealjsOptions.SlideNumber` enumeration.
+<.> Displays the slide number.
+  Set via a valid string.
+<.> Enables touch navigation on devices with touch input.
+<.> Transition style.
+If not set, an internal default of `SLIDE` will be used.
+<.> Set the transition style via the enumeration instead.
+<.> Slide transition speed.
+  One of `default`, `fast`, or `slow`.
+  If not provided, an internal default value of `DEFAULT` will be used.
+<.> Set the transition speed via the enumeration instead.
+<.>  Vertical centering of slides.
+<.>  Number of slides away from the current that are visible.
+  If not set, an internal value of 3 will be used.
+<.> Configures a custom theme.
+  Unsets any built-in theme.
+<.> Get the theme from a URL.
+  Anything convertible to a URI can be passed.
+<.> Get a theme from the local filesystem.
+ Anything convertible to a file can be used.
+<.> Get a theme from a path relative to the source directory.
+  Anything convertible to a file can be used.

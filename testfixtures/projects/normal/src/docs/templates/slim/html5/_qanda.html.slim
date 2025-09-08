@@ -1,0 +1,11 @@
+= block_with_title 'qlist qanda'
+  ol
+    - items.each do |questions, answer|
+      li
+        - [*questions].each do |question|
+          p: em =question.text
+        - unless answer.nil?
+          - if answer.text?
+            p =answer.text
+          - if answer.blocks?
+            =answer.content

@@ -1,0 +1,10 @@
+- case type
+- when :xref
+  a href=target =(xref_text || %([#{attr :refid}]))
+- when :ref
+  a id=target
+- when :bibref
+  a id=target
+  |[#{@target}]
+- else
+  a id=id class=role href=target target=(attr :window) title=(attr :title) =text

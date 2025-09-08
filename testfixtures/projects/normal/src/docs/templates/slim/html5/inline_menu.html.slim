@@ -1,0 +1,10 @@
+- if attr :menuitem
+  span.menuseq
+    span.menu =(attr :menu)
+    '&#160;&#9656;
+    - (attr 'submenus').each do |submenu|
+      span.submenu =submenu
+      '&#160;&#9656;
+    span.menuitem =(attr :menuitem)
+- else
+  span.menu =(attr :menu)

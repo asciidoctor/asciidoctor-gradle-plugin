@@ -1,0 +1,9 @@
+span class=[type, role] style=style_value(float: (attr :float))
+  = html_tag_if (attr? :link), :a, {class: 'image', href: (attr :link), target: (attr :window)}
+    - if type == 'icon' && font_icons?
+      i class=icon_fa_classes title=(attr :title)
+    - elsif type == 'icon' && !icons?
+      |[#{attr :alt}]
+    - else
+      - src = (type == 'icon' ? (icon_uri target) : (image_uri target))
+      img src=src alt=(attr :alt) width=(attr :width) height=(attr :height) title=(attr :title)

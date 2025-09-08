@@ -1,0 +1,5 @@
+- unless notitle || !has_header?
+  h1 id=id =header.title
+=content
+- unless !footnotes? || (attr? :nofootnotes)
+  include _footnotes.html

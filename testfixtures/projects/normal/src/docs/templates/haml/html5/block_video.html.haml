@@ -1,0 +1,11 @@
+%div{:id=>@id, :class=>['videoblock', @style, role]}
+  - if title?
+    .title=captioned_title
+  .content
+    - if video_iframe?
+      %iframe{:width=>(attr :width), :height=>(attr :height), :src=>video_uri, :frameborder=>0, :allowfullscreen=>!(option? :nofullscreen)}
+    - else
+      %video{:src=>video_uri, :width=>(attr :width), :height=>(attr :height),
+          :poster=>((attr :poster) ? media_uri(attr :poster) : nil), :autoplay=>(option? :autoplay),
+          :controls=>!(option? :nocontrols), :loop=>(option? :loop)}
+        Your browser does not support the video tag.

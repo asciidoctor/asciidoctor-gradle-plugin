@@ -13,6 +13,7 @@
 * xref:model5/asciidoctorj/html.adoc[]
 * xref:model5/asciidoctorj/epub.adoc[]
 * xref:model5/asciidoctorj/pdf.adoc[]
+* xref:model5/asciidoctorj/revealjs.adoc[]
 * xref:model5/asciidoctorj/configure-diagram.adoc[]
 
 .Asciidoctor.js

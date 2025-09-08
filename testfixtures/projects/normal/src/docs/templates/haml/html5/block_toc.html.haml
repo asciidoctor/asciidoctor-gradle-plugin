@@ -1,0 +1,11 @@
+- if @document.attr? :toc
+  - toc_id = @id
+  - toc_role = (attr 'role', (@document.attr 'toc-class', 'toc'))
+  - toc_title_id = "#{toc_id}title" if toc_id
+  - toc_title = title? ? title : (@document.attr 'toc-title')
+  - if !toc_id && (@document.embedded? || !(@document.attr? 'toc-placement'))
+    - toc_id = 'toc'
+    - toc_title_id = 'toctitle'
+  %div{:id=>toc_id, :class=>toc_role}
+    .title{:id=>toc_title_id}=toc_title
+    =converter.convert_with_options @document, 'outline', :toclevels => ((attr? :levels) ? (attr :levels).to_i : nil)

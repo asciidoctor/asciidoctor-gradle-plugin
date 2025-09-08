@@ -20,6 +20,7 @@ import org.asciidoctor.gradle.model5.core.revealjs.RevealjsOptions
 import org.asciidoctor.gradle.model5.jvm.JvmModel
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjRevealjs
 import org.asciidoctor.gradle.model5.jvm.internal.PluginUtils
+import org.asciidoctor.gradle.model5.jvm.internal.gems.GemUtils
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskInputs
@@ -41,6 +42,9 @@ class DefaultAsciidoctorjRevealjs extends AbstractAsciidoctorjFormatterVersioned
     final boolean copyResources = true
     final RevealjsOptions revealjsOptions
 
+    @Delegate
+    private final DefaultAsciidoctorjTemplates templates
+
     @Inject
     DefaultAsciidoctorjRevealjs(String name, AsciidoctorjToolchain tc, Project project) {
         super(
@@ -53,8 +57,12 @@ class DefaultAsciidoctorjRevealjs extends AbstractAsciidoctorjFormatterVersioned
         )
 
         this.revealjsOptions = project.objects.newInstance(RevealjsOptions)
-
         attributes.putAll(revealjsOptions.attributeProvider)
+
+        this.templates = project.objects.newInstance(
+            DefaultAsciidoctorjTemplates,
+            GemUtils.nameForToolchainConfiguration(tc.name)
+        )
     }
 
     @Override

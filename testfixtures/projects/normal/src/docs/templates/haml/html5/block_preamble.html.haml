@@ -1,0 +1,7 @@
+#preamble
+  .sectionbody
+    =content
+  - if (attr? :toc) && (attr? 'toc-placement', 'preamble')
+    #toc{:class=>(attr 'toc-class', 'toc')}
+      #toctitle=(attr 'toc-title')
+      =converter.convert @document, 'outline'

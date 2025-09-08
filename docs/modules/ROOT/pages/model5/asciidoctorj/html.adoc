@@ -3,7 +3,7 @@
 HTML output is the most common usage of {asciidoctorj-name} and is also bundled with `org.asciidoctor.jvm`.
 There are a number of items that can be configured on the output formatter itself.
 
-[source,groovy,roole="primary"]
+[source,groovy,role="primary"]
 ----
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjHtml
 
