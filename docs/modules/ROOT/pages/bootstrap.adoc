@@ -12,8 +12,10 @@ plugins {
     id 'org.asciidoctor.jvm.epub' version '{release-version}' // <.>
     id 'org.asciidoctor.jvm.gems' version '{release-version}' // <.>
     id 'org.asciidoctor.jvm.pdf' version '{release-version}' // <.>
+    id 'org.asciidoctor.jvm.revealjs' version '{release-version}' // <.>
     id 'org.asciidoctor.js' version '{release-version}' // <.>
     id 'org.asciidoctor.js.docbook' version '{release-version}' // <.>
+    id 'org.asciidoctor.js.revealjs' version '{release-version}' // <.>
 }
 ----
 <.> The convention plugin for working with {asciidoctorj-name}.
@@ -21,10 +23,11 @@ plugins {
 <.> Registers the output formatter for creating EPUB files.
 <.> Adds support for adding additional GEMs to the execution classpath.
 <.> Applies `org.asciidoctor.core.pdf-themes` and also registers the output formatter for creating PDF files.
+<.> Adds the ability to generate slides with {asciidoctorj-revealjs-name}.
 <.> The convention plugin for working with {asciidoctorjs-name}.
   Applies `org.asciidoctor.jvm.base` and also creates a default toolchain called `asciidoctorjs`.
 <.> Adds the ability to output to Docbook using {asciidoctorjs-name}.
-
+<.> Adds the ability to generate slides with {asciidoctorjs-revealjs-name}.
 
 There is also a set of less common plugins, which are applied via the plugins listed above.
 They are listed here as they might prove useful in special cases
@@ -61,8 +64,10 @@ asciidoctorj = { id ="org.asciidoctor.jvm", version.ref = "asciidoctorPlugin" }
 asciidoctorjEpub = { id ="org.asciidoctor.jvm.epub", version.ref = "asciidoctorPlugin" }
 asciidoctorjGems = { id ="org.asciidoctor.jvm.gems", version.ref = "asciidoctorPlugin" }
 asciidoctorjPdf = { id ="org.asciidoctor.jvm.pdf", version.ref = "asciidoctorPlugin" }
+asciidoctorjRevealjs = { id ="org.asciidoctor.jvm.revealjs", version.ref = "asciidoctorPlugin" }
 asciidoctorjs = { id ="org.asciidoctor.js", version.ref = "asciidoctorPlugin" }
 asciidoctorjsDocbook = { id ="org.asciidoctor.js.docbook", version.ref = "asciidoctorPlugin" }
+asciidoctorjsRevealjs = { id ="org.asciidoctor.js.reveraljs", version.ref = "asciidoctorPlugin" }
 asciidoctorEditorConfig = { id ="org.asciidoctor.editorconfig", version.ref = "asciidoctorPlugin" }
 ----
 
@@ -74,8 +79,10 @@ plugins {
     id alias(libs.plugins.asciidoctorjEpub)
     id alias(libs.plugins.asciidoctorjGems)
     id alias(libs.plugins.asciidoctorjPdf)
+    id alias(libs.plugins.asciidoctorjRevealjs)
     id alias(libs.plugins.asciidoctorjs)
     id alias(libs.plugins.asciidoctorjsDocbook)
+    id alias(libs.plugins.asciidoctorjsRevealjs)
     id alias(libs.plugins.asciidoctorEditorConfig)
 }
 ----

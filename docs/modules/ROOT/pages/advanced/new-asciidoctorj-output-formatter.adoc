@@ -1,4 +1,4 @@
-= New output formatter for {asciidoctorj-name}
+= Implementing a new output formatter for {asciidoctorj-name}
 
 == Adding an internal output formatter
 

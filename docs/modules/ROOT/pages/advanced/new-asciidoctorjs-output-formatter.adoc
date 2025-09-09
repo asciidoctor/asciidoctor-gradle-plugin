@@ -1,0 +1,153 @@
+= Implementing a new output formatter for {asciidoctorjs-name}
+
+== Adding an internal output formatter
+
+This section describes the minimum requirements of adding a new output formatter to the `model5/js-core` subproject.
+
+And per an example, this will show how to add the {asciidoctorjs-revealjs-name} backend as an output formatter.
+As this also supports templates, this example illustrates adding template support to the DSL too.
+
+=== Add the output formatter
+
+==== Add the interface
+
+Firstly, add the interface to `org.asciidoctor.gradle.model5.js.formatters`.
+By convention, the name is prefixed with `Asciidoctorjs`.
+
+.AsciidoctorjsRevealjs.java
+[source,java]
+----
+include::example${examples-model5-js-main}/AsciidoctorjsRevealjs.java[tags=hacking-asciidoctorjs-output-formatter]
+----
+<.> Extend the `AsciidoctorjsOutputFormatterVersioned` interface so that build script authors can override the version of `@asciidoctor/revealjs` if they so wish.
+  Also extend the `HasAsciidoctorjsTemplates` interface so that template support is available.
+
+==== Add the NPM artifact to the version catalog
+
+.gradle/libs.versions.toml
+[source,toml]
+----
+include::example$libs.versions.toml[tags=hacking-asciidoctorjs-output-formatter]
+----
+
+NOTE: By convention, we prefix NPM modules that are related to {asciidoctorjs-name} with `asciidoctorjs`.
+
+==== Update the version properties file
+
+Edit the `asciidoctor5-js-core-plugin.properties` file and add a version token.
+
+.resources/META-INF/asciidoctor.gradle/asciidoctor5-js-core-plugin.properties
+[source,properties]
+----
+include::example${examples-model5-js-main-resources}/asciidoctor5-js-core-plugin.properties[tags=hacking-asciidoctorjs-output-formatter]
+----
+
+==== Update the build script
+
+Go to the subproject's `build.gradle` and add the substitutions and plugin details.
+(The plugin itself will be implemented further down in these steps).
+
+.js-core/build.gradle
+[source,groovy]
+----
+include::example$model5/js-core-build.gradle[tags=hacking-asciidoctorjs-output-formatter]
+----
+<.> The identifier of the plugin.
+<.> A name for the plugin that will provide this output formatter.
+<.> A description of the plugin.
+<.> The actual class that will implement that plugin.
+  Note that the convention is to prefix with `Asciidoctorjs` and postfix with `Plugin`.
+<.> Add some useful tags.
+<.> Get the version from the version catalog.
+
+==== Add the implementation
+
+Now add the implementation which by convention is prefixed with `DefaultAsciidoctorjs` and placed in `org.asciidoctor.gradle.model5.js.internal.formatters`.
+
+.DefaultAsciidoctorjsRevealjs.groovy
+[source,groovy]
+----
+include::example${examples-model5-js-main}/DefaultAsciidoctorjsRevealjs.groovy[tags=hacking-asciidoctorjs-output-formatter]
+----
+<.> Extend `AbstractAsciidoctorjsFormatterVersioned` which is the implementation of  `AsciidoctorjsOutputFormatterVersioned`.
+<.> Also implement the interface that you defined previously - being `AsciidoctorjsRevealjs` in this example.
+<.> Define the default name for when the output formatter is registered by the `org.asciidoctor.js` plugin.
+<.> Define the {asciidoctorjs-name} backend name.
+  If it is the same as the default output formatter name, then assign the one to the other.
+<.> If the backend does not require additional resources to be copied to the output directory, then set this to `false`.
+  Otherwise, in cases like HTML and Reveal.js backends, set it to `true`.
+<.> Since {asciidoctorjs-revealjs-name} has many attributes that can be controlled, add this helper.
+  This is optional for many output formatters, but for cases where ir is useful to configure attributes, adding some methods directly on the interface, or using a helper DSL block, is recommended.
+<.> If the backend supports templates, then it easiest is to simply add this delegate.
+<.> This needs to be the backend name.
+<.> Set the NPM scope, or `null`.
+<.> Set the NPM package name.
+<.> Set the key from the properties file, that you edited earlier.
+<.> If templates are supported and those templates might add additional NPM packages, ensure that those packages are added to the list of `requires`.
+<.> Set the type that the `showAsciidoctorToolchains` task must display.
+  This is also the type that build script users will use to perform configuration.
+  Normally it is just the type of the interface.
+<.> As the attributes of this output formatter will affect the final artifacts, ensure that changes in them will cause the appropriate `AsciidoctorTask` to run again.
+
+==== Add a factory
+
+The factory class is so that instances of the output formatter can be created and placed in the container of registered output formatters.
+This factory is also places inside `org.asciidoctor.gradle.model5.js.internal.formatters` and by convention is prefixed with `Asciidoctorjs` and postfixed with `Factory.
+
+.AsciidoctorjsRevealjsFactory.groovy
+[source,groovy]
+----
+include::example${examples-model5-js-main}/AsciidoctorjsRevealjsFactory.groovy[tags=hacking-asciidoctorjs-output-formatter]
+----
+<.> Reference the interface name
+<.> The return type of the `create` method is the interface name.
+<.> Pass the implementation class as that is what we really need to instantiate.
+
+==== Add a plugin
+
+A plugin needs to be added to `org.asciidoctor.gradle.model5.js.plugins`.
+By convention, this class is prefixed with `Asciidoctorjs` and postfixed with `Plugin`.
+
+.AsciidoctorjsRevealjsPlugin.groovy
+[source,groovy]
+----
+include::example${examples-model5-js-main}/AsciidoctorjsRevealjsPlugin.groovy[tags=hacking-asciidoctorjs-output-formatter]
+----
+<.> Reference the interface of the output formatter
+<.> Reference the factory of the output formatter
+<.> Once again, reference the interface of the output formatter
+<.> Provide the name of the default output formatter that will be registered on the toolchains.
+
+==== Add an integration test
+
+Go to the `js-core/src/integrationTest/groovy` directory and add an integration test in the `org.asciidoctor.gradle.model5.js.formatters` package.
+
+.AsciidoctorjsRevealjsSpec
+[source,groovy]
+----
+include::example${examples-model5-js-integration-test}/AsciidoctorjsRevealjsSpec.groovy[tags=hacking-asciidoctorjs-output-formatter]
+----
+<.> Set the name of the task.
+<.> Set the output directory.
+<.> Check that the document was created.
+<.> Check that resources were not copied if you set `copyResources = false` in the implementation class.
+  If you did the opposite, then invert the logic of this test.
+<.> Set the correct plugin name.
+<.> This configures the build script to create an output.
+  Set the second parameter to the correct value.
+
+You can extend this class with further tests as you expand the output formatter with additional functionality.
+
+==== Configure specific attributes
+
+An output formatter might require attributes that are specific to that output formatter.
+You can add additional configuration to the class and then configure a provider to send those to the {asciidoctorjs-name} engine during the conversion process.
+
+This example already used `RevealjsOptions` as how this could be done for {asciidoctorjs-revealjs-name}.
+If you browse through other formatters in `org.asciidoctor.gradle.model5.js.formatters` and `org.asciidoctor.gradle.model5.js.internal.formatters` you will find more examples.
+
+==== Documentation
+
+. Document the formatter by placing a new document in `docs/modules/ROOT/pages/model5/asciidoctorjs`.
+. Update `docs/modules/ROOT/nav.adoc` to link to your document.
+. Update `docs/modules/ROOT/pages/bootstrap.adoc` to add information about the plugin.

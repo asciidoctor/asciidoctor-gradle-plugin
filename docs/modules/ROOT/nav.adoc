@@ -30,7 +30,6 @@
 * xref:classic/asciidoctorj-gems-plugin.adoc[]
 // * xref:asciidoctorj-leanpub-plugin.adoc[]
 * xref:classic/asciidoctor-diagram.adoc[]
-// * xref:kindlegen-plugin.adoc[]
 * xref:classic/asciidoctorj-custom-extensions.adoc[]
 * xref:classic/common-task-configuration.adoc[]
 * xref:classic/asciidoctoreditorconfig-plugin.adoc[Asciidoctor Editor Config plugin]
@@ -38,4 +37,5 @@
 .Advanced
 * xref:advanced/implementing-a-new-toolchain.adoc[Implementing a new toolchain]
 * xref:advanced/new-asciidoctorj-output-formatter.adoc[Implementing an AsciidoctorJ output formatter]
+* xref:advanced/new-asciidoctorjs-output-formatter.adoc[]
 

@@ -40,49 +40,6 @@ import java.util.function.Function
 @CompileStatic
 class JsModel {
 
-//    /**
-//     * Name of a declarable configuration for use with a specific {@code asciidoctor.js} engine.
-//     *
-//     * @param engineName Name of engine.
-//     * @return Configuration name
-//     */
-//
-//    static String nameForEngineConfiguration(String engineName) {
-//        "asciidoctorjsEngine${engineName.capitalize()}"
-//    }
-//
-//    /**
-//     * Name of a resolvable configuration for use with a specific {@code asciidoctor.js} engine.
-//     *
-//     * @param engineName Name of engine.
-//     * @return Configuration name
-//     */
-//    static String nameForEngineConfigurationResolvable(String engineName) {
-//        "${nameForEngineConfiguration(engineName)}RuntimeClasspath"
-//    }
-
-//    /**
-//     * Name of a declarable configuration for use with a specific {@code asciidoctor.js} toolchain + output formatter.
-//     *
-//     * @param toolchainName Name of toolchain.
-//     * @param formatterName Name of output formatter.
-//     * @return Configuration name
-//     */
-//    static String nameForOutputFormatterConfiguration(String toolchainName, String formatterName) {
-//        "asciidoctorjOutputFormatter${toolchainName.capitalize()}${formatterName.capitalize()}"
-//    }
-//
-//    /**
-//     * Name of a resolvable configuration for use with a specific {@code asciidoctor.js} toolchain + output formatter.
-//     *
-//     * @param toolchainName Name of toolchain.
-//     * @param formatterName Name of output formatter.
-//     * @return Configuration name
-//     */
-//    static String nameForOutputFormatterConfigurationResolvable(String toolchainName, String formatterName) {
-//        "${nameForOutputFormatterConfiguration(toolchainName, formatterName)}RuntimeClasspath"
-//    }
-
     /**
      * The toolchain preparation task name
      * @param toolchainName Name of the toolchains

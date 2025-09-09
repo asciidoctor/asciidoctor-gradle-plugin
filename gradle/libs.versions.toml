@@ -22,7 +22,9 @@ asciidoctorjsHandlebars = "4.7.8"
 asciidoctorjsManpage = "1.0.0"
 asciidoctorjsNunjucks = "3.2.4"
 asciidoctorjsPug = "3.0.3"
-asciidoctorjsReveal = "5.2.0"
+# tag::hacking-asciidoctorjs-output-formatter[]
+asciidoctorjsRevealjs = "5.2.0"
+# end::hacking-asciidoctorjs-output-formatter[]
 cglib = "3.3.0"
 commonsIO = "2.15.1"
 gemHaml = "6.3.0"

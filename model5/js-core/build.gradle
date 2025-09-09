@@ -2,31 +2,45 @@ plugins {
     id 'org.asciidoctor.internal.model5.gradle.project'
 }
 
+// tag::hacking-asciidoctorjs-output-formatter[]
 agProject {
+// end::hacking-asciidoctorjs-output-formatter[]
     withIntegrationTests()
     configurePlugin(
             'org.asciidoctor.js.base',
-            'AsciidoctorJS Base Plugin',
+            'Asciidoctor.js Base Plugin',
             'Base plugin for all AsciidoctorJS tasks & extensions. Provides the asciidoctorjs toolchain',
             'org.asciidoctor.gradle.model5.js.plugins.AsciidoctorJSBasePlugin',
             ['asciidoctorjs']
     )
     configurePlugin(
             'org.asciidoctor.js',
-            'AsciidoctorJS Plugin',
+            'Asciidoctor.js Plugin',
             'Provides html formatter for all AsciidoctorJS toolchains',
             'org.asciidoctor.gradle.model5.js.plugins.AsciidoctorjsPlugin',
-            ['asciidoctorj']
+            ['asciidoctorjs']
     )
     configurePlugin(
             'org.asciidoctor.js.docbook',
-            'AsciidoctorJS Docbook Plugin',
+            'Asciidoctor.js Docbook Plugin',
             'Provides docbook formatter for all AsciidoctorJS toolchains',
             'org.asciidoctor.gradle.model5.js.plugins.AsciidoctorjsDocbookPlugin',
-            ['asciidoctorj']
+            ['asciidoctorjs', 'docbook']
     )
+    // tag::hacking-asciidoctorjs-output-formatter[]
+    configurePlugin(
+        'org.asciidoctor.js.revealjs', // <.>
+        'Asciidoctor.js Reveal.js Plugin', // <.>
+        'Provides Reveal.js formatter for all Asciidoctor.js toolchains', // <.>
+        'org.asciidoctor.gradle.model5.js.plugins.AsciidoctorjsRevealjsPlugin', // <.>
+        ['asciidoctorjs', 'revealjs', 'slides'] // <.>
+    )
+    // end::hacking-asciidoctorjs-output-formatter[]
 
+
+    // tag::hacking-asciidoctorjs-output-formatter[]
     withVersionSubstitution("${project.name}.properties", [
+        // end::hacking-asciidoctorjs-output-formatter[]
             VERSION  : versionOf('asciidoctorjs'),
             CLI: versionOf('asciidoctorjsCli'),
             DOCBOOK : versionOf('asciidoctorjsDocbook'),
@@ -36,8 +50,15 @@ agProject {
             NODE: versionOf('nodejs'),
             NUNJUCKS: versionOf('asciidoctorjsNunjucks'),
             PUG: versionOf('asciidoctorjsPug'),
+            // tag::hacking-asciidoctorjs-output-formatter[]
+            REVEALJS: versionOf('asciidoctorjsRevealjs'), // <.>
+            // end::hacking-asciidoctorjs-output-formatter[]
+    // tag::hacking-asciidoctorjs-output-formatter[]
     ])
+    // end::hacking-asciidoctorjs-output-formatter[]
+// tag::hacking-asciidoctorjs-output-formatter[]
 }
+// end::hacking-asciidoctorjs-output-formatter[]
 
 dependencies {
     api project(':asciidoctor5-core-plugin')

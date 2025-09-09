@@ -1,0 +1,1 @@
+../../../../../../../model5/js-core/src/integrationTest/groovy/org/asciidoctor/gradle/model5/js/formatters/AsciidoctorjsRevealjsSpec.groovy
