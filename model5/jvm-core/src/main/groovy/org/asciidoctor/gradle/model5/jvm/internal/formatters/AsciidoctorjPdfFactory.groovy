@@ -16,7 +16,6 @@
 package org.asciidoctor.gradle.model5.jvm.internal.formatters
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjHtml5
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjPdf
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.gradle.api.NamedDomainObjectFactory
@@ -25,6 +24,13 @@ import org.gradle.api.model.ObjectFactory
 
 import javax.inject.Inject
 
+/**
+ * Factory class for {@link AsciidoctorjPdf}.
+ *
+ * @author Schalk W. Cronjé
+ *
+ * @since 5.0
+ */
 @CompileStatic
 class AsciidoctorjPdfFactory implements NamedDomainObjectFactory<AsciidoctorjPdf> {
 

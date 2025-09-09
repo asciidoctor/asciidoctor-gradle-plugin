@@ -82,7 +82,7 @@ import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 @CompileStatic
 @SuppressWarnings('MethodCount')
 class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExecSpec, AsciidoctorWorkerParameters>
-        implements AsciidoctorTaskMethods {
+    implements AsciidoctorTaskMethods {
 
     public final static ExecutionMode CLASSPATH = ExecutionMode.CLASSPATH
     public final static ExecutionMode IN_PROCESS = ExecutionMode.CLASSPATH
@@ -307,9 +307,9 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
     @SuppressWarnings('Instanceof')
     FileCollection getConfigurations() {
         final precompiledExtensions = findDependenciesInExtensions()
-        FileCollection fc = this.asciidocConfigurations.inject((FileCollection)asciidoctorj.configuration) {
+        FileCollection fc = this.asciidocConfigurations.inject((FileCollection) asciidoctorj.configuration) {
             FileCollection seed, Object it ->
-                final newFC = (FileCollection)ProjectOperations.find(project).configurations.asConfiguration(it)
+                final newFC = (FileCollection) ProjectOperations.find(project).configurations.asConfiguration(it)
                 seed + newFC
         }
         final gjp = fsOperations().files([gemJarProviders, fc])
@@ -352,7 +352,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
     @Override
     Set<Configuration> getReportableConfigurations() {
         ([asciidoctorj.configuration] +
-                ProjectOperations.find(project).configurations.asConfigurations(asciidocConfigurations)).toSet()
+            ProjectOperations.find(project).configurations.asConfigurations(asciidocConfigurations)).toSet()
     }
 
     /**
@@ -430,16 +430,16 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
         if (executionMode == JAVA_EXEC) {
             entrypoint {
                 classpath(JavaExecUtils.getJavaExecClasspath(
-                        this,
-                        configurations
+                    this,
+                    configurations
                 ))
             }
 
             final mapping = prepareWorkspaceAndLoadExecutorConfigurations()
 
             JavaExecUtils.writeExecConfigurationData(
-                    execConfigurationDataFile,
-                    mapping.values().flatten() as List<ExecutorConfiguration>
+                execConfigurationDataFile,
+                mapping.values().flatten() as List<ExecutorConfiguration>
             )
         } else {
             entrypoint {
@@ -460,14 +460,14 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
         notCompatibleWithConfigurationCache('Classic asciidoctor tasks are not compatible with CC')
         this.asciidoctorTaskFileOperations = new DefaultAsciidoctorFileOperations(this, 'AsciidoctorJ')
         this.workspacePreparation = new DefaultAsciidoctorWorkspacePreparation(
-                this,
-                this.asciidoctorTaskFileOperations,
-                this.asciidoctorTaskFileOperations
+            this,
+            this.asciidoctorTaskFileOperations,
+            this.asciidoctorTaskFileOperations
         )
         this.asciidoctorOutputOptions = new DefaultAsciidoctorOutputOptions(
-                this,
-                name,
-                asciidoctorTaskFileOperations
+            this,
+            name,
+            asciidoctorTaskFileOperations
         )
         this.baseDirConfiguration = new DefaultAsciidoctorBaseDirConfiguration(project, this)
         this.asciidoctorj = extensions.create(AsciidoctorJExtension.NAME, AsciidoctorJExtension, this)
@@ -483,11 +483,11 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
         }.curry(project.configurations) as Function<List<Dependency>, Configuration>
 
         inputs.files(this.asciidoctorj.configuration)
-                .withPathSensitivity(RELATIVE)
-                .withPropertyName('asciidoctorj-dependencies')
+            .withPathSensitivity(RELATIVE)
+            .withPropertyName('asciidoctorj-dependencies')
         inputs.files { gemJarProviders }
-                .withPathSensitivity(RELATIVE)
-                .withPropertyName('gemJarProviders')
+            .withPathSensitivity(RELATIVE)
+            .withPropertyName('gemJarProviders')
         inputs.property 'backends', { -> backends() }
         inputs.property 'asciidoctorj-version', { -> asciidoctorj.version }
         inputs.property 'jruby-version', { -> asciidoctorj.jrubyVersion ?: '' }
@@ -498,7 +498,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
 
         executionMode = IN_PROCESS
 
-        preventExecutionMode(JAVA_EXEC,'Gradle API for closure serialisation has changed')
+        preventExecutionMode(JAVA_EXEC, 'Gradle API for closure serialisation has changed')
     }
 
     /**
@@ -550,14 +550,14 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
      * @return Executor configurations
      */
     protected Map<String, ExecutorConfiguration> getExecutorConfigurations(
-            final File workingSourceDir,
-            final Set<File> sourceFiles,
-            Optional<String> lang
+        final File workingSourceDir,
+        final Set<File> sourceFiles,
+        Optional<String> lang
     ) {
         backends().collectEntries { String activeBackend ->
             [
-                    "backend=${activeBackend}".toString(),
-                    getExecutorConfigurationFor(activeBackend, workingSourceDir, sourceFiles, lang)
+                "backend=${activeBackend}".toString(),
+                getExecutorConfigurationFor(activeBackend, workingSourceDir, sourceFiles, lang)
             ]
         }
     }
@@ -573,34 +573,34 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
      */
     @SuppressWarnings(['UnnecessaryGetter', 'LineLength'])
     protected ExecutorConfiguration getExecutorConfigurationFor(
-            final String backendName,
-            final File workingSourceDir,
-            final Set<File> sourceFiles,
-            Optional<String> lang
+        final String backendName,
+        final File workingSourceDir,
+        final Set<File> sourceFiles,
+        Optional<String> lang
     ) {
         Optional<List<String>> copyResources = getCopyResourcesForBackends()
         new ExecutorConfiguration(
-                sourceDir: workingSourceDir,
-                sourceTree: sourceFiles,
-                outputDir: lang.present ? getOutputDirForBackend(backendName, lang.get()) : getOutputDirForBackend(backendName),
-                baseDir: lang.present ? getBaseDir(lang.get()) : getBaseDir(),
-                projectDir: this.projectDir,
-                rootDir: this.rootDir,
-                options: resolveAsSerializable(evaluateProviders(options), stringTools()),
-                failureLevel: failureLevel.level,
-                attributes: resolveAsSerializable(
-                        preparePreserialisedAttributes(workingSourceDir, lang),
-                        stringTools()
-                ),
-                backendName: backendName,
-                logDocuments: logDocuments,
-                fatalMessagePatterns: asciidoctorj.fatalWarnings,
-                asciidoctorExtensions: serializableAsciidoctorJExtensions,
-                requires: asciidoctorj.requires,
-                copyResources: copyResources.present &&
-                        (copyResources.get().empty || backendName in copyResources.get()),
-                executorLogLevel: ExecutorUtils.getExecutorLogLevel(asciidoctorj.logLevel),
-                safeModeLevel: asciidoctorj.safeMode.level
+            sourceDir: workingSourceDir,
+            sourceTree: sourceFiles,
+            outputDir: lang.present ? getOutputDirForBackend(backendName, lang.get()) : getOutputDirForBackend(backendName),
+            baseDir: lang.present ? getBaseDir(lang.get()) : getBaseDir(),
+            projectDir: this.projectDir,
+            rootDir: this.rootDir,
+            options: resolveAsSerializable(evaluateProviders(options), stringTools()),
+            failureLevel: failureLevel.level,
+            attributes: resolveAsSerializable(
+                preparePreserialisedAttributes(workingSourceDir, lang),
+                stringTools()
+            ),
+            backendName: backendName,
+            logDocuments: logDocuments,
+            fatalMessagePatterns: asciidoctorj.fatalWarnings,
+            asciidoctorExtensions: serializableAsciidoctorJExtensions,
+            requires: asciidoctorj.requires,
+            copyResources: copyResources.present &&
+                (copyResources.get().empty || backendName in copyResources.get()),
+            executorLogLevel: ExecutorUtils.getExecutorLogLevel(asciidoctorj.logLevel),
+            safeModeLevel: asciidoctorj.safeMode.level
         )
     }
 
@@ -672,9 +672,9 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
         final mapping = sourcesByLang.collectEntries { lang, workspace ->
             final byLang = Optional.ofNullable(lang)
             List<ExecutorConfiguration> loadedConfigurations = getExecutorConfigurations(
-                    workspace.workingSourceDir,
-                    workspace.sourceTree.files,
-                    byLang
+                workspace.workingSourceDir,
+                workspace.sourceTree.files,
+                byLang
             ).values().toList()
             copyResourcesByExecutorConfiguration(loadedConfigurations, byLang)
             [lang, loadedConfigurations]
@@ -693,8 +693,8 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
     }
 
     private void copyResourcesByExecutorConfiguration(
-            Iterable<ExecutorConfiguration> executorConfigurations,
-            Optional<String> lang
+        Iterable<ExecutorConfiguration> executorConfigurations,
+        Optional<String> lang
     ) {
         for (ExecutorConfiguration ec : executorConfigurations) {
             copyResourcesByExecutorConfiguration(ec, lang)
@@ -702,8 +702,8 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
     }
 
     private void copyResourcesByExecutorConfiguration(
-            ExecutorConfiguration ec,
-            Optional<String> lang
+        ExecutorConfiguration ec,
+        Optional<String> lang
     ) {
         if (ec.copyResources) {
             copyResourcesByBackend(ec.backendName, ec.sourceDir, ec.outputDir, lang)
@@ -744,12 +744,12 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
         }
         if (LegacyLevel.PRE_8_4 && !LegacyLevel.PRE_8_3) {
             closurePaths.add(getInternalGradleLibraryLocation(
-                    this,
-                    ~/gradle-internal-instrumentation-api-([\d.]+).jar/
+                this,
+                ~/gradle-internal-instrumentation-api-([\d.]+).jar/
             ))
             closurePaths.add(getInternalGradleLibraryLocation(
-                    this,
-                    ~/gradle-instrumentation-declarations-([\d.]+).jar/
+                this,
+                ~/gradle-instrumentation-declarations-([\d.]+).jar/
             ))
         }
         if (!LegacyLevel.PRE_8_1 && LegacyLevel.PRE_8_4) {
@@ -768,12 +768,12 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
 
     private Map<String, Object> preparePreserialisedAttributes(final File workingSourceDir, Optional<String> lang) {
         prepareAttributes(
-                stringTools(),
-                attributes,
-                (lang.present ? asciidoctorj.getAttributesForLang(lang.get()) : [:]),
-                getTaskSpecificDefaultAttributes(workingSourceDir) as Map<String, ?>,
-                attributeProviders,
-                lang
+            stringTools(),
+            attributes,
+            (lang.present ? asciidoctorj.getAttributesForLang(lang.get()) : [:]),
+            getTaskSpecificDefaultAttributes(workingSourceDir) as Map<String, ?>,
+            attributeProviders,
+            lang
         )
     }
 

@@ -26,6 +26,13 @@ import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 
+/**
+ * Base class for implementing an output formatter for {@code asciidoctor.js}.
+ *
+ * @author Schalk W. Cronjé
+ *
+ * @since 5.0
+ */
 @CompileStatic
 abstract class AbstractAsciidoctorjsFormatter implements AsciidoctorjsOutputFormatter {
     final String name
@@ -35,8 +42,6 @@ abstract class AbstractAsciidoctorjsFormatter implements AsciidoctorjsOutputForm
     protected final ConfigCacheSafeOperations ccso
     protected final AsciidoctorjsToolchain toolchain
 
-    private final FileCollection emptyFileCollection
-
     /**
      * Can be modified by derived classes when additional requires are needed.
      */
@@ -45,7 +50,7 @@ abstract class AbstractAsciidoctorjsFormatter implements AsciidoctorjsOutputForm
     /**
      * Can be modified by derived classes when attributes need to be made available.
      */
-    protected final MapProperty<String,Object> attributes
+    protected final MapProperty<String, Object> attributes
 
     /**
      * A list of {@code requires} that a component places on the associated toolchain.
@@ -64,7 +69,7 @@ abstract class AbstractAsciidoctorjsFormatter implements AsciidoctorjsOutputForm
      */
     @Override
     Provider<Map<String, Object>> getAttributeProvider() {
-       this.attributes
+        this.attributes
     }
 
     /**
@@ -78,17 +83,17 @@ abstract class AbstractAsciidoctorjsFormatter implements AsciidoctorjsOutputForm
     }
 
     protected AbstractAsciidoctorjsFormatter(
-            String name,
-            String backendName,
-            AsciidoctorjsToolchain tc,
-            Project project
+        String name,
+        String backendName,
+        AsciidoctorjsToolchain tc,
+        Project project
     ) {
         this.name = name
         this.toolchain = tc
         this.ccso = ConfigCacheSafeOperations.from(project)
         this.backend = ccso.providerTools().provider { -> AsciidoctorNamedBackend.of(name, backendName) }
         this.packageRequires = project.objects.setProperty(String)
-        this.attributes = project.objects.mapProperty(String,Object)
+        this.attributes = project.objects.mapProperty(String, Object)
     }
 
     /**

@@ -134,7 +134,6 @@ class DefaultPdfTheme implements PdfTheme {
             } else {
                 objectFactory.newInstance(DefaultPdfTheme, name, parent)
             }
-
         }
     }
 }

@@ -27,9 +27,6 @@ import org.gradle.workers.WorkerExecutor
 
 import javax.inject.Inject
 
-import static org.ysb33r.grolifant5.api.core.TaskInputFileOptions.IGNORE_EMPTY_DIRECTORIES
-import static org.ysb33r.grolifant5.api.core.TaskInputFileOptions.OPTIONAL
-
 /** Asciidoctor task that is specialises in PDF conversion.
  *
  * @author Schalk W. Cronjé
@@ -51,8 +48,8 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
 
         outputOptions.backends = ['pdf']
         copyNoResources()
-        inputs.files({ -> pdfFontDirs }).withPathSensitivity(PathSensitivity.RELATIVE)
-                .ignoreEmptyDirectories().optional()
+        inputs.files { -> pdfFontDirs }.withPathSensitivity(PathSensitivity.RELATIVE)
+            .ignoreEmptyDirectories().optional()
     }
 
     /** Returns the directories or single directory for the fonts
@@ -162,9 +159,9 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
         final attrs = super.getTaskSpecificDefaultAttributes(workingSourceDir)
         final fonts = fontsDirs
         attrs.putAll([
-                'pdf-fontsdir' : fonts.empty ? null : fonts.asPath,
-                'pdf-themesdir': themesDir?.absolutePath,
-                'pdf-theme'    : themeName
+            'pdf-fontsdir' : fonts.empty ? null : fonts.asPath,
+            'pdf-themesdir': themesDir?.absolutePath,
+            'pdf-theme'    : themeName
         ].findAll { k, v -> v != null })
         attrs
     }

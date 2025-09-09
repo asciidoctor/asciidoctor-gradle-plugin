@@ -22,7 +22,15 @@ import org.gradle.api.ExtensiblePolymorphicDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
 
+/**
+ * Base class for implementing toolchains,
+ *
+ * @author Schalk W. Cronjé
+ *
+ * @since 5.0
+ */
 @CompileStatic
+@SuppressWarnings('AbstractClassWithoutAbstractMethod')
 abstract class AbstractAsciidoctorToolchain implements AsciidoctorToolchain {
 
     final ExtensiblePolymorphicDomainObjectContainer<AsciidoctorOutputFormatter> registeredOutputFormatters

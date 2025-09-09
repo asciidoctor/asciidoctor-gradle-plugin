@@ -35,6 +35,22 @@ import javax.inject.Inject
 
 import static java.util.Collections.EMPTY_LIST
 
+/**
+ * Default implementation of the {@come asciidoctorj} toolchain.
+ *
+ * <p>
+ * This class provides the core functionality for running Asciidoctor document processing using
+ * the AsciidoctorJ implementation. It handles configuration of the engine options, processing
+ * options, and preparation tasks required for document generation.
+ * <p>
+ *
+ * When the {@link AsciidoctorjGemsPlugin} is applied, this implementation automatically adds
+ * the necessary gem and jar preparation tasks to the toolchain.
+ *
+ * @since 5.0
+ *
+ * @author Schalk W. Cronjé
+ */
 @CompileStatic
 class DefaultAsciidoctorjToolchain extends AbstractAsciidoctorToolchain implements AsciidoctorjToolchain {
 
@@ -46,6 +62,12 @@ class DefaultAsciidoctorjToolchain extends AbstractAsciidoctorToolchain implemen
     @Delegate
     private final ProcessingOptions processingOptions
 
+    /**
+     * Creates a new instance of the AsciidoctorJ toolchain.
+     *
+     * @param name The name of this toolchain instance
+     * @param project The Gradle project this toolchain belongs to
+     */
     @Inject
     DefaultAsciidoctorjToolchain(String name, Project project) {
         super(name, project)
@@ -79,7 +101,7 @@ class DefaultAsciidoctorjToolchain extends AbstractAsciidoctorToolchain implemen
      * @param configurator Configurator which is passed an instance of {@link EngineOptions}
      */
     @Override
-    void engineOptions(@DelegatesTo(EngineOptions.class) Closure<?> configurator) {
+    void engineOptions(@DelegatesTo(EngineOptions) Closure<?> configurator) {
         ClosureUtils.configureItem(engine, configurator)
     }
 
@@ -112,7 +134,7 @@ class DefaultAsciidoctorjToolchain extends AbstractAsciidoctorToolchain implemen
      */
     @Override
     String getDisplayType() {
-        AsciidoctorjToolchain.class.canonicalName
+        AsciidoctorjToolchain.canonicalName
     }
 
     /**

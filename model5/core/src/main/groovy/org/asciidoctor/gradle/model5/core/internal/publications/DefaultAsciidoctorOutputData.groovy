@@ -202,8 +202,8 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
             this.embedded.set(((HasEmbedded) formatter).embedded)
         }
 
-        if(formatter instanceof HasTemplates) {
-            final templateFormatter = (HasTemplates)formatter
+        if (formatter instanceof HasTemplates) {
+            final templateFormatter = (HasTemplates) formatter
             this.templates.set(templateFormatter.conversionTemplate)
         }
     }

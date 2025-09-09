@@ -21,6 +21,7 @@ import org.asciidoctor.gradle.model5.core.attributes.Attributes
 import org.asciidoctor.gradle.model5.core.attributes.HasAsciidoctorAttributes
 import org.asciidoctor.gradle.model5.core.basedir.BaseDirConfiguration
 import org.asciidoctor.gradle.model5.core.basedir.HasBaseDirStrategy
+import org.asciidoctor.gradle.model5.core.errors.ConfigurationNotSupportedException
 import org.asciidoctor.gradle.model5.core.internal.attributes.DefaultAttributes
 import org.asciidoctor.gradle.model5.core.internal.basedir.DefaultBaseDirConfiguration
 import org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils
@@ -28,6 +29,7 @@ import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.file.ProjectLayout
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
@@ -66,6 +68,7 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
     private final PatternSet resourcePatterns
     private final Provider<PatternFilterable> resourcePatternProvider
     private final SetProperty<Pattern> fatalWarningPatterns
+    private final Property<DuplicatesStrategy> duplicatesStrategy
 //    private final CopySpec resourcesCopySpec
 //    private final PatternSet secondarySourceDocumentPattern
 //    private final Provider<PatternFilterable> secondarySourcePatternProvider
@@ -81,7 +84,8 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
         this.sourceDocumentPattern = new PatternSet().exclude(UNDERSCORE_LED_FILES)
         this.resourcePatterns = new PatternSet()
         this.fatalWarningPatterns = tempProjectReference.objects.setProperty(Pattern)
-
+        this.duplicatesStrategy = tempProjectReference.objects.property(DuplicatesStrategy)
+            .convention(DuplicatesStrategy.FAIL)
 //        this.resourcesCopySpec = ccso.fsOperations().copySpec()
 //        this.secondarySourceDocumentPattern = new PatternSet()
 
@@ -133,7 +137,7 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
      * @param configurator Configurator
      */
     @Override
-    void baseDir(@DelegatesTo(BaseDirConfiguration.class) Closure<?> configurator) {
+    void baseDir(@DelegatesTo(BaseDirConfiguration) Closure<?> configurator) {
         ClosureUtils.configureItem(this.baseDirConfiguration, configurator)
     }
 
@@ -166,7 +170,7 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
      * @param cfg Configuration closure. Is passed a {@link org.gradle.api.tasks.util.PatternSet}.
      */
     @Override
-    void sources(@DelegatesTo(PatternSet.class) Closure<?> cfg) {
+    void sources(@DelegatesTo(PatternSet) Closure<?> cfg) {
         ClosureUtils.configureItem(this.sourceDocumentPattern, cfg)
     }
 
@@ -206,6 +210,40 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
     @Override
     Provider<PatternFilterable> getSourcePatterns() {
         this.sourcePatternProvider
+    }
+
+    /**
+     * Adds an external source which is is a supplier of AsciiDoc source and
+     * related resources
+     *
+     * <p>
+     *     Once an external source is added, it will result in all local sources and external sources being copied to
+     *     an intermediate folder before processing starts.
+     * </p>
+     * @param configurator Configure the external source.
+     */
+    void externalSource(Action<HasExternalAsciidoctorSource> configurator) {
+        HasExternalAsciidoctorSource t
+        configurator.execute(t)
+        throw new ConfigurationNotSupportedException('TO BE IMPLEMENTED')
+    }
+
+    /**
+     * Defines how duplicates between local and external sources are managed.
+     *
+     * @param strategy Instance of {@link DuplicatesStrategy}.
+     */
+    void setDuplicatesStrategy(DuplicatesStrategy strategy) {
+        this.duplicatesStrategy.set(strategy)
+    }
+
+    /**
+     * Defines how duplicates are handled is external sources are added.
+     *
+     * @return Provider to strategy.
+     */
+    Provider<DuplicatesStrategy> getDuplicatesStrategy() {
+        this.duplicatesStrategy
     }
 
 //    /**
@@ -306,7 +344,7 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
      * @param cfg A closure that can configure a {@link PatternFilterable} instance.
      */
     @Override
-    void resources(@DelegatesTo(PatternFilterable.class) Closure<?> cfg) {
+    void resources(@DelegatesTo(PatternFilterable) Closure<?> cfg) {
         ClosureUtils.configureItem(this.resourcePatterns, cfg)
     }
 
@@ -330,7 +368,7 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
     }
 
     @Override
-    void attributes(@DelegatesTo(Attributes.class) Closure configurator) {
+    void attributes(@DelegatesTo(Attributes) Closure configurator) {
         ClosureUtils.configureItem(this.attributes, configurator)
     }
 

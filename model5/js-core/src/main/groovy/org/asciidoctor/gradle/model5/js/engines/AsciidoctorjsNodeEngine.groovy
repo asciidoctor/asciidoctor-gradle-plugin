@@ -21,7 +21,6 @@ import org.asciidoctor.gradle.model5.core.engines.AsciidoctorEngine
 import org.asciidoctor.gradle.model5.js.JsModel
 import org.asciidoctor.gradle.model5.js.internal.engines.DefaultLauncher
 import org.asciidoctor.gradle.model5.js.internal.engines.NpmPackage
-
 import org.asciidoctor.gradle.model5.js.toolchains.CoreVersions
 import org.gradle.api.Project
 import org.gradle.api.provider.ListProperty
@@ -51,6 +50,8 @@ import static org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreBasePlug
 @CompileStatic
 class AsciidoctorjsNodeEngine implements AsciidoctorEngine, CoreVersions {
 
+    private static final String ASCIIDOCTOR_SCOPE = 'asciidoctor'
+
     final String name
     final NodeJSExtension nodejs
     final NpmExtension npm
@@ -69,21 +70,21 @@ class AsciidoctorjsNodeEngine implements AsciidoctorEngine, CoreVersions {
         this.packages = tempProjectReference.objects.listProperty(NpmPackageDescriptor)
         this.npm = new NpmExtension(tempProjectReference, this.nodejs).tap {
             homeDirectory = ccso.fsOperations().buildDirDescendant(
-                    "tmp/asciidoctorjs-engine/${ccso.fsOperations().toSafeFileName(name)}")
+                "tmp/asciidoctorjs-engine/${ccso.fsOperations().toSafeFileName(name)}")
         }
 
         final props = ccso.fsOperations().loadPropertiesFromResource(
-                "${INTERMEDIATE_RESOURCE_PATH}/asciidoctor5-js-core-plugin.properties",
-                this.class.classLoader
+            "${INTERMEDIATE_RESOURCE_PATH}/asciidoctor5-js-core-plugin.properties",
+            this.class.classLoader
         )
 
         this.asciidoctorjsVersion = tempProjectReference.objects.property(String)
-                .convention(props['asciidoctorjs'].toString())
+            .convention(props['asciidoctorjs'].toString())
         this.asciidoctorjsCliVersion = tempProjectReference.objects.property(String)
-                .convention(props['asciidoctorjs.cli'].toString())
+            .convention(props['asciidoctorjs.cli'].toString())
 
-        usePackage('asciidoctor', 'core', this.asciidoctorjsVersion)
-        usePackage('asciidoctor', 'cli', this.asciidoctorjsCliVersion)
+        usePackage(ASCIIDOCTOR_SCOPE, 'core', this.asciidoctorjsVersion)
+        usePackage(ASCIIDOCTOR_SCOPE, 'cli', this.asciidoctorjsCliVersion)
 
         createToolchainPrepareTask(tempProjectReference)
         this.launcherProvider = createLauncher(tempProjectReference)
@@ -103,7 +104,7 @@ class AsciidoctorjsNodeEngine implements AsciidoctorEngine, CoreVersions {
      * Sets the version of {@code asciidoctor.js} to use.
      *
      * @param ver New version to be used. Can be of anything that can be resolved by
-     *          {@link org.ysb33r.grolifant5.api.core.StringTools#stringize ( Object o )}
+     * {@link org.ysb33r.grolifant5.api.core.StringTools#stringize ( Object o )}
      */
     void useAsciidoctorjs(Object ver) {
         ccso.stringTools().updateStringProperty(this.asciidoctorjsVersion, ver)
@@ -113,7 +114,7 @@ class AsciidoctorjsNodeEngine implements AsciidoctorEngine, CoreVersions {
      * Sets the version of {@code asciidoctor.js cli} to use.
      *
      * @param ver New version to be used. Can be of anything that can be resolved by
-     *          {@link org.ysb33r.grolifant5.api.core.StringTools#stringize ( Object o )}
+     * {@link org.ysb33r.grolifant5.api.core.StringTools#stringize ( Object o )}
      */
     void useAsciidoctorjsCli(Object ver) {
         ccso.stringTools().updateStringProperty(this.asciidoctorjsCliVersion, ver)
@@ -135,16 +136,16 @@ class AsciidoctorjsNodeEngine implements AsciidoctorEngine, CoreVersions {
      * @param pkgName Name
      * @param ver Lazy-evaluated version
      */
-    void usePackage(String scope,String pkgName, Object ver) {
+    void usePackage(String scope, String pkgName, Object ver) {
         this.packages.add(new NpmPackage(
-                scope,
-                pkgName,
-                ccso.stringTools().provideString(ver)
+            scope,
+            pkgName,
+            ccso.stringTools().provideString(ver)
         ))
     }
 
     private NodeJSExecSpec createExecSpec() {
-        final env = NpmExecutor.environmentFromExtensions(nodejs,npm)
+        final env = NpmExecutor.environmentFromExtensions(nodejs, npm)
         nodejs.createExecSpec().tap { spec ->
             entrypoint {
                 workingDir(this.npm.homeDirectoryProvider)
@@ -159,10 +160,10 @@ class AsciidoctorjsNodeEngine implements AsciidoctorEngine, CoreVersions {
     private Provider<DefaultLauncher> createLauncher(Project tempProjectReference) {
         final execSpec = createExecSpec()
         final jsLauncher = tempProjectReference.objects.newInstance(
-                DefaultLauncher,
-                execSpec,
-                NodeJSConfigCacheSafeOperations.from(nodejs),
-                NpmConfigCacheSafeOperations.from(npm)
+            DefaultLauncher,
+            execSpec,
+            NodeJSConfigCacheSafeOperations.from(nodejs),
+            NpmConfigCacheSafeOperations.from(npm)
         )
         jsLauncher.packages = this.packages
         tempProjectReference.provider { -> jsLauncher }
@@ -170,10 +171,10 @@ class AsciidoctorjsNodeEngine implements AsciidoctorEngine, CoreVersions {
 
     private void createToolchainPrepareTask(Project project) {
         final task = project.tasks.register(
-                JsModel.toolchainPrepareTaskName(name),
-                NodeNpmPrepareTask,
-                NodeJSConfigCacheSafeOperations.from(this.nodejs),
-                NpmConfigCacheSafeOperations.from(this.npm)
+            JsModel.toolchainPrepareTaskName(name),
+            NodeNpmPrepareTask,
+            NodeJSConfigCacheSafeOperations.from(this.nodejs),
+            NpmConfigCacheSafeOperations.from(this.npm)
         )
         task.configure {
             it.packages = packages

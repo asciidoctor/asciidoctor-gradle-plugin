@@ -21,7 +21,6 @@ import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 
 import javax.inject.Inject
-import java.util.function.BiConsumer
 import java.util.function.Consumer
 
 /**
@@ -34,7 +33,6 @@ import java.util.function.Consumer
 @CompileStatic
 class DependencyUpdater {
     private final Project project
-
 
     @Inject
     DependencyUpdater(Project project) {

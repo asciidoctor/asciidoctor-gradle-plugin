@@ -33,15 +33,15 @@ import org.gradle.api.model.ObjectFactory
 @CompileStatic
 class PublicationFactory implements NamedDomainObjectFactory<AsciidoctorPublication> {
 
-    private final ObjectFactory objectFactory
-    private final AsciidoctorModelExtension parent
     private static final List<String> INVALID_NAMES = [
         'all',
         'toolchains',
         'gemjar',
         'gems'
-
     ].asImmutable()
+
+    private final ObjectFactory objectFactory
+    private final AsciidoctorModelExtension parent
 
     PublicationFactory(Project project, AsciidoctorModelExtension parent) {
         this.objectFactory = project.objects

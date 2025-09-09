@@ -17,7 +17,6 @@ package org.asciidoctor.gradle.model5.core.plugins
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
-import org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils
 import org.asciidoctor.gradle.model5.core.internal.toolchains.ToolchainInfo
 import org.asciidoctor.gradle.model5.core.publications.AsciidoctorPublication
 import org.asciidoctor.gradle.model5.core.waitingroom.ShowAsciidocToolchains
@@ -29,6 +28,14 @@ import org.ysb33r.grolifant5.api.core.plugins.GrolifantServicePlugin
 
 import static org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils.TASK_PREFIX
 
+/**
+ * Plugin that provides the {@code asciidoc} extension and the {@code showAsciidoctorToolchains} task.
+ * It also reacts to the {@code org.asciidoctor.editorconfig} plugin.
+ *
+ * @author Schalk W. Cronjé
+ *
+ * @since 5.0
+ */
 @CompileStatic
 class AsciidoctorCoreBasePlugin implements Plugin<Project> {
     public final static String INTERMEDIATE_RESOURCE_PATH = 'META-INF/asciidoctor.gradle'
@@ -41,9 +48,9 @@ class AsciidoctorCoreBasePlugin implements Plugin<Project> {
         }
 
         final asciidoc = project.extensions.create(
-                AsciidoctorModelExtension.NAME,
-                AsciidoctorModelExtension,
-                project
+            AsciidoctorModelExtension.NAME,
+            AsciidoctorModelExtension,
+            project
         )
 
         final satp = project.provider { ->
@@ -59,10 +66,10 @@ class AsciidoctorCoreBasePlugin implements Plugin<Project> {
         configureForAsciidoctorEditorConfig(project, asciidoc)
     }
 
-    private void configureForAsciidoctorEditorConfig(Project project,AsciidoctorModelExtension asciidoc) {
+    private void configureForAsciidoctorEditorConfig(Project project, AsciidoctorModelExtension asciidoc) {
         project.pluginManager.withPlugin('org.asciidoctor.editorconfig') {
             asciidoc.publications.whenObjectAdded { AsciidoctorPublication pub ->
-                project.tasks.named(AsciidoctorEditorConfigPlugin.DEFAULT_TASK_NAME,AsciidoctorEditorConfigGenerator) {
+                project.tasks.named(AsciidoctorEditorConfigPlugin.DEFAULT_TASK_NAME, AsciidoctorEditorConfigGenerator) {
                     it.attributes(pub.sourceSet.attributes.attributeResolver)
                 }
             }

@@ -38,12 +38,13 @@ class BooleanType implements AttributeType {
      * Render to a string value
      * @return String value. Can be {@code null.}
      */
+    @SuppressWarnings(['MultipleUnaryOperators', 'DoubleNegative'])
     @Override
     String render() {
-       if(value instanceof Boolean) {
-           value.toString()
-       } else {
-           (!!value).toString()
-       }
+        if (value instanceof Boolean) {
+            value.toString()
+        } else {
+            (!!value).toString()
+        }
     }
 }

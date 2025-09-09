@@ -33,6 +33,7 @@ import java.util.concurrent.ConcurrentMap
  * @since 5.0
  */
 @CompileStatic
+@SuppressWarnings(['AbstractClassWithPublicConstructor', 'AbstractClassWithoutAbstractMethod'])
 abstract class AsciidoctorjEngineContextService implements BuildService<BuildServiceParameters.None> {
     private static final String LAUNCHER_SERVICE_NAME = 'org.asciidoctor.gradle.model5.jvm.internal.engines'
     private final ConcurrentMap<String, DefaultExecutionContext> executionsContexts
@@ -61,10 +62,10 @@ abstract class AsciidoctorjEngineContextService implements BuildService<BuildSer
      * @param context THe execution context.
      */
     void storeExecutionContext(
-            String projectPath,
-            String toolchainName,
-            String formatterName,
-            DefaultExecutionContext context
+        String projectPath,
+        String toolchainName,
+        String formatterName,
+        DefaultExecutionContext context
     ) {
         final index = key(projectPath, toolchainName, formatterName)
         executionsContexts.put(index, context)
@@ -92,7 +93,11 @@ abstract class AsciidoctorjEngineContextService implements BuildService<BuildSer
      *
      * @return Execution context. If nothing is found returns an empty {@link Optional}.
      */
-    Optional<DefaultExecutionContext> getExecutionContext(String projectPath, String toolchainName, String formatterName) {
+    Optional<DefaultExecutionContext> getExecutionContext(
+        String projectPath,
+        String toolchainName,
+        String formatterName
+    ) {
         final index = key(projectPath, toolchainName, formatterName)
         Optional.ofNullable(executionsContexts.get(index))
     }

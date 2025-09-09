@@ -24,6 +24,13 @@ import org.gradle.api.provider.Provider
 
 import javax.inject.Inject
 
+/**
+ * The base directory is the source directory. WHere an intermediate work directory is used, it will the work directory.
+ *
+ * @author Schalk W. Cronjé
+ *
+ * @since 5.0
+ */
 @CompileStatic
 class BaseDirFollowSourceDir implements BaseDirStrategy {
 

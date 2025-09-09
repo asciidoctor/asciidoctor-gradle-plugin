@@ -24,6 +24,13 @@ import org.gradle.api.model.ObjectFactory
 
 import javax.inject.Inject
 
+/**
+ * Factory for {@link AsciidoctorjDocbook}.
+ *
+ * @since 5.0
+ *
+ * @author Schalk W. Cronjé
+ */
 @CompileStatic
 class AsciidoctorjDocbookFactory implements NamedDomainObjectFactory<AsciidoctorjDocbook> {
 

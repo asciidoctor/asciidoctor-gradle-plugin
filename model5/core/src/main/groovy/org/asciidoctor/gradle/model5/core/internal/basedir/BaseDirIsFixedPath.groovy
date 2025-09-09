@@ -56,6 +56,6 @@ class BaseDirIsFixedPath implements BaseDirStrategy {
 
     protected BaseDirIsFixedPath(DirectoryProperty lazyResolvedLocation, ProviderFactory pf) {
         this.location = lazyResolvedLocation
-        this.adjustBaseDirPerFile = pf.provider { -> false}
+        this.adjustBaseDirPerFile = pf.provider { -> false }
     }
 }

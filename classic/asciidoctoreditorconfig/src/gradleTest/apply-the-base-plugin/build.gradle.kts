@@ -1,5 +1,5 @@
 plugins {
-    id ("org.asciidoctor.editorconfig")
+    id ("org.asciidoctor.editorconfig.classic")
 }
 
 tasks.register<DefaultTask>("runGradleTest") {

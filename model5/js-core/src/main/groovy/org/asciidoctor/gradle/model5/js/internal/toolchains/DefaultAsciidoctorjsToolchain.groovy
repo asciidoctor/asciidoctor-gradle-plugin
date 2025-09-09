@@ -26,6 +26,17 @@ import org.gradle.api.Project
 
 import javax.inject.Inject
 
+/**
+ * Default implementation of {@link AsciidoctorjsToolchain} that provides support for processing
+ * AsciiDoc content using Asciidoctor.js.
+ * <p>
+ * This implementation delegates Node.js engine capabilities to {@link AsciidoctorjsNodeEngine}
+ * and processing options to {@link ProcessingOptions}.
+ *
+ * @since 5.0
+ *
+ * @author Schalk W. Cronjé
+ */
 @CompileStatic
 class DefaultAsciidoctorjsToolchain extends AbstractAsciidoctorToolchain implements AsciidoctorjsToolchain {
 
@@ -35,6 +46,12 @@ class DefaultAsciidoctorjsToolchain extends AbstractAsciidoctorToolchain impleme
     @Delegate
     private final ProcessingOptions processingOptions
 
+    /**
+     * Creates a new toolchain instance.
+     *
+     * @param name The name of this toolchain instance
+     * @param project The Gradle project this toolchain belongs to
+     */
     @Inject
     DefaultAsciidoctorjsToolchain(String name, Project project) {
         super(name, project)

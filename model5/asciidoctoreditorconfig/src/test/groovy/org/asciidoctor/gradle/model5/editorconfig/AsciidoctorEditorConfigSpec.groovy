@@ -37,7 +37,7 @@ class AsciidoctorEditorConfigSpec extends Specification {
         project.asciidoctorEditorConfig.destinationDir = 'build'
 
         then:
-        project.asciidoctorEditorConfig.outputFile.get().canonicalPath == new File(
+        project.asciidoctorEditorConfig.outputFile.get().asFile.canonicalPath == new File(
             project.file('build'), '.asciidoctorconfig'
         ).canonicalPath
     }

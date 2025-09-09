@@ -41,15 +41,15 @@ class TaskFactory {
     }
 
     TaskProvider<? extends AsciidoctorTask> registerConversionTask(
-            final String taskName,
-            Action<? extends AsciidoctorTaskMethods> configurator
+        final String taskName,
+        Action<? extends AsciidoctorTaskMethods> configurator
     ) {
-        project.tasks.register(taskName,AsciidoctorTask) {
+        project.tasks.register(taskName, AsciidoctorTask) {
             configurator.execute(it)
         }
     }
 
-    void addPrerequisiteTasks(final String taskName,Iterable<String> prepareTasks) {
-        project.tasks.named(taskName).configure { it.dependsOn(prepareTasks)}
+    void addPrerequisiteTasks(final String taskName, Iterable<String> prepareTasks) {
+        project.tasks.named(taskName).configure { it.dependsOn(prepareTasks) }
     }
 }

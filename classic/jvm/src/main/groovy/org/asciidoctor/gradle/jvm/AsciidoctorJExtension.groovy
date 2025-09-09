@@ -33,7 +33,6 @@ import org.ysb33r.grolifant5.api.core.LegacyLevel
 
 import java.util.concurrent.Callable
 import java.util.function.BiConsumer
-import java.util.function.BiFunction
 import java.util.function.Function
 import java.util.regex.Pattern
 
@@ -66,9 +65,6 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     private static final String JRUBY_COMPLETE_DEPENDENCY = JavaExecUtils.JRUBY_COMPLETE_DEPENDENCY
     private static final String ASCIIDOCTOR_DEPENDENCY_PROPERTY_NAME = 'asciidoctorj'
     private static final String CONFIGURATION_NAME = "__\$\$${NAME}\$\$__"
-
-    @SuppressWarnings(['SpaceAfterOpeningBrace', 'SpaceBeforeClosingBrace'])
-    private static final Closure EMPTY_CONFIGURATOR = {}
 
     private static final BiConsumer<DependencyResolveDetails, Callable<String>> DRD_VERSION_RESOLVER = {
         DependencyResolveDetails drd, Callable<String> versionResolver ->
@@ -118,7 +114,7 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
         this.defaultLogLevel = project.logging.level
         if (this.version == null) {
             throw new ModuleNotFoundException('Default version for AsciidoctorJ must be defined. ' +
-                    'Please report a bug at https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues'
+                'Please report a bug at https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues'
             )
         }
 
@@ -289,7 +285,7 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
      */
     void docExtensionsFromExternal(String... exts) {
         addExtensions(Transform.toList(exts as List) {
-            deps.add(this.privateConfiguration.name,it.toString())
+            deps.add(this.privateConfiguration.name, it.toString())
 //            dependencyCreator.apply(it.toString(), EMPTY_CONFIGURATOR)
         } as List<Object>)
     }
@@ -305,8 +301,8 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
     void setDocExtensions(Iterable<Object> newExtensions) {
         if (!LegacyLevel.PRE_8_4 && newExtensions.find { it instanceof Closure }) {
             throw new GradleException(
-                    'Closures are no longer supported on Gradle 8.4+ due to Gradle instrumentation issues. ' +
-                            'Place content in a string or load from it from a file instead.'
+                'Closures are no longer supported on Gradle 8.4+ due to Gradle instrumentation issues. ' +
+                    'Place content in a string or load from it from a file instead.'
             )
         }
         asciidoctorExtensions.clear()
@@ -395,7 +391,7 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
             }
         } else {
             this.jrubyVersionProvider?.present ?
-                    projectOperations.stringTools.stringize(this.jrubyVersionProvider.get()) : null
+                projectOperations.stringTools.stringize(this.jrubyVersionProvider.get()) : null
         }
     }
 
@@ -549,9 +545,9 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
      */
     List<String> getRequires() {
         stringizeList(
-                this.jrubyRequires,
-                onlyTaskRequires,
-                x -> ((AsciidoctorJExtension) x).requires
+            this.jrubyRequires,
+            onlyTaskRequires,
+            x -> ((AsciidoctorJExtension) x).requires
         ).toList()
     }
 
@@ -742,8 +738,8 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
 
         if (jrubyVersionProvider?.present) {
             loadDependencyRuleOnce(
-                    JRUBY_COMPLETE_DEPENDENCY,
-                    { Optional x -> x.get() }.curry(jrubyVersionProvider) as Callable<String>
+                JRUBY_COMPLETE_DEPENDENCY,
+                { Optional x -> x.get() }.curry(jrubyVersionProvider) as Callable<String>
             )
         }
 
@@ -765,18 +761,18 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
 
         if (diagramVer != null) {
             loadDependencyRuleOnce(
-                    ASCIIDOCTORJ_DIAGRAM_DEPENDENCY,
-                    { -> owner.finalDiagramVersion },
-                    excludeTransitiveAsciidoctorJ()
+                ASCIIDOCTORJ_DIAGRAM_DEPENDENCY,
+                { -> owner.finalDiagramVersion },
+                excludeTransitiveAsciidoctorJ()
             )
         }
     }
 
     @SuppressWarnings('DuplicateNumberLiteral')
     private void loadDependencyRuleOnce(
-            final String coords,
-            Callable<String> versionResolver,
-            @DelegatesTo(ExternalModuleDependency) Closure configurator = null
+        final String coords,
+        Callable<String> versionResolver,
+        @DelegatesTo(ExternalModuleDependency) Closure configurator = null
     ) {
         final parts = coords.split(':', 2)
 
@@ -789,13 +785,12 @@ class AsciidoctorJExtension extends AbstractImplementationEngineExtension {
         }) {
             final initialVersion = versionResolver.call()
 
-            if(configurator) {
-                deps.add(this.privateConfigurationName,"${coords}:${initialVersion}".toString(), configurator)
+            if (configurator) {
+                deps.add(this.privateConfigurationName, "${coords}:${initialVersion}".toString(), configurator)
             } else {
-                deps.add(this.privateConfigurationName,"${coords}:${initialVersion}".toString())
+                deps.add(this.privateConfigurationName, "${coords}:${initialVersion}".toString())
             }
 
-//            dependencyCreator.apply("${coords}:${initialVersion}".toString(), configurator)
             this.publicConfiguration.resolutionStrategy { ResolutionStrategy rs ->
                 rs.eachDependency { drd ->
                     if (drd.requested.group == parts[0] && drd.requested.name == parts[1]) {

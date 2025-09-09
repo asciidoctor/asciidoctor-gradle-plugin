@@ -3,8 +3,8 @@ plugins {
 }
 
 agProject {
-//    withAdditionalPluginClasspath()
     withIntegrationTests()
+    withAdditionalPluginClasspath()
     configurePlugin(
             'org.asciidoctor.editorconfig',
             'Asciidoctor Editor Config Plugin',
@@ -15,6 +15,7 @@ agProject {
 }
 
 dependencies {
+    additionalPluginClasspath(project(':asciidoctor5-js-core-plugin'))
 }
 
 

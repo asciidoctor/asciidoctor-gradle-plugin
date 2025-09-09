@@ -52,21 +52,21 @@ class ShowAsciidocToolchains extends GrolifantDefaultTask {
             println " |  Type: ${tc.type}"
 
             if (!tc.formatters.isEmpty()) {
-                println " |  Formatters:"
+                println ' |  Formatters:'
                 tc.formatters.each { fName, fmt ->
                     println " |   | ${fName} (${fmt.type})"
                     println " |   +---- Backend: ${fmt.backend}"
                 }
             }
             if (!tc.asciidocExtensions.isEmpty()) {
-                println " |  Extensions:"
+                println ' |  Extensions:'
                 tc.asciidocExtensions.each { eName, ext ->
                     println " |   + ${eName} (${ext.type})"
                 }
             }
             println ' |'
         }
-        if(allToolchains.size()) {
+        if (allToolchains.size()) {
             println ' \\--------------------'
         }
     }

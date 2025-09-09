@@ -84,10 +84,10 @@ include::example${examples-model5-js-main}/DefaultAsciidoctorjsRevealjs.groovy[t
 <.> Set the NPM package name.
 <.> Set the key from the properties file, that you edited earlier.
 <.> If templates are supported and those templates might add additional NPM packages, ensure that those packages are added to the list of `requires`.
-<.> Set the type that the `showAsciidoctorToolchains` task must display.
-  This is also the type that build script users will use to perform configuration.
-  Normally it is just the type of the interface.
 <.> As the attributes of this output formatter will affect the final artifacts, ensure that changes in them will cause the appropriate `AsciidoctorTask` to run again.
+<.> Set the type that the `showAsciidoctorToolchains` task must display.
+This is also the type that build script users will use to perform configuration.
+Normally it is just the type of the interface.
 
 ==== Add a factory
 

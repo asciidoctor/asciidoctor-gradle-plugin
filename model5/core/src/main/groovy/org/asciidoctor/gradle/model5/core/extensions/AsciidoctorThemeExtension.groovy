@@ -40,13 +40,14 @@ import org.gradle.api.model.ObjectFactory
  */
 @CompileStatic
 class AsciidoctorThemeExtension {
-    public static final NAME = 'asciidocThemes'
+    public static final String NAME = 'asciidocThemes'
 
     final ExtensiblePolymorphicDomainObjectContainer<PdfThemeCollection> pdfThemeCollections
     final ExtensiblePolymorphicDomainObjectContainer<PdfThemeCollection> revealjsThemeCollections
     final NamedDomainObjectContainer<PdfTheme> pdfThemes
     final NamedDomainObjectContainer<PdfTheme> revealjsThemes
 
+    @SuppressWarnings('ThisReferenceEscapesConstructor')
     AsciidoctorThemeExtension(Project project) {
         final ObjectFactory objectFactory = project.objects
         this.pdfThemeCollections = objectFactory.polymorphicDomainObjectContainer(PdfThemeCollection)

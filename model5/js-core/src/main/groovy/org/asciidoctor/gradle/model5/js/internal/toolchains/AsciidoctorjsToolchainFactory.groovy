@@ -23,6 +23,13 @@ import org.gradle.api.model.ObjectFactory
 
 import javax.inject.Inject
 
+/**
+ * Factory for {@link AsciidoctorjsToolchain}.
+ *
+ * @since 5.0
+ *
+ * @author Schalk W. Cronjé
+ */
 @CompileStatic
 class AsciidoctorjsToolchainFactory implements NamedDomainObjectFactory<AsciidoctorjsToolchain> {
 
@@ -35,8 +42,6 @@ class AsciidoctorjsToolchainFactory implements NamedDomainObjectFactory<Asciidoc
 
     @Override
     AsciidoctorjsToolchain create(String name) {
-        objectFactory.newInstance(DefaultAsciidoctorjsToolchain, name).tap {
-
-        }
+        objectFactory.newInstance(DefaultAsciidoctorjsToolchain, name)
     }
 }

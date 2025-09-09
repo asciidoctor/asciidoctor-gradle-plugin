@@ -89,7 +89,7 @@ class DefaultGithubThemeCollection implements GithubThemeCollection {
      * @param configurator Configurator.
      */
     @Override
-    void from(@DelegatesTo(GitHubArchive.class) Closure<?> configurator) {
+    void from(@DelegatesTo(GitHubArchive) Closure<?> configurator) {
         ClosureUtils.configureItem(this.archive, configurator)
     }
 

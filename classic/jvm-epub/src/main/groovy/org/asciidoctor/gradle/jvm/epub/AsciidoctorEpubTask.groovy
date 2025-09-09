@@ -15,7 +15,6 @@
  */
 package org.asciidoctor.gradle.jvm.epub
 
-import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AsciidoctorExecutionException
 import org.asciidoctor.gradle.base.Transform
@@ -25,10 +24,8 @@ import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.workers.WorkerExecutor
-import org.ysb33r.grolifant5.api.core.Version
 
 import javax.inject.Inject
-import java.util.regex.Matcher
 
 /**
  * Builds EPUB documents using the epub3 backend.
@@ -107,14 +104,14 @@ class AsciidoctorEpubTask extends AbstractAsciidoctorTask {
      */
     @Override
     protected Map<String, ExecutorConfiguration> getExecutorConfigurations(
-            File workingSourceDir,
-            Set<File> sourceFiles,
-            Optional<String> lang
+        File workingSourceDir,
+        Set<File> sourceFiles,
+        Optional<String> lang
     ) {
         Map<String, ExecutorConfiguration> executorConfigurations = super.getExecutorConfigurations(
-                workingSourceDir,
-                sourceFiles,
-                lang
+            workingSourceDir,
+            sourceFiles,
+            lang
         )
 
         final Closure<String> backendName = { String fmt ->

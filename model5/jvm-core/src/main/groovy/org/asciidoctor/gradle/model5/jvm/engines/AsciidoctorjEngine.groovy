@@ -19,12 +19,10 @@ import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorLauncher
 import org.asciidoctor.gradle.model5.core.engines.AsciidoctorEngine
 import org.asciidoctor.gradle.model5.jvm.JvmModel
-import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjOutputFormatter
 import org.asciidoctor.gradle.model5.jvm.internal.PluginUtils
 import org.asciidoctor.gradle.model5.jvm.internal.engines.DefaultEngineOptions
 import org.asciidoctor.gradle.model5.jvm.internal.engines.DefaultLauncher
 import org.asciidoctor.gradle.model5.jvm.internal.utils.DependencyUpdater
-import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.asciidoctor.gradle.model5.jvm.toolchains.ClasspathManagement
 import org.asciidoctor.gradle.model5.jvm.toolchains.CoreVersions
 import org.gradle.api.Project
@@ -34,7 +32,6 @@ import org.gradle.api.file.FileCollection
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.gradle.api.provider.SetProperty
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 import org.ysb33r.grolifant5.api.core.ProjectOperations
 
@@ -61,7 +58,7 @@ class AsciidoctorjEngine implements AsciidoctorEngine, CoreVersions, ClasspathMa
     private final String configurationName
     private final Property<DefaultLauncher> jvmLauncher
 
-    @Delegate(includes=['setEruby', 'setCatalogAssets', 'setSourceMap'])
+    @Delegate(includes = ['setEruby', 'setCatalogAssets', 'setSourceMap'])
     private final DefaultEngineOptions engineOptions
 
     @Inject
@@ -72,17 +69,19 @@ class AsciidoctorjEngine implements AsciidoctorEngine, CoreVersions, ClasspathMa
         this.name = name
         this.classpath = ccso.fsOperations().emptyFileCollection()
         this.asciidoctorjVersion = ccso.providerTools().property(String).convention(
-                PluginUtils.loadDefaultVersion('asciidoctorj', tempProjectReference, this.class.classLoader)
+            PluginUtils.loadDefaultVersion('asciidoctorj', tempProjectReference, this.class.classLoader)
         )
-        this.asciidoctorjProvider = asciidoctorjVersion.map { "${JvmModel.ASCIIDOCTORJ_CORE_DEPENDENCY}:${it}".toString() }
+        this.asciidoctorjProvider = asciidoctorjVersion.map {
+            "${JvmModel.ASCIIDOCTORJ_CORE_DEPENDENCY}:${it}".toString()
+        }
         this.jrubyVersion = ccso.providerTools().property(String)
 
         this.configurationName = JvmModel.nameForEngineConfiguration(name)
         final runtime = JvmModel.nameForEngineConfigurationResolvable(name)
         ProjectOperations.find(tempProjectReference).configurations.createLocalRoleFocusedConfiguration(
-                configurationName,
-                runtime,
-                true
+            configurationName,
+            runtime,
+            true
         )
 
         final runtimeClasspath = tempProjectReference.configurations.getByName(runtime)
@@ -93,7 +92,7 @@ class AsciidoctorjEngine implements AsciidoctorEngine, CoreVersions, ClasspathMa
         this.engineOptions = objectFactory.newInstance(DefaultEngineOptions)
 
         this.jvmLauncher = objectFactory.property(DefaultLauncher)
-                .value( createLauncher(tempProjectReference))
+            .value(createLauncher(tempProjectReference))
 
         this.jvmLauncher.finalizeValue()
     }
@@ -152,11 +151,11 @@ class AsciidoctorjEngine implements AsciidoctorEngine, CoreVersions, ClasspathMa
     }
 
     void registerExecutionContext(
-            String toolchainName,
-            String formatterName,
-            Provider<ExecutionContext> executionContext
+        String toolchainName,
+        String formatterName,
+        Provider<ExecutionContext> executionContext
     ) {
-        this.jvmLauncher.get().registerExecutionContext(toolchainName,formatterName,executionContext)
+        this.jvmLauncher.get().registerExecutionContext(toolchainName, formatterName, executionContext)
     }
 
     private void setupJrubyRule(Project tempProjectReference, Configuration runtimeClasspath) {
@@ -173,7 +172,7 @@ class AsciidoctorjEngine implements AsciidoctorEngine, CoreVersions, ClasspathMa
     }
 
     private DefaultLauncher createLauncher(Project tempProjectReference) {
-        final defaultLauncher  = tempProjectReference.objects.newInstance(DefaultLauncher)
+        final defaultLauncher = tempProjectReference.objects.newInstance(DefaultLauncher)
         defaultLauncher.classpath(this.classpath)
         defaultLauncher.engineOptions = engineOptions.engineOptionsProvider
         defaultLauncher

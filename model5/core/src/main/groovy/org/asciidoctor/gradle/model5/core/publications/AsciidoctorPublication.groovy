@@ -157,12 +157,13 @@ class AsciidoctorPublication implements Named {
         }
         final task = registerConversionTask(toolchain, newOutput)
 
-        task.configure {AsciidoctorTask t -> formatter.configureTaskInputs(t.inputs)}
+        task.configure { AsciidoctorTask t -> formatter.configureTaskInputs(t.inputs) }
     }
 
+    @SuppressWarnings('UnnecessaryObjectReferences')
     private TaskProvider<? extends AsciidoctorTask> registerConversionTask(
-            AsciidoctorToolchain toolchain,
-            AsciidoctorOutputData outputData
+        AsciidoctorToolchain toolchain,
+        AsciidoctorOutputData outputData
     ) {
         final taskFactory = objectFactory.newInstance(TaskFactory)
         final taskName = PublicationUtils.conversionTaskName(name, outputData.name)

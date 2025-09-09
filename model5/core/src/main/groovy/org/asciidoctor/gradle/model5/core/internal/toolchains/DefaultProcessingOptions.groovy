@@ -24,6 +24,13 @@ import org.gradle.api.provider.Provider
 
 import javax.inject.Inject
 
+/**
+ * Implementation of {@link ProcessingOptions}.
+ *
+ * @author Schalk W. Cronjé
+ *
+ * @since 5.0
+ */
 @CompileStatic
 class DefaultProcessingOptions implements ProcessingOptions {
 

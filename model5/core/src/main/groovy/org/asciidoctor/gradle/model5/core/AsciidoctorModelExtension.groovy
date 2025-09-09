@@ -23,6 +23,13 @@ import org.gradle.api.ExtensiblePolymorphicDomainObjectContainer
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 
+/**
+ * The extension for the this plugin suite. It described the model.
+ *
+ * @author Schalk W. Cronjé
+ *
+ * @since 5.0
+ */
 @CompileStatic
 class AsciidoctorModelExtension {
     public static final String NAME = 'asciidoc'
@@ -30,8 +37,7 @@ class AsciidoctorModelExtension {
     final NamedDomainObjectContainer<AsciidoctorPublication> publications
     final ExtensiblePolymorphicDomainObjectContainer<AsciidoctorToolchain> toolchains
 
-//    final Provider<List<ToolchainInformation>> registeredToolchains
-
+    @SuppressWarnings(['ThisReferenceEscapesConstructor'])
     AsciidoctorModelExtension(Project project) {
         final publicationFactory = new PublicationFactory(project, this)
         this.publications = project.objects.domainObjectContainer(
@@ -39,18 +45,5 @@ class AsciidoctorModelExtension {
         )
 
         this.toolchains = project.objects.polymorphicDomainObjectContainer(AsciidoctorToolchain)
-
-//        this.registeredToolchains = project.provider { ->
-//            toolchains.collect { tc  ->
-//
-//                new ToolchainInformation(
-//                        tc.name,
-//                        tc.toolchainClass.canonicalName,
-//                        tc.registeredOutputFormatters.collectEntries { fmt ->
-//                            [fmt.name,fmt.outputFormatterClass.canonicalName]
-//                        }
-//                )
-//            }
-//        }
     }
 }

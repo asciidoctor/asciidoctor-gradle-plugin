@@ -16,7 +16,6 @@
 package org.asciidoctor.gradle.model5.jvm.internal.formatters
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjPdf
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjRevealjs
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.gradle.api.NamedDomainObjectFactory

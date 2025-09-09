@@ -7,10 +7,12 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.plugins.jvm.JvmTestSuite
+import org.gradle.api.plugins.quality.CodeNarcExtension
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.testing.Test
 import org.gradle.testing.base.TestingExtension
 
+import static org.gradle.api.logging.LogLevel.INFO
 import static org.gradle.api.tasks.SourceSet.MAIN_SOURCE_SET_NAME
 
 @CompileStatic
@@ -30,6 +32,7 @@ class AsciidoctorGradlePluginProject implements Plugin<Project> {
 
         addMainDependencies(project)
         addTestDependencies(project)
+        configureCodenarc(project)
 
         project.tasks.withType(Test).configureEach { Test t ->
             t.useJUnitPlatform()
@@ -68,6 +71,21 @@ class AsciidoctorGradlePluginProject implements Plugin<Project> {
         java.tap {
             withJavadocJar()
             withSourcesJar()
+        }
+    }
+
+    private void configureCodenarc(Project project) {
+        project.pluginManager.apply('codenarc')
+        final codenarc = project.extensions.getByType(CodeNarcExtension)
+        codenarc.configFile = project.file("${project.rootDir}/gradle/codenarc/codenarc.groovy")
+        codenarc.sourceSets = [project.extensions.getByType(SourceSetContainer).getByName('main')]
+
+        if (project.gradle.startParameter.logLevel == INFO) {
+            codenarc.reportFormat = 'console'
+        }
+
+        project.tasks.register('codenarcAll') {
+            it.dependsOn('codenarcMain')
         }
     }
 }

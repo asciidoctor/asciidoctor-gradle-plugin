@@ -18,8 +18,6 @@ package org.asciidoctor.gradle.model5.js.formatters
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.errors.ConfigurationNotSupportedException
 
-import static org.ysb33r.grolifant5.api.core.StringTools.COMMA_SPACE
-
 /**
  * Supported template engines for {@code asciidoctor.js}.
  *
@@ -28,6 +26,7 @@ import static org.ysb33r.grolifant5.api.core.StringTools.COMMA_SPACE
  * @since 5.0
  */
 @CompileStatic
+@SuppressWarnings('DuplicateStringLiteral')
 enum SupportedTemplateEngines {
     TEMPLATE_JS('js'),
     EJS('ejs'),
@@ -39,6 +38,17 @@ enum SupportedTemplateEngines {
     final boolean hasPackage
     final String packageScope = null
 
+    static SupportedTemplateEngines fromEngine(String engineName) {
+        final name = engineName.toLowerCase(Locale.US)
+        final target = values().find { it.engineName == name }
+        if (target == null) {
+            throw new ConfigurationNotSupportedException(
+                "'${engineName}' is not a supported engine name"
+            )
+        }
+        target
+    }
+
     String getPackageName() {
         this.engineName
     }
@@ -47,16 +57,6 @@ enum SupportedTemplateEngines {
         this.engineName
     }
 
-    static SupportedTemplateEngines fromEngine(String engineName) {
-        final name = engineName.toLowerCase(Locale.US)
-        final target = values().find { it.engineName == engineName}
-        if(target == null) {
-            throw new ConfigurationNotSupportedException(
-                "'${engineName}' is not a supported engine name"
-            )
-        }
-        target
-    }
     private SupportedTemplateEngines(String engine) {
         this.engineName = engine
         this.hasPackage = engine != 'js'

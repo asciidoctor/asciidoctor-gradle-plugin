@@ -18,6 +18,9 @@ package org.asciidoctor.gradle.model5.core.errors
 import groovy.transform.CompileStatic
 import groovy.transform.InheritConstructors
 
+/**
+ * Thrown when an output formatter is incorrectly configured.
+ */
 @InheritConstructors
 @CompileStatic
 class IncorrectOutputFormatException extends RuntimeException {

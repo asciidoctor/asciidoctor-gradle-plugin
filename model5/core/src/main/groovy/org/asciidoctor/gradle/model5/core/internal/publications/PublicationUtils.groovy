@@ -36,10 +36,10 @@ class PublicationUtils {
     public static final PatternSet UNDERSCORE_LED_PATTERN = new PatternSet().exclude(UNDERSCORE_LED_FILES)
     public static final String GROUP_NAME = 'Documentation'
     public static final List<String> ASCIIDOC_PATTERNS = [
-            '**/*.adoc',
-            '**/*.ad',
-            '**/*.asc',
-            '**/*.asciidoc'
+        '**/*.adoc',
+        '**/*.ad',
+        '**/*.asc',
+        '**/*.asciidoc'
     ].asImmutable()
 
     /**
@@ -69,7 +69,7 @@ class PublicationUtils {
      * @return Relative path below build directory.
      */
     static String outputPathFor(FileSystemOperations fsOperations, String publicationName, String outputName) {
-        if(publicationName == DEFAULT_PUBLICATION) {
+        if (publicationName == DEFAULT_PUBLICATION) {
             "docs/asciidoc/${outputName}"
         } else {
             "docs/asciidoc${fsOperations.toSafeFileName(publicationName).capitalize()}/${outputName}"
@@ -84,7 +84,7 @@ class PublicationUtils {
      * @return Task name.
      */
     static String conversionTaskName(String publicationName, String outputName) {
-        if(publicationName == DEFAULT_PUBLICATION) {
+        if (publicationName == DEFAULT_PUBLICATION) {
             "${TASK_PREFIX}${outputName.capitalize()}"
         } else {
             "${TASK_PREFIX}${publicationName.capitalize()}${outputName.capitalize()}"

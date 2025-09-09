@@ -65,7 +65,7 @@ class DefaultLanguage implements Language {
      * @param configurator Configurator
      */
     @Override
-    void attributes(@DelegatesTo(Attributes.class) Closure<?> configurator) {
+    void attributes(@DelegatesTo(Attributes) Closure<?> configurator) {
         ClosureUtils.configureItem(this.attributes, configurator)
     }
 

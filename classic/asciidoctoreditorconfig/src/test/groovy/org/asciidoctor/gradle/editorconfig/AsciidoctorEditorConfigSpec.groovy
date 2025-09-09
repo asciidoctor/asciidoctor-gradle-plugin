@@ -26,7 +26,7 @@ class AsciidoctorEditorConfigSpec extends Specification {
 
         when:
         project.allprojects {
-            apply plugin: 'org.asciidoctor.editorconfig'
+            apply plugin: 'org.asciidoctor.editorconfig.classic'
         }
 
         then:

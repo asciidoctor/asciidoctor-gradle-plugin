@@ -25,8 +25,6 @@ import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 
 import javax.inject.Inject
 
-import static org.asciidoctor.gradle.model5.core.internal.attributes.AttributeUtils.resolveAttribute
-
 /**
  * An engine-agnostic implementation of Asciidoctor attributes.
  *
@@ -44,7 +42,7 @@ class DefaultAttributes implements Attributes {
     DefaultAttributes(Project project) {
         final stringTools = ConfigCacheSafeOperations.from(project).stringTools()
         this.attrs = project.objects.mapProperty(String, Object)
-        this.attributeResolver = AttributeUtils.resolvingProvider(stringTools,attrs)
+        this.attributeResolver = AttributeUtils.resolvingProvider(stringTools, attrs)
     }
 
     /**

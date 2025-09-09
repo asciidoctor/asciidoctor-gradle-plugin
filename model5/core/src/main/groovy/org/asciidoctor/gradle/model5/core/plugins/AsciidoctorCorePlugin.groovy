@@ -22,6 +22,13 @@ import org.asciidoctor.gradle.model5.core.tasks.AsciidoctorTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
+/**
+ * Conventions plugin which adds a main publication and a task to run all {@link AsciidoctorTask} tasks.
+ *
+ * @since 5.0
+ *
+ * @author Schalk W. Cronjé
+ */
 @CompileStatic
 class AsciidoctorCorePlugin implements Plugin<Project> {
     public final static String CONVERT_ALL_TASK = "${PublicationUtils.TASK_PREFIX}All"

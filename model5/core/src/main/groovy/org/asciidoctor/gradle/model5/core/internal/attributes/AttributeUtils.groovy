@@ -22,13 +22,11 @@ import org.gradle.api.provider.Provider
 import org.ysb33r.grolifant5.api.core.StringTools
 import org.ysb33r.grolifant5.api.core.Transform
 
-import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.OffsetTime
-import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAccessor
@@ -45,30 +43,11 @@ import java.util.function.Function
 @CompileStatic
 class AttributeUtils {
 
-    private static DateTimeFormatter DATETIME_FORMAT = DateTimeFormatter.ISO_DATE_TIME
-    private static DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_DATE
-    private static DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ISO_TIME
+    private static final DateTimeFormatter DATETIME_FORMAT = DateTimeFormatter.ISO_DATE_TIME
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_DATE
+    private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ISO_TIME
 
-    static Provider<Map<String,String>> resolvingProvider(StringTools stringTools, Provider<Map<String,Object>> attrs) {
-        attrs.map {
-            it.collectEntries { k, v ->
-                [k, resolveAttribute(stringTools, v)]
-            } as Map<String, String>
-        }
-    }
-    static String resolveAttribute(StringTools str, Object value) {
-        Transform.convertItem(value, x -> CONVERTER.apply(str, x))
-    }
-
-    static String resolveDateType(Object value) {
-        Transform.convertItem(value, DATE_CONVERTER)
-    }
-
-    static String resolveTimeType(Object value) {
-        Transform.convertItem(value, TIME_CONVERTER)
-    }
-
-    private static Function<Object, String> TIME_CONVERTER = (Object value) -> {
+    private static final Function<Object, String> TIME_CONVERTER = (Object value) -> {
         switch (value) {
             case Date:
                 return formatTime(((Date) value).toLocalTime())
@@ -81,7 +60,7 @@ class AttributeUtils {
         }
     }
 
-    private static Function<Object, String> DATE_CONVERTER = (Object value) -> {
+    private static final Function<Object, String> DATE_CONVERTER = (Object value) -> {
         switch (value) {
             case Date:
                 return formatDate(((Date) value).toLocalDateTime())
@@ -89,19 +68,20 @@ class AttributeUtils {
                 return formatDate(LocalDateTime.from((TemporalAccessor) value))
             default:
                 throw new UnsupportedAttributeType(
-                        "The value '${value}' is not suitable for a date (and time) conversion"
+                    "The value '${value}' is not suitable for a date (and time) conversion"
                 )
         }
     }
 
-    private static BiFunction<StringTools, Object, String> CONVERTER = (StringTools stringTools, Object input) -> {
+    @SuppressWarnings('LineLength')
+    private static final BiFunction<StringTools, Object, String> CONVERTER = (StringTools stringTools, Object input) -> {
         if (input == null) {
             return null
         }
         switch (input) {
             case boolean:
             case Boolean:
-                return input ? "" : null
+                return input ? StringTools.EMPTY : null
             case AttributeType:
                 return ((AttributeType) input).render()
             case Date:
@@ -123,6 +103,29 @@ class AttributeUtils {
             default:
                 stringTools.stringizeOrNull(input)
         }
+    }
+
+    static Provider<Map<String, String>> resolvingProvider(
+        StringTools stringTools,
+        Provider<Map<String, Object>> attrs
+    ) {
+        attrs.map {
+            it.collectEntries { k, v ->
+                [k, resolveAttribute(stringTools, v)]
+            } as Map<String, String>
+        }
+    }
+
+    static String resolveAttribute(StringTools str, Object value) {
+        Transform.convertItem(value, x -> CONVERTER.apply(str, x))
+    }
+
+    static String resolveDateType(Object value) {
+        Transform.convertItem(value, DATE_CONVERTER)
+    }
+
+    static String resolveTimeType(Object value) {
+        Transform.convertItem(value, TIME_CONVERTER)
     }
 
     static String formatDateTime(LocalDateTime dt) {

@@ -22,8 +22,8 @@ import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.ysb33r.grolifant5.api.core.ProjectOperations
 import org.ysb33r.grolifant5.api.core.Version
-import org.ysb33r.grolifant5.api.core.git.GitRepoArchiveDownloader
 import org.ysb33r.grolifant5.api.core.git.GitHubArchive
+import org.ysb33r.grolifant5.api.core.git.GitRepoArchiveDownloader
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClosure
 
@@ -44,7 +44,7 @@ class RevealJSExtension {
     RevealJSExtension(Project project) {
         this.project = project
 
-        Map<String,String> versionMap = ModuleVersionLoader.load('revealjs-extension')
+        Map<String, String> versionMap = ModuleVersionLoader.load('revealjs-extension')
         this.version = versionMap['revealjs.gem']
 
         templateGitHub {
@@ -101,7 +101,7 @@ class RevealJSExtension {
     }
 
     private void resolveViaGitHub(final GitHubArchive archive) {
-        final GitRepoArchiveDownloader downloader = new GitRepoArchiveDownloader(archive,project)
+        final GitRepoArchiveDownloader downloader = new GitRepoArchiveDownloader(archive, project)
 
         resolveRevealJs = { ->
             downloader.downloadRoot = project.buildDir

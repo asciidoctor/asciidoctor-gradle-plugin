@@ -97,6 +97,7 @@ class AsciidoctorEditorConfigGenerator extends GrolifantDefaultTask {
      *     The file must already be in a correct format.
      * </p>
      *
+     * @param file Anything convertible to a file.
      */
     void attributesFromFile(Object file) {
         this.fileProviders.add(fsOperations().provideFile(file))
@@ -139,7 +140,7 @@ class AsciidoctorEditorConfigGenerator extends GrolifantDefaultTask {
             mergedAttrs.putAll(mapper(attrs.get()))
 
             mergedAttrs.keySet().sort().each { String k ->
-                w.println ":${k}: ${attrs[k]}"
+                w.println ":${k}: ${mergedAttrs[k]}"
             }
 
             fileProviders.each { prov ->

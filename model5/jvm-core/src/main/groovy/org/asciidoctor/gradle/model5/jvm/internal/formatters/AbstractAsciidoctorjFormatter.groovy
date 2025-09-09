@@ -28,11 +28,17 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.gradle.api.reflect.TypeOf
 import org.ysb33r.grolifant5.api.core.ClosureUtils
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 import org.ysb33r.grolifant5.api.core.jvm.GrolifantSimpleSetJavaForkOptions
 
+/**
+ * Base class for implementing output formatters for {@code asciidoctorj}.
+ *
+ * @author Schalk W. Cronjé
+ *
+ * @since 5.0
+ */
 @CompileStatic
 abstract class AbstractAsciidoctorjFormatter implements AsciidoctorjOutputFormatter {
     final String name
@@ -47,7 +53,7 @@ abstract class AbstractAsciidoctorjFormatter implements AsciidoctorjOutputFormat
     /**
      * Can be modified by derived classes when attributes need to be made available.
      */
-    protected final MapProperty<String,Object> attributes
+    protected final MapProperty<String, Object> attributes
 
     private final Provider<Set<String>> emptyRequires
 
@@ -68,7 +74,7 @@ abstract class AbstractAsciidoctorjFormatter implements AsciidoctorjOutputFormat
      */
     @Override
     void useClassloaderIsolation() {
-        this.executionContext.set((ExecutionContext)null)
+        this.executionContext.set((ExecutionContext) null)
     }
 
     /**
@@ -89,7 +95,7 @@ abstract class AbstractAsciidoctorjFormatter implements AsciidoctorjOutputFormat
      * @param forkOptions Reduced set of fork options.
      */
     @Override
-    void useProcessIsolation(@DelegatesTo(GrolifantSimpleSetJavaForkOptions.class) Closure<?> forkOptions) {
+    void useProcessIsolation(@DelegatesTo(GrolifantSimpleSetJavaForkOptions) Closure<?> forkOptions) {
         final ec = objectFactory.newInstance(DefaultExecutionContext)
         ClosureUtils.configureItem(ec, forkOptions)
         this.executionContext.set(ec)
@@ -115,6 +121,7 @@ abstract class AbstractAsciidoctorjFormatter implements AsciidoctorjOutputFormat
      * @return Always {@code null} as the default is not to support additional classpath.
      */
     @Override
+    @SuppressWarnings(['EmptyMethodInAbstractClass', 'GetterMethodCouldBeProperty'])
     FileCollection getClasspath() {
         null
     }
@@ -129,16 +136,30 @@ abstract class AbstractAsciidoctorjFormatter implements AsciidoctorjOutputFormat
         dslType.canonicalName
     }
 
-    protected AbstractAsciidoctorjFormatter(String name, String backendName, AsciidoctorjToolchain tc, Project project) {
+    protected AbstractAsciidoctorjFormatter(
+        String name,
+        String backendName,
+        AsciidoctorjToolchain tc,
+        Project project
+    ) {
+        this(name, project.provider { -> backendName }, tc, project)
+    }
+
+    protected AbstractAsciidoctorjFormatter(
+        String name,
+        Provider<String> backendName,
+        AsciidoctorjToolchain tc,
+        Project project
+    ) {
         this.name = name
         this.toolchain = tc
         this.ccso = ConfigCacheSafeOperations.from(project)
         this.objectFactory = project.objects
         this.projectPath = ccso.projectTools().fullProjectPath
-        this.backend = ccso.providerTools().provider { -> AsciidoctorNamedBackend.of(name, backendName) }
+        this.backend = backendName.map { be -> AsciidoctorNamedBackend.of(name, be) }
         this.emptyRequires = ccso.providerTools().provider { -> Collections.EMPTY_SET }
         this.executionContext = ccso.providerTools().property(ExecutionContext)
-        this.attributes = project.objects.mapProperty(String,Object)
+        this.attributes = project.objects.mapProperty(String, Object)
 
         tc.registerExecutionContext(name, executionContext)
     }

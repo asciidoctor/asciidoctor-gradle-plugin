@@ -26,6 +26,7 @@ import org.gradle.api.provider.SetProperty
 import javax.inject.Inject
 
 /**
+ * Implementation of {@link AsciidoctorExecutionSettings}.
  *
  * @author Schalk W. Cronjé
  *

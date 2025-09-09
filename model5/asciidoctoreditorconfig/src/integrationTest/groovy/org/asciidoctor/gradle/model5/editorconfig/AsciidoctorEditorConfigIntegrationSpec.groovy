@@ -40,17 +40,16 @@ class AsciidoctorEditorConfigIntegrationSpec extends FunctionalSpecification {
         """.stripIndent()
 
         getGroovyBuildFile("""
-        apply plugin : 'org.asciidoctor.jvm.base'
+        apply plugin : 'org.asciidoctor.js'
 
-        asciidoctorj {
-            attributes ${key2}: '${value2}'
+        asciidoc.publications.main.sourceSet.attributes {
+            addAll ${key2}: '${value2}'
         }
 
         asciidoctorEditorConfig {
             attributes ${key1} : '${value1}'
 
-            additionalAttributes 'inputs.adoc'
-            additionalAttributes asciidoctorj
+            attributesFromFile 'inputs.adoc'
         }
         """)
 
@@ -59,18 +58,16 @@ class AsciidoctorEditorConfigIntegrationSpec extends FunctionalSpecification {
 
         when:
         getGradleRunner(['asciidoctorEditorConfig']).build()
+        final lines = outputFile.text.readLines()
 
         then:
-        normalisedLineEndings(outputFile.text) == """:${key1}: ${value1}
-:gradle-project-version: ${projVer}
-:gradle-project-name: ${projName}
-:${key2}: ${value2}
-:gradle-project-group: ${groupName}
-:${key3}: ${value3}
-"""
-    }
-
-    String normalisedLineEndings(String text) {
-        text.replaceAll('\\r', '')
+        lines.containsAll([
+            ":${key1}: ${value1}",
+            ":${key2}: ${value2}",
+            ":${key3}: ${value3}",
+            ":gradle-project-group: ${groupName}",
+            ":gradle-project-name: ${projName}",
+            ":gradle-project-version: ${projVer}"
+        ]*.toString())
     }
 }

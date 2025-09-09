@@ -48,14 +48,18 @@ import static org.ysb33r.grolifant5.api.core.StringTools.COLON
 import static org.ysb33r.grolifant5.api.core.StringTools.EMPTY
 
 /**
+ * Launcher for the {@code asciidoctor.js} engine.
  *
  * @author Schalk W. Cronjé
  *
- * @since
+ * @since 5.0
  */
 @CompileStatic
 @Slf4j
 class DefaultLauncher implements AsciidoctorLauncher {
+
+    private final static long CMD_LIMIT = OperatingSystem.current().windows ? 7000L : ((1L << 21) - 1000L)
+    private final static Pattern LOG_LINE_MATCHER = ~/^asciidoctor: (ERROR|INFO|WARN|FATAL): .+$/
 
     private final ExecTools execTools
     private final StringTools stringTools
@@ -65,9 +69,6 @@ class DefaultLauncher implements AsciidoctorLauncher {
     private final NodeJSConfigCacheSafeOperations node
     private final NpmConfigCacheSafeOperations npm
     private final DirectoryProperty logDir
-
-    private final static long CMD_LIMIT = OperatingSystem.current().windows ? 7000L : ((1L << 21) - 1000L)
-    private final static Pattern LOG_LINE_MATCHER = ~/^asciidoctor: (ERROR|INFO|WARN|FATAL): .+$/
 
     @Inject
     DefaultLauncher(
@@ -121,11 +122,7 @@ class DefaultLauncher implements AsciidoctorLauncher {
         }.getOrElse(EMPTY_LIST)
 
         final attrs = conversionSettings.attributes.get().collectMany { k, v ->
-            if (v) {
-                ['-a', "${k}=${v}".toString()]
-            } else {
-                ['-a', k]
-            }
+            ['-a', v ? "${k}=${v}".toString() : k]
         } + (conversionSettings.docType.present ? ['-d', conversionSettings.docType.get().lc()] : EMPTY_LIST)
 
         int index = 1
@@ -137,13 +134,15 @@ class DefaultLauncher implements AsciidoctorLauncher {
             sourcePaths.each { partition ->
                 final result = execTools.exec(CAPTURE, CAPTURE) { spec ->
                     execSpec.copyTo(spec)
-                    spec.args(embedded)
-                    spec.args(fixedArgs)
-                    spec.args(destArgs)
-                    spec.args(attrs)
-                    spec.args(templateDirs)
-                    spec.args(partition)
-                    spec.ignoreExitValue = true
+                    spec.tap {
+                        args(embedded)
+                        args(fixedArgs)
+                        args(destArgs)
+                        args(attrs)
+                        args(templateDirs)
+                        args(partition)
+                        ignoreExitValue = true
+                    }
                 }
                 if (result.result.get()) {
                     log.error(result.standardError.asText.get())
@@ -158,6 +157,7 @@ class DefaultLauncher implements AsciidoctorLauncher {
         parseLogs(stringTools, jobLogDir.get(), conversionSettings.fatalWarnings.get(), index)
     }
 
+    @SuppressWarnings('DuplicateNumberLiteral')
     private void processLogToJson(int index, Directory dir, String stderr) {
         final logLines = stderr.readLines().findAll {
             it.find(LOG_LINE_MATCHER)
@@ -185,7 +185,7 @@ class DefaultLauncher implements AsciidoctorLauncher {
     }
 
     private List<List<String>> partitionFiles(List<File> sourceFiles) {
-        final sources = sourceFiles.collect { it.absolutePath }
+        final sources = sourceFiles*.absolutePath
         final allSum = (long) sources.sum { (long) it.size() }
         if (allSum <= CMD_LIMIT) {
             [sources]
@@ -219,7 +219,4 @@ class DefaultLauncher implements AsciidoctorLauncher {
         }
         index
     }
-
-//    -T, --template-dir      a directory containing custom converter templates that override the built-in converter (may be specified multiple times)  [array]
-//    -E, --template-engine   template engine to use for the custom converter templates  [string]
 }

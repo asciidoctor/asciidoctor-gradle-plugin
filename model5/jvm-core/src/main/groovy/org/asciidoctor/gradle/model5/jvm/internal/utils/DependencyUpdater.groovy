@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.model5.jvm.internal.utils
 import groovy.transform.CompileStatic
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ConfigurationContainer
+import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.provider.Provider
 
@@ -45,10 +46,20 @@ class DependencyUpdater {
      * Adds a dependency to the given configuration.
      *
      * @param cfgName Name of configuration.
+     * @param dep A project dependency.
+     */
+    void add(String cfgName, ProjectDependency dep) {
+        dependencies.add(cfgName, dep)
+    }
+
+    /**
+     * Adds a dependency to the given configuration.
+     *
+     * @param cfgName Name of configuration.
      * @param dep Provider to a string in the standard Maven coordinate format.
      */
     void add(String cfgName, Provider<String> dep) {
-        dependencies.addProvider(cfgName,dep)
+        dependencies.addProvider(cfgName, dep)
     }
 
     /**
@@ -59,7 +70,7 @@ class DependencyUpdater {
      * @param version Provider to a version.
      */
     void add(String cfgName, String moduleName, Provider<String> version) {
-        dependencies.addProvider(cfgName,version.map { "${moduleName}:${it}"})
+        dependencies.addProvider(cfgName, version.map { "${moduleName}:${it}" })
     }
 
     /**

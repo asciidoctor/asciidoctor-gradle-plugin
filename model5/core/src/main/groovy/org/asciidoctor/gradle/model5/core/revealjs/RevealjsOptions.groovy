@@ -160,6 +160,7 @@ class RevealjsOptions implements HasAttributeProvider, CanConfigureTaskInputs {
     }
 
     @Inject
+    @SuppressWarnings(['UnnecessaryCast'])
     RevealjsOptions(Project project) {
         transition = project.objects.property(String)
         backgroundTransition = project.objects.property(String)
@@ -192,36 +193,36 @@ class RevealjsOptions implements HasAttributeProvider, CanConfigureTaskInputs {
 
         this.attrs.putAll(
             stringTools.provideValuesDropNull([
-                    revealjs_controls            : controls,
-                    revealjs_progress            : progressBar,
-                    revealjs_slideNumber         : slideNumber,
-                    revealjs_history             : pushToHistory,
-                    revealjs_keyboard            : keyboardShortcuts,
-                    revealjs_overview            : overviewMode,
-                    revealjs_touch               : touchMode,
-                    revealjs_center              : verticalCenter,
-                    revealjs_loop                : loop,
-                    revealjs_rtl                 : rightToLeft,
-                    revealjs_fragments           : fragments,
-                    revealjs_embedded            : flagEmbedded,
-                    revealjs_autoSlide           : autoSlideInterval,
-                    revealjs_autoSlideStoppable  : autoSlideStoppable,
-                    revealjs_mouseWheel          : mouseWheel,
-                    revealjs_hideAddressBar      : hideAddressBarOnMobile,
-                    revealjs_previewLinks        : previewLinks,
-                    revealjs_transition          : transition,
-                    revealjs_backgroundTransition: backgroundTransition,
-                    revealjs_transitionSpeed     : transitionSpeed,
-                    revealjs_viewDistance        : viewDistance
+                revealjs_controls            : controls,
+                revealjs_progress            : progressBar,
+                revealjs_slideNumber         : slideNumber,
+                revealjs_history             : pushToHistory,
+                revealjs_keyboard            : keyboardShortcuts,
+                revealjs_overview            : overviewMode,
+                revealjs_touch               : touchMode,
+                revealjs_center              : verticalCenter,
+                revealjs_loop                : loop,
+                revealjs_rtl                 : rightToLeft,
+                revealjs_fragments           : fragments,
+                revealjs_embedded            : flagEmbedded,
+                revealjs_autoSlide           : autoSlideInterval,
+                revealjs_autoSlideStoppable  : autoSlideStoppable,
+                revealjs_mouseWheel          : mouseWheel,
+                revealjs_hideAddressBar      : hideAddressBarOnMobile,
+                revealjs_previewLinks        : previewLinks,
+                revealjs_transition          : transition,
+                revealjs_backgroundTransition: backgroundTransition,
+                revealjs_transitionSpeed     : transitionSpeed,
+                revealjs_viewDistance        : viewDistance
             ])
         )
 
         this.attrs.putAll(parallax.attributeProvider)
 
         this.attrs.putAll(
-                this.builtinTheme.map {
-                    [revealjs_theme: it.name().toLowerCase(Locale.US)] as Map<String, Object>
-                }.orElse(this.customTheme.attributeProvider)
+            this.builtinTheme.map {
+                [revealjs_theme: it.name().toLowerCase(Locale.US)] as Map<String, Object>
+            }.orElse(this.customTheme.attributeProvider)
         )
 
         this.attrs.putAll(this.highlightjsTheme.attributeProvider)
@@ -273,6 +274,7 @@ class RevealjsOptions implements HasAttributeProvider, CanConfigureTaskInputs {
 
     /** Push each slide change to the browser history.
      *
+     * @param b If true, enables pushing slide changes to browser history
      */
     void setPushToHistory(Boolean b) {
         this.pushToHistory.set(b)
@@ -306,8 +308,9 @@ class RevealjsOptions implements HasAttributeProvider, CanConfigureTaskInputs {
         this.verticalCenter.set(b)
     }
 
-    /** Loop the presentation..
+    /** Loop the presentation.
      *
+     * @param b If true, presentation will loop back to first slide after last slide
      */
     void setLoop(Boolean b) {
         this.loop.set(b)
@@ -370,7 +373,6 @@ class RevealjsOptions implements HasAttributeProvider, CanConfigureTaskInputs {
 
     /**
      * Opens links in an iframe preview overlay.
-     *
      */
     void setPreviewLinks(Boolean b) {
         this.previewLinks.set(b)
@@ -378,7 +380,10 @@ class RevealjsOptions implements HasAttributeProvider, CanConfigureTaskInputs {
 
     /** Number of slides away from the current that are visible.
      *
-     * If not set, Revels.JS will use an internal value of 3.
+     * If not set, Reveal.JS will use an internal value of 3.
+     *
+     * @param numSlides Number of slides to preload before/after current slide
+     * @throws GradleException if numSlides is negative
      */
     void setViewDistance(Integer numSlides) {
         if (numSlides != null && numSlides < 0) {
@@ -435,11 +440,13 @@ class RevealjsOptions implements HasAttributeProvider, CanConfigureTaskInputs {
         this.transitionSpeed.set(s?.toLowerCase(Locale.US))
     }
 
-    /** Slide transition speed
+    /** Sets the slide transition speed.
      *
-     * One of {@code default , fast, slow}.
+     * One of {@code default, fast, slow}.
      *
-     * If not provided, Reveal.js wil use an internal default value of {@code DEFAULT}.
+     * If not provided, Reveal.js will use an internal default value of {@code DEFAULT}.
+     *
+     * @param tr The transition speed to use for slides
      */
     void setTransitionSpeed(TransitionSpeed tr) {
         this.transitionSpeed.set(tr?.toString()?.toLowerCase(Locale.US))
@@ -457,7 +464,8 @@ class RevealjsOptions implements HasAttributeProvider, CanConfigureTaskInputs {
     /**
      * Use a built-in theme. Unsets anything from {@link #customTheme(Action)}.
      *
-     * @param theme Built-in theme.
+     * @param theme Name of built-in theme to use. Will be converted to uppercase to match enum values.
+     * @throws IllegalArgumentException if theme name does not match a built-in theme
      */
     void setBuiltinThemeName(String theme) {
         builtinThemeName = BuiltInThemes.valueOf(theme.toUpperCase(Locale.US))

@@ -16,11 +16,9 @@
 package org.asciidoctor.gradle.model5.js.internal
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
-import org.ysb33r.grolifant5.api.core.FileSystemOperations
 
 import static org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreBasePlugin.INTERMEDIATE_RESOURCE_PATH
 
@@ -42,7 +40,7 @@ class PluginUtils {
      * @return A provider to the value.
      */
     static Provider<String> loadDefaultVersion(String entity, Project project, ClassLoader classLoader) {
-        loadDefaultVersion(entity,ConfigCacheSafeOperations.from(project),classLoader)
+        loadDefaultVersion(entity, ConfigCacheSafeOperations.from(project), classLoader)
     }
 
     /**

@@ -17,7 +17,6 @@ package org.asciidoctor.gradle.model5.jvm.internal.extensions
 
 import groovy.transform.CompileStatic
 import groovy.transform.Synchronized
-import org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils
 import org.asciidoctor.gradle.model5.jvm.JvmModel
 import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjDiagram
 import org.asciidoctor.gradle.model5.jvm.internal.utils.DependencyUpdater
@@ -40,10 +39,11 @@ import static org.asciidoctor.gradle.model5.jvm.internal.PluginUtils.loadDefault
 import static org.ysb33r.grolifant5.api.core.StringTools.EMPTY
 
 /**
+ * Implementation of {@link AsciidoctorjDiagram}.
  *
  * @author Schalk W. Cronjé
  *
- * @since
+ * @since 5.0
  */
 @CompileStatic
 class DefaultAsciidoctorjDiagram extends AbstractAsciidoctorjExtension implements AsciidoctorjDiagram {
@@ -68,10 +68,11 @@ class DefaultAsciidoctorjDiagram extends AbstractAsciidoctorjExtension implement
     }
 
     public static final String DEFAULT_NAME = 'diagram'
+    private static final String PROP_PREFIX = 'asciidoctorj.diagram'
 
     final String name
     final Provider<Set<String>> requires
-    final Provider<Map<String,Object>> attributeProvider
+    final Provider<Map<String, Object>> attributeProvider
 
     private final ConfigCacheSafeOperations ccso
     private final ObjectFactory objectFactory
@@ -82,7 +83,6 @@ class DefaultAsciidoctorjDiagram extends AbstractAsciidoctorjExtension implement
     private final Property<String> plantumlVersion
     private final String configurationName
     private boolean diagramRegistered = false
-    private static final String PROP_PREFIX = 'asciidoctorj.diagram'
 
     @Inject
     DefaultAsciidoctorjDiagram(String name, AsciidoctorjToolchain tc, Project tempProjectReference) {
@@ -110,7 +110,7 @@ class DefaultAsciidoctorjDiagram extends AbstractAsciidoctorjExtension implement
 
         final cache = ccso.fsOperations().toSafeFileName("${tc.name}-${name}")
         this.attributeProvider = ccso.fsOperations().buildDirDescendant("${CACHE_SUBDIR_BASE}/${cache}").map {
-            diagramRegistered ? ['diagram-cachedir' : it.absolutePath] : EMPTY_MAP
+            diagramRegistered ? ['diagram-cachedir': it.absolutePath] : EMPTY_MAP
         }
     }
 

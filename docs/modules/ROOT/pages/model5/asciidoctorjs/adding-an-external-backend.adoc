@@ -1,0 +1,35 @@
+= Adding an external backend as an output formatter
+
+Although the popular {asciidoctorjs-name} backends are supported in this plugin suite, there is a good chance that one might want to use a backend that is not directly supported.
+For this there is a special output formatter of type `AsciidoctorjsGenericOutputFormatter`.
+
+[source,groovy,role=primary]
+----
+import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsGenericOutputFormatter
+
+asciidoc {
+  toolchains {
+    asciidoctorjs.registeredOutputFormatters {
+      myBackend(AsciidoctorjsGenericOutputFormatter) {
+        backend = 'foo' // <.>
+        attributes( foo_color : 'black') // <.>
+        copyResources = false // <.>
+        enforcedDocType = 'book' // <.>
+        requires 'foo' // <.>
+        usePackage( 'asciidoctor', 'foo', '1.2.3') // <.>
+      }
+    }
+  }
+}
+----
+<.> Set the name of the backend
+<.> Set the specific attributes that this backend might require.
+<.> Set whether the backend should copy resources.
+<.> If the backend requires a specific kind of document type, set it here, otherwise leave it alone.
+<.> If one or more `requires` need to be passed to the engine, define them here.
+<.> Add the NPM package details.
+  The first parameter is the scope and can be passed as `null`.
+  The second parameter is the package name.
+  The third parameter is something that can be lazy-evaluated to a version string.
+
+

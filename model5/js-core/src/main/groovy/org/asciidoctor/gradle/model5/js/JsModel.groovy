@@ -16,11 +16,8 @@
 package org.asciidoctor.gradle.model5.js
 
 import groovy.transform.CompileStatic
-import groovy.transform.PackageScope
 import org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils
 import org.asciidoctor.gradle.model5.core.toolchains.AsciidoctorToolchain
-import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsOutputFormatter
-import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
 import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsOutputFormatter
 import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
 import org.gradle.api.Action
@@ -58,13 +55,13 @@ class JsModel {
      * @param objectFactory objectFactory
      */
     static <T extends AsciidoctorjsOutputFormatter> void registerOutputFormatterFactory(
-            ExtensiblePolymorphicDomainObjectContainer<AsciidoctorToolchain> toolchains,
-            Class<T> formatterClass,
-            Class<? extends NamedDomainObjectFactory<T>> factoryClass,
-            ObjectFactory objectFactory
+        ExtensiblePolymorphicDomainObjectContainer<AsciidoctorToolchain> toolchains,
+        Class<T> formatterClass,
+        Class<? extends NamedDomainObjectFactory<T>> factoryClass,
+        ObjectFactory objectFactory
     ) {
-        registerOutputFormatterFactory(toolchains,formatterClass) { AsciidoctorjsToolchain tc ->
-            objectFactory.newInstance(factoryClass,tc)
+        registerOutputFormatterFactory(toolchains, formatterClass) { AsciidoctorjsToolchain tc ->
+            objectFactory.newInstance(factoryClass, tc)
         }
     }
 
@@ -76,12 +73,12 @@ class JsModel {
      * @param factoryFunction A function that will create a factory given a specific toolchain instance.
      */
     static <T extends AsciidoctorjsOutputFormatter> void registerOutputFormatterFactory(
-            ExtensiblePolymorphicDomainObjectContainer<AsciidoctorToolchain> toolchains,
-            Class<T> formatterClass,
-            Function<AsciidoctorjsToolchain,NamedDomainObjectFactory<T>> factoryFunction
+        ExtensiblePolymorphicDomainObjectContainer<AsciidoctorToolchain> toolchains,
+        Class<T> formatterClass,
+        Function<AsciidoctorjsToolchain, NamedDomainObjectFactory<T>> factoryFunction
     ) {
         toolchains.withType(AsciidoctorjsToolchain).configureEach { tc ->
-            tc.registeredOutputFormatters.registerFactory(formatterClass,factoryFunction.apply(tc))
+            tc.registeredOutputFormatters.registerFactory(formatterClass, factoryFunction.apply(tc))
         }
     }
 
@@ -92,11 +89,11 @@ class JsModel {
      * @param name Name of the formatter
      */
     static <T extends AsciidoctorjsOutputFormatter> void registerOutputFormatterOnAllToolchains(
-            ExtensiblePolymorphicDomainObjectContainer<AsciidoctorToolchain> toolchains,
-            Class<T> formatterClass,
-            String name
+        ExtensiblePolymorphicDomainObjectContainer<AsciidoctorToolchain> toolchains,
+        Class<T> formatterClass,
+        String name
     ) {
-        registerOutputFormatterOnAllToolchains(toolchains,formatterClass,name) {
+        registerOutputFormatterOnAllToolchains(toolchains, formatterClass, name) {
         }
     }
 
@@ -108,13 +105,13 @@ class JsModel {
      * @param configurator Configurator of the output formatter.
      */
     static <T extends AsciidoctorjsOutputFormatter> void registerOutputFormatterOnAllToolchains(
-            ExtensiblePolymorphicDomainObjectContainer<AsciidoctorToolchain> toolchains,
-            Class<T> formatterClass,
-            String name,
-            Action<T> configurator
+        ExtensiblePolymorphicDomainObjectContainer<AsciidoctorToolchain> toolchains,
+        Class<T> formatterClass,
+        String name,
+        Action<T> configurator
     ) {
         toolchains.withType(AsciidoctorjsToolchain).configureEach { tc ->
-            final fc = tc.registeredOutputFormatters.register(name,formatterClass)
+            final fc = tc.registeredOutputFormatters.register(name, formatterClass)
             fc.configure(configurator)
         }
     }

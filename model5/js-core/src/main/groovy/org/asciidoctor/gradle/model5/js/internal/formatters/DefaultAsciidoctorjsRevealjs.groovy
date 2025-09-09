@@ -16,15 +16,14 @@
 // tag::hacking-asciidoctorjs-output-formatter[]
 package org.asciidoctor.gradle.model5.js.internal.formatters
 
-// end::hacking-asciidoctorjs-output-formatter[]
 import groovy.transform.CompileStatic
+
+// end::hacking-asciidoctorjs-output-formatter[]
+
 import org.asciidoctor.gradle.model5.core.revealjs.RevealjsOptions
-import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsHtml5
 import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsRevealjs
 import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
 import org.gradle.api.Project
-import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskInputs
 
 import javax.inject.Inject
@@ -67,19 +66,19 @@ class DefaultAsciidoctorjsRevealjs extends AbstractAsciidoctorjsFormatterVersion
         this.revealjsOptions = project.objects.newInstance(RevealjsOptions)
         attributes.putAll(revealjsOptions.attributeProvider)
 
-        this.templates = project.objects.newInstance(DefaultAsciidoctorjsTemplates,tc, { String r -> // <.>
+        this.templates = project.objects.newInstance(DefaultAsciidoctorjsTemplates, tc, { String r -> // <.>
             packageRequires.add(r)
         } as Consumer<String>)
     }
 
     @Override
-    protected Class<?> getDslType() {
-        AsciidoctorjsRevealjs // <.>
+    void configureTaskInputs(TaskInputs taskInputs) { // <.>
+        revealjsOptions.configureTaskInputs(taskInputs)
     }
 
     @Override
-    void configureTaskInputs(TaskInputs taskInputs) { // <.>
-        revealjsOptions.configureTaskInputs(taskInputs)
+    protected Class<?> getDslType() {
+        AsciidoctorjsRevealjs // <.>
     }
 }
 // end::hacking-asciidoctorjs-output-formatter[]

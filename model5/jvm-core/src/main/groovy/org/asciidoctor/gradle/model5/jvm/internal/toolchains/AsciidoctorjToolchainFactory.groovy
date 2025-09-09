@@ -23,19 +23,37 @@ import org.gradle.api.model.ObjectFactory
 
 import javax.inject.Inject
 
+/**
+ * Factory for creating AsciidoctorjToolchain instances.
+ * Provides object creation capabilities for the toolchain infrastructure.
+ *
+ * @author Schalk W. Cronjé
+ * @since 5.0
+ */
 @CompileStatic
 class AsciidoctorjToolchainFactory implements NamedDomainObjectFactory<AsciidoctorjToolchain> {
 
     private final ObjectFactory objectFactory
 
+    /**
+     * Creates a new factory instance.
+     *
+     * @param project The Gradle project this factory is associated with
+     */
     @Inject
     AsciidoctorjToolchainFactory(Project project) {
         this.objectFactory = project.objects
     }
 
+    /**
+     * Creates a new AsciidoctorjToolchain instance.
+     *
+     * @param name The name for the new toolchain instance
+     * @return A new toolchain instance
+     */
     @Override
     AsciidoctorjToolchain create(String name) {
-        objectFactory.newInstance(DefaultAsciidoctorjToolchain,name).tap {
+        objectFactory.newInstance(DefaultAsciidoctorjToolchain, name).tap {
 //            registeredOutputFormatters.
         }
     }

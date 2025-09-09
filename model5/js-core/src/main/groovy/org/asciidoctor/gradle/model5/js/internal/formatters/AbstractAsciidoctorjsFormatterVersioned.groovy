@@ -21,11 +21,17 @@ import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.gradle.api.provider.SetProperty
 
+/**
+ * Base class for implementing {@code asciidoctor.js} output formatters where the version of a component can be set.
+ *
+ * @author Schalk W. Cronjé
+ *
+ * @since 5.0
+ */
 @CompileStatic
 abstract class AbstractAsciidoctorjsFormatterVersioned extends AbstractAsciidoctorjsFormatter
-        implements AsciidoctorjsOutputFormatterVersioned {
+    implements AsciidoctorjsOutputFormatterVersioned {
 
     protected final Property<String> moduleVersion
 
@@ -35,6 +41,7 @@ abstract class AbstractAsciidoctorjsFormatterVersioned extends AbstractAsciidoct
     }
 
     /**
+     * C-tor for a versioned output formatter.
      *
      * @param name Name of the output formatter.
      * @param backendName Name of the backend.
@@ -44,14 +51,15 @@ abstract class AbstractAsciidoctorjsFormatterVersioned extends AbstractAsciidoct
      * @param tc The toolchain the formatter is attached to.
      * @param tempProjectReference A temporary reference to a {@link Project} instance.
      */
+    @SuppressWarnings('ParameterCount')
     protected AbstractAsciidoctorjsFormatterVersioned(
-            String name,
-            String backendName,
-            String scope,
-            String componentName,
-            Provider<String> componentDefaultVersion,
-            AsciidoctorjsToolchain tc,
-            Project tempProjectReference
+        String name,
+        String backendName,
+        String scope,
+        String componentName,
+        Provider<String> componentDefaultVersion,
+        AsciidoctorjsToolchain tc,
+        Project tempProjectReference
     ) {
         super(name, backendName, tc, tempProjectReference)
         this.moduleVersion = tempProjectReference.objects.property(String).convention(componentDefaultVersion)

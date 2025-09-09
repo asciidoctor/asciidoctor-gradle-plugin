@@ -21,7 +21,6 @@ import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.gradle.api.tasks.TaskInputs
 
 import javax.inject.Inject
 import java.util.function.Consumer
@@ -48,19 +47,9 @@ class DefaultAsciidoctorjsHtml5 extends AbstractAsciidoctorjsFormatter implement
     DefaultAsciidoctorjsHtml5(String name, AsciidoctorjsToolchain tc, Project project) {
         super(name, BACKEND_NAME, tc, project)
         this.embedded = project.objects.property(Boolean).convention(false)
-        this.templates = project.objects.newInstance(DefaultAsciidoctorjsTemplates,tc, { String r ->
+        this.templates = project.objects.newInstance(DefaultAsciidoctorjsTemplates, tc, { String r ->
             packageRequires.add(r)
         } as Consumer<String>)
-    }
-
-    /**
-     * The type that this implements and which should be displayed.
-     *
-     * @return A type that needs to be displayed.
-     */
-    @Override
-    protected Class<?> getDslType() {
-        AsciidoctorjsHtml5
     }
 
     @Override
@@ -73,4 +62,8 @@ class DefaultAsciidoctorjsHtml5 extends AbstractAsciidoctorjsFormatter implement
         this.embedded
     }
 
+    @Override
+    protected Class<?> getDslType() {
+        AsciidoctorjsHtml5
+    }
 }

@@ -19,11 +19,11 @@ package org.asciidoctor.gradle.model5.jvm.internal.formatters
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.errors.IncorrectOutputFormatException
 import org.asciidoctor.gradle.model5.jvm.JvmModel
+import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjEpub
+import org.asciidoctor.gradle.model5.jvm.internal.PluginUtils
 
 // end::hacking-asciidoctorj-output-formatter[]
 
-import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjEpub
-import org.asciidoctor.gradle.model5.jvm.internal.PluginUtils
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
@@ -57,14 +57,15 @@ class DefaultAsciidoctorjEpub extends AbstractAsciidoctorjFormatterVersioned imp
     // end::hacking-asciidoctorj-output-formatter-attrs-fields[]
 
     @Inject
+    @SuppressWarnings('UnnecessaryCast')
     DefaultAsciidoctorjEpub(String name, AsciidoctorjToolchain tc, Project project) {
         super(
-                name,
-                BACKEND_NAME, // <.>
-                JvmModel.ASCIIDOCTORJ_EPUB_DEPENDENCY, // <.>
-                PluginUtils.loadDefaultVersion('asciidoctorj.epub', project, tc.class.classLoader), // <.>
-                tc,
-                project
+            name,
+            BACKEND_NAME, // <.>
+            JvmModel.ASCIIDOCTORJ_EPUB_DEPENDENCY, // <.>
+            PluginUtils.loadDefaultVersion('asciidoctorj.epub', project, tc.class.classLoader), // <.>
+            tc,
+            project
         )
         // end::hacking-asciidoctorj-output-formatter[]
 
@@ -122,7 +123,7 @@ class DefaultAsciidoctorjEpub extends AbstractAsciidoctorjFormatterVersioned imp
     // tag::hacking-asciidoctorj-output-formatter-attrs[]
     @Override
     void setChapterLevel(int level) {
-        if(level < 1 || level > 5) {
+        if (level < 1 || level > 5) {
             throw new IncorrectOutputFormatException('The level can only be set between 1-5 (inclusive)')
         }
         this.level.set(level)
@@ -145,28 +146,3 @@ class DefaultAsciidoctorjEpub extends AbstractAsciidoctorjFormatterVersioned imp
 // tag::hacking-asciidoctorj-output-formatter[]
 }
 // end::hacking-asciidoctorj-output-formatter[]
-
-//epub-properties
-//
-//
-//An optional override of the properties attribute for this document’s item in the manifest. Only applies to a chapter document.
-//
-//        epub-chapter-level
-//
-//
-//Specify the section level at which to split the EPUB into separate "chapter" files. This attribute only affects documents with :doctype: book. The default is to split into chapters at level-1 sections. This attribute only affects the internal composition of the EPUB, not the way chapters and sections are displayed to users. Some readers may be slow if the chapter files are too large, so for large documents with few level-1 headings, one might want to use a chapter level of 2 or 3.
-//
-//        series-name, series-volume, series-id
-//
-//
-//Populates the series statements (belongs-to-collection) in the package metadata. Volume is a number, ID probably a UUID that is constant for all volumes in the series.
-//
-//epub3-frontmatterdir
-//
-//
-//The path to a directory that contains frontmatter files. The file names must match front-matter*.html and will be included in alphabetic order. The files are expected to be valid EPUB HTML files. If only one front matter page is required, the default 'front-matter.html' file can be used instead.
-//
-//        epub3-stylesdir
-//
-//
-//The path to a directory that contains alternate epub3.css and epub3-css3-only.css files to customize the look and feel.

@@ -16,10 +16,10 @@
 // tag::hacking-asciidoctorjs-output-formatter[]
 package org.asciidoctor.gradle.model5.js.internal.formatters
 
+import groovy.transform.CompileStatic
+
 // end::hacking-asciidoctorjs-output-formatter[]
 
-import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsDocbook
 import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsRevealjs
 import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
 import org.gradle.api.NamedDomainObjectFactory

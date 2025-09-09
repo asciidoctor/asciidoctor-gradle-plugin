@@ -66,12 +66,12 @@ class DefaultAsciidoctorjRevealjs extends AbstractAsciidoctorjFormatterVersioned
     }
 
     @Override
-    protected Class<?> getDslType() {
-        AsciidoctorjRevealjs
+    void configureTaskInputs(TaskInputs taskInputs) {
+        revealjsOptions.configureTaskInputs(taskInputs)
     }
 
     @Override
-    void configureTaskInputs(TaskInputs taskInputs) {
-        revealjsOptions.configureTaskInputs(taskInputs)
+    protected Class<?> getDslType() {
+        AsciidoctorjRevealjs
     }
 }

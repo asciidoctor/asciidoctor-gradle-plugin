@@ -44,7 +44,7 @@ class AsciidoctorjGemsPlugin implements Plugin<Project> {
         final asciidoc = project.extensions.getByType(AsciidoctorModelExtension)
         final toolchains = asciidoc.toolchains
         toolchains.withType(AsciidoctorjToolchain).configureEach { tc ->
-            GemUtils.registerToolchainSupport(tc,project)
+            GemUtils.registerToolchainSupport(tc, project)
         }
     }
 }

@@ -17,7 +17,6 @@ package org.asciidoctor.gradle.model5.js.internal.formatters
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsDocbook
-import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsHtml5
 import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
 import org.gradle.api.Project
 

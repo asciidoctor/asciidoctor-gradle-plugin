@@ -45,6 +45,9 @@ import javax.inject.Inject
 class DefaultAsciidoctorjPdf extends AbstractAsciidoctorjFormatterVersioned implements AsciidoctorjPdf {
     public static final String DEFAULT_NAME = 'pdf'
     public static final String BACKEND_NAME = DEFAULT_NAME
+    private static final String ATTR_THEME = 'pdf-theme'
+    private static final String ATTR_THEME_DIR = 'pdf-themedir'
+    private static final String ATTR_FONT_DIR = 'pdf-fontsdir'
 
     final boolean copyResources = false
     private final NamedDomainObjectCollection<PdfTheme> availableThemes
@@ -52,19 +55,15 @@ class DefaultAsciidoctorjPdf extends AbstractAsciidoctorjFormatterVersioned impl
     private final Property<PdfTheme> theme
     private final Property<File> fontsDir
 
-    private static final String ATTR_THEME = 'pdf-theme'
-    private static final String ATTR_THEME_DIR = 'pdf-themedir'
-    private static final String ATTR_FONT_DIR = 'pdf-fontsdir'
-
     @Inject
     DefaultAsciidoctorjPdf(String name, AsciidoctorjToolchain tc, Project project) {
         super(
-                name,
-                BACKEND_NAME,
-                JvmModel.ASCIIDOCTORJ_PDF_DEPENDENCY,
-                PluginUtils.loadDefaultVersion('asciidoctorj.pdf', project, tc.class.classLoader),
-                tc,
-                project
+            name,
+            BACKEND_NAME,
+            JvmModel.ASCIIDOCTORJ_PDF_DEPENDENCY,
+            PluginUtils.loadDefaultVersion('asciidoctorj.pdf', project, tc.class.classLoader),
+            tc,
+            project
         )
 
         this.fsOperations = ConfigCacheSafeOperations.from(project).fsOperations()
@@ -83,9 +82,9 @@ class DefaultAsciidoctorjPdf extends AbstractAsciidoctorjFormatterVersioned impl
         }
 
         attributes.putAll(
-                themeAttrs.zip(this.fontsDir) { attrs, dir ->
-                    attrs + [(ATTR_FONT_DIR): dir.absolutePath]
-                }.orElse(themeAttrs)
+            themeAttrs.zip(this.fontsDir) { attrs, dir ->
+                attrs + [(ATTR_FONT_DIR): dir.absolutePath]
+            }.orElse(themeAttrs)
         )
     }
 
@@ -113,8 +112,8 @@ class DefaultAsciidoctorjPdf extends AbstractAsciidoctorjFormatterVersioned impl
     @Override
     void configureTaskInputs(TaskInputs taskInputs) {
         taskInputs.dir(fontsDir).optional(true).withPathSensitivity(PathSensitivity.RELATIVE)
-        taskInputs.dir(theme.flatMap { it.themeDir}).optional(true)
-                .withPathSensitivity(PathSensitivity.RELATIVE)
+        taskInputs.dir(theme.flatMap { it.themeDir }).optional(true)
+            .withPathSensitivity(PathSensitivity.RELATIVE)
     }
 
     @Override

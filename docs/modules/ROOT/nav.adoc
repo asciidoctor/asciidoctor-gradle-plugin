@@ -15,9 +15,11 @@
 * xref:model5/asciidoctorj/pdf.adoc[]
 * xref:model5/asciidoctorj/revealjs.adoc[]
 * xref:model5/asciidoctorj/configure-diagram.adoc[]
+* xref:model5/asciidoctorj/adding-an-external-backend.adoc[]
 
 .Asciidoctor.js
 * xref:model5/asciidoctorjs/html.adoc[]
+* xref:model5/asciidoctorjs/adding-an-external-backend.adoc[]
 
 .Classic (Deprecated) mode
 * xref:classic/quick-start.adoc[Quick start]

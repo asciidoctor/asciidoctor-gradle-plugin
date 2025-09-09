@@ -171,7 +171,7 @@ class AsciidoctorEditorConfigGenerator extends GrolifantDefaultTask {
     @TaskAction
     void exec() {
         outputFile.get().withWriter { w ->
-            Map<String, String> attrs = getAttributes().get()
+            Map<String, String> attrs = attributes.get()
             attrs.keySet().sort().each { String k ->
                 w.println ":${k}: ${attrs[k]}"
             }

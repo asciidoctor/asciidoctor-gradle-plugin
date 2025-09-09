@@ -40,9 +40,9 @@ class AsciidoctorjGemPrepareTask extends AbstractGemPrepareTask {
     @SuppressWarnings('UnnecessarySetter')
     AsciidoctorjGemPrepareTask(String jRubyConfiguration, WorkerExecutor we) {
         super(we)
-            this.jruby = project.configurations.getByName(jRubyConfiguration)
-            jrubyJarProvider = project.provider { ->
-                jruby.files.find {it.name.startsWith(JRUBY_COMPLETE_NAME)  }
-            }
+        this.jruby = project.configurations.getByName(jRubyConfiguration)
+        jrubyJarProvider = project.provider { ->
+            jruby.files.find { it.name.startsWith(JRUBY_COMPLETE_NAME) }
+        }
     }
 }

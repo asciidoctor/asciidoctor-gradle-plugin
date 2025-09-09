@@ -89,7 +89,7 @@ class DefaultGitlabThemeCollection implements GitlabThemeCollection {
      * @param configurator Configurator.
      */
     @Override
-    void from(@DelegatesTo(GitLabArchive.class) Closure<?> configurator) {
+    void from(@DelegatesTo(GitLabArchive) Closure<?> configurator) {
         ClosureUtils.configureItem(this.archive, configurator)
     }
 

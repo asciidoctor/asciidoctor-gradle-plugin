@@ -15,7 +15,6 @@
  */
 package org.asciidoctor.gradle.model5.jvm.internal.engines
 
-
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.asciidoctor.gradle.model5.core.AsciidoctorConversionSettings
@@ -50,6 +49,7 @@ import java.util.concurrent.ConcurrentMap
 @CompileStatic
 @Slf4j
 class DefaultLauncher implements AsciidoctorLauncher {
+    private final static String LOG_EVENTS_FILE_PREFIX = LogProcessor.LOG_EVENTS_FILE_PREFIX
     private final WorkerExecutor workerExecutor
     private final ConfigurableFileCollection classpath
     private final StringTools stringTools
@@ -58,7 +58,6 @@ class DefaultLauncher implements AsciidoctorLauncher {
     private final String projectPath
     private final ConcurrentMap<String, Provider<ExecutionContext>> executionsContexts
     private final DirectoryProperty logDir
-    private final static String LOG_EVENTS_FILE_PREFIX = LogProcessor.LOG_EVENTS_FILE_PREFIX
 
     @Inject
     DefaultLauncher(Project tempProjectRef, WorkerExecutor we) {
@@ -128,7 +127,7 @@ class DefaultLauncher implements AsciidoctorLauncher {
                     logFile.set(jobLogDir.map { it.file("${LOG_EVENTS_FILE_PREFIX}.${index}") })
                     embedded.set(conversionSettings.embedded.orElse(false))
 
-                    if(conversionSettings.templates.present) {
+                    if (conversionSettings.templates.present) {
                         final t = conversionSettings.templates.get()
                         templateEngine.set(t.templateEngines.first())
                         templateDirs.set(t.templateDirs)

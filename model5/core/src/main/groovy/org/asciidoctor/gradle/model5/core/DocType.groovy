@@ -59,7 +59,7 @@ enum DocType {
      * @return {@link DocType}
      */
     static DocType from(String val) {
-        valueOf(val.replaceAll(~/-/,'_').toUpperCase(Locale.US))
+        valueOf(val.replaceAll(~/-/, '_').toUpperCase(Locale.US))
     }
 
     String lc() {

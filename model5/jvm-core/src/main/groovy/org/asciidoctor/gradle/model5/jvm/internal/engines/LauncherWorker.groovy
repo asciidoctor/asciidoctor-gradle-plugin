@@ -27,7 +27,6 @@ import org.gradle.workers.WorkAction
 
 import static org.asciidoctor.log.Severity.ERROR
 import static org.asciidoctor.log.Severity.FATAL
-import static org.asciidoctor.log.Severity.INFO
 import static org.asciidoctor.log.Severity.WARN
 import static org.ysb33r.grolifant5.api.core.StringTools.EMPTY
 
@@ -63,12 +62,14 @@ abstract class LauncherWorker implements WorkAction<LauncherParameters> {
                     asciidoctor.convertFiles(files, normalisedOptions(bd))
                 }
             } else {
-                asciidoctor.convertFiles(parameters.sourceFiles.get(), normalisedOptions(parameters.baseDir.get().asFile))
+                asciidoctor.convertFiles(
+                    parameters.sourceFiles.get(),
+                    normalisedOptions(parameters.baseDir.get().asFile)
+                )
             }
         } finally {
             logger?.close()
         }
-
     }
 
     private Options normalisedOptions(File withBaseDir) {
@@ -95,15 +96,15 @@ abstract class LauncherWorker implements WorkAction<LauncherParameters> {
             attributes(attributesBuilder.build())
             eruby(eo.eruby)
             catalogAssets(eo.catalogAssets)
-            
+
             sourcemap(eo.sourceMap)
             standalone(!parameters.embedded.get())
 
-            if(parameters.templateDirs.present) {
-                parameters.templateDirs.get()*.asFile.each { templateDirs(it)}
+            if (parameters.templateDirs.present) {
+                parameters.templateDirs.get()*.asFile.each { templateDirs(it) }
             }
 
-            if(parameters.templateEngine.present) {
+            if (parameters.templateEngine.present) {
                 final engine = parameters.templateEngine.get()
                 templateEngine(engine)
             }

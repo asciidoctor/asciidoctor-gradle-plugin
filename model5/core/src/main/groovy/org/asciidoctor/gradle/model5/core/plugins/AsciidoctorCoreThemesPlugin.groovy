@@ -21,6 +21,13 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.ysb33r.grolifant5.api.core.plugins.GrolifantServicePlugin
 
+/**
+ * Plugin that provides the themes extension.
+ *
+ * @author Schalk W. Cronjé
+ *
+ * @since 5.0
+ */
 @CompileStatic
 class AsciidoctorCoreThemesPlugin implements Plugin<Project> {
 
@@ -32,6 +39,6 @@ class AsciidoctorCoreThemesPlugin implements Plugin<Project> {
             apply(GrolifantServicePlugin)
         }
 
-        project.extensions.create(THEMES_NAME,AsciidoctorThemeExtension,project)
+        project.extensions.create(THEMES_NAME, AsciidoctorThemeExtension, project)
     }
 }

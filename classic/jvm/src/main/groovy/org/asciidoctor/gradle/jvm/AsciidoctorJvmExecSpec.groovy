@@ -17,7 +17,6 @@ package org.asciidoctor.gradle.jvm
 
 import groovy.transform.CompileStatic
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
-import org.ysb33r.grolifant5.api.core.ProjectOperations
 import org.ysb33r.grolifant5.api.core.runnable.AbstractJvmExecSpec
 
 /**

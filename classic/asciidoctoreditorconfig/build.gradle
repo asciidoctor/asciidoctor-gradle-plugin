@@ -4,6 +4,8 @@ plugins {
 
 agProject {
     withAdditionalPluginClasspath()
+    withIntegrationTests()
+    withCompatibilityTests()
 
     configurePlugin(
             'org.asciidoctor.editorconfig.classic',

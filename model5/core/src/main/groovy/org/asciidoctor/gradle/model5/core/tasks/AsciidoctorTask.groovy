@@ -32,7 +32,7 @@ import org.ysb33r.grolifant5.api.core.runnable.GrolifantDefaultTask
 
 import java.util.regex.Pattern
 
-import static org.gradle.api.tasks.PathSensitivity.*
+import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 
 /**
  * Base task for converting Asciidoc sources into content.
@@ -105,7 +105,7 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
         this.exeSettings.toolchainName.set(outputData.toolchainName)
         this.exeSettings.formatterName.set(outputData.formatterName)
 
-        if(outputData.additionalClasspath != null) {
+        if (outputData.additionalClasspath != null) {
             this.exeSettings.additionalClasspath.from(outputData.additionalClasspath)
         }
 
@@ -174,9 +174,9 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
     @Override
     void setSourcePatterns(Provider<PatternFilterable> patterns) {
         conversionSettings.sourceFiles.set(
-                patterns.zip(conversionSettings.sourceRootDir) { pats, dir ->
-                    fsOperations().fileTree(dir).matching(pats).files
-                }
+            patterns.zip(conversionSettings.sourceRootDir) { pats, dir ->
+                fsOperations().fileTree(dir).matching(pats).files
+            }
         )
     }
 

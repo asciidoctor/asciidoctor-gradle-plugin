@@ -47,7 +47,6 @@ class LogProcessor {
      * @param dir Log directory
      * @param patterns Patterns to match against.
      * @param maxIndex Maximum number of JSON files.
-     *
      */
     static void parseLogs(
         StringTools stringTools,

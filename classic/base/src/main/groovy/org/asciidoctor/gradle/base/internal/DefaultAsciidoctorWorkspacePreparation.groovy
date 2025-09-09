@@ -23,7 +23,6 @@ import org.asciidoctor.gradle.base.AsciidoctorTaskWorkspacePreparation
 import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileTree
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
-import org.ysb33r.grolifant5.api.core.ProjectOperations
 
 /**
  * Default implementation of an Asciidoctor workspace preparation.
@@ -39,9 +38,9 @@ class DefaultAsciidoctorWorkspacePreparation implements AsciidoctorTaskWorkspace
     private final ConfigCacheSafeOperations po
 
     DefaultAsciidoctorWorkspacePreparation(
-            ConfigCacheSafeOperations po,
-            AsciidoctorTaskFileOperations atfo,
-            AsciidoctorTaskTreeOperations atto
+        ConfigCacheSafeOperations po,
+        AsciidoctorTaskFileOperations atfo,
+        AsciidoctorTaskTreeOperations atto
     ) {
         this.po = ConfigCacheSafeOperations.from(po)
         this.fileOperations = atfo
@@ -61,13 +60,13 @@ class DefaultAsciidoctorWorkspacePreparation implements AsciidoctorTaskWorkspace
             File tmpDir = fileOperations.intermediateWorkDir
             prepareTempWorkspace(tmpDir)
             Workspace.builder()
-                    .workingSourceDir(tmpDir)
-                    .sourceTree(treeOperations.getSourceFileTreeFrom(tmpDir))
-                    .build()
+                .workingSourceDir(tmpDir)
+                .sourceTree(treeOperations.getSourceFileTreeFrom(tmpDir))
+                .build()
         } else {
             Workspace.builder()
-                    .workingSourceDir(fileOperations.sourceDir)
-                    .sourceTree(fileOperations.sourceFileTree).build()
+                .workingSourceDir(fileOperations.sourceDir)
+                .sourceTree(fileOperations.sourceFileTree).build()
         }
     }
 
@@ -83,15 +82,15 @@ class DefaultAsciidoctorWorkspacePreparation implements AsciidoctorTaskWorkspace
             File tmpDir = new File(fileOperations.intermediateWorkDir, language)
             prepareTempWorkspace(tmpDir, language)
             Workspace.builder()
-                    .workingSourceDir(tmpDir)
-                    .sourceTree(treeOperations.getSourceFileTreeFrom(tmpDir))
-                    .build()
+                .workingSourceDir(tmpDir)
+                .sourceTree(treeOperations.getSourceFileTreeFrom(tmpDir))
+                .build()
         } else {
             File srcDir = new File(fileOperations.sourceDir, language)
             Workspace.builder()
-                    .workingSourceDir(srcDir)
-                    .sourceTree(treeOperations.getSourceFileTreeFrom(srcDir))
-                    .build()
+                .workingSourceDir(srcDir)
+                .sourceTree(treeOperations.getSourceFileTreeFrom(srcDir))
+                .build()
         }
     }
 
@@ -100,30 +99,30 @@ class DefaultAsciidoctorWorkspacePreparation implements AsciidoctorTaskWorkspace
             throw new AsciidoctorMultiLanguageException('Use prepareTempWorkspace(tmpDir,lang) instead')
         }
         prepareTempWorkspace(
-                tmpDir,
-                fileOperations.sourceFileTree,
-                fileOperations.secondarySourceFileTree,
-                fileOperations.getResourceCopySpec(Optional.empty()),
-                Optional.empty()
+            tmpDir,
+            fileOperations.sourceFileTree,
+            fileOperations.secondarySourceFileTree,
+            fileOperations.getResourceCopySpec(Optional.empty()),
+            Optional.empty()
         )
     }
 
     private void prepareTempWorkspace(final File tmpDir, final String lang) {
-            prepareTempWorkspace(
-                    tmpDir,
-                    treeOperations.getLanguageSourceFileTree(lang),
-                    treeOperations.getLanguageSecondarySourceFileTree(lang),
-                    fileOperations.getResourceCopySpec(Optional.of(lang)),
-                    Optional.ofNullable(fileOperations.getLanguageResourceCopySpec(lang))
-            )
+        prepareTempWorkspace(
+            tmpDir,
+            treeOperations.getLanguageSourceFileTree(lang),
+            treeOperations.getLanguageSecondarySourceFileTree(lang),
+            fileOperations.getResourceCopySpec(Optional.of(lang)),
+            Optional.ofNullable(fileOperations.getLanguageResourceCopySpec(lang))
+        )
     }
 
     private void prepareTempWorkspace(
-            final File tmpDir,
-            final FileTree mainSourceTree,
-            final FileTree secondarySourceTree,
-            final CopySpec resourceTree,
-            final Optional<CopySpec> langResourcesTree
+        final File tmpDir,
+        final FileTree mainSourceTree,
+        final FileTree secondarySourceTree,
+        final CopySpec resourceTree,
+        final Optional<CopySpec> langResourcesTree
     ) {
         if (tmpDir.exists()) {
             tmpDir.deleteDir()

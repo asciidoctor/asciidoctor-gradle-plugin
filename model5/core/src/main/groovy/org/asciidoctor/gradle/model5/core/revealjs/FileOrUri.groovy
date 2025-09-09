@@ -52,8 +52,8 @@ class FileOrUri implements HasAttributeProvider, CanConfigureTaskInputs {
         this.location = project.objects.property(String)
         this.isFile = project.objects.property(Boolean).convention(false)
         this.attributeProvider = stringTools.provideValuesDropNull([
-                (attrName): this.location
-        ]) as Provider<Map<String,Object>>
+            (attrName): this.location
+        ]) as Provider<Map<String, Object>>
     }
 
     /**
@@ -66,7 +66,7 @@ class FileOrUri implements HasAttributeProvider, CanConfigureTaskInputs {
      * @param uriThingy Anything convertible to a URI.
      */
     void setUri(Object uriThingy) {
-        this.location.set(stringTools.provideUri(uriThingy).map { stringTools.stringize(it)})
+        this.location.set(stringTools.provideUri(uriThingy).map { stringTools.stringize(it) })
         this.isFile.set(false)
     }
 
@@ -80,7 +80,7 @@ class FileOrUri implements HasAttributeProvider, CanConfigureTaskInputs {
      * @param fileThingy Anything convertible to a file.
      */
     void setLocation(Object fileThingy) {
-        this.location.set(fsOperations.provideFile(fileThingy).map { it.absolutePath})
+        this.location.set(fsOperations.provideFile(fileThingy).map { it.absolutePath })
         this.isFile.set(true)
     }
 
@@ -100,6 +100,6 @@ class FileOrUri implements HasAttributeProvider, CanConfigureTaskInputs {
 
     @Override
     void configureTaskInputs(TaskInputs taskInputs) {
-        taskInputs.files(location.zip(isFile) { loc, flag -> flag ? loc : null}).optional(true)
+        taskInputs.files(location.zip(isFile) { loc, flag -> flag ? loc : null }).optional(true)
     }
 }

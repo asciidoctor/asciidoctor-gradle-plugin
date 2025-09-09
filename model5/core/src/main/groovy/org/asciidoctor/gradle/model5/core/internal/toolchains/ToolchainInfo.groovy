@@ -56,7 +56,6 @@ class ToolchainInfo {
                 formatters = allFormattersForTc
                 asciidocExtensions = allExtensionsForTc
             }]
-
         } as Map<String, SingleToolchain>
 
         new ToolchainInfo(allToolchains)

@@ -19,10 +19,11 @@ import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjExtension
 
 /**
+ * Base class for implementing {@code asciidoctorj} extensions.
  *
  * @author Schalk W. Cronjé
  *
- * @since
+ * @since 5.0
  */
 @CompileStatic
 abstract class AbstractAsciidoctorjExtension implements AsciidoctorjExtension {

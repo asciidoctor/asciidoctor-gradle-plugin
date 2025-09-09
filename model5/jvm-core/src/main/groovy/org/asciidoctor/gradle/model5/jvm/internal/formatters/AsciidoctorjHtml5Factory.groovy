@@ -24,6 +24,13 @@ import org.gradle.api.model.ObjectFactory
 
 import javax.inject.Inject
 
+/**
+ * Factory for {@link AsciidoctorjHtml5}.
+ *
+ * @author Schalk W. Cronjé
+ *
+ * @since 5.0
+ */
 @CompileStatic
 class AsciidoctorjHtml5Factory implements NamedDomainObjectFactory<AsciidoctorjHtml5> {
 

@@ -26,9 +26,16 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.ysb33r.grolifant5.api.core.ProjectOperations
 
+/**
+ * Base class for output formatters where the version can be configured.
+ *
+ * @author Schalk W. Cronjé
+ *
+ * @since 5.0
+ */
 @CompileStatic
 abstract class AbstractAsciidoctorjFormatterVersioned extends AbstractAsciidoctorjFormatter
-        implements AsciidoctorjOutputFormatterVersioned {
+    implements AsciidoctorjOutputFormatterVersioned {
 
     protected final Property<String> moduleVersion
     private final ConfigurableFileCollection classpath
@@ -44,6 +51,7 @@ abstract class AbstractAsciidoctorjFormatterVersioned extends AbstractAsciidocto
     }
 
     /**
+     * C-tor.
      *
      * @param name Name of the output formatter.
      * @param backendName Name of the backend.
@@ -52,13 +60,14 @@ abstract class AbstractAsciidoctorjFormatterVersioned extends AbstractAsciidocto
      * @param tc The toolchain the formatter is attached to.
      * @param tempProjectReference A temporary reference to a {@link Project} instance.
      */
+    @SuppressWarnings('ParameterCount')
     protected AbstractAsciidoctorjFormatterVersioned(
-            String name,
-            String backendName,
-            String componentModule,
-            Provider<String> componentDefaultVersion,
-            AsciidoctorjToolchain tc,
-            Project tempProjectReference
+        String name,
+        String backendName,
+        String componentModule,
+        Provider<String> componentDefaultVersion,
+        AsciidoctorjToolchain tc,
+        Project tempProjectReference
     ) {
         super(name, backendName, tc, tempProjectReference)
         this.moduleVersion = tempProjectReference.objects.property(String).convention(componentDefaultVersion)
@@ -67,10 +76,10 @@ abstract class AbstractAsciidoctorjFormatterVersioned extends AbstractAsciidocto
         final runtime = JvmModel.nameForOutputFormatterConfigurationResolvable(tc.name, name)
 
         ProjectOperations.find(tempProjectReference).configurations
-                .createLocalRoleFocusedConfiguration(cfgName, runtime, true)
+            .createLocalRoleFocusedConfiguration(cfgName, runtime, true)
         tempProjectReference.dependencies.addProvider(
-                cfgName,
-                this.moduleVersion.map { "${componentModule}:${it}".toString()}
+            cfgName,
+            this.moduleVersion.map { "${componentModule}:${it}".toString() }
         )
         this.classpath = ccso.fsOperations().emptyFileCollection()
         this.classpath.from(tempProjectReference.configurations.getByName(runtime))

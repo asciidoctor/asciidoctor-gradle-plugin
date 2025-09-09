@@ -59,7 +59,6 @@ enum SafeMode {
 
     final private int level
 
-
     int getLevel() {
         this.level
     }
