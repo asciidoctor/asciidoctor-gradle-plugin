@@ -18,11 +18,9 @@ package org.asciidoctor.gradle.model5.jvm.plugins
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
 import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCorePlugin
-import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjDiagram
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjDocbook
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjHtml5
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjManpage
-import org.asciidoctor.gradle.model5.jvm.internal.extensions.DefaultAsciidoctorjDiagram
 import org.asciidoctor.gradle.model5.jvm.internal.formatters.DefaultAsciidoctorjDocbook
 import org.asciidoctor.gradle.model5.jvm.internal.formatters.DefaultAsciidoctorjHtml5
 import org.asciidoctor.gradle.model5.jvm.internal.formatters.DefaultAsciidoctorjManpage
@@ -30,7 +28,6 @@ import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
-import static org.asciidoctor.gradle.model5.jvm.JvmModel.registerExtensionOnAllToolchains
 import static org.asciidoctor.gradle.model5.jvm.JvmModel.registerOutputFormatterOnAllToolchains
 
 /**
@@ -60,7 +57,5 @@ class AsciidoctorjPlugin implements Plugin<Project> {
         registerOutputFormatterOnAllToolchains(toolchains, AsciidoctorjHtml5, DefaultAsciidoctorjHtml5.DEFAULT_NAME)
         registerOutputFormatterOnAllToolchains(toolchains, AsciidoctorjDocbook, DefaultAsciidoctorjDocbook.DEFAULT_NAME)
         registerOutputFormatterOnAllToolchains(toolchains, AsciidoctorjManpage, DefaultAsciidoctorjManpage.DEFAULT_NAME)
-
-        registerExtensionOnAllToolchains(toolchains, AsciidoctorjDiagram, DefaultAsciidoctorjDiagram.DEFAULT_NAME)
     }
 }

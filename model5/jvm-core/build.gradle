@@ -47,6 +47,12 @@ agProject {
         'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjGemsPlugin',
         ['asciidoctorj', 'gems', 'jruby']
 
+    configurePlugin 'org.asciidoctor.jvm.diagram',
+        'Ability to use Asciidoctor Diagrams with AsciidoctorJ',
+        'Provides an extension for adding diagramming support',
+        'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjDiagramPlugin',
+        ['asciidoctorj', 'diagrams', 'ditaa', 'plantuml', 'batik', 'syntrax']
+
     // tag::hacking-asciidoctorj-output-formatter[]
     configurePlugin(
         'org.asciidoctor.jvm.epub', // <.>

@@ -5,10 +5,14 @@ This extension utilises link:{asciidoctorj-diagram-url}[asciidoctorj-diagram-url
 When the `{asciidoctorj-conventions-plugin}` is applied, this extension is registered automatically and named `diagram`.
 It is then up to the build script author to enable the specific components so that they can appear on the classpath.
 
-[source,groovy]
+[source,groovy,subs=+attributes]
 ----
-org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
+import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjDiagram
+
+plugins {
+    id 'org.asciidoctor.jvm.diagram' version '{release-version}'
+}
 
 asciidoc {
   toolchains {
@@ -49,3 +53,5 @@ Implies `useDiagram().
 Implies `useDiagram().
 <.> Use PlantUML with a non-default version.
 Implies `useDiagram().
+
+IMPORTANT: It is not possible to apply both `org.asciidoctor.jvm.diagram` and `org.asciidoctor.jvm.kroki` to the same project.

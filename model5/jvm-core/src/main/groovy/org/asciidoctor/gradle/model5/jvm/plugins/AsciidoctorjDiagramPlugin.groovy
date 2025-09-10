@@ -17,19 +17,17 @@ package org.asciidoctor.gradle.model5.jvm.plugins
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
-import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreThemesPlugin
-import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjPdf
-import org.asciidoctor.gradle.model5.jvm.internal.formatters.AsciidoctorjPdfFactory
-import org.asciidoctor.gradle.model5.jvm.internal.formatters.DefaultAsciidoctorjPdf
+import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjDiagram
+import org.asciidoctor.gradle.model5.jvm.internal.extensions.DefaultAsciidoctorjDiagram
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
-import static org.asciidoctor.gradle.model5.jvm.JvmModel.registerOutputFormatterFactory
-import static org.asciidoctor.gradle.model5.jvm.JvmModel.registerOutputFormatterOnAllToolchains
+import static org.asciidoctor.gradle.model5.jvm.JvmModel.registerExtensionFactory
+import static org.asciidoctor.gradle.model5.jvm.JvmModel.registerExtensionOnAllToolchains
 
 /**
- * Applies {@link AsciidoctorjPlugin} and {@link AsciidoctorCoreThemesPlugin}, then adds an output formatter for
- * {@code asciidoctorj-pdf}.
+ * Applies {@link AsciidoctorjPlugin} , then adds an extension for
+ * {@code asciidoctorj-diagram}.
  *
  * @author Schalk W. Cronjé
  *
@@ -42,21 +40,20 @@ class AsciidoctorjDiagramPlugin implements Plugin<Project> {
     void apply(Project project) {
         project.pluginManager.tap {
             apply(AsciidoctorjPlugin)
-            apply(AsciidoctorCoreThemesPlugin)
         }
 
         final asciidoc = project.extensions.getByType(AsciidoctorModelExtension)
         final toolchains = asciidoc.toolchains
 
-        registerOutputFormatterFactory(
-                toolchains,
-                AsciidoctorjPdf,
-                AsciidoctorjPdfFactory,
-                project.objects
+        registerExtensionFactory(
+            asciidoc.toolchains,
+            AsciidoctorjDiagram,
+            DefaultAsciidoctorjDiagram.Factory,
+            project.objects
         )
 
         project.pluginManager.withPlugin(AsciidoctorjPlugin.PLUGIN_ID) {
-            registerOutputFormatterOnAllToolchains(toolchains, AsciidoctorjPdf, DefaultAsciidoctorjPdf.DEFAULT_NAME)
+            registerExtensionOnAllToolchains(toolchains, AsciidoctorjDiagram, DefaultAsciidoctorjDiagram.DEFAULT_NAME)
         }
     }
 }

@@ -14,7 +14,7 @@
 * xref:model5/asciidoctorj/epub.adoc[]
 * xref:model5/asciidoctorj/pdf.adoc[]
 * xref:model5/asciidoctorj/revealjs.adoc[]
-* xref:model5/asciidoctorj/configure-diagram.adoc[]
+* xref:model5/asciidoctorj/diagram.adoc[]
 * xref:model5/asciidoctorj/adding-an-external-backend.adoc[]
 
 .Asciidoctor.js
