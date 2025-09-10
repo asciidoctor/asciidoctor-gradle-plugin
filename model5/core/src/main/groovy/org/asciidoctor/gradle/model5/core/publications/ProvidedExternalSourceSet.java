@@ -15,34 +15,33 @@
  */
 package org.asciidoctor.gradle.model5.core.publications;
 
-import groovy.lang.Closure;
-import groovy.lang.DelegatesTo;
-import org.gradle.api.Action;
-import org.gradle.api.file.CopySpec;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.util.PatternFilterable;
 
 /**
- * Configuration of Asciidoctor resource files.
+ * Provides the necessary information on an external source to a
+ * {@link org.asciidoctor.gradle.model5.core.tasks.AsciidoctorTask}.
  *
  * @author Schalk W. Cronjé
- *
  * @since 5.0
  */
-public interface HasAsciidoctorResources {
-    /**
-     * Adds these patterns that are relative to the source directory or the intermediate source directory.
-     *
-     * @param cfg {@link PatternFilterable} instance that can be configured.
-     */
-    void resources(Action<? super PatternFilterable> cfg);
+public interface ProvidedExternalSourceSet {
 
     /**
-     * Adds these patterns that are relative to the source directory or the intermediate source directory.
+     * A collection of files from the external source area.
+     * This can contain more than tjust AsciiDoc sources.
      *
-     * @param cfg A closre that can configure a {@link PatternFilterable} instance.
+     * @return Files
      */
-    void resources(@DelegatesTo(PatternFilterable.class) Closure<?> cfg);
+    FileCollection getSourcesAndResources();
+
+    /**
+     * A provider of source patterns.
+     *
+     * @return Patterns of files to include for Asciidoc sources.
+     */
+    Provider<PatternFilterable> getSourcePatterns();
 
     /**
      * Patterns that can be added to a copy spec for copying resources to a target directory.
@@ -50,4 +49,12 @@ public interface HasAsciidoctorResources {
      * @return Provider to patterns for a copy specification
      */
     Provider<PatternFilterable> getResourcesPatterns();
+
+    /**
+     * Whether the external source should be placed in a folder below the local source directory and also in the
+     * destination directory.
+     *
+     * @return Provider to a subpath. Can be empty.
+     */
+    Provider<String> getInto();
 }

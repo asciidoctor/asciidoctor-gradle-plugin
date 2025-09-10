@@ -20,6 +20,7 @@ import org.asciidoctor.gradle.model5.core.tasks.AsciidoctorTask
 import org.asciidoctor.gradle.model5.core.tasks.AsciidoctorTaskMethods
 import org.gradle.api.Action
 import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 
 import javax.inject.Inject
@@ -50,6 +51,10 @@ class TaskFactory {
     }
 
     void addPrerequisiteTasks(final String taskName, Iterable<String> prepareTasks) {
+        project.tasks.named(taskName).configure { it.dependsOn(prepareTasks) }
+    }
+
+    void addPrerequisiteTasks(final String taskName, Provider<List<Object>> prepareTasks) {
         project.tasks.named(taskName).configure { it.dependsOn(prepareTasks) }
     }
 }

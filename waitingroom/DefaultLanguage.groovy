@@ -21,6 +21,8 @@ import org.asciidoctor.gradle.model5.core.internal.attributes.DefaultAttributes
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.file.CopySpec
+import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.util.PatternFilterable
 import org.ysb33r.grolifant5.api.core.ClosureUtils
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 
@@ -65,7 +67,7 @@ class DefaultLanguage implements Language {
      * @param configurator Configurator
      */
     @Override
-    void attributes(@DelegatesTo(Attributes) Closure<?> configurator) {
+    void attributes(@DelegatesTo(Attributes) Closure configurator) {
         ClosureUtils.configureItem(this.attributes, configurator)
     }
 
@@ -88,24 +90,19 @@ class DefaultLanguage implements Language {
      * @param cfg {@link CopySpec} runConfiguration {@link Action}
      */
     @Override
-    void resources(Action<? super CopySpec> cfg) {
-        final childSpec = ccso.fsOperations().copySpec()
-        cfg.execute(childSpec)
-        this.resourcesCopySpec.with(childSpec)
+    void resources(@DelegatesTo(CopySpec) Closure<?> cfg) {
+    }
+
+    void resources(Action<? super PatternFilterable> cfg) {
     }
 
     /**
-     *  Add to the CopySpec for extra files.
+     * Patterns that can be added to a copy spec for copying resources to a target directory.
      *
-     * The destination of these files will always have a parent directory
-     * of {@code outputDir} or {@code outputDir + backend}
-     *
-     * @param cfg {@link CopySpec} runConfiguration {@link Action}
+     * @return Provider to patterns for a copy specification
      */
     @Override
-    void resources(@DelegatesTo(CopySpec) Closure<?> cfg) {
-        final childSpec = ccso.fsOperations().copySpec()
-        ClosureUtils.configureItem(childSpec, cfg)
-        this.resourcesCopySpec.with(childSpec)
+    Provider<PatternFilterable> getResourcesPatterns() {
+        null
     }
 }

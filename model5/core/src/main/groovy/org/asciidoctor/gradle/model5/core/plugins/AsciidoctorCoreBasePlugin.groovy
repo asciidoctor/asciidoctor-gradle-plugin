@@ -19,7 +19,7 @@ import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
 import org.asciidoctor.gradle.model5.core.internal.toolchains.ToolchainInfo
 import org.asciidoctor.gradle.model5.core.publications.AsciidoctorPublication
-import org.asciidoctor.gradle.model5.core.waitingroom.ShowAsciidocToolchains
+import org.asciidoctor.gradle.model5.core.tasks.ShowAsciidocToolchains
 import org.asciidoctor.gradle.model5.editorconfig.AsciidoctorEditorConfigGenerator
 import org.asciidoctor.gradle.model5.editorconfig.AsciidoctorEditorConfigPlugin
 import org.gradle.api.Plugin

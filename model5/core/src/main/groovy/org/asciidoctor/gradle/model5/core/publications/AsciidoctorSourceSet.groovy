@@ -21,29 +21,28 @@ import org.asciidoctor.gradle.model5.core.attributes.Attributes
 import org.asciidoctor.gradle.model5.core.attributes.HasAsciidoctorAttributes
 import org.asciidoctor.gradle.model5.core.basedir.BaseDirConfiguration
 import org.asciidoctor.gradle.model5.core.basedir.HasBaseDirStrategy
-import org.asciidoctor.gradle.model5.core.errors.ConfigurationNotSupportedException
 import org.asciidoctor.gradle.model5.core.internal.attributes.DefaultAttributes
 import org.asciidoctor.gradle.model5.core.internal.basedir.DefaultBaseDirConfiguration
+import org.asciidoctor.gradle.model5.core.internal.publications.DefaultAsciidoctorSource
+import org.asciidoctor.gradle.model5.core.internal.publications.DefaultExternalAsciidoctorSource
+import org.asciidoctor.gradle.model5.core.internal.publications.DefaultProvidedExternalSourceSet
+import org.asciidoctor.gradle.model5.core.internal.publications.DefaultProvidedExternalSources
 import org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils
 import org.gradle.api.Action
 import org.gradle.api.Project
-import org.gradle.api.file.Directory
-import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.file.ProjectLayout
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
-import org.gradle.api.tasks.util.PatternFilterable
-import org.gradle.api.tasks.util.PatternSet
 import org.ysb33r.grolifant5.api.core.ClosureUtils
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 
 import javax.inject.Inject
 import java.util.regex.Pattern
 
-import static org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils.ASCIIDOC_PATTERNS
-import static org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils.UNDERSCORE_LED_FILES
 import static org.ysb33r.grolifant5.api.core.StringTools.EMPTY
 
 /**
@@ -59,49 +58,48 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
 
     private final BaseDirConfiguration baseDirConfiguration
     private final ConfigCacheSafeOperations ccso
+    private final ObjectFactory objectFactory
     private final ProjectLayout layout
-    private final DirectoryProperty srcDir
     private final Attributes attributes
     private final Property<DocType> doctype
-    private final PatternSet sourceDocumentPattern
-    private final Provider<PatternFilterable> sourcePatternProvider
-    private final PatternSet resourcePatterns
-    private final Provider<PatternFilterable> resourcePatternProvider
     private final SetProperty<Pattern> fatalWarningPatterns
     private final Property<DuplicatesStrategy> duplicatesStrategy
-//    private final CopySpec resourcesCopySpec
-//    private final PatternSet secondarySourceDocumentPattern
-//    private final Provider<PatternFilterable> secondarySourcePatternProvider
+    private final ListProperty<DefaultExternalAsciidoctorSource> externalSources
+    private final Provider<List<Object>> externalBuiltBy
+    private final Provider<? extends ProvidedExternalSources> externalSourcesTransformed
+
+    @Delegate
+    private final DefaultAsciidoctorSource localSource
 
     @Inject
     AsciidoctorSourceSet(String name, Project tempProjectReference) {
         final srcDirPath = PublicationUtils.sourcePathFor(name)
         this.ccso = ConfigCacheSafeOperations.from(tempProjectReference)
         this.layout = tempProjectReference.layout
+        this.objectFactory = tempProjectReference.objects
+        this.localSource = objectFactory.newInstance(DefaultAsciidoctorSource)
+        this.externalSources = objectFactory.listProperty(DefaultExternalAsciidoctorSource)
         this.baseDirConfiguration = tempProjectReference.objects.newInstance(DefaultBaseDirConfiguration)
         this.attributes = tempProjectReference.objects.newInstance(DefaultAttributes)
         this.doctype = tempProjectReference.objects.property(DocType)
-        this.sourceDocumentPattern = new PatternSet().exclude(UNDERSCORE_LED_FILES)
-        this.resourcePatterns = new PatternSet()
         this.fatalWarningPatterns = tempProjectReference.objects.setProperty(Pattern)
         this.duplicatesStrategy = tempProjectReference.objects.property(DuplicatesStrategy)
             .convention(DuplicatesStrategy.FAIL)
-//        this.resourcesCopySpec = ccso.fsOperations().copySpec()
-//        this.secondarySourceDocumentPattern = new PatternSet()
 
-        this.srcDir = tempProjectReference.objects.directoryProperty().convention(
-            tempProjectReference.layout.projectDirectory.dir(srcDirPath)
-        )
+        sourceDir = tempProjectReference.layout.projectDirectory.dir(srcDirPath)
 
-        this.sourcePatternProvider = ccso.providerTools().provider { ->
-            final ret = owner.sourceDocumentPattern.includes.empty ?
-                new PatternSet().copyFrom(owner.sourceDocumentPattern).include(ASCIIDOC_PATTERNS) :
-                owner.sourceDocumentPattern
-            (PatternFilterable) ret
+        this.externalBuiltBy = externalSources.map { list ->
+            list*.builtBy*.get().flatten() as List<Object>
         }
 
-        this.resourcePatternProvider = ccso.providerTools().provider { ->
-            (PatternFilterable) (owner.resourcePatterns.includes.empty ? null : owner.resourcePatterns)
+        final listProvider = externalSources.map { list ->
+            list.collect {
+                new DefaultProvidedExternalSourceSet(it)
+            }
+        }
+
+        this.externalSourcesTransformed = ccso.providerTools().provider { ->
+            new DefaultProvidedExternalSources(listProvider, owner.duplicatesStrategy)
         }
 
         this.attributes.add('gradle-project-name', ccso.projectTools().projectNameProvider)
@@ -142,77 +140,6 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
     }
 
     /**
-     * The top directory for asciidoc sources for this publication.
-     *
-     * @return Provider to location.
-     */
-    @Override
-    Provider<Directory> getSourceDir() {
-        this.srcDir
-    }
-
-    /**
-     * The directory where the root of the asciidoc documents will be found.
-     *
-     * <p>
-     *   Usually this is {@code src/docs/asciidoc} or {@code src/docs/asciidoc<PUBLICATION>}.
-     * </p>
-     * @param dir New source directory
-     */
-    @Override
-    void setSourceDir(Object dir) {
-        this.srcDir.set(layout.dir(ccso.fsOperations().provideFile(dir)))
-    }
-
-    /**
-     * Configures sources.
-     *
-     * @param cfg Configuration closure. Is passed a {@link org.gradle.api.tasks.util.PatternSet}.
-     */
-    @Override
-    void sources(@DelegatesTo(PatternSet) Closure<?> cfg) {
-        ClosureUtils.configureItem(this.sourceDocumentPattern, cfg)
-    }
-
-    /**
-     * Configures sources.
-     *
-     * @param cfg Configuration {@link org.gradle.api.Action}. Is passed a {@link PatternSet}.
-     */
-    @Override
-    void sources(final Action<? super PatternSet> cfg) {
-        cfg.execute(this.sourceDocumentPattern)
-    }
-
-    /**
-     * Include source patterns.
-     *
-     * @param includePatterns ANT-style patterns for sources to include
-     */
-    @Override
-    void sources(String... includePatterns) {
-        this.sourceDocumentPattern.include(includePatterns)
-    }
-
-    /**
-     * Clears existing sources patterns.
-     */
-    @Override
-    void clearSources() {
-        sourceDocumentPattern.copyFrom(new PatternSet())
-    }
-
-    /**
-     * A provider of source patterns.
-     *
-     * @return Patterns of files to include for Asciidoc sources.
-     */
-    @Override
-    Provider<PatternFilterable> getSourcePatterns() {
-        this.sourcePatternProvider
-    }
-
-    /**
      * Adds an external source which is is a supplier of AsciiDoc source and
      * related resources
      *
@@ -222,10 +149,10 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
      * </p>
      * @param configurator Configure the external source.
      */
-    void externalSource(Action<HasExternalAsciidoctorSource> configurator) {
-        HasExternalAsciidoctorSource t
-        configurator.execute(t)
-        throw new ConfigurationNotSupportedException('TO BE IMPLEMENTED')
+    void externalSource(Action<ExternalAsciidoctorSource> configurator) {
+        final src = objectFactory.newInstance(DefaultExternalAsciidoctorSource)
+        configurator.execute(src)
+        externalSources.add(src)
     }
 
     /**
@@ -238,12 +165,21 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
     }
 
     /**
-     * Defines how duplicates are handled is external sources are added.
+     * A list of all the tasks that build the external sources.
      *
-     * @return Provider to strategy.
+     * @return Provider to list. Can be empty, but never {@code null}.
      */
-    Provider<DuplicatesStrategy> getDuplicatesStrategy() {
-        this.duplicatesStrategy
+    Provider<List<Object>> getExternalSourcesBuiltBy() {
+        this.externalBuiltBy
+    }
+
+    /**
+     * All external sources.
+     *
+     * @return Provider to all defined external sources.
+     */
+    Provider<ProvidedExternalSources> getExternalSources() {
+        this.externalSourcesTransformed
     }
 
 //    /**
@@ -285,77 +221,6 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
 //    Provider<PatternFilterable> getSecondarySourcePatterns() {
 //        this.sourcePatternProvider
 //    }
-//    /**
-//     *  Add to the CopySpec for extra files.
-//     *
-//     * The destination of these files will always have a parent directory
-//     * of {@code outputDir} or {@code outputDir + backend}
-//     *
-//     * @param cfg {@link CopySpec} runConfiguration {@link Action}
-//     */
-//    @Override
-//    void resources(Action<? super CopySpec> cfg) {
-//        final childSpec = ccso.fsOperations().copySpec()
-//        cfg.execute(childSpec)
-//        this.resourcesCopySpec.with(childSpec)
-//    }
-//
-//    /**
-//     *  Add to the CopySpec for extra files.
-//     *
-//     * The destination of these files will always have a parent directory
-//     * of {@code outputDir} or {@code outputDir + backend}
-//     *
-//     * @param cfg {@link CopySpec} runConfiguration {@link Action}
-//     */
-//    @Override
-//    void resources(@DelegatesTo(CopySpec.class) Closure<?> cfg) {
-//        final childSpec = ccso.fsOperations().copySpec()
-//        ClosureUtils.configureItem(childSpec, cfg)
-//        this.resourcesCopySpec.with(childSpec)
-//    }
-    /**
-     * Adds these patterns that are relative to the source directory or the intermediate source directory.
-     *
-     * <p>
-     *     The {@code resources} method can be called many times, but at least one should have an {@code include}
-     *     pattern, otherwise resources will not be copied.
-     *
-     *     If the output formatter does not require resources, then they will not be copied either.
-     * </p>
-     *
-     * @param cfg {@link PatternFilterable} instance that can be configured.
-     */
-    @Override
-    void resources(Action<? super PatternFilterable> cfg) {
-        cfg.execute(this.resourcePatterns)
-    }
-
-    /**
-     * Adds these patterns that are relative to the source directory or the intermediate source directory.
-     *
-     * <p>
-     *     The {@code resources} method can be called many times, but at least one should have an {@code include}
-     *     pattern, otherwise resources will not be coped.
-     *
-     *     If the output formatter does not require resources, then they will not be copied either.
-     * </p>
-     *
-     * @param cfg A closure that can configure a {@link PatternFilterable} instance.
-     */
-    @Override
-    void resources(@DelegatesTo(PatternFilterable) Closure<?> cfg) {
-        ClosureUtils.configureItem(this.resourcePatterns, cfg)
-    }
-
-    /**
-     * Patterns that can be added to a copy spec for copying resources to a target directory.
-     *
-     * @return Copy specification
-     */
-    Provider<PatternFilterable> getResourcesPatterns() {
-        this.resourcePatternProvider
-    }
 
     /**
      * Configures the attributes for this publication

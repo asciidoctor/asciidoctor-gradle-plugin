@@ -31,7 +31,7 @@ class AsciidoctorjManpageSpec extends IntegrationSpecification {
         final outputDir = new File(buildDir, 'docs/asciidoc/manpage')
 
         writeBuildFile()
-        copyTestProject('resources')
+        copyTestProject('manpage')
 
         configureSourceSetGroovy(DEFAULT_PUBLICATION, """
         resources {
@@ -46,7 +46,7 @@ class AsciidoctorjManpageSpec extends IntegrationSpecification {
         result.task(":${taskName}").outcome == SUCCESS
 
         and: 'Content exists'
-        fileExists(outputDir, 'simple.1')
+        fileExists(outputDir, 'eve.1')
         !fileExists(outputDir, 'images/fake11.txt')
         !fileExists(outputDir, 'images/fake12.txt')
     }

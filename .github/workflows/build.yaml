@@ -48,7 +48,7 @@ jobs:
         run: ./gradlew --console=plain --warning-mode=all -s clean assemble
       # TODO: Resolve the gem integration test issue.  See https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/694
       - name: Test
-        run: ./gradlew --console=plain --warning-mode=all -s check --no-parallel -x gradleTest -x :asciidoctor-gradle-jvm-gems:IntTest --scan
+        run: ./gradlew --console=plain --warning-mode=all -s check --no-parallel -x gradleTest -x :asciidoctor-gradle-jvm-gems:IntTest 
         env:
           JAVA_TOOL_OPTIONS: -Djava.net.preferIPv4Stack=true
       # Stop gradlew to avoid locking issues
@@ -82,11 +82,11 @@ jobs:
     - name: Build
       run: ./gradlew  -i -S --console=plain --no-build-cache assemble
     - name: Integration tests (without slides)
-      run: ./gradlew  -i -s --console=plain --no-build-cache test intTest remoteTest --scan
+      run: ./gradlew  -i -s --console=plain --no-build-cache test intTest remoteTest 
 #        arguments: -i -s --console=plain --no-build-cache test intTest remoteTest  -x asciidoctor-gradle-jvm-slides:intTest
 #        arguments: -i -s --console=plain --no-build-cache test intTest remoteTest -x asciidoctor-gradle-slides-export:intTest -x asciidoctor-gradle-jvm-slides:intTest
 #    TODO: See https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/695
 #    - name: Integration tests (slides only)
 #      uses: ./gradlew -i -s --console=plain --no-build-cache test asciidoctor-gradle-jvm-slides:intTest asciidoctor-gradle-slides-export:intTest
     - name: Gradle tests
-      run: ./gradlew -i -s --console=plain --no-build-cache gradleTest --scan
+      run: ./gradlew -i -s --console=plain --no-build-cache gradleTest 

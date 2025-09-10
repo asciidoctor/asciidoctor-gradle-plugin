@@ -21,13 +21,21 @@ import org.asciidoctor.gradle.model5.core.SafeMode
 import org.asciidoctor.gradle.model5.core.internal.DefaultAsciidoctorConversionSettings
 import org.asciidoctor.gradle.model5.core.internal.DefaultAsciidoctorExecutionSettings
 import org.asciidoctor.gradle.model5.core.publications.AsciidoctorOutputData
+import org.asciidoctor.gradle.model5.core.publications.ProvidedExternalSourceSet
+import org.asciidoctor.gradle.model5.core.publications.ProvidedExternalSources
+import org.gradle.api.file.CopySpec
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.FileCollection
+import org.gradle.api.file.FileVisitDetails
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.util.PatternFilterable
+import org.ysb33r.grolifant5.api.core.StringTools
 import org.ysb33r.grolifant5.api.core.runnable.GrolifantDefaultTask
 
 import java.util.regex.Pattern
@@ -44,32 +52,67 @@ import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 @CompileStatic
 class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMethods {
 
+    private static final String EVERYTHING = '**'
+
     private final Property<AsciidoctorLauncher> launcher
     private final DefaultAsciidoctorExecutionSettings exeSettings
     private final DefaultAsciidoctorConversionSettings conversionSettings
     private final DirectoryProperty sourceDir
+    private final DirectoryProperty originalBaseDir
     private final DirectoryProperty useIntermediateWorkdir
     private final Property<PatternFilterable> resourcesCopySpec
+    private final Property<ProvidedExternalSources> externalSources
+    private final Provider<Boolean> hasExternalSources
+    private final Provider<Boolean> needsIntermediateWorkdir
+    private final Provider<Boolean> srcDirIsBaseDir
+    private final Property<PatternFilterable> localSourcePatterns
+    private final SetProperty<String> resolvedSourcePatterns
+    private final ObjectFactory objectFactory
 
     AsciidoctorTask() {
+        this.objectFactory = project.objects
         this.launcher = providerTools().property(AsciidoctorLauncher)
         this.exeSettings = project.objects.newInstance(DefaultAsciidoctorExecutionSettings)
         this.conversionSettings = project.objects.newInstance(DefaultAsciidoctorConversionSettings)
         this.sourceDir = project.objects.directoryProperty()
-        this.useIntermediateWorkdir = project.objects.directoryProperty()
+        this.originalBaseDir = project.objects.directoryProperty()
         this.resourcesCopySpec = project.objects.property(PatternFilterable)
-        this.conversionSettings.sourceRootDir.set(this.useIntermediateWorkdir.orElse(this.sourceDir))
+        this.localSourcePatterns = project.objects.property(PatternFilterable)
+        this.resolvedSourcePatterns = project.objects.setProperty(String)
+        this.srcDirIsBaseDir = sourceDir.zip(this.originalBaseDir) { src, base -> src == base }
+
+        // Work with external sources and determine whether there should be an intermediate workdir
+        // Ordering in this block is important!!
+        this.externalSources = project.objects.property(ProvidedExternalSources)
+        this.hasExternalSources = determineHasExternalSources()
+        this.needsIntermediateWorkdir = determineNeedsIntermediateWorkdir()
+        this.useIntermediateWorkdir = project.objects.directoryProperty().value(determineIntermediateWorkdir())
+
+        // Setup conversion settings
+        this.resolvedSourcePatterns.set(determineSourceFilePatterns())
+        this.conversionSettings.sourceRootDir.set(determineSourceRootDir())
+        this.conversionSettings.baseDir.set(determineBaseDir())
+        this.conversionSettings.sourceFiles.set(
+            this.conversionSettings.sourceRootDir.zip(this.resolvedSourcePatterns) { dir, pats ->
+                fsOperations().fileTree(dir).matching { include(pats) }.files
+            }
+        )
 
         inputs.property('doctype', conversionSettings.docType).optional(true)
         inputs.dir(this.sourceDir)
-        inputs.files(conversionSettings.sourceFiles).skipWhenEmpty(true).withPathSensitivity(RELATIVE)
+        inputs.files(determineAllInputSources())
+            .skipWhenEmpty(true)
+            .withPathSensitivity(RELATIVE)
 
-        inputs.files(conversionSettings.templates.map {
-            it.templateDirs
-        }).optional().withPathSensitivity(RELATIVE)
+        inputs.files(conversionSettings.templates.map { it.templateDirs })
+            .optional()
+            .withPathSensitivity(RELATIVE)
+
+        inputs.files(determineAllOtherSources())
+            .optional()
+            .withPathSensitivity(RELATIVE)
 
         outputs.files(fsOperations().fileTree(conversionSettings.destinationDir))
-        // TODO: How do we know to use an intermediate workdir?
     }
 
     @Internal
@@ -129,7 +172,8 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
      */
     @Override
     void setBaseDir(Provider<Directory> dir) {
-        this.conversionSettings.baseDir.set(dir)
+//        this.conversionSettings.baseDir.set(dir)
+        this.originalBaseDir.set(dir)
     }
 
     /**
@@ -173,11 +217,7 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
      */
     @Override
     void setSourcePatterns(Provider<PatternFilterable> patterns) {
-        conversionSettings.sourceFiles.set(
-            patterns.zip(conversionSettings.sourceRootDir) { pats, dir ->
-                fsOperations().fileTree(dir).matching(pats).files
-            }
-        )
+        localSourcePatterns.set(patterns)
     }
 
     @Override
@@ -185,9 +225,26 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
         conversionSettings.fatalWarnings.set(patterns)
     }
 
+    /**
+     * External sources.
+     *
+     * @param externalSources Provider to external sources.
+     */
+    @Override
+    void setExternalSources(Provider<? extends ProvidedExternalSources> externalSources) {
+        this.externalSources.set(externalSources)
+    }
+
     @TaskAction
     void exec() {
-        // copyToIntermediateWorkdir
+        if (needsIntermediateWorkdir.get()) {
+            execWithIntermediateDir()
+        } else {
+            execWithOneSourceDir()
+        }
+    }
+
+    private void execWithOneSourceDir() {
         launcher.get().run(exeSettings, conversionSettings)
         if (resourcesCopySpec.present) {
             fsOperations().copy {
@@ -195,5 +252,137 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
                 it.from(fsOperations().fileTree(conversionSettings.sourceRootDir).matching(resourcesCopySpec.get()))
             }
         }
+    }
+
+    private void execWithIntermediateDir() {
+        final intermediateWorkdir = useIntermediateWorkdir.get()
+        final externals = externalSources.get()
+        final duplicates = externals.duplicatesStrategy.get()
+        final allExternalSources = externals.externalSources.get()
+
+        intermediateWorkdir.asFile.mkdirs()
+        fsOperations().sync { spec ->
+            spec.duplicatesStrategy = duplicates
+            spec.into(intermediateWorkdir)
+            spec.from(sourceDir).include(EVERYTHING)
+
+            allExternalSources.each { esrc ->
+                spec.from(esrc.sourcesAndResources) { CopySpec cs ->
+                    cs.include(EVERYTHING)
+                    if (esrc.into.present) {
+                        cs.into(esrc.into.get())
+                    }
+                }
+            }
+        }
+
+        execWithOneSourceDir()
+
+        allExternalSources.each { src ->
+            if (src.resourcesPatterns.present) {
+                fsOperations().copy {
+                    if (src.into.present) {
+                        it.into(conversionSettings.destinationDir.zip(src.into) { base, p -> base.dir(p) })
+                    } else {
+                        it.into(conversionSettings.destinationDir)
+                    }
+
+                    it.from(src.sourcesAndResources.asFileTree.matching(src.resourcesPatterns.get()))
+                }
+            }
+        }
+    }
+
+    private Provider<Boolean> determineHasExternalSources() {
+        this.externalSources.flatMap { it.externalSources }
+            .map { !it.empty }.orElse(false) as Provider<Boolean>
+    }
+
+    private Provider<Boolean> determineNeedsIntermediateWorkdir() {
+        hasExternalSources.orElse(false)
+    }
+
+    private Provider<Directory> determineIntermediateWorkdir() {
+        final workdir = project.layout.buildDirectory.dir("tmp/asciidoc/${name}/workdir")
+        needsIntermediateWorkdir.zip(workdir) { flag, dir -> flag ? dir : null }
+    }
+
+    private Provider<Directory> determineSourceRootDir() {
+        this.useIntermediateWorkdir.orElse(this.sourceDir)
+    }
+
+    private Provider<Directory> determineBaseDir() {
+        needsIntermediateWorkdir.zip(originalBaseDir) { flag, base ->
+            final adjustBaseDir = srcDirIsBaseDir.get()
+            if (flag && adjustBaseDir) {
+                useIntermediateWorkdir.get()
+            } else {
+                base
+            }
+        }
+    }
+
+    private Provider<Set<String>> determineSourceFilePatterns() {
+        needsIntermediateWorkdir.map { flag ->
+            if (flag) {
+                final locals = determineSourceFilePatterns(sourceDir, localSourcePatterns).get()
+                final externals = externalSources.get().externalSources.get().collectMany {
+                    determineSourceFilePatterns(it)
+                }
+                (locals + externals).toSet()
+            } else {
+                localSourcePatterns.get().includes
+            }
+        }
+    }
+
+    private Provider<Set<File>> determineAllOtherSources() {
+        this.externalSources.flatMap { it.externalSources }
+            .map { list ->
+                list.collectMany { it.sourcesAndResources.asFileTree.files }.toSet()
+            }.orElse([].toSet() as Set<File>)
+    }
+
+    private Provider<Set<File>> determineAllExternalSources() {
+        this.externalSources.flatMap { it.externalSources }
+            .map { list ->
+                list.collectMany {
+                    fsOperations()
+                        .emptyFileCollection()
+                        .from(it.sourcesAndResources)
+                        .asFileTree
+                        .matching(it.sourcePatterns.get())
+                        .files
+                }.toSet()
+            }.orElse([].toSet() as Set<File>)
+    }
+
+    private FileCollection determineAllInputSources() {
+        final localSources = sourceDir.zip(localSourcePatterns) { dir, pats ->
+            fsOperations().fileTree(dir).matching(pats).files
+        }
+        final externalSources = determineAllExternalSources()
+        fsOperations().emptyFileCollection().from(localSources).from(externalSources)
+    }
+
+    private Provider<List<String>> determineSourceFilePatterns(
+        Provider<Directory> srcDir,
+        Provider<PatternFilterable> srcPatterns
+    ) {
+        srcPatterns.zip(srcDir) { pats, dir ->
+            fsOperations().fileTree(dir).matching(pats).files
+                .collect { fsOperations().relativize(dir.asFile, it) }
+        }
+    }
+
+    private List<String> determineSourceFilePatterns(ProvidedExternalSourceSet src) {
+        final intoPrefix = src.into.map { "${it}/".toString() }.getOrElse(StringTools.EMPTY)
+        List<String> patterns = []
+        final originals = src.sourcePatterns.get()
+
+        src.sourcesAndResources.asFileTree.matching(originals).visit { FileVisitDetails fvd ->
+            patterns.add(intoPrefix + fvd.relativePath.pathString)
+        }
+        patterns
     }
 }

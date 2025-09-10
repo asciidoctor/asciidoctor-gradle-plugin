@@ -66,4 +66,18 @@ class DefaultAsciidoctorConversionSettings implements AsciidoctorConversionSetti
         this.embedded = objectFactory.property(Boolean).convention(false)
         this.templates = objectFactory.property(ConversionTemplate)
     }
+
+    void updateFrom(DefaultAsciidoctorConversionSettings other) {
+        sourceFiles.set(other.sourceFiles)
+        backend.set(other.backend)
+        sourceRootDir.set(other.sourceRootDir)
+        baseDir.set(other.baseDir)
+        adjustBaseDirPerFile.set(other.adjustBaseDirPerFile)
+        destinationDir.set(other.destinationDir)
+        attributes.set(other.attributes)
+        docType.set(other.docType)
+        fatalWarnings.set(other.fatalWarnings)
+        embedded.set(other.embedded)
+        templates.set(other.templates)
+    }
 }

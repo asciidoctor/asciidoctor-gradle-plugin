@@ -17,10 +17,13 @@ package org.asciidoctor.gradle.model5.core.tasks;
 
 import org.asciidoctor.gradle.model5.core.*;
 import org.asciidoctor.gradle.model5.core.publications.AsciidoctorOutputData;
+import org.asciidoctor.gradle.model5.core.publications.ProvidedExternalSourceSet;
+import org.asciidoctor.gradle.model5.core.publications.ProvidedExternalSources;
 import org.gradle.api.file.Directory;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.util.PatternFilterable;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -93,6 +96,13 @@ public interface AsciidoctorTaskMethods {
      * @param patterns Set of patterns
      */
     void setFatalWarnings(Provider<Set<Pattern>> patterns);
+
+    /**
+     * External sources.
+     *
+     * @param externalSources Provider to external sources.
+     */
+    void setExternalSources(Provider<? extends ProvidedExternalSources> externalSources);
 //
 //    /**
 //     * Whether document names should be logged prior to processing.

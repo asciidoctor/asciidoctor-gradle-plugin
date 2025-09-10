@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.core.waitingroom
+package org.asciidoctor.gradle.model5.core.tasks
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.internal.toolchains.ToolchainInfo
