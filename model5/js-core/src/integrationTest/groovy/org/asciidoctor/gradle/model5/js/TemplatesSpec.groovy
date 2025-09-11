@@ -16,7 +16,6 @@
 package org.asciidoctor.gradle.model5.js
 
 import groovy.json.JsonSlurper
-import org.asciidoctor.gradle.model5.js.formatters.SupportedTemplateEngines
 import org.asciidoctor.gradle.model5.js.internal.formatters.DefaultAsciidoctorjsTemplates
 import org.asciidoctor.gradle.model5.js.testfixtures.AsciidoctorjsHtmlIntegrationSpecification
 
@@ -27,7 +26,7 @@ class TemplatesSpec extends AsciidoctorjsHtmlIntegrationSpecification {
 
     void 'Can apply the #engine-based template'() {
         setup:
-        final packageJson = new File(buildDir,'tmp/asciidoctorjs-engine/asciidoctorjs/package.json')
+        final packageJson = new File(buildDir, 'tmp/asciidoctorjs-engine/asciidoctorjs/package.json')
         final slurper = new JsonSlurper()
         writeHtmlBasedBuildFile()
         copyTestProject('normal')
@@ -44,7 +43,7 @@ class TemplatesSpec extends AsciidoctorjsHtmlIntegrationSpecification {
 
         then:
         result.task(":${taskName}").outcome == SUCCESS
-        result.output.readLines().findAll { it.contains('@asciidoctor/cli')}.find { it.contains('-T ')}
+        result.output.readLines().findAll { it.contains('@asciidoctor/cli') }.find { it.contains('-T ') }
         TEMPLATE_JS.engineName == engine ? true : json.devDependencies.keySet().contains(engine)
 
         where:

@@ -1,0 +1,7 @@
+= Emojis
+
+emoji:wink[]
+
+emoji:bear[5x]
+
+emoji:tada[42px]

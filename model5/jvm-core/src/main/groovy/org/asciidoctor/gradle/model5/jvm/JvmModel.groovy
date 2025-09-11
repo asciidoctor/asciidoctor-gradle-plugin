@@ -212,7 +212,7 @@ class JvmModel {
     }
 
     /**
-     * Registers an extensionr on all the {@code asciidoctorj} toolchains.
+     * Registers an extension factory on the {@code asciidoctorj} toolchains.
      *
      * @param toolchains Toolchain container
      * @param extensionClass The extension class

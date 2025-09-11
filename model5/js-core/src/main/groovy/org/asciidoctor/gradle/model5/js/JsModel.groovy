@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.model5.js
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils
 import org.asciidoctor.gradle.model5.core.toolchains.AsciidoctorToolchain
+import org.asciidoctor.gradle.model5.js.extensions.AsciidoctorjsExtension
 import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsOutputFormatter
 import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
 import org.gradle.api.Action
@@ -112,6 +113,76 @@ class JsModel {
     ) {
         toolchains.withType(AsciidoctorjsToolchain).configureEach { tc ->
             final fc = tc.registeredOutputFormatters.register(name, formatterClass)
+            fc.configure(configurator)
+        }
+    }
+
+    /**
+     * Registers an extension on all the {@code asciidoctor.js} toolchains.
+     *
+     * @param toolchains Toolchain container
+     * @param extensionClass The extension class
+     * @param factoryClass The factory for the extension.
+     * @param objectFactory objectFactory
+     */
+    static <T extends AsciidoctorjsExtension> void registerExtensionFactory(
+        ExtensiblePolymorphicDomainObjectContainer<AsciidoctorToolchain> toolchains,
+        Class<T> extensionClass,
+        Class<? extends NamedDomainObjectFactory<T>> factoryClass,
+        ObjectFactory objectFactory
+    ) {
+        registerExtensionFactory(toolchains, extensionClass) { AsciidoctorjsToolchain tc ->
+            objectFactory.newInstance(factoryClass, tc)
+        }
+    }
+
+    /**
+     * Registers an extension factory on the {@code asciidoctor.js} toolchains.
+     *
+     * @param toolchains Toolchain container
+     * @param extensionClass The extension class
+     * @param factoryFunction A function that will create a factory given a specific toolchain instance.
+     */
+    static <T extends AsciidoctorjsExtension> void registerExtensionFactory(
+        ExtensiblePolymorphicDomainObjectContainer<AsciidoctorToolchain> toolchains,
+        Class<T> extensionClass,
+        Function<AsciidoctorjsToolchain, NamedDomainObjectFactory<T>> factoryFunction
+    ) {
+        toolchains.withType(AsciidoctorjsToolchain).configureEach { tc ->
+            tc.asciidocExtensions.registerFactory(extensionClass, factoryFunction.apply(tc))
+        }
+    }
+
+    /**
+     * Registers an extension on each of the {@code asciidoctorj} toolchains
+     * @param toolchains Toolchains
+     * @param extensionClass Extension class
+     * @param name Name of the extension
+     */
+    static <T extends AsciidoctorjsExtension> void registerExtensionOnAllToolchains(
+        ExtensiblePolymorphicDomainObjectContainer<AsciidoctorToolchain> toolchains,
+        Class<T> extensionClass,
+        String name
+    ) {
+        registerExtensionOnAllToolchains(toolchains, extensionClass, name) {
+        }
+    }
+
+    /**
+     * Registers an extension on each of the {@code asciidoctor.js} toolchains.
+     * @param toolchains Toolchains.
+     * @param extensionClass Extension class.
+     * @param name Name of the extension.
+     * @param configurator Configurator of the extension.
+     */
+    static <T extends AsciidoctorjsExtension> void registerExtensionOnAllToolchains(
+        ExtensiblePolymorphicDomainObjectContainer<AsciidoctorToolchain> toolchains,
+        Class<T> extensionClass,
+        String name,
+        Action<T> configurator
+    ) {
+        toolchains.withType(AsciidoctorjsToolchain).configureEach { tc ->
+            final fc = tc.asciidocExtensions.register(name, extensionClass)
             fc.configure(configurator)
         }
     }

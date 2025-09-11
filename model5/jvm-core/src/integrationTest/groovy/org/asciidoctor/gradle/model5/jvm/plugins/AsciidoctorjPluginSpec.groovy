@@ -27,7 +27,24 @@ class AsciidoctorjPluginSpec extends IntegrationSpecification {
         final taskName = AsciidoctorCoreBasePlugin.TOOLCHAIN_DISPLAY_TASK
 
         when:
-        final result = getGradleRunner(IS_GROOVY_DSL,[taskName]).build()
+        final result = getGradleRunner(IS_GROOVY_DSL, [taskName]).build()
+
+        then:
+        result.task(":${taskName}").outcome == TaskOutcome.SUCCESS
+        result.output.contains('.AsciidoctorjDocbook')
+        result.output.contains('.AsciidoctorjHtml5')
+        result.output.contains('.AsciidoctorjManpage')
+        result.output.contains('.AsciidoctorjToolchain')
+        !result.output.contains('.AsciidoctorjDiagram')
+    }
+
+    void 'Can show toolchain information with additional plugin'() {
+        setup:
+        writeBasicBuildFileGroovy(['org.asciidoctor.jvm', 'org.asciidoctor.jvm.diagram'])
+        final taskName = AsciidoctorCoreBasePlugin.TOOLCHAIN_DISPLAY_TASK
+
+        when:
+        final result = getGradleRunner(IS_GROOVY_DSL, [taskName]).build()
 
         then:
         result.task(":${taskName}").outcome == TaskOutcome.SUCCESS

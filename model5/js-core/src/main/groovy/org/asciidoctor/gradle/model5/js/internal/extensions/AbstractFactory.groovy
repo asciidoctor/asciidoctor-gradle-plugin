@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013 - 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,18 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.js.formatters;
+package org.asciidoctor.gradle.model5.js.internal.extensions
 
-import org.asciidoctor.gradle.model5.core.formatters.AsciidoctorGenericOutputFormatter;
-import org.asciidoctor.gradle.model5.js.AsciidoctorjsGenericComponent;
+import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
+import org.gradle.api.Project
+import org.gradle.api.model.ObjectFactory
 
 /**
- * Generic output formatter for adding {@code asciidoctor.js} backends that are not
- * directly supported by the plugin suite.
+ * A base class for {@code asciidoctor.js} extension factories.
  *
  * @author Schalk W. Cronjé
+ *
  * @since 5.0
  */
-public interface AsciidoctorjsGenericOutputFormatter extends AsciidoctorjsOutputFormatter,
-        AsciidoctorGenericOutputFormatter, AsciidoctorjsGenericComponent {
+@CompileStatic
+class AbstractFactory {
+
+    protected final ObjectFactory objectFactory
+    protected final AsciidoctorjsToolchain toolchain
+
+    protected AbstractFactory(AsciidoctorjsToolchain toolchain, Project project) {
+        this.objectFactory = project.objects
+        this.toolchain = toolchain
+    }
 }

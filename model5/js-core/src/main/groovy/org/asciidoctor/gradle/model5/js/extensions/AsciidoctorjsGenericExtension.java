@@ -13,18 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.js.formatters;
+package org.asciidoctor.gradle.model5.js.extensions;
 
-import org.asciidoctor.gradle.model5.core.formatters.AsciidoctorGenericOutputFormatter;
 import org.asciidoctor.gradle.model5.js.AsciidoctorjsGenericComponent;
 
 /**
- * Generic output formatter for adding {@code asciidoctor.js} backends that are not
- * directly supported by the plugin suite.
+ * Ability to add arbitrary extensions for the {@asciidoctor.js} engine.
  *
  * @author Schalk W. Cronjé
  * @since 5.0
  */
-public interface AsciidoctorjsGenericOutputFormatter extends AsciidoctorjsOutputFormatter,
-        AsciidoctorGenericOutputFormatter, AsciidoctorjsGenericComponent {
+public interface AsciidoctorjsGenericExtension extends AsciidoctorjsExtension, AsciidoctorjsGenericComponent {
 }
