@@ -1,6 +1,11 @@
 = {asciidoctorj-pdf-name} plugin
 
-[source,groovy,role="primary"]
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
 [subs=attributes+]
 .build.gradle
 ----
@@ -8,8 +13,12 @@ plugins {
     id 'org.asciidoctor.jvm.pdf' version '{release-version}'
 }
 ----
+--
 
-[source,kotlin,role="secondary"]
+Kotlin::
++
+--
+[source,kotlin]
 [subs=attributes+]
 .build.gradle.kts
 ----
@@ -17,6 +26,8 @@ plugins {
     id("org.asciidoctor.jvm.pdf") version "{release-version}"
 }
 ----
+--
+====
 
 When applying `org.asciidoctor.jvm.pdf` it creates a single task of type `org.asciidoctor.gradle.jvm.pdf.AsciidoctorPdfTask` an extension called `pdfThemes`.
 
@@ -36,6 +47,11 @@ theme:: Name of the theme to use.
 
 The `pdfThemes` extension allows for themes to be registered from local copies or downloaded from GitHub or GitLab and has been inspired by earlier work of Florian Wilhelm (@fwilhe).
 
+[tabs]
+====
+Groovy::
++
+--
 .Registering a local theme
 [source,groovy]
 ----
@@ -49,7 +65,14 @@ pdfThemes {
 <1> Local themes are registered using the `local` keyword and must be provided with a name.
 <2> Directory for finding the theme. Specify a directory in any form acceptable to `project.file`.
 <3> Optional setting of the style name. If this is not set, the theme name provided previously will be used.
+--
+====
 
+[tabs]
+====
+Groovy::
++
+--
 .Registering a GitHub or GitLab theme
 [source,groovy]
 ----
@@ -72,6 +95,8 @@ pdfThemes {
 <5> Specify the branch
 <6> Instead of a branch a tag can be used.
 <7> Instead of a branch or a tag, a very specific commit can be used.
+--
+====
 
 If a repository contains more than one theme, then the block will need to be repeated for each theme and the `name` and `relativePath` adjusted accordingly. Gradle will however, only download the repository once.
 

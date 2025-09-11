@@ -3,7 +3,12 @@
 HTML output is the most common usage of {asciidoctorj-name} and is also bundled with `org.asciidoctor.jvm`.
 There are a number of items that can be configured on the output formatter itself.
 
-[source,groovy,role="primary"]
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
 ----
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjHtml
 
@@ -30,6 +35,8 @@ asciidoc {
 <.> Adds an engine to the GEM classpath.
   Only `erb`, `slim` and `haml` is supported.
 <.> Adds any engine by https://github.com/jeremyevans/tilt[tilt] along with the version of the GEM.
+--
+====
 
 NOTE: `templateDirs` must be provided, otherwise template setting will be ignored.
   If the engine is not provided, it will auto-detect engines from the file extensions found in the template directories.

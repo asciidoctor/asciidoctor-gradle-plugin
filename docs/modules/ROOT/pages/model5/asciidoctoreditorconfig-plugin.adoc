@@ -4,7 +4,12 @@ This plugin can be used on its own to generate an `.asciidoctoreditorconfig` fil
 It does not rely on any {asciidoctorj-name} or {asciidoctorjs-name} support.
 It will, however, perform additional configuration if it is applied alongside any of the AsciiDoc conversion plugins.
 
-[source,groovy,role="primary"]
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
 [subs=attributes+]
 .build.gradle
 ----
@@ -12,8 +17,12 @@ plugins {
     id 'org.asciidoctor.editorconfig' version '{release-version}'
 }
 ----
+--
 
-[source,kotlin,role="secondary"]
+Kotlin::
++
+--
+[source,kotlin]
 [subs=attributes+]
 .build.gradle.kts
 ----
@@ -21,6 +30,8 @@ plugins {
     id("org.asciidoctor.editorconfig") version "{release-version}"
 }
 ----
+--
+====
 
 Writes an `.asciidoctorconfig` file so that supporting IDEs can render Asciidoctor-based documentation correctly.
 
@@ -48,9 +59,16 @@ In that case an explicit value can be set with `attributes` on the task, which w
 
 == Changing the output directory
 
-[source,groovy,role="primary"]
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
 ----
 asciidoctorEditorConfig {
   destinationDir = 'docs'
 }
 ----
+--
+====

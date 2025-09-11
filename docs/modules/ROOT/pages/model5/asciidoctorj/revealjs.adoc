@@ -4,7 +4,12 @@
 
 There are many items that can be configured on the output formatter itself.
 
-[source,groovy,role="primary"]
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
 ----
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjRevealjs
 
@@ -34,6 +39,8 @@ asciidoc {
 <.> Adds any engine by https://github.com/jeremyevans/tilt[tilt] along with the version of the GEM.
 <.> Configures {asciidoctorj-revealjs-name} options.
     See below.
+--
+====
 
 NOTE: `templateDirs` must be provided, otherwise template setting will be ignored.
   If the engine is not provided, it will auto-detect engines from the file extensions found in the template directories.

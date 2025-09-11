@@ -15,10 +15,10 @@
  */
 package org.asciidoctor.gradle.model5.js.extensions;
 
-import org.asciidoctor.gradle.model5.js.AsciidoctorjsGenericComponent;
+import org.asciidoctor.gradle.model5.js.components.AsciidoctorjsGenericComponent;
 
 /**
- * Ability to add arbitrary extensions for the {@asciidoctor.js} engine.
+ * Ability to add arbitrary extensions for the {@code asciidoctor.js} engine.
  *
  * @author Schalk W. Cronjé
  * @since 5.0

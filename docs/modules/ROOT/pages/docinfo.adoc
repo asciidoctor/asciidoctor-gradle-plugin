@@ -12,13 +12,20 @@ To do so, first create a docinfo file in your source directory i.e. `src/docs/as
 
 Then, add the `docinfo1` attribute to the attributes list in the previous example:
 
-[source,groovy,role="primary"]
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
 .build.gradle
 ----
-asciidoctorj { // <1>
+asciidoctorj { // <.>
     attribute 'docinfo', ''
 }
 ----
-<1> Substitute `asciidoctorjs` if you are using the {asciidoctorjs-name} engine.
+<.> Substitute `asciidoctorjs` if you are using the {asciidoctorjs-name} engine.
+--
+====
 
 See xref:asciidoc:docinfo:index.adoc[] for more information on `docinfo` and friends.

@@ -6,6 +6,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.tasks.javadoc.Groovydoc
+import org.gradle.api.tasks.javadoc.GroovydocAccess
 import org.gradle.api.tasks.testing.Test
 import org.ysb33r.grolifant5.api.core.plugins.GrolifantServicePlugin
 
@@ -78,6 +79,7 @@ class CommonBasePlugin implements Plugin<Project> {
         final agProject = project.extensions.getByType(AsciidoctorGradleProjectExtension)
         project.tasks.withType(Groovydoc).configureEach { t ->
             t.include('**/*.java')
+            t.access.set(GroovydocAccess.PROTECTED)
             t.link(
                 "https://grolifant.ysb33r.org/grolifant-plugin-development/${agProject.versionOf('grolifant')}/project-artifacts/_attachments/-grolifant5-core/groovydoc/",
                 'org.ysb33r.grolifant5.api'

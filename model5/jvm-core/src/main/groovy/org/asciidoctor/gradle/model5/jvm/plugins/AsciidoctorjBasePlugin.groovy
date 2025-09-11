@@ -18,10 +18,12 @@ package org.asciidoctor.gradle.model5.jvm.plugins
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
 import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreBasePlugin
+import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjGenericExtension
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjDocbook
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjGenericOutputFormatter
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjHtml5
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjManpage
+import org.asciidoctor.gradle.model5.jvm.internal.extensions.DefaultAsciidoctorjGenericExtension
 import org.asciidoctor.gradle.model5.jvm.internal.formatters.AsciidoctorjDocbookFactory
 import org.asciidoctor.gradle.model5.jvm.internal.formatters.AsciidoctorjGenericOutputFormatterFactory
 import org.asciidoctor.gradle.model5.jvm.internal.formatters.AsciidoctorjHtml5Factory
@@ -31,6 +33,7 @@ import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
+import static org.asciidoctor.gradle.model5.jvm.JvmModel.registerExtensionFactory
 import static org.asciidoctor.gradle.model5.jvm.JvmModel.registerOutputFormatterFactory
 
 /**
@@ -82,6 +85,13 @@ class AsciidoctorjBasePlugin implements Plugin<Project> {
             asciidoc.toolchains,
             AsciidoctorjGenericOutputFormatter,
             AsciidoctorjGenericOutputFormatterFactory,
+            project.objects
+        )
+
+        registerExtensionFactory(
+            asciidoc.toolchains,
+            AsciidoctorjGenericExtension,
+            DefaultAsciidoctorjGenericExtension.Factory,
             project.objects
         )
     }

@@ -1,6 +1,11 @@
 == Reveal.js options
 
-[source,groovy,role="primary"]
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
 ----
 revealjsOptions{
     autoSlideInterval = 200 // <.>
@@ -86,3 +91,5 @@ If not set, an internal default of `SLIDE` will be used.
  Anything convertible to a file can be used.
 <.> Get a theme from a path relative to the source directory.
   Anything convertible to a file can be used.
+--
+====

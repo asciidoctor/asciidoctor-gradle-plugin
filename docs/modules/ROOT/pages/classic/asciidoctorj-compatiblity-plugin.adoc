@@ -1,7 +1,13 @@
 = Asciidoctor Compatibility Plugin
 
-In order to help people upgrade a compatibility plugin has been kept which mostly behaves in the same way as the {asciidoctorj-name} plugins in the 1.5.x series 
-[source,groovy,role="primary"]
+In order to help people upgrade a compatibility plugin has been kept which mostly behaves in the same way as the {asciidoctorj-name} plugins in the 1.5.x series
+
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
 [subs=attributes+]
 .build.gradle
 ----
@@ -9,8 +15,12 @@ plugins {
     id 'org.asciidoctor.convert' version '{release-version}'
 }
 ----
+--
 
-[source,kotlin,role="secondary"]
+Kotlin::
++
+--
+[source,kotlin]
 [subs=attributes+]
 .build.gradle.kts
 ----
@@ -18,6 +28,8 @@ plugins {
     id("org.asciidoctor.convert") version "{release-version}"
 }
 ----
+--
+====
 
 The plugin adds a new task named *asciidoctor*.
 You can configure this task using the following configuration properties and methods.

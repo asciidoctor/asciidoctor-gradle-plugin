@@ -2,7 +2,12 @@
 
 GEM support is simplified via the `org.asciidoctor.jvm.gems` plugin.
 
-[source,groovy,role="primary"]
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
 [subs=attributes+]
 .build.gradle
 ----
@@ -28,8 +33,12 @@ asciidoctorj {
 <1> Always specify a GEM proxy. In this case use the internal proxy to https://rubygems.org.
 <2> Specify GEMs as per usual.
 <3> Add the GEM to the project-wide (or task-specific) list of `requires`.
+--
 
-[source,kotlin,role="secondary"]
+Kotlin::
++
+--
+[source,kotlin]
 [subs=attributes+]
 .build.gradle.kts
 ----
@@ -37,3 +46,5 @@ plugins {
     id("org.asciidoctor.jvm.gems") version "{release-version}"
 }
 ----
+--
+====

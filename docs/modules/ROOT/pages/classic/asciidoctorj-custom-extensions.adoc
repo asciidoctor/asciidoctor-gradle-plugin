@@ -8,7 +8,12 @@ for that matter. Now with the 2.0.0 you have even more flexibility in that exten
 This is the most versatile option, as it allows you to reuse the same extension in different projects. An external library
 is just like any other Java/Groovy project. You simply define a dependency using the `asciidoctor` configuration.
 
-[source,groovy,role="primary"]
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
 .build.gradle
 ----
 configurations {
@@ -23,8 +28,12 @@ asciidoctor {
     configurations 'asciidoctorExt'
 }
 ----
+--
 
-[source,kotlin,role="secondary"]
+Kotlin::
++
+--
+[source,kotlin]
 .build.gradle.kts
 ----
 val asciidoctorExt by configurations.creating
@@ -37,6 +46,8 @@ tasks.withType<AsciidoctorTask> {
    configurations("asciidoctorExt")
 }
 ----
+--
+====
 
 == As Project Dependency
 
@@ -74,6 +85,11 @@ following setup:
 
 The `extension` project is a sibling for `core`. The build file for the latter looks like this:
 
+[tabs]
+====
+Groovy::
++
+--
 [source,groovy]
 [subs=attributes+]
 .build.gradle
@@ -98,9 +114,16 @@ asciidoctor {
     configurations 'asciidoctorExtensions'
 }
 ----
+--
+====
 
 Alternatively you can add the project to the extension directly
 
+[tabs]
+====
+Groovy::
++
+--
 [source,groovy]
 [subs=attributes+]
 .build.gradle
@@ -113,9 +136,10 @@ asciidoctorj {
     docExtensions project(':extension')
 }
 ----
+--
+====
 
 In the less-common case where extension is not supplied via the default configuration, the latter shortcut will not work, and you will need to use the longer method described above.
-
 
 == As Inline Script
 

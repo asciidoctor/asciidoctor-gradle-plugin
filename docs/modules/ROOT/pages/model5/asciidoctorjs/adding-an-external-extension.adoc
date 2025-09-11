@@ -1,0 +1,37 @@
+= Adding an external extension
+
+If an {asciidoctorjs-name} extension is not already supported in this plugin suite, there is a there is a special extension of type `AsciidoctorjsGenericExtension`.
+
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
+----
+import org.asciidoctor.gradle.model5.js.extensions.AsciidoctorjsGenericExtension
+
+asciidoc {
+  toolchains {
+    asciidoctorjs.asciidocExtensions {
+      myBackend(AsciidoctorjsGenericExtension) {
+        attributes( foo_color : 'black') // <.>
+        requires 'foo' // <.>
+        usePackage( 'asciidoctor', 'foo', '1.2.3') // <.>
+        usePackage( 'asciidoctor-emoji', '1.2.3') // <.>
+      }
+    }
+  }
+}
+----
+<.> Set the specific attributes that this extension might require.
+<.> If the extension requires a specific kind of document type, set it here, otherwise leave it alone.
+<.> If one or more `requires` need to be passed to the engine, define them here.
+<.> Add the NPM package details.
+  The first parameter is the scope and can be passed as `null`.
+  The second parameter is the package name.
+  The third parameter is something that can be lazy-evaluated to a version string.
+<.> A two-parameter version if the package is scope-less.
+--
+====
+

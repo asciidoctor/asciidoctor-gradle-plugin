@@ -16,7 +16,7 @@
 package org.asciidoctor.gradle.model5.js.formatters;
 
 import org.asciidoctor.gradle.model5.core.formatters.AsciidoctorGenericOutputFormatter;
-import org.asciidoctor.gradle.model5.js.AsciidoctorjsGenericComponent;
+import org.asciidoctor.gradle.model5.js.components.AsciidoctorjsGenericComponent;
 
 /**
  * Generic output formatter for adding {@code asciidoctor.js} backends that are not

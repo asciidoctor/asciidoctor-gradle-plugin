@@ -2,7 +2,12 @@
 
 == Main configuration blocks
 
-[source,groovy,role="primary"]
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
 ----
 asciidoc {
   publications {
@@ -31,10 +36,17 @@ asciidoc {
 <.> Configures the outputs for this publication.
   The format is `toolchainName, outputFormat`.
   See xref:configure-toolchains.adoc[Configuring Toolchains] for more info.
+--
+====
 
 === Sources and resources
 
-[source,groovy,role="primary"]
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
 ----
 asciidoc {
   publications {
@@ -61,6 +73,8 @@ http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.
 <.> Configures a copy specification for resources.
   These are files, such as images, that are required as part of publication, but not processed by an Asciidoctor engine.
 <.> It is possible to override the source directory, although the convention of `src/docs/asciidoc<PUBLICATION>` should suffice for most cases.
+--
+====
 
 === Asciidoc attributes
 
@@ -94,7 +108,12 @@ asciidoc {
 
 === Treating warnings as errors
 
-[source,groovy,role="primary"]
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
 ----
 asciidoc {
   publications {
@@ -110,10 +129,17 @@ asciidoc {
 <.> Provide one or more patterns for scanning log messages.
   These can be strings, regexes, or anything else can be lazy-evaluated to either.
 <.> Adds the correct pattern for detecting missing include files.
+--
+====
 
 === Language customisation
 
-[source,groovy,role="primary"]
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
 ----
 asciidoc {
   publications {
@@ -140,3 +166,5 @@ asciidoc {
   DSL is the same as for `attributes` described earlier.
 <.> Resources to be processed for the specific language.
   This is a copy specification.
+--
+====

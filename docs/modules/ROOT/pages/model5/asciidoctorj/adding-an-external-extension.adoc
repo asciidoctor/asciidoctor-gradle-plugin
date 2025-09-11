@@ -1,0 +1,37 @@
+= Adding an external extension
+
+If an {asciidoctors-name} extension is not already supported in this plugin suite, there is a there is a special extension of type `AsciidoctorjGenericExtension`.
+
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
+----
+import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjGenericExtension
+import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
+
+asciidoc {
+  toolchains {
+    asciidoctorj.asciidocExtensions {
+      myBackend(AsciidoctorjGenericExtension) {
+        attributes( foo_color : 'black') // <.>
+        requires 'foo' // <.>
+        useGem 'foo', '1.2.3' // <.>
+        useModule( 'acme.foo:foo', '1.2.3') // <.>
+        useModule( dependencies.project(':my-backend')) // <.>
+      }
+    }
+  }
+}
+----
+<.> Set the specific attributes that this extension might require.
+<.> If one or more `requires` need to be passed to the engine, define them here.
+<.> If the extension is only available as a GEM, add the name of the GEM and its version.
+  To use this option, the `org.asciidoctor.jvm.gems` must be applied.
+<.> If the extension is available as a JAR artifact from a Maven or Ivy repository, provide the Maven module coordinates as well as something that will resolve to a version string.
+<.> If the extension is provided from the current project hierarchy, it can be referenced as a project dependency.
+--
+====
+

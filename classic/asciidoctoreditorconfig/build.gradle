@@ -4,8 +4,6 @@ plugins {
 
 agProject {
     withAdditionalPluginClasspath()
-    withIntegrationTests()
-    withCompatibilityTests()
 
     configurePlugin(
             'org.asciidoctor.editorconfig.classic',
@@ -18,6 +16,7 @@ agProject {
 
 dependencies {
     implementation project(':asciidoctor-gradle-base')
+    additionalPluginClasspath  project(':asciidoctor-gradle-js')
 }
 
 

@@ -61,7 +61,12 @@ The following options may be set using the extension's `options` property
 Any key/values set on `attributes` is sent as is to Asciidoctor. You may use this Map to specify
 a stylesheet for example. The following snippet shows a sample configuration defining attributes.
 
-[source,groovy,role="primary"]
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
 .build.gradle
 ----
 asciidoctorj { // <1>
@@ -74,10 +79,12 @@ asciidoctorj { // <1>
 }
 ----
 <1> This can be globally on the project extension or locally on the task's extension.
+--
 
-Or in the {kotlindsl}:
-
-[source,kotlin,role="secondary"]
+Kotlin::
++
+--
+[source,kotlin]
 .build.gradle.kts
 ----
 tasks {
@@ -96,6 +103,8 @@ tasks {
 }
 ----
 <1> This is an example of setting it on the task extension in Kotlin.
+--
+====
 
 The following attributes are automatically set by the `asciidoctorj` extension:
 
@@ -175,7 +184,12 @@ asciidoctorj {
 
 If none of the default conventions work for you, the base plugin can be applied on its own.
 
-[source,groovy,role="primary"]
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
 [subs=attributes+]
 .build.gradle
 ----
@@ -183,8 +197,12 @@ plugins {
     id 'org.asciidoctor.jvm.base' version '{release-version}'
 }
 ----
+--
 
-[source,kotlin,role="secondary"]
+Kotlin::
++
+--
+[source,kotlin]
 [subs=attributes+]
 .build.gradle.kts
 ----
@@ -192,3 +210,5 @@ plugins {
     id("org.asciidoctor.jvm.base") version "{release-version}"
 }
 ----
+--
+====

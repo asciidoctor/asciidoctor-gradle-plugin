@@ -2,7 +2,12 @@
 
 INFO: As from version 3.3 support for KindleGen is dropped as Amazon no longer has the binary available for download.
 
-[source,groovy,role="primary"]
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
 [subs=attributes+]
 .build.gradle
 ----
@@ -10,8 +15,12 @@ plugins {
     id 'org.asciidoctor.jvm.epub' version '{release-version}'
 }
 ----
+--
 
-[source,kotlin,role="secondary"]
+Kotlin::
++
+--
+[source,kotlin]
 [subs=attributes+]
 .build.gradle.kts
 ----
@@ -19,6 +28,9 @@ plugins {
     id("org.asciidoctor.jvm.epub") version "{release-version}"
 }
 ----
+--
+====
+
 When applying `org.asciidoctor.jvm.epub` it creates a single task of type `org.asciidoctor.gradle.jvm.epub.AsciidoctorEpubTask` which is then configured to:
 
 * Output source to "$\{buildDir}/docs/asciidocEpub"

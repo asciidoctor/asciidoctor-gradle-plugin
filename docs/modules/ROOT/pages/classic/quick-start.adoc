@@ -2,7 +2,12 @@
 
 To start you need to use one of the plugins from the following Gradle snippet
 
-[source,groovy,role="primary"]
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
 [subs=attributes+]
 .build.gradle
 ----
@@ -10,8 +15,12 @@ plugins {
     id 'org.asciidoctor.jvm.convert.classic' version '{release-version}'
 }
 ----
+--
 
-[source,kotlin,role="secondary"]
+Kotlin::
++
+--
+[source,kotlin]
 [subs=attributes+]
 .build.gradle.kts
 ----
@@ -19,3 +28,5 @@ plugins {
     id("org.asciidoctor.jvm.convert.classic") version "{release-version}"
 }
 ----
+--
+====
