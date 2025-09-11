@@ -21,10 +21,10 @@ jobs:
       - uses: gradle/gradle-build-action@v2
         with:
           gradle-home-cache-cleanup: true
-      - name: Licensing
-        run: ./gradlew --console=plain -S license
+      - name: Licensing and other lightweight checks
+        run: ./gradlew --console=plain license validateAntoraYml
       - name: Coding style
-        run: ./gradlew --console=plain -S codenarcAll
+        run: ./gradlew --console=plain -i codenarcAll
   build-windows:
     runs-on: windows-latest
     steps:
