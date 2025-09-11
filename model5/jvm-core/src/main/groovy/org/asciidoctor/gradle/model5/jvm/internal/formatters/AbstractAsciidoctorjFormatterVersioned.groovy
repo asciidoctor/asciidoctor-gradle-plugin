@@ -55,7 +55,7 @@ abstract class AbstractAsciidoctorjFormatterVersioned extends AbstractAsciidocto
      *
      * @param name Name of the output formatter.
      * @param backendName Name of the backend.
-     * @param componentModule THe maven module notation, excluding the version
+     * @param componentModule The maven module notation, excluding the version
      * @param componentDefaultVersion THe default version of the component.
      * @param tc The toolchain the formatter is attached to.
      * @param tempProjectReference A temporary reference to a {@link Project} instance.

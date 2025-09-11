@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle.model5.jvm.internal.engines
 
 import groovy.transform.CompileStatic
+import groovy.transform.ToString
 
 /**
  * Simple data transfer object.
@@ -25,6 +26,7 @@ import groovy.transform.CompileStatic
  * @since 5.0
  */
 @CompileStatic
+@ToString
 class LauncherEngineOptions implements Serializable {
     boolean catalogAssets
     boolean sourceMap

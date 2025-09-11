@@ -94,6 +94,11 @@ class DefaultLauncher implements AsciidoctorLauncher {
     }
 
     @Override
+    String getEcosystemSignature() {
+        packages.get()*.npmPackageCoordinates.join('\n')
+    }
+
+    @Override
     void run(AsciidoctorExecutionSettings executionsSettings, AsciidoctorConversionSettings conversionSettings) {
         final groups = EngineUtils.groupByParent(conversionSettings.sourceFiles.get())
         final root = conversionSettings.sourceRootDir.get().asFile

@@ -19,6 +19,7 @@ import org.asciidoctor.gradle.model5.core.AsciidoctorRequires;
 import org.asciidoctor.gradle.model5.core.HasDisplayType;
 import org.asciidoctor.gradle.model5.core.attributes.HasAttributeProvider;
 import org.gradle.api.Named;
+import org.gradle.api.file.FileCollection;
 
 /**
  * Defines an Asciddoctor extension.
@@ -28,4 +29,14 @@ import org.gradle.api.Named;
  * @since 5.0
  */
 public interface AsciidoctorExtension extends Named, AsciidoctorRequires, HasAttributeProvider, HasDisplayType {
+    /**
+     * Additional items to add to the classpath when a conversion involving the output formatter is executed.
+     *
+     * <p>
+     *     The classpath is empty by default.
+     * </p>
+     *
+     * @return Classpath. Can be {@code null} to indicate that the formatter does not support additional classpath.
+     */
+    FileCollection getClasspath();
 }

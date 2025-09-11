@@ -23,6 +23,7 @@ import org.asciidoctor.gradle.model5.jvm.internal.utils.DependencyUpdater
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.gradle.api.NamedDomainObjectFactory
 import org.gradle.api.Project
+import org.gradle.api.file.FileCollection
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
@@ -73,6 +74,7 @@ class DefaultAsciidoctorjDiagram extends AbstractAsciidoctorjExtension implement
     final String name
     final Provider<Set<String>> requires
     final Provider<Map<String, Object>> attributeProvider
+    final FileCollection classpath
 
     private final ConfigCacheSafeOperations ccso
     private final ObjectFactory objectFactory
@@ -102,7 +104,7 @@ class DefaultAsciidoctorjDiagram extends AbstractAsciidoctorjExtension implement
         this.plantumlVersion = objectFactory.property(String).convention(helper.apply('plantuml'))
 
         this.configurationName = JvmModel.nameForExtensionConfiguration(tc.name, name)
-        registerConfiguration(tc, tempProjectReference)
+        this.classpath = registerConfiguration(tc, tempProjectReference)
 
         this.requires = ccso.providerTools().provider { ->
             diagramRegistered ? ['asciidoctor-diagram'].toSet() : EMPTY_SET
@@ -227,11 +229,12 @@ class DefaultAsciidoctorjDiagram extends AbstractAsciidoctorjExtension implement
         AsciidoctorjDiagram
     }
 
-    private void registerConfiguration(AsciidoctorjToolchain tc, Project tempProjectReference) {
+    private FileCollection registerConfiguration(AsciidoctorjToolchain tc, Project tempProjectReference) {
         final runtime = JvmModel.nameForExtensionConfigurationResolvable(tc.name, name)
         final configTools = ProjectOperations.find(tempProjectReference).configurations
         configTools.createLocalRoleFocusedConfiguration(configurationName, runtime)
         tc.classpathExtendsFrom(configurationName)
+        tempProjectReference.configurations.getByName(runtime)
     }
 
     private void addToClasspath(String module, Provider<String> ver) {

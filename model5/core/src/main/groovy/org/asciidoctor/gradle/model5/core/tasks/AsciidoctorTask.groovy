@@ -99,6 +99,7 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
         )
 
         inputs.property('doctype', conversionSettings.docType).optional(true)
+        inputs.property('launcher', launcher.map { it.ecosystemSignature }).optional(true)
         inputs.dir(this.sourceDir)
         inputs.files(determineAllInputSources())
             .skipWhenEmpty(true)
@@ -112,6 +113,7 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
             .optional()
             .withPathSensitivity(RELATIVE)
 
+        inputs.files { -> exeSettings.additionalClasspath }.optional()
         outputs.files(fsOperations().fileTree(conversionSettings.destinationDir))
     }
 

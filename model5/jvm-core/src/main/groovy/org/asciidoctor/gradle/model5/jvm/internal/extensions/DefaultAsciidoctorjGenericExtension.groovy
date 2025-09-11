@@ -26,6 +26,7 @@ import org.gradle.api.NamedDomainObjectFactory
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.FileCollection
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Provider
@@ -138,6 +139,20 @@ class DefaultAsciidoctorjGenericExtension implements AsciidoctorjGenericExtensio
     @Override
     void useModule(ProjectDependency module) {
         objectFactory.newInstance(DependencyUpdater).add(jarConfigurationName, module)
+    }
+
+    /**
+     * Additional items to add to the classpath when a conversion involving the output formatter is executed.
+     *
+     * <p>
+     *     The classpath is empty by default.
+     * </p>
+     *
+     * @return Classpath. Can be {@code null} to indicate that the formatter does not support additional classpath.
+     */
+    @Override
+    FileCollection getClasspath() {
+        this.classpath
     }
 
     private void checkForGemsPlugin() {

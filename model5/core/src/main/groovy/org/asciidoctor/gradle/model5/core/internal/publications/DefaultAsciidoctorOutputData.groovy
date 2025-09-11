@@ -176,9 +176,11 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
         this.backend.set(formatter.backend.map { AsciidoctorNamedBackend.of(owner.name, it.backend) })
         this.formatterName.set(formatter.name)
         this.toolchainName.set(toolchain.name)
+        final workingClasspath = ccso.fsOperations().emptyFileCollection()
 
         if (formatter.classpath) {
-            this.additionalClasspath = formatter.classpath
+            this.additionalClasspath = workingClasspath
+            workingClasspath.from(formatter.classpath)
         }
 
         if (formatter.copyResources) {
@@ -194,6 +196,13 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
         final allRequires = ccso.providerTools().listProperty(String)
         toolchain.asciidocExtensions.all { AsciidoctorExtension it ->
             allRequires.addAll(it.requires)
+
+            if (it.classpath) {
+                if (additionalClasspath == null) {
+                    additionalClasspath = workingClasspath
+                }
+                workingClasspath.from(it.classpath)
+            }
         }
         allRequires.addAll(formatter.requires)
         this.moduleRequires.set(allRequires)

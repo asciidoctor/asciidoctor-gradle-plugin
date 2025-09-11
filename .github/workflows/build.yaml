@@ -45,9 +45,9 @@ jobs:
       - name: Build offline repository
         run: ./gradlew --console=plain --no-build-cache syncRemoteRepositories
       - name: Build
-        run: ./gradlew --console=plain --warning-mode=all -s clean assemble
+        run: ./gradlew --console=plain --warning-mode=all clean assemble
       - name: Test
-        run: ./gradlew --console=plain --warning-mode=all -s check --no-parallel -x gradleTest -x :asciidoctor-gradle-jvm-gems:integrationTest
+        run: ./gradlew --console=plain --warning-mode=all -i check --no-parallel -x gradleTest -x :asciidoctor-gradle-jvm-gems:integrationTest
         env:
           JAVA_TOOL_OPTIONS: -Djava.net.preferIPv4Stack=true
       # Stop gradlew to avoid locking issues

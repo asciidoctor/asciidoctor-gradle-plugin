@@ -39,6 +39,8 @@ import javax.inject.Inject
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
 
+import static org.ysb33r.grolifant5.api.core.StringTools.EMPTY
+
 /**
  * Launches conversion jobs on JVM workers.
  *
@@ -92,6 +94,11 @@ class DefaultLauncher implements AsciidoctorLauncher {
             executionContextKey(toolchainName, formatterName),
             executionContext
         )
+    }
+
+    @Override
+    String getEcosystemSignature() {
+        launcherEngineOptions.map { it.toString() }.getOrElse(EMPTY)
     }
 
     @Override

@@ -20,6 +20,7 @@ import org.asciidoctor.gradle.model5.js.extensions.AsciidoctorjsGenericExtension
 import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
 import org.gradle.api.NamedDomainObjectFactory
 import org.gradle.api.Project
+import org.gradle.api.file.FileCollection
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Provider
@@ -58,6 +59,7 @@ class DefaultAsciidoctorjsGenericExtension implements AsciidoctorjsGenericExtens
     }
 
     final String name
+    final FileCollection classpath = null
 
     private final ConfigCacheSafeOperations ccso
     private final ObjectFactory objectFactory

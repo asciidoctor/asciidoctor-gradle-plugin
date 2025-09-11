@@ -18,9 +18,12 @@ package org.asciidoctor.gradle.testfixtures.model5
 import groovy.util.logging.Slf4j
 import org.apache.commons.io.FileUtils
 import org.asciidoctor.gradle.testfixtures.DslType
+import org.gradle.testfixtures.ProjectBuilder
 import org.gradle.testkit.runner.GradleRunner
+import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 import org.ysb33r.grolifant5.api.core.OperatingSystem
 import org.ysb33r.grolifant5.api.core.StringTools
+import org.ysb33r.grolifant5.api.core.plugins.GrolifantServicePlugin
 import spock.lang.Specification
 import spock.lang.TempDir
 
@@ -211,7 +214,7 @@ class IntegrationSpecification extends Specification {
         ${offlineRepositoriesGroovyDsl}
         """.stripIndent()
 
-        new File(projectDir,'gradle.properties').text = 'version=0.0.1'
+        new File(projectDir, 'gradle.properties').text = 'version=0.0.1'
     }
 
     /**
@@ -358,6 +361,16 @@ class IntegrationSpecification extends Specification {
         dslType == GROOVY_DSL ? getOfflineRepositoriesGroovyDsl() : offlineRepositoriesKotlinDsl
     }
 
+    Properties loadPropertiesFile(String propertiesName) {
+        final p = ProjectBuilder.builder().build()
+        p.pluginManager.apply(GrolifantServicePlugin)
+        final fso = ConfigCacheSafeOperations.from(p).fsOperations()
+        fso.loadPropertiesFromResource(
+            "META-INF/asciidoctor.gradle/${propertiesName}.properties",
+            this.class.classLoader
+        )
+    }
+
     private String getOfflineRepositoriesDsl(String propertyName) {
         final location = System.getProperty(propertyName)
         if (location == null) {
@@ -366,6 +379,7 @@ class IntegrationSpecification extends Specification {
             new File(location).text
         }
     }
+
     public static final String BACKSLASH = '\\'
     public static final String DOUBLE_BACKSLASH = BACKSLASH * 2
 }

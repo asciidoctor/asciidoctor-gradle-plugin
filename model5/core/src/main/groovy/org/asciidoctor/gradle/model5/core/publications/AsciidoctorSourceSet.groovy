@@ -182,46 +182,6 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
         this.externalSourcesTransformed
     }
 
-//    /**
-//     * Configures secondary sources.
-//     *
-//     * @param cfg Configuration closure. Is passed a {@link PatternSet}.
-//     */
-//    @Override
-//    void secondarySources(@DelegatesTo(PatternSet.class) Closure<?> cfg) {
-//        ClosureUtils.configureItem(this.secondarySourceDocumentPattern, cfg)
-//    }
-//
-//    /**
-//     * Configures sources.
-//     *
-//     * @param cfg Configuration {@link Action}. Is passed a {@link PatternSet}.
-//     */
-//    @Override
-//    void secondarySources(final Action<? super PatternSet> cfg) {
-//        cfg.execute(secondarySourceDocumentPattern)
-//    }
-//
-//    /**
-//     * Clears any of the existing secondary source patterns.
-//     *
-//     * This should be used if none of the default patterns should be monitored.
-//     */
-//    @Override
-//    void clearSecondarySources() {
-//        secondarySourceDocumentPattern.copyFrom(new PatternSet())
-//    }
-//
-//    /**
-//     * A provider of secondary source patterns.
-//     *
-//     * @return Patterns of non-Asciidoc source files to monitor.
-//     */
-//    @Override
-//    Provider<PatternFilterable> getSecondarySourcePatterns() {
-//        this.sourcePatternProvider
-//    }
-
     /**
      * Configures the attributes for this publication
      *

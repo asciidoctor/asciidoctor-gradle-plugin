@@ -15,11 +15,18 @@
  */
 package org.asciidoctor.gradle.model5.jvm
 
+import org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils
+import org.asciidoctor.gradle.model5.jvm.internal.PluginUtils
+import org.asciidoctor.gradle.model5.jvm.internal.formatters.DefaultAsciidoctorjHtml5
 import org.asciidoctor.gradle.model5.jvm.testfixtures.AsciidoctorjHtmlIntegrationSpecification
+import org.gradle.testfixtures.ProjectBuilder
 import org.gradle.testkit.runner.TaskOutcome
+import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
+import org.ysb33r.grolifant5.api.core.plugins.GrolifantServicePlugin
 import spock.lang.Issue
 
 import static org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils.DEFAULT_PUBLICATION
+import static org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjPlugin.DEFAULT_TOOLCHAIN
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 import static org.gradle.testkit.runner.TaskOutcome.UP_TO_DATE
 
@@ -50,6 +57,47 @@ class UpToDateSpec extends AsciidoctorjHtmlIntegrationSpecification {
 
         when:
         new File(projectDir,'src/docs/asciidoc/sample.asciidoc') << 'One more line'
+        final result3 = getGradleRunner(IS_GROOVY_DSL, [taskName]).build()
+
+        then:
+        result3.task(":${taskName}").outcome == SUCCESS
+
+        when:
+        final result4 = getGradleRunner(IS_GROOVY_DSL, [taskName]).build()
+
+        then:
+        result4.task(":${taskName}").outcome == UP_TO_DATE
+    }
+
+    void 'Changes to classpath will cause rebuild'() {
+        setup:
+        writeHtmlBasedBuildFileWithImports(['org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjGenericExtension'])
+        copyTestProject('normal')
+        configureSourceSetGroovy(DEFAULT_PUBLICATION, """
+        missingIncludesAreFatal()
+        """.stripIndent())
+
+        when:
+        final result1 = getGradleRunner(IS_GROOVY_DSL, [taskName]).build()
+
+        then:
+        result1.task(":${taskName}").outcome == SUCCESS
+
+        when:
+        final result2 = getGradleRunner(IS_GROOVY_DSL, [taskName]).build()
+
+        then:
+        result2.task(":${taskName}").outcome == UP_TO_DATE
+
+        when:
+        // Add diagram to the classpath even if we are not going to use it.
+        buildFile << """
+        asciidoc.toolchains.asciidoctorj.asciidocExtensions {
+            foo(AsciidoctorjGenericExtension) {
+                useModule('${JvmModel.ASCIIDOCTORJ_DIAGRAM_DEPENDENCY}','${diagramVersion}')
+            }
+        }
+        """.stripIndent()
         final result3 = getGradleRunner(IS_GROOVY_DSL, [taskName]).build()
 
         then:
@@ -103,5 +151,18 @@ class UpToDateSpec extends AsciidoctorjHtmlIntegrationSpecification {
 
         then:
         result4.task(":${taskName}").outcome == UP_TO_DATE
+    }
+
+    private void writeHtmlBasedBuildFileWithImports(List<String> imports) {
+        writeBasicBuildFileGroovy(
+            ['org.asciidoctor.jvm'],
+            imports
+        )
+        addOutputToSourceSetGroovy(DEFAULT_TOOLCHAIN, DefaultAsciidoctorjHtml5.DEFAULT_NAME, DEFAULT_PUBLICATION)
+    }
+
+    private String getDiagramVersion() {
+        final props = loadPropertiesFile('asciidoctor5-jvm-core-plugin')
+        props['asciidoctorj.diagram']
     }
 }
