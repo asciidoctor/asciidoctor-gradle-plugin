@@ -1,0 +1,1 @@
+../../../../../../../model5/core/src/test/groovy/org/asciidoctor/gradle/model5/core/extensions/AsciidoctorThemeExtensionSpec.groovy

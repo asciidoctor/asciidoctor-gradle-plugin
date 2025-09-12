@@ -10,7 +10,7 @@ To do so, first create a docinfo file in your source directory i.e. `src/docs/as
 <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.js"></script>
 ----
 
-Then, add the `docinfo1` attribute to the attributes list in the previous example:
+Then, add the `docinfo` attribute to the attributes list in the previous example:
 
 [tabs]
 ====
@@ -28,4 +28,3 @@ asciidoctorj { // <.>
 --
 ====
 
-See xref:asciidoc:docinfo:index.adoc[] for more information on `docinfo` and friends.

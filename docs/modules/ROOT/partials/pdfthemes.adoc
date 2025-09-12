@@ -12,7 +12,7 @@ pdfThemes:: These are named themes, which are each related to one theme from any
 ----
 import org.asciidoctor.gradle.model5.core.pdfthemes.LocalThemeCollection
 
-include::example${examples-model5-core-test}/extensions/AciidoctorThemeExtensionSpec.groovy[tags=local-theme,indent=0]
+include::example${examples-model5-core-test}/AsciidoctorThemeExtensionSpec.groovy[tags=local-theme,indent=0]
 ----
 <.> Declares a local collection called `myLocal`
 <.> Provide the directory where the themes are located.
@@ -29,7 +29,7 @@ Themes stored in repositories on Github and Gitlab can also be used.
 import org.asciidoctor.gradle.model5.core.pdfthemes.GithubThemeCollection
 import org.asciidoctor.gradle.model5.core.pdfthemes.GitlabThemeCollection
 
-include::example${examples-model5-core-test}/extensions/AciidoctorThemeExtensionSpec.groovy[tags=github-theme,indent=0]
+include::example${examples-model5-core-test}/AsciidoctorThemeExtensionSpec.groovy[tags=github-theme,indent=0]
 ----
 <.> Declares a collection called `kuboaki` that can be retrieved from Github.
   For a Gitlab-based collection replace `GithubThemeCollection` with `GitlabThemeCollection`.

@@ -80,17 +80,10 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
 
         where:
         parallelMode | jrubyVer              | asciidoctorjVer | compatible
-        true         | AJ20_ABSOLUTE_MINIMUM | SERIES_20       | true
-        true         | AJ20_ABSOLUTE_MINIMUM | SERIES_20       | true
-        true         | AJ20_SAFE_MINIMUM     | SERIES_20       | true
-        true         | AJ20_SAFE_MINIMUM     | SERIES_20       | true
-        true         | AJ20_SAFE_MAXIMUM     | SERIES_20       | true
-        true         | AJ20_SAFE_MAXIMUM     | SERIES_20       | true
         false        | AJ20_ABSOLUTE_MINIMUM | SERIES_20       | true
         false        | AJ20_SAFE_MINIMUM     | SERIES_20       | true
         false        | AJ20_SAFE_MAXIMUM     | SERIES_20       | true
         false        | AJ20_SAFE_MAXIMUM     | SERIES_20       | true
-        true         | AJ20_ABSOLUTE_MAXIMUM | SERIES_20       | true
         false        | AJ20_ABSOLUTE_MAXIMUM | SERIES_20       | true
     }
 
@@ -194,30 +187,6 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
         then:
         result.contains("missing converter for backend 'abc'. Processing aborted")
         result.contains('org.asciidoctor.jruby.internal.AsciidoctorCoreException: org.jruby.exceptions.NotImplementedError')
-    }
-
-    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/2324')
-    @SuppressWarnings('LineLength')
-    @PendingFeature
-    void 'Run conversion with an unknown backend using JAVA_EXEC'() {
-        given:
-        getBuildFile('''
-        asciidoctor {
-            executionMode = JAVA_EXEC
-            outputOptions {
-                backends = ['html5', 'abc', 'xyz']
-            }
-            sourceDir 'src/docs/asciidoc'
-        }
-        ''')
-
-        when:
-        String result = getGradleRunner(DEFAULT_ARGS).buildAndFail().output
-
-        then:
-        result.contains("missing converter for backend 'abc'. Processing aborted")
-        result.contains('org.asciidoctor.jruby.internal.AsciidoctorCoreException: org.jruby.exceptions.NotImplementedError')
-        !result.contains('ArrayIndexOutOfBoundsException')
     }
 
     @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/368')

@@ -24,6 +24,7 @@ import org.asciidoctor.gradle.model5.core.basedir.HasBaseDirStrategy
 import org.asciidoctor.gradle.model5.core.internal.attributes.DefaultAttributes
 import org.asciidoctor.gradle.model5.core.internal.basedir.DefaultBaseDirConfiguration
 import org.asciidoctor.gradle.model5.core.internal.publications.DefaultAsciidoctorSource
+import org.asciidoctor.gradle.model5.core.internal.publications.DefaultDocInfo
 import org.asciidoctor.gradle.model5.core.internal.publications.DefaultExternalAsciidoctorSource
 import org.asciidoctor.gradle.model5.core.internal.publications.DefaultProvidedExternalSourceSet
 import org.asciidoctor.gradle.model5.core.internal.publications.DefaultProvidedExternalSources
@@ -67,6 +68,7 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
     private final ListProperty<DefaultExternalAsciidoctorSource> externalSources
     private final Provider<List<Object>> externalBuiltBy
     private final Provider<? extends ProvidedExternalSources> externalSourcesTransformed
+    private final DefaultDocInfo docInfoBlock
 
     @Delegate
     private final DefaultAsciidoctorSource localSource
@@ -107,6 +109,9 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
         this.attributes.add('gradle-project-version', ccso.projectTools().versionProvider.orElse(EMPTY))
         this.attributes.add('gradle-projectdir', tempProjectReference.projectDir)
         this.attributes.add('gradle-rootdir', tempProjectReference.rootDir)
+
+        this.docInfoBlock = tempProjectReference.objects.newInstance(DefaultDocInfo)
+        this.attributes.attributeProvider(this.docInfoBlock.attributeProvider)
     }
 
     /**
@@ -276,5 +281,32 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
      */
     Provider<Set<Pattern>> getFatalWarnings() {
         this.fatalWarningPatterns
+    }
+
+    /**
+     * Direct access to {@code docinfo} configuration
+     *
+     * @return An implementation of {@link AsciidoctorDocInfo}.
+     */
+    AsciidoctorDocInfo getDocInfo() {
+        docInfoBlock
+    }
+
+    /**
+     * Configures {@code docinfo} information.
+     *
+     * @param configurator Configurating {@link Action}
+     */
+    void docInfo(Action<AsciidoctorDocInfo> configurator) {
+        configurator.execute(docInfoBlock)
+    }
+
+    /**
+     * Configures {@code docinfo} information.
+     *
+     * @param configurator Configurating {@link Action}
+     */
+    void docInfo(@DelegatesTo(AsciidoctorDocInfo) Closure<?> configurator) {
+        ClosureUtils.configureItem(this.docInfoBlock, configurator)
     }
 }

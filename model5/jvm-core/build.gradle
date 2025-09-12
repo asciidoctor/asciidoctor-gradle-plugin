@@ -109,6 +109,7 @@ dependencies {
     api project(':asciidoctor5-core-plugin')
     implementation(libs.grolifantApi)
     implementation(libs.pluginJRuby)
+    implementation(libs.grolifantRemoteWorker)
     runtimeOnly(libs.grolifantRuntime)
     testImplementation project(':testfixtures-jvm')
 
@@ -124,8 +125,3 @@ dependencies {
     cachingOnly(libs.asciidoctorjEpub) // <.>
 }
 // end::hacking-asciidoctorj-output-formatter[]
-
-tasks.named('integrationTest',Test) {
-    maxParallelForks = 4
-    forkEvery = 2
-}

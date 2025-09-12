@@ -360,7 +360,7 @@ ruleset {
     UnnecessaryFloatInstantiation
     UnnecessaryGString
     UnnecessaryGetter {
-        ignoreMethodNames = 'isEmpty'
+        ignoreMethodNames = 'isEmpty,getOrNull'
     }
     UnnecessaryIfStatement
     UnnecessaryInstanceOfCheck

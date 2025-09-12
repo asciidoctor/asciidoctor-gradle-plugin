@@ -40,7 +40,7 @@ class AsciidoctorjDiagramSpec extends IntegrationSpecification {
         activateExtension(activator)
 
         when:
-        final result = getGradleRunnerConfigCache(IS_GROOVY_DSL, [taskName]).build()
+        final result = getGradleRunnerConfigCache(IS_GROOVY_DSL, [taskName, '-s']).build()
 
         then: 'Task completed successfully'
         result.task(":${taskName}").outcome == SUCCESS
@@ -52,7 +52,7 @@ class AsciidoctorjDiagramSpec extends IntegrationSpecification {
         where:
         useProject | activator     | imagePattern                     | imageCount
         'ditaa'    | 'useDitaa'    | ~/^diag-ditaa-.+\.png$/          | 1
-        'plantuml' | 'usePlantUml' | ~/^plantuml-example\.svg$/       | 1
+        'plantuml' | 'usePlantUml' | ~/^diag-plantuml-.+\.svg$/       | 1
         'diagram'  | 'useDiagram'  | ~/^(testd2.svg|testqrcode.png)$/ | 1
 //        'diagram'  | 'useDiagram'  | ~/^(testd2.svg|testqrcode.png)$/ | 2
         'jsyntrax' | 'useSyntrax' | ~/^diag-syntrax-.+\.png$/ | 1
@@ -61,7 +61,7 @@ class AsciidoctorjDiagramSpec extends IntegrationSpecification {
 
     private void writeBuildFile() {
         writeBasicBuildFileGroovy(
-            ['org.asciidoctor.jvm.diagram'],
+            ['org.asciidoctor.jvm.diagram', 'org.asciidoctor.jvm'],
             [
                     'org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain',
                     'org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjDiagram'

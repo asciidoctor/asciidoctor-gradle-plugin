@@ -22,7 +22,7 @@ jobs:
         with:
           gradle-home-cache-cleanup: true
       - name: Licensing and other lightweight checks
-        run: ./gradlew --console=plain license validateAntoraYml
+        run: ./gradlew --console=plain license validateAntora validatePlugins
       - name: Coding style
         run: ./gradlew --console=plain -i codenarcAll
   build-windows:
@@ -81,7 +81,9 @@ jobs:
     - name: Build
       run: ./gradlew  -i -S --console=plain --no-build-cache assemble
     - name: Integration tests
-      run: ./gradlew  -i -s --console=plain --no-build-cache test integrationTest
+      run: ./gradlew  -i -s --console=plain --no-build-cache test integrationTest -x :asciidoctor-gradle-jvm-gems:intTest
+    - name: Classic GEM plugin integration test
+      run: ./gradlew  -i -s --console=plain --no-build-cache :asciidoctor-gradle-jvm-gems:intTest
     - name: Remote tests for classic plugins
       run: ./gradlew  -i -s --console=plain --no-build-cache remoteTest
     - name: Gradle tests

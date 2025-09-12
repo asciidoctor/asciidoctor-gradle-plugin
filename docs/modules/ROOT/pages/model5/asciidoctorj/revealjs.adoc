@@ -21,7 +21,7 @@ asciidoc {
                     templateDirs 'src/myAsciidocTemplate1', 'src/myAsciidocTemplate2' // <.>
                     forceEngine =  'erb' // <.>
                     useEngine 'slim' // <.>
-
+                    useEngine 'slim', '1.2.3' // <.>
                     revealjsOptions { // <.>
                     }
                 }
@@ -36,7 +36,7 @@ asciidoc {
   template directories.
 <.> Adds an engine to the GEM classpath.
   Only `erb`, `slim` and `haml` is supported.
-<.> Adds any engine by https://github.com/jeremyevans/tilt[tilt] along with the version of the GEM.
+<.> Adds any engine supported by https://github.com/jeremyevans/tilt[tilt] along with the version of the GEM.
 <.> Configures {asciidoctorj-revealjs-name} options.
     See below.
 --

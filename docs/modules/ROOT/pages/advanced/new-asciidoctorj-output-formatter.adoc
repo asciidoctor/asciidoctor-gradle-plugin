@@ -16,7 +16,7 @@ By convention, the name is prefixed with `Asciidoctorj`.
 .AsciidoctorjEpub.java
 [source,java]
 ----
-include::example${examples-model5-jvm-main}/formatters/AsciidoctorjEpub.java[tags=hacking-asciidoctorj-output-formatter]
+include::example${examples-model5-jvm-main}/AsciidoctorjEpub.java[tags=hacking-asciidoctorj-output-formatter]
 ----
 <.> Extend the `AsciidoctorjOutputFormatterVersioned` interface so that build script authors can override the version of `asciidoctorj-epub` if they so wish.
 
@@ -74,7 +74,7 @@ Now add the implementation which by convention is prefixed with `DefaultAsciidoc
 .DefaultAsciidoctorjEpub.groovy
 [source,groovy]
 ----
-include::example${examples-model5-jvm-main}/internal/formatters/DefaultAsciidoctorjEpub.groovy[tags=hacking-asciidoctorj-output-formatter]
+include::example${examples-model5-jvm-main}/DefaultAsciidoctorjEpub.groovy[tags=hacking-asciidoctorj-output-formatter]
 ----
 <.> Extend `AbstractAsciidoctorjFormatterVersioned` which is the implementation of  `AsciidoctorjOutputFormatterVersioned`.
   Also implement the interface that you defined previously - being `AsciidoctorjEpub` in this example.
@@ -97,7 +97,7 @@ This factory is also places inside `org.asciidoctor.gradle.model5.jvm.internal.f
 .AsciidoctorjEpubFactory.groovy
 [source,groovy]
 ----
-include::example${examples-model5-jvm-main}/internal/formatters/AsciidoctorjEpubFactory.groovy[tags=hacking-asciidoctorj-output-formatter]
+include::example${examples-model5-jvm-main}/AsciidoctorjEpubFactory.groovy[tags=hacking-asciidoctorj-output-formatter]
 ----
 <.> Reference the interface name
 <.> The return type of the `create` method is the interface name.
@@ -111,7 +111,7 @@ By convention, this class is prefixed with `Asciidoctorj` and postfixed with `Pl
 .AsciidoctorJEpubPlugin.groovy
 [source,groovy]
 ----
-include::example${examples-model5-jvm-main}/plugins/AsciidoctorjEpubPlugin.groovy[tags=hacking-asciidoctorj-output-formatter]
+include::example${examples-model5-jvm-main}/AsciidoctorjEpubPlugin.groovy[tags=hacking-asciidoctorj-output-formatter]
 ----
 <.> Reference the interface of the output formatter
 <.> Reference the factory of the output formatter
@@ -125,7 +125,7 @@ Go to the `jvm-core/src/integrationTest/groovy` directory and add an integration
 .AsciidoctorjEpubSpec
 [source,groovy]
 ----
-include::example${examples-model5-jvm-integration-test}/formatters/AsciidoctorjEpubSpec.groovy[tags=hacking-asciidoctorj-output-formatter]
+include::example${examples-model5-jvm-integration-test}/AsciidoctorjEpubSpec.groovy[tags=hacking-asciidoctorj-output-formatter]
 ----
 <.> Set the name of the task.
 <.> Set the output directory.
@@ -149,7 +149,7 @@ Return to the interface first and add methods for these.
 .AsciidoctorjEpub.java
 [source,java]
 ----
-include::example${examples-model5-jvm-main}/formatters/AsciidoctorjEpub.java[tags=hacking-asciidoctorj-output-formatter-attrs]
+include::example${examples-model5-jvm-main}/AsciidoctorjEpub.java[tags=hacking-asciidoctorj-output-formatter-attrs]
 ----
 <.> Add methods to the interface.
 
@@ -159,7 +159,7 @@ Now go to the implementation class and configure these methods.
 .DefaultAsciidoctorjEpub.groovy
 [source,groovy]
 ----
-include::example${examples-model5-jvm-main}/internal/formatters/DefaultAsciidoctorjEpub.groovy[tags=hacking-asciidoctorj-output-formatter-attrs-fields,indent=0]
+include::example${examples-model5-jvm-main}/DefaultAsciidoctorjEpub.groovy[tags=hacking-asciidoctorj-output-formatter-attrs-fields,indent=0]
 ----
 <.> Store the optional level as a property.
 <.> Store the optional style directory as a directory property.
@@ -170,7 +170,7 @@ Initialise these values in the injected constructor.
 .DefaultAsciidoctorjEpub.groovy
 [source,groovy]
 ----
-include::example${examples-model5-jvm-main}/internal/formatters/DefaultAsciidoctorjEpub.groovy[tags=hacking-asciidoctorj-output-formatter-attrs-ctor,indent=0]
+include::example${examples-model5-jvm-main}/DefaultAsciidoctorjEpub.groovy[tags=hacking-asciidoctorj-output-formatter-attrs-ctor,indent=0]
 ----
 <.> Add the chapter level to the attributes only if the property was set.
 <.> Set the styles directory to the attributes only if the property was set.
@@ -181,7 +181,7 @@ Finally, allow the properties to be configured.
 .DefaultAsciidoctorjEpub.groovy
 [source,groovy]
 ----
-include::example${examples-model5-jvm-main}/internal/formatters/DefaultAsciidoctorjEpub.groovy[tags=hacking-asciidoctorj-output-formatter-attrs,indent=0]
+include::example${examples-model5-jvm-main}/DefaultAsciidoctorjEpub.groovy[tags=hacking-asciidoctorj-output-formatter-attrs,indent=0]
 ----
 <.> `ccso.fsOperations` is available from the base class.
   `updateDirectoryProperty` is an invaluable utility to set a `DirectoryProperty` from any object that is convertible to a file.

@@ -26,13 +26,13 @@ class AsciidoctorGradleGroovyProject implements Plugin<Project> {
         }
 
         SourceSetContainer sourceSets = project.extensions.getByType(SourceSetContainer)
-        addDefaultVersions(project)
+//        addDefaultVersions(project)
     }
 
-    @CompileDynamic
-    void addDefaultVersions(Project project) {
-        project.ext {
-            defaultNodeJsVersion = '0'//NodeJSExtension.NODEJS_DEFAULT
-        }
-    }
+//    @CompileDynamic
+//    void addDefaultVersions(Project project) {
+//        project.ext {
+//            defaultNodeJsVersion = '0'//NodeJSExtension.NODEJS_DEFAULT
+//        }
+//    }
 }

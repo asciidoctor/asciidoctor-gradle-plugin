@@ -31,10 +31,10 @@ asciidoc:
     asciidoctorjs-revealjs-name: "Reveal.js for Asciidoctor.js"
     asciidoctorjs-revealjs-url: "https://github.com/asciidoctor/asciidoctor-reveal.js"
     development-branch: "development-4.x"
-    examples-model5-core-test: "model5/core/test/groovy/org/asciidoctor/gradle/model5/core"
-    examples-model5-jvm-integration-test: "model5/jvm-core/integrationTest/groovy/org/asciidoctor/gradle/model5/jvm"
-    examples-model5-jvm-main: "model5/jvm-core/main/groovy/org/asciidoctor/gradle/model5/jvm"
-    examples-model5-jvm-main-resources: "model5/jvm-core/main/resources/META-INF/asciidoctor.gradle"
+    examples-model5-core-test: "model5/core/test"
+    examples-model5-jvm-integration-test: "model5/jvm-core/integrationTest"
+    examples-model5-jvm-main: "model5/jvm-core/main"
+    examples-model5-jvm-main-resources: "model5/jvm-core/main/resources"
     examples-model5-js-integration-test: "model5/js-core/integrationTest"
     examples-model5-js-main: "model5/js-core/main"
     examples-model5-js-main-resources: "model5/js-core/main/resources"
@@ -47,4 +47,4 @@ asciidoc:
     lordofthejars: "https://github.com/lordofthejars[Alex Soto]"
 nav:
 - "modules/ROOT/nav.adoc"
-- "modules/appendices/nav.adoc"
+

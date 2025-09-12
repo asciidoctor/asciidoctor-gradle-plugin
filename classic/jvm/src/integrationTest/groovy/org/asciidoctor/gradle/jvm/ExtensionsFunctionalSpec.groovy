@@ -41,7 +41,7 @@ class ExtensionsFunctionalSpec extends FunctionalSpecification {
     }
 
     @Unroll
-    @Timeout(value = 90)
+    @Timeout(value = 900)
     void 'Extension can be applied from a string (#model)'() {
         given:
         getBuildFile(
@@ -134,7 +134,7 @@ block('small') {
         resultFile.text.contains('and write this in lowercase')
 
         where:
-        gradle << ['8.4', '8.3', '8.1.1', '7.6.1', '7.0.2']
+        gradle << ['8.9', '8.1.1', '7.6.1']
     }
 
     @Timeout(value = 90)

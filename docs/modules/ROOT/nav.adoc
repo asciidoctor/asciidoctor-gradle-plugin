@@ -1,6 +1,5 @@
 * xref:index.adoc[Overview]
 * xref:bootstrap.adoc[Bootstrap]
-* xref:docinfo.adoc[]
 * xref:upgrading.adoc[Upgrading]
 * xref:terminology.adoc[]
 
@@ -39,10 +38,15 @@
 * xref:classic/asciidoctorj-custom-extensions.adoc[]
 * xref:classic/common-task-configuration.adoc[]
 // * xref:classic/exporting-slides.adoc[]
+* xref:classic/docinfo.adoc[]
 * xref:classic/asciidoctoreditorconfig-plugin.adoc[Asciidoctor Editor Config plugin]
 
 .Advanced
 * xref:advanced/implementing-a-new-toolchain.adoc[Implementing a new toolchain]
 * xref:advanced/new-asciidoctorj-output-formatter.adoc[Implementing an AsciidoctorJ output formatter]
 * xref:advanced/new-asciidoctorjs-output-formatter.adoc[]
+
+.Appendices
+* xref:appendices/tips-and-tricks.adoc[]
+* xref:appendices/hacking.adoc[]
 

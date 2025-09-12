@@ -24,7 +24,7 @@ asciidoc {
         }
         asciidoctorjs2(AsciidoctorjsToolchain) { // <.>
             registeredOutputFormatters {
-                pdf(AsciidoctorjsPdf) {
+                pdf(AsciidoctorjsPdf) { // <.>
 
                 }
             }
@@ -34,7 +34,6 @@ asciidoc {
     publications { // <.>
         main {
             sourceSet { // <.>
-
             }
 
             output('asciidoctorj', 'html') // <.>

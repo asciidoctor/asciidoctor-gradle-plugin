@@ -35,7 +35,7 @@ asciidoc {
 <.> Human-language additional configuration.
 <.> Configures the outputs for this publication.
   The format is `toolchainName, outputFormat`.
-  See xref:configure-toolchains.adoc[Configuring Toolchains] for more info.
+  See xref:model5/configure-toolchains.adoc[Configuring Toolchains] for more info.
 --
 ====
 
@@ -132,7 +132,13 @@ asciidoc {
 --
 ====
 
-=== Language customisation
+=== Docinfo
+
+There is some DSL support for configuring docinfo.
+It is important to note that for any of `headIsPrivate`, `headerIsPrivate` and `footerIsPrivate`, it configures it for ALL the source AsciiDoc file within the source set.
+It is still possible to override a DSL setting within a single source file.
+
+For people that ustilise a common docinfo directory, setting it via the DSL has the benefit that Gradle's up-to-date checks can then be used to detect changes.
 
 [tabs]
 ====
@@ -144,27 +150,62 @@ Groovy::
 asciidoc {
   publications {
     main {
-      languages {
-        fr { // <.>
-          attributes {  // <.>
-              add 'publish-time', asTime(LocalTime.now())
-          }
-          resources { // <.>
-            from 'images/fr', {
-              include '*.png'
-            }
-          }
+      sourceSet {
+        docInfo {
+            headIsPrivate = false // <.>
+            headerIsPrivate = false // <.>
+            footerIsPrivate = false // <.>
+            docInfoDir = 'src/docs/docinfo' // <.>
         }
       }
     }
   }
 }
 ----
-<.> Add option for a language.
-  The naming does not matter directly, but convention is to use letter codes that correspond to either chttps://en.wikipedia.org/wiki/ISO_639-1[ISO 639-1] or https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes[ISO 639-2].
-<.> Attributes that will only be sent to the Asciidoctor processor when the specific language is processed.
-  DSL is the same as for `attributes` described earlier.
-<.> Resources to be processed for the specific language.
-  This is a copy specification.
+<.> Set whether `head` is private or not.
+<.> Set whether `header` is private or not.
+<.> Set whether `footer` is private or not.
+<.> Configures a common docinfo source directory.
 --
 ====
+
+WARNING: Currently, setting `docInfoDir` affects all tasks associated with the specific publication where it was set, even those that are no docinfo-aware.
+For example, if your publication builds both PDF and HTML files, and you change `docbook-header.html`, then the PDF output will also be rebuilt.
+This might be rectified in a future release.
+
+// === Language customisation
+//
+// [tabs]
+// ====
+// Groovy::
+// +
+// --
+// [source,groovy]
+// ----
+// asciidoc {
+//   publications {
+//     main {
+//       languages {
+//         fr { // <.>
+//           attributes {  // <.>
+//               add 'publish-time', asTime(LocalTime.now())
+//           }
+//           resources { // <.>
+//             from 'images/fr', {
+//               include '*.png'
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
+// ----
+// <.> Add option for a language.
+//   The naming does not matter directly, but convention is to use letter codes that correspond to either chttps://en.wikipedia.org/wiki/ISO_639-1[ISO 639-1] or https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes[ISO 639-2].
+// <.> Attributes that will only be sent to the Asciidoctor processor when the specific language is processed.
+//   DSL is the same as for `attributes` described earlier.
+// <.> Resources to be processed for the specific language.
+//   This is a copy specification.
+// --
+// ====

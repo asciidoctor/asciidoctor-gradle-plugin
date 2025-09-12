@@ -16,10 +16,16 @@
 package org.asciidoctor.gradle.model5.jvm
 
 import org.asciidoctor.gradle.model5.jvm.internal.formatters.DefaultAsciidoctorjTemplates
+import org.asciidoctor.gradle.model5.jvm.internal.gems.GemUtils
 import org.asciidoctor.gradle.model5.jvm.testfixtures.AsciidoctorjHtmlIntegrationSpecification
+import spock.lang.IgnoreIf
 
+import static org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjPlugin.DEFAULT_TOOLCHAIN
+import static org.gradle.testkit.runner.TaskOutcome.FROM_CACHE
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
+import static org.gradle.testkit.runner.TaskOutcome.UP_TO_DATE
 
+@IgnoreIf(reason = 'Gradle is offline', value = { IS_OFFLINE })
 class GemsSpec extends AsciidoctorjHtmlIntegrationSpecification {
 
     void 'Will fail if templates are requested, but gem plugin has not been applied'() {
@@ -63,14 +69,119 @@ class GemsSpec extends AsciidoctorjHtmlIntegrationSpecification {
         engine << DefaultAsciidoctorjTemplates.SUPPORTED_TEMPLATE_ENGINES
     }
 
-    void writeGemUsingBuildFile() {
-        writeHtmlBasedBuildFile(['org.asciidoctor.jvm', 'org.asciidoctor.jvm.gems'])
-        buildFile << '''
+    void 'Prepare tasks are cacheable and relocatable'() {
+        setup:
+        final gemPrepare = GemUtils.nameForGemPrepareTask(DEFAULT_TOOLCHAIN)
+        final jarPrepare = GemUtils.nameForJarPrepareTask(DEFAULT_TOOLCHAIN)
 
+        writeGemUsingBuildFile()
+        copyTestProject('ditaa')
+        addBuildCacheAndCopyProjectToAlternateArea()
+
+        when:
+        final result1 = getGradleRunnerWithBuildAndConfigCache(IS_GROOVY_DSL, [jarPrepare]).build()
+
+        then:
+        result1.task(":${jarPrepare}").outcome == SUCCESS
+        result1.task(":${gemPrepare}").outcome == SUCCESS
+
+        when:
+        final result2 = getGradleRunnerWithBuildAndConfigCache(IS_GROOVY_DSL, [jarPrepare]).build()
+
+        then:
+        result2.task(":${jarPrepare}").outcome == UP_TO_DATE
+        result2.task(":${gemPrepare}").outcome == UP_TO_DATE
+
+        when:
+        final result3 = getGradleRunnerWithBuildAndConfigCache(IS_GROOVY_DSL, [jarPrepare, '-i'])
+            .withProjectDir(alternateProjectDir).build()
+
+        then:
+        result3.task(":${jarPrepare}").outcome == SUCCESS
+        result3.task(":${gemPrepare}").outcome == FROM_CACHE
+
+        when:
+        final result4 = getGradleRunnerWithBuildAndConfigCache(IS_GROOVY_DSL, [jarPrepare, '-i'])
+            .withProjectDir(alternateProjectDir).build()
+
+        then:
+        result4.task(":${jarPrepare}").outcome == UP_TO_DATE
+        result4.task(":${gemPrepare}").outcome == UP_TO_DATE
+    }
+
+    void 'Prepare tasks are not cached when GEMs change'() {
+        setup:
+        final gemPrepare = GemUtils.nameForGemPrepareTask(DEFAULT_TOOLCHAIN)
+        final jarPrepare = GemUtils.nameForJarPrepareTask(DEFAULT_TOOLCHAIN)
+        final propName = 'krokiVersion'
+
+        writeGemUsingBuildFile([
+            'org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjKrokiExtension'
+        ])
+        writeUseKrokiVersionFromProperty(propName)
+        copyTestProject('ditaa')
+        addBuildCacheAndCopyProjectToAlternateArea()
+
+        when:
+        final result1 = getGradleRunnerWithBuildAndConfigCache(IS_GROOVY_DSL, [
+            jarPrepare,
+            "-P${propName}=0.9.1"
+        ]*.toString()).build()
+
+        then:
+        result1.task(":${jarPrepare}").outcome == SUCCESS
+        result1.task(":${gemPrepare}").outcome == SUCCESS
+
+        when:
+        final result3 = getGradleRunnerWithBuildAndConfigCache(IS_GROOVY_DSL, [
+            jarPrepare,
+            "-P${propName}=0.9.1"
+        ]*.toString()).withProjectDir(alternateProjectDir).build()
+
+        then:
+        result3.task(":${jarPrepare}").outcome == SUCCESS
+        result3.task(":${gemPrepare}").outcome == FROM_CACHE
+
+        when:
+        final result2 = getGradleRunnerWithBuildAndConfigCache(IS_GROOVY_DSL, [
+            jarPrepare,
+            "-P${propName}=0.10.0"
+        ]*.toString()).build()
+
+        then:
+        result2.task(":${jarPrepare}").outcome == SUCCESS
+        result2.task(":${gemPrepare}").outcome == SUCCESS
+
+        when:
+        final result4 = getGradleRunnerWithBuildAndConfigCache(IS_GROOVY_DSL, [
+            jarPrepare,
+            "-P${propName}=0.10.0"
+        ]*.toString()).withProjectDir(alternateProjectDir).build()
+
+        then:
+        result4.task(":${jarPrepare}").outcome == SUCCESS
+        result4.task(":${gemPrepare}").outcome == FROM_CACHE
+    }
+
+    void writeUseKrokiVersionFromProperty(String propName) {
+        buildFile << """
+        asciidoc.toolchains.asciidoctorj.asciidocExtensions {
+            kroki(AsciidoctorjKrokiExtension) {
+                useVersion(grolifantOps.resolveProperty('${propName}'))
+            }
+        }
+        """.stripIndent()
+    }
+
+    void writeGemUsingBuildFile(Iterable<String> imports = []) {
+        writeHtmlBasedBuildFileWithImports(
+            ['org.asciidoctor.jvm', 'org.asciidoctor.jvm.gems', 'org.asciidoctor.jvm.kroki'],
+            imports
+        )
+        buildFile << '''
         repositories {
             ruby.gems()
         }
-        
         '''.stripIndent()
     }
 }

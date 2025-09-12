@@ -21,6 +21,7 @@ asciidoc {
                     templateDirs 'src/myAsciidocTemplate1', 'src/myAsciidocTemplate2' // <.>
                     forceEngine =  'erb' // <.>
                     useEngine 'slim' // <.>
+                    useEngine 'slim', '1.2.3' // <.>
                 }
             }
         }

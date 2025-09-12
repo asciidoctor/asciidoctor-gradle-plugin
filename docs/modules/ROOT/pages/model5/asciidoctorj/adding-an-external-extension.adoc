@@ -1,6 +1,6 @@
 = Adding an external extension
 
-If an {asciidoctors-name} extension is not already supported in this plugin suite, there is a there is a special extension of type `AsciidoctorjGenericExtension`.
+If an {asciidoctorj-name} extension is not already supported in this plugin suite, there is a there is a special extension of type `AsciidoctorjGenericExtension`.
 
 [tabs]
 ====

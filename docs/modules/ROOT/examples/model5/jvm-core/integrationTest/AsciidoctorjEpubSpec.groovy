@@ -1,0 +1,1 @@
+../../../../../../../model5/jvm-core/src/integrationTest/groovy/org/asciidoctor/gradle/model5/jvm/formatters/AsciidoctorjEpubSpec.groovy

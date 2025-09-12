@@ -160,7 +160,10 @@ class AsciidoctorPublication implements Named {
         }
         final task = registerConversionTask(toolchain, newOutput, formatter.copyResources)
 
-        task.configure { AsciidoctorTask t -> formatter.configureTaskInputs(t.inputs) }
+        task.configure { AsciidoctorTask t ->
+            formatter.configureTaskInputs(t.inputs)
+            sourceSet.docInfo.configureTaskInputs(t.inputs)
+        }
     }
 
     @SuppressWarnings('UnnecessaryObjectReferences')

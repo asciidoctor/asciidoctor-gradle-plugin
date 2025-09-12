@@ -33,4 +33,9 @@ class AsciidoctorjHtmlIntegrationSpecification extends IntegrationSpecification 
         writeBasicBuildFileGroovy(plugins)
         addOutputToSourceSetGroovy(DEFAULT_TOOLCHAIN, DefaultAsciidoctorjHtml5.DEFAULT_NAME, DEFAULT_PUBLICATION)
     }
+
+    void writeHtmlBasedBuildFileWithImports(List<String> plugins, Iterable<String> imports) {
+        writeBasicBuildFileGroovy(plugins, imports)
+        addOutputToSourceSetGroovy(DEFAULT_TOOLCHAIN, DefaultAsciidoctorjHtml5.DEFAULT_NAME, DEFAULT_PUBLICATION)
+    }
 }

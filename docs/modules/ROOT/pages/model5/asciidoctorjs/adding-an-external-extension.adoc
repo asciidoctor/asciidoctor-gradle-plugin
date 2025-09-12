@@ -25,7 +25,6 @@ asciidoc {
 }
 ----
 <.> Set the specific attributes that this extension might require.
-<.> If the extension requires a specific kind of document type, set it here, otherwise leave it alone.
 <.> If one or more `requires` need to be passed to the engine, define them here.
 <.> Add the NPM package details.
   The first parameter is the scope and can be passed as `null`.

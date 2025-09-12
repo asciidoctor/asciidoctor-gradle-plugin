@@ -1,4 +1,0 @@
-* Appendices
-** xref:tips-and-tricks.adoc[]
-** xref:hacking.adoc[]
-

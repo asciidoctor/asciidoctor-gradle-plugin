@@ -38,8 +38,8 @@ revealjsOptions{
 
     customTheme {  // <.>
         uri = 'https:/somewhere.example/there/is/a/revealjs/theme' // <.>
-        location = '/path/to/dir'
-        relativePath = 'my/theme'
+        location = '/path/to/dir' // <.>
+        relativePath = 'my/theme' // <.>
     }
 }
 ----

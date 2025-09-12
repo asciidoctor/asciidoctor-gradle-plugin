@@ -52,7 +52,7 @@ class FunctionalSpecification extends Specification implements FunctionalTestFix
 
     @CompileStatic
     GradleRunner getGradleRunner(List<String> taskNames = ['asciidoctor']) {
-        getGroovyGradleRunner(taskNames).withTestKitDir(testKitDir)
+        getGroovyGradleRunner(taskNames)//.withTestKitDir(testKitDir)
     }
 
     @SuppressWarnings(['BuilderMethodWithSideEffects'])

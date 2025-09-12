@@ -50,10 +50,10 @@ class IntegrationSpecification extends Specification {
     File settingsFile
     File testKitDir
     File alternateProjectDir
+    File alternateBuildDir
 
     void setup() {
         projectDir = new File(testProjectDir, 'test-project')
-        alternateProjectDir = new File(testProjectDir, 'alternate-test-project')
 
         projectDir.mkdirs()
         buildDir = new File(projectDir, 'build')
@@ -65,6 +65,9 @@ class IntegrationSpecification extends Specification {
 
         testKitDir = new File(testProjectDir, ".testkit-${UUID.randomUUID()}")
         testKitDir.mkdirs()
+
+        alternateProjectDir = new File(testProjectDir, 'alternate-test-project')
+        alternateBuildDir = new File(alternateProjectDir, 'build')
 
         buildCacheDir = new File(testProjectDir, '.build-cache')
     }
@@ -106,7 +109,7 @@ class IntegrationSpecification extends Specification {
             .forwardOutput()
             .withDebug(groovyDsl)
             .withPluginClasspath()
-            .withTestKitDir(testKitDir)
+//            .withTestKitDir(testKitDir)
     }
 
     /**

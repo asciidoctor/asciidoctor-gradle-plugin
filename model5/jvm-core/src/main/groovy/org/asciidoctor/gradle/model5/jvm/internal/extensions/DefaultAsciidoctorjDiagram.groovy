@@ -24,10 +24,8 @@ import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.gradle.api.NamedDomainObjectFactory
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
-import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 import org.ysb33r.grolifant5.api.core.ProjectOperations
 
 import javax.inject.Inject
@@ -71,13 +69,10 @@ class DefaultAsciidoctorjDiagram extends AbstractAsciidoctorjExtension implement
     public static final String DEFAULT_NAME = 'diagram'
     private static final String PROP_PREFIX = 'asciidoctorj.diagram'
 
-    final String name
     final Provider<Set<String>> requires
     final Provider<Map<String, Object>> attributeProvider
     final FileCollection classpath
 
-    private final ConfigCacheSafeOperations ccso
-    private final ObjectFactory objectFactory
     private final Property<String> diagramVersion
     private final Property<String> batikVersion
     private final Property<String> ditaaVersion
@@ -88,9 +83,7 @@ class DefaultAsciidoctorjDiagram extends AbstractAsciidoctorjExtension implement
 
     @Inject
     DefaultAsciidoctorjDiagram(String name, AsciidoctorjToolchain tc, Project tempProjectReference) {
-        this.name = name
-        this.ccso = ConfigCacheSafeOperations.from(tempProjectReference)
-        this.objectFactory = tempProjectReference.objects
+        super(name, tc, tempProjectReference)
 
         final Function<String, Provider<String>> helper = { String entity ->
             final prop = entity ? "${PROP_PREFIX}.${entity}".toString() : PROP_PREFIX

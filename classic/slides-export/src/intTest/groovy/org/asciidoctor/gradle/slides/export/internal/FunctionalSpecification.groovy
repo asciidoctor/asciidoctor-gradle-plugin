@@ -51,7 +51,7 @@ class FunctionalSpecification extends Specification {
     GradleRunner getGradleRunner(List<String> taskNames = ['asciidoctor']) {
         GradleRunner.create()
             .withProjectDir(projectDir)
-            .withTestKitDir(testkitDir)
+//            .withTestKitDir(testkitDir)
             .withArguments(taskNames + (withBuildScan ? ['--scan'] : []))
             .withPluginClasspath()
             .forwardOutput()

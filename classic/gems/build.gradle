@@ -18,6 +18,7 @@ dependencies {
     implementation(libs.pluginJRuby)
     api project(':asciidoctor-gradle-jvm')
     api (libs.grolifantApi)
+    implementation(libs.grolifantRemoteWorker)
 }
 
 
