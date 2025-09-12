@@ -14,6 +14,10 @@ agProject {
             'org.asciidoctor.gradle.base.AsciidoctorBasePlugin',
             []
     )
+
+    withVersionSubstitution("${project.name}.properties", [
+        VERSION  : grolifantOps.versionProvider
+    ])
 }
 
 //dependencies {

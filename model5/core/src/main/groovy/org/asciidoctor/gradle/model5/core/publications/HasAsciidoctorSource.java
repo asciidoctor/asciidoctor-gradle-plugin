@@ -83,33 +83,4 @@ public interface HasAsciidoctorSource {
      * @return Patterns of files to include for Asciidoc sources.
      */
     Provider<PatternFilterable> getSourcePatterns();
-
-//    /**
-//     * Configures secondary sources.
-//     *
-//     * @param cfg Configuration closure. Is passed a {@link PatternSet}.
-//     */
-//    void secondarySources(@DelegatesTo(PatternSet.class) Closure<?> cfg);
-//
-//    /**
-//     * Configures sources.
-//     *
-//     * @param cfg Configuration {@link Action}. Is passed a {@link PatternSet}.
-//     */
-//    void secondarySources(final Action<? super PatternSet> cfg);
-//
-//    /**
-//     * Clears any of the existing secondary source patterns.
-//     *
-//     * This should be used if none of the default patterns should be monitored.
-//     */
-//    void clearSecondarySources();
-//
-//    /**
-//     * A provider of secondary source patterns.
-//     *
-//     * @return Patterns of non-Asciidoc source files to monitor.
-//     */
-//    Provider<PatternFilterable> getSecondarySourcePatterns();
-
 }

@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.jvm.epub
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AsciidoctorExecutionException
+import org.asciidoctor.gradle.base.ProblemReports
 import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask
@@ -26,6 +27,9 @@ import org.gradle.api.tasks.util.PatternSet
 import org.gradle.workers.WorkerExecutor
 
 import javax.inject.Inject
+
+import static org.asciidoctor.gradle.base.ProblemReports.ASCIIDOCTOR_J_PROBLEM_ID
+import static org.asciidoctor.gradle.base.ProblemReports.TOOLCHAIN_J
 
 /**
  * Builds EPUB documents using the epub3 backend.
@@ -50,6 +54,19 @@ class AsciidoctorEpubTask extends AbstractAsciidoctorTask {
 
         outputOptions.backends = [BACKEND]
         copyNoResources()
+
+        ProblemReports.report(
+            problemReporter(),
+            ASCIIDOCTOR_J_PROBLEM_ID,
+            ProblemReports.taskProblemDetail(name, 'asciidoctorj'),
+            ProblemReports.replacePlugin(
+                project, name,
+                'jvm.epub.classic',
+                'jvm.epub',
+                TOOLCHAIN_J,
+                BACKEND
+            )
+        )
     }
 
     /**

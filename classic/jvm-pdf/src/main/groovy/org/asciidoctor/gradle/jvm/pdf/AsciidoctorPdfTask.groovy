@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle.jvm.pdf
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.base.ProblemReports
 import org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask
 import org.gradle.api.Project
 import org.gradle.api.UnknownDomainObjectException
@@ -26,6 +27,9 @@ import org.gradle.api.tasks.util.PatternSet
 import org.gradle.workers.WorkerExecutor
 
 import javax.inject.Inject
+
+import static org.asciidoctor.gradle.base.ProblemReports.ASCIIDOCTOR_J_PROBLEM_ID
+import static org.asciidoctor.gradle.base.ProblemReports.TOOLCHAIN_J
 
 /** Asciidoctor task that is specialises in PDF conversion.
  *
@@ -42,6 +46,7 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
     private String theme
     private final List<Object> pdfFontDirs = []
 
+    @SuppressWarnings('DuplicateStringLiteral')
     @Inject
     AsciidoctorPdfTask(WorkerExecutor we) {
         super(we)
@@ -50,6 +55,19 @@ class AsciidoctorPdfTask extends AbstractAsciidoctorTask {
         copyNoResources()
         inputs.files { -> pdfFontDirs }.withPathSensitivity(PathSensitivity.RELATIVE)
             .ignoreEmptyDirectories().optional()
+
+        ProblemReports.report(
+            problemReporter(),
+            ASCIIDOCTOR_J_PROBLEM_ID,
+            ProblemReports.taskProblemDetail(name, 'asciidoctorj'),
+            ProblemReports.replacePlugin(
+                project, name,
+                'jvm.pdf.classic',
+                'jvm.pdf',
+                TOOLCHAIN_J,
+                'pdf'
+            )
+        )
     }
 
     /** Returns the directories or single directory for the fonts

@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.jvm.slides
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AsciidoctorUtils
+import org.asciidoctor.gradle.base.ProblemReports
 import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.base.slides.Profile
 import org.asciidoctor.gradle.base.slides.SlidesToExportAware
@@ -24,7 +25,6 @@ import org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask
 import org.asciidoctor.gradle.jvm.gems.AsciidoctorGemPrepare
 import org.gradle.api.Action
 import org.gradle.api.file.CopySpec
-
 @java.lang.SuppressWarnings('NoWildcardImports')
 import org.gradle.api.tasks.*
 import org.gradle.workers.WorkerExecutor
@@ -32,6 +32,8 @@ import org.ysb33r.grolifant5.api.core.Version
 
 import javax.inject.Inject
 
+import static org.asciidoctor.gradle.base.ProblemReports.ASCIIDOCTOR_J_PROBLEM_ID
+import static org.asciidoctor.gradle.base.ProblemReports.TOOLCHAIN_J
 import static org.asciidoctor.gradle.jvm.gems.AsciidoctorGemSupportPlugin.GEMPREP_TASK
 import static org.asciidoctor.gradle.jvm.gems.AsciidoctorGemSupportPlugin.JAR_TASK
 import static org.asciidoctor.gradle.jvm.slides.RevealJSExtension.FIRST_VERSION_WITH_PLUGIN_SUPPORT
@@ -58,7 +60,7 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
      * @param we {@link WorkerExecutor}.
      */
     @Inject
-    @SuppressWarnings('ClosureAsLastMethodParameter')
+    @SuppressWarnings(['ClosureAsLastMethodParameter', 'DuplicateStringLiteral'])
     AsciidoctorJRevealJSTask(WorkerExecutor we) {
         super(we)
         this.revealjsOptions = new RevealJSOptions(project)
@@ -72,9 +74,22 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
             withGemJar(JAR_TASK)
         }
 
-        inputs.file( { RevealJSOptions opt -> opt.highlightJsThemeIfFile }.curry(this.revealjsOptions) ).optional()
-        inputs.file( { RevealJSOptions opt -> opt.parallaxBackgroundImageIfFile }.
-                curry(this.revealjsOptions) ).optional()
+        inputs.file({ RevealJSOptions opt -> opt.highlightJsThemeIfFile }.curry(this.revealjsOptions)).optional()
+        inputs.file({ RevealJSOptions opt -> opt.parallaxBackgroundImageIfFile }.
+            curry(this.revealjsOptions)).optional()
+
+        ProblemReports.report(
+            problemReporter(),
+            ASCIIDOCTOR_J_PROBLEM_ID,
+            ProblemReports.taskProblemDetail(name, 'asciidoctorj'),
+            ProblemReports.replacePlugin(
+                project, name,
+                'jvm.revealjs.classic',
+                'jvm.revealjs',
+                TOOLCHAIN_J,
+                'revealjs'
+            )
+        )
     }
 
     /** Options for Reveal.JS slides.
@@ -241,9 +256,9 @@ class AsciidoctorJRevealJSTask extends AbstractAsciidoctorTask implements Slides
     Map<String, ?> getTaskSpecificDefaultAttributes(File workingSourceDir) {
         Map<String, String> attrs = super.getTaskSpecificDefaultAttributes(workingSourceDir) as Map<String, String>
 
-        attrs.putAll([revealjsdir: getTemplateRelativeDir(),
-            revealjs_theme: getTheme(),
-            'source-highlighter': 'highlightjs'
+        attrs.putAll([revealjsdir         : getTemplateRelativeDir(),
+                      revealjs_theme      : getTheme(),
+                      'source-highlighter': 'highlightjs'
         ])
 
         attrs.putAll(revealjsOptions.asAttributeMap)

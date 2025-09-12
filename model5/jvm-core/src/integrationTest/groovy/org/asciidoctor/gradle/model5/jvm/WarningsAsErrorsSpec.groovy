@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.model5.jvm
 
 import org.asciidoctor.gradle.model5.jvm.testfixtures.AsciidoctorjHtmlIntegrationSpecification
 import org.gradle.testkit.runner.TaskOutcome
+import spock.lang.Timeout
 
 import static org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils.DEFAULT_PUBLICATION
 
@@ -27,6 +28,7 @@ class WarningsAsErrorsSpec extends AsciidoctorjHtmlIntegrationSpecification {
         copyTestProject('missing-include')
     }
 
+    @Timeout(value=120)
     void 'Warnings can be treated as errors'() {
         setup:
         final logFile = new File(buildDir, 'reports/asciidoc/logs/asciidoctorj/html/log.json')

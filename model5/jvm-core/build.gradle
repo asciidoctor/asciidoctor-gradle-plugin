@@ -124,3 +124,8 @@ dependencies {
     cachingOnly(libs.asciidoctorjEpub) // <.>
 }
 // end::hacking-asciidoctorj-output-formatter[]
+
+tasks.named('integrationTest',Test) {
+    maxParallelForks = 4
+    forkEvery = 2
+}

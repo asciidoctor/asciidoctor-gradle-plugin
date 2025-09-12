@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.js.nodejs
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.AsciidoctorAttributeProvider
+import org.asciidoctor.gradle.base.ProblemReports
 import org.asciidoctor.gradle.base.internal.Workspace
 import org.asciidoctor.gradle.js.base.AbstractAsciidoctorTask
 import org.asciidoctor.gradle.js.nodejs.core.AsciidoctorJSNodeExtension
@@ -30,6 +31,8 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.workers.WorkerExecutor
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 
+import static org.asciidoctor.gradle.base.ProblemReports.ASCIIDOCTOR_JS_PROBLEM_ID
+import static org.asciidoctor.gradle.base.ProblemReports.publicationName
 import static org.asciidoctor.gradle.base.internal.AsciidoctorAttributes.resolveAsCacheable
 import static org.asciidoctor.gradle.js.nodejs.core.AsciidoctorNodeJSBasePlugin.NPM_EXTENSION_NAME
 import static org.asciidoctor.gradle.js.nodejs.core.NodeJSUtils.initPackageJson
@@ -71,6 +74,7 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
      */
     void setAttributes(Map m) {
         asciidoctorjs.attributes = m
+        reportAttributes()
     }
 
     /** Add additional asciidoctor attributes.
@@ -83,6 +87,7 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
      */
     void attributes(Map m) {
         asciidoctorjs.attributes(m)
+        reportAttributes()
     }
 
     /** Shortcut method to access additional providers of attributes.
@@ -131,49 +136,49 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
     @CompileDynamic
     private Map<String, String> prepareAttributesForSerialisation(final File workingSourceDir, Optional<String> lang) {
         projectOperations.stringTools.stringizeValues(prepareAttributes(
-                workingSourceDir,
-                asciidoctorjs.attributes,
-                lang.present ? asciidoctorjs.getAttributesForLang(lang.get()) : [:],
-                asciidoctorjs.attributeProviders,
-                lang
+            workingSourceDir,
+            asciidoctorjs.attributes,
+            lang.present ? asciidoctorjs.getAttributesForLang(lang.get()) : [:],
+            asciidoctorjs.attributeProviders,
+            lang
         ))
     }
 
     @SuppressWarnings('UnnecessaryGetter')
     private AsciidoctorJSRunner getAsciidoctorJSRunnerFor(
-            final AsciidoctorJSRunner.FileLocations asciidoctorjsExe,
-            final String backend,
-            final Map<String, String> attributes,
-            Optional<String> lang
+        final AsciidoctorJSRunner.FileLocations asciidoctorjsExe,
+        final String backend,
+        final Map<String, String> attributes,
+        Optional<String> lang
     ) {
         new AsciidoctorJSRunner(
-                nodejs.executable.get(),
-                projectOperations,
-                asciidoctorjsExe,
-                backend,
-                asciidoctorjs.safeMode,
-                lang.present ? getBaseDir(lang.get()) : getBaseDir(),
-                lang.present ? getOutputDirFor(backend, lang.get()) : getOutputDirFor(backend),
-                attributes,
-                asciidoctorjs.requires,
-                Optional.empty(),
-                logDocuments
+            nodejs.executable.get(),
+            projectOperations,
+            asciidoctorjsExe,
+            backend,
+            asciidoctorjs.safeMode,
+            lang.present ? getBaseDir(lang.get()) : getBaseDir(),
+            lang.present ? getOutputDirFor(backend, lang.get()) : getOutputDirFor(backend),
+            attributes,
+            asciidoctorjs.requires,
+            Optional.empty(),
+            logDocuments
         )
     }
 
     private AsciidoctorJSRunner.FileLocations resolveAsciidoctorjsEnvironment() {
         File home = asciidoctorjs.toolingWorkDir.get()
         initPackageJson(
-                home,
-                projectAlias,
-                projectOperations,
-                nodejs,
-                npm
+            home,
+            projectAlias,
+            projectOperations,
+            nodejs,
+            npm
         )
         asciidoctorjs.configuration.resolve()
         new AsciidoctorJSRunner.FileLocations(
-                executable: new File(home, 'node_modules/@asciidoctor/cli/bin/asciidoctor'),
-                workingDir: home
+            executable: new File(home, 'node_modules/@asciidoctor/cli/bin/asciidoctor'),
+            workingDir: home
         )
     }
 
@@ -189,15 +194,43 @@ class AbstractAsciidoctorNodeJSTask extends AbstractAsciidoctorTask {
         for (String backend : configuredOutputOptions.backends) {
             conversionGroups.each { String relativePath, List<File> sourceGroup ->
                 getAsciidoctorJSRunnerFor(
-                        asciidoctorjsEnv,
-                        backend,
-                        finalAttributes,
-                        lang
+                    asciidoctorjsEnv,
+                    backend,
+                    finalAttributes,
+                    lang
                 ).convert(sourceGroup.toSet(), relativePath)
             }
             if (copyResources.present && (copyResources.get().empty || backend in copyResources.get())) {
                 copyResourcesByBackend(backend, workingSourceDir, getOutputDirFor(backend), lang)
             }
         }
+    }
+
+    private void reportAttributes() {
+        final details = 'Attributes need to migrate to the new model5 attributes block'
+        final solution = """
+        In the classic model, attributes could be set on the task.
+        This now needs to migrate to the model definition.
+
+        asciidoc {
+            publications {
+                ${publicationName(name)} {
+                    sourceSet {
+                        attributes {
+                            // Add one attribute
+                            add ('single', 'attribute)
+
+                            // Add multiple attributes
+                            addAll( single: 'attribute', seocnd: 'attribute2' )
+
+                            // Replace all attributes
+                            replaceAll( single: 'attribute', seocnd: 'attribute2' )
+                        }
+                    }
+                }
+            }
+        }
+        """.stripIndent()
+        ProblemReports.report(problemReporter(), ASCIIDOCTOR_JS_PROBLEM_ID, details, solution)
     }
 }

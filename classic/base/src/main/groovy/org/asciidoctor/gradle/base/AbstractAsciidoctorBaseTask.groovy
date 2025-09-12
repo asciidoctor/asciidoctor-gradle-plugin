@@ -20,7 +20,6 @@ import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.internal.DefaultAsciidoctorBaseDirConfiguration
 import org.asciidoctor.gradle.base.internal.Workspace
 import org.gradle.api.Action
-import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.Project
@@ -41,6 +40,7 @@ import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.api.tasks.util.PatternSet
 import org.ysb33r.grolifant5.api.core.ProjectOperations
+import org.ysb33r.grolifant5.api.core.runnable.GrolifantDefaultTask
 
 import java.nio.file.Path
 
@@ -48,6 +48,7 @@ import static org.asciidoctor.gradle.base.AsciidoctorUtils.UNDERSCORE_LED_FILES
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.createDirectoryProperty
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.executeDelegatingClosure
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.mapToDirectoryProvider
+import static org.asciidoctor.gradle.base.ProblemReports.publicationName
 import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 import static org.ysb33r.grolifant5.api.core.TaskInputFileOptions.IGNORE_EMPTY_DIRECTORIES
 import static org.ysb33r.grolifant5.api.core.TaskInputFileOptions.SKIP_WHEN_EMPTY
@@ -63,7 +64,7 @@ import static org.ysb33r.grolifant5.api.core.TaskInputFileOptions.SKIP_WHEN_EMPT
  */
 @CompileStatic
 @SuppressWarnings(['MethodCount', 'ClassSize'])
-abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements AsciidoctorTaskMethods {
+abstract class AbstractAsciidoctorBaseTask extends GrolifantDefaultTask implements AsciidoctorTaskMethods {
 
     @Delegate
     private final AsciidoctorTaskBaseDirConfiguration baseDirConfiguration
@@ -95,6 +96,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
      */
     void setSourceDir(Object f) {
         this.srcDir.set(mapToDirectoryProvider(project, f))
+        reportSourceAndResourcs()
     }
 
     /** Sets the new Asciidoctor parent source directory in a declarative style.
@@ -105,6 +107,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
      */
     void sourceDir(Object f) {
         this.srcDir.set(mapToDirectoryProvider(project, f))
+        reportSourceAndResourcs()
     }
 
     /** Returns the parent directory for Asciidoctor source.
@@ -136,6 +139,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
      */
     void setOutputDir(Object f) {
         this.outDir.set(project.file(f))
+        reportOutputDir()
     }
 
     /**
@@ -157,6 +161,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
         Closure configuration = (Closure) cfg.clone()
         configuration.delegate = sourceDocumentPattern
         configuration()
+        reportSourceAndResourcs()
     }
 
     /** Configures sources.
@@ -168,6 +173,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
             sourceDocumentPattern = new PatternSet().exclude(UNDERSCORE_LED_FILES)
         }
         cfg.execute(sourceDocumentPattern)
+        reportSourceAndResourcs()
     }
 
     /** Include source patterns.
@@ -182,12 +188,14 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
                 patternSet.include(includePatterns)
             }
         })
+        reportSourceAndResourcs()
     }
 
     /** Clears existing sources patterns.
      */
     void clearSources() {
         sourceDocumentPattern = null
+        reportSourceAndResourcs()
     }
 
     /** Clears any of the existing secondary soruces patterns.
@@ -196,6 +204,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
      */
     void clearSecondarySources() {
         secondarySourceDocumentPattern = new PatternSet()
+        reportSourceAndResourcs()
     }
 
     /** Configures secondary sources.
@@ -208,6 +217,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
             this.secondarySourceDocumentPattern = defaultSecondarySourceDocumentPattern
         }
         executeDelegatingClosure(this.secondarySourceDocumentPattern, cfg)
+        reportSourceAndResourcs()
     }
 
     /** Configures sources.
@@ -219,6 +229,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
             secondarySourceDocumentPattern = defaultSecondarySourceDocumentPattern
         }
         cfg.execute(secondarySourceDocumentPattern)
+        reportSourceAndResourcs()
     }
 
     /** Returns a FileTree containing all of the source documents
@@ -276,6 +287,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
             configuration.delegate = this.resourceCopy
             configuration()
         }
+        reportSourceAndResourcs()
     }
 
     /** Add to the CopySpec for extra files. The destination of these files will always have a parent directory
@@ -289,6 +301,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
         } else {
             cfg.execute(this.resourceCopy)
         }
+        reportSourceAndResourcs()
     }
 
     /** Add to the CopySpec for extra files. The destination of these files will always have a parent directory
@@ -308,6 +321,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
             configuration.delegate = this.languageResources[lang]
             configuration()
         }
+//        reportSourceAndResourcs()
     }
 
     /** Add to the CopySpec for extra files. The destination of these files will always have a parent directory
@@ -325,6 +339,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
         } else {
             cfg.execute(this.languageResources[lang])
         }
+//        reportSourceAndResourcs()
     }
 
     /** Copies all resources to the output directory.
@@ -334,6 +349,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
      */
     void copyAllResources() {
         this.copyResourcesForBackends = []
+        reportCopyResources()
     }
 
     /** Do not copy any resources to the output directory.
@@ -343,6 +359,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
      */
     void copyNoResources() {
         this.copyResourcesForBackends = null
+        reportSourceAndResourcs()
     }
 
     /** Copy resources to the output directory only if the backend names matches any of the specified
@@ -354,6 +371,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
     void copyResourcesOnlyIf(String... backendNames) {
         this.copyResourcesForBackends = []
         this.copyResourcesForBackends.addAll(backendNames)
+        reportCopyResources()
     }
 
     /** List of backends for which to copy resources.
@@ -394,6 +412,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
      */
     void useIntermediateWorkDir() {
         withIntermediateWorkDir = true
+        reportIntermediateWorkdir()
     }
 
     /** The document conversion might generate additional artifacts that could
@@ -413,6 +432,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
             this.intermediateArtifactPattern.set(new PatternSet())
         }
         executeDelegatingClosure(this.intermediateArtifactPattern.get(), cfg)
+        reportIntermediateWorkdir()
     }
 
     /** Additional artifacts created by Asciidoctor that might require copying.
@@ -427,6 +447,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
             this.intermediateArtifactPattern.set(new PatternSet())
         }
         cfg.execute(this.intermediateArtifactPattern.get())
+        reportIntermediateWorkdir()
     }
 
     /**
@@ -559,7 +580,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
      */
     Map<String, Object> getTaskSpecificDefaultAttributes(File workingSourceDir) {
         Map<String, Object> attrs = [
-                includedir: (Object) workingSourceDir.absolutePath
+            includedir: (Object) workingSourceDir.absolutePath
         ]
 
         String revNumber = defaultRevNumber.get()
@@ -600,9 +621,9 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
         } else {
             File srcDir = new File(sourceDir, language)
             Workspace.builder()
-                    .workingSourceDir(srcDir)
-                    .sourceTree(getSourceFileTreeFrom(srcDir))
-                    .build()
+                .workingSourceDir(srcDir)
+                .sourceTree(getSourceFileTreeFrom(srcDir))
+                .build()
         }
     }
 
@@ -666,7 +687,7 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
     protected AbstractAsciidoctorBaseTask() {
         super()
         notCompatibleWithConfigurationCache(
-                'Classic Asciidoctor Gradle tasks are not compatible with CC.'
+            'Classic Asciidoctor Gradle tasks are not compatible with CC.'
         )
         this.projectOperations = ProjectOperations.find(project)
         this.intermediateArtifactPattern = project.objects.property(PatternSet)
@@ -674,24 +695,24 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
         this.outDir = createDirectoryProperty(project)
         this.defaultRevNumber = projectOperations.projectTools.versionProvider.orElse(Project.DEFAULT_VERSION)
         this.intermediateWorkDirProvider = projectOperations.fsOperations.buildDirDescendant(
-                "tmp/${projectOperations.fsOperations.toSafeFileName(this.name)}.intermediate"
+            "tmp/${projectOperations.fsOperations.toSafeFileName(this.name)}.intermediate"
         )
 
         projectOperations.tasks.inputFiles(
-                inputs,
-                { projectOperations.fsOperations.resolveFilesFromCopySpec(getResourceCopySpec(Optional.empty())) },
-                RELATIVE,
-                IGNORE_EMPTY_DIRECTORIES
+            inputs,
+            { projectOperations.fsOperations.resolveFilesFromCopySpec(getResourceCopySpec(Optional.empty())) },
+            RELATIVE,
+            IGNORE_EMPTY_DIRECTORIES
         )
         projectOperations.tasks.inputFiles(
-                inputs,
-                { sourceFileTree },
-                RELATIVE, IGNORE_EMPTY_DIRECTORIES, SKIP_WHEN_EMPTY
+            inputs,
+            { sourceFileTree },
+            RELATIVE, IGNORE_EMPTY_DIRECTORIES, SKIP_WHEN_EMPTY
         )
         projectOperations.tasks.inputFiles(
-                inputs,
-                { secondarySourceFileTree },
-                RELATIVE, IGNORE_EMPTY_DIRECTORIES
+            inputs,
+            { secondarySourceFileTree },
+            RELATIVE, IGNORE_EMPTY_DIRECTORIES
         )
         this.baseDirConfiguration = new DefaultAsciidoctorBaseDirConfiguration(project, this)
     }
@@ -760,9 +781,9 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
      */
     protected FileTree getSourceFileTreeFrom(File dir) {
         AsciidoctorUtils.getSourceFileTree(
-                projectOperations,
-                dir,
-                this.sourceDocumentPattern ?: defaultSourceDocumentPattern
+            projectOperations,
+            dir,
+            this.sourceDocumentPattern ?: defaultSourceDocumentPattern
         )
     }
 
@@ -774,10 +795,10 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
     protected FileTree getSecondarySourceFileTreeFrom(File dir) {
         Spec<FileTreeElement> primarySourceSpec = (this.sourceDocumentPattern ?: defaultSourceDocumentPattern).asSpec
         project.fileTree(dir)
-                .matching(this.secondarySourceDocumentPattern ?: defaultSecondarySourceDocumentPattern)
-                .matching { PatternFilterable target ->
-                    target.exclude(primarySourceSpec)
-                }
+            .matching(this.secondarySourceDocumentPattern ?: defaultSecondarySourceDocumentPattern)
+            .matching { PatternFilterable target ->
+                target.exclude(primarySourceSpec)
+            }
     }
 
     /** The default PatternSet that will be used if {@code sources} was never called
@@ -833,17 +854,17 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
      * @param includeLang If set also copy resources for this specified language
      */
     protected void copyResourcesByBackend(
-            final String backendName,
-            final File sourceDir,
-            final File outputDir,
-            Optional<String> includeLang
+        final String backendName,
+        final File sourceDir,
+        final File outputDir,
+        Optional<String> includeLang
     ) {
         CopySpec rcs = getResourceCopySpec(includeLang)
         logger.info "Copy resources for '${backendName}' to ${outputDir}"
 
         FileTree ps = this.intermediateArtifactPattern.present ?
-                projectOperations.fileTree(sourceDir).matching(this.intermediateArtifactPattern.get()) :
-                null
+            projectOperations.fileTree(sourceDir).matching(this.intermediateArtifactPattern.get()) :
+            null
 
         CopySpec langSpec = includeLang.present ? languageResources[includeLang.get()] : null
 
@@ -952,8 +973,8 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
             throw new GradleException("outputDir has not been defined for task '${name}'")
         }
         configuredOutputOptions.separateOutputDirs ?
-                new File(outputDir, "${language}/${backendName}") :
-                new File(outputDir, language)
+            new File(outputDir, "${language}/${backendName}") :
+            new File(outputDir, language)
     }
 
     /**
@@ -969,11 +990,11 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
      * @since 3.0.0
      */
     protected Map<String, Object> prepareAttributes(
-            final File workingSourceDir,
-            Map<String, Object> seedAttributes,
-            Map<String, Object> langAttributes,
-            List<AsciidoctorAttributeProvider> attributeProviders,
-            Optional<String> lang
+        final File workingSourceDir,
+        Map<String, Object> seedAttributes,
+        Map<String, Object> langAttributes,
+        List<AsciidoctorAttributeProvider> attributeProviders,
+        Optional<String> lang
     ) {
         Map<String, Object> attrs = [:]
         attrs.putAll(seedAttributes)
@@ -983,18 +1004,18 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
         }
 
         Map<String, Object> defaultAttrs = prepareDefaultAttributes(
-                attrs,
-                getTaskSpecificDefaultAttributes(workingSourceDir),
-                lang
+            attrs,
+            getTaskSpecificDefaultAttributes(workingSourceDir),
+            lang
         )
         attrs.putAll(defaultAttrs)
         evaluateProviders(attrs)
     }
 
     private Map<String, Object> prepareDefaultAttributes(
-            Map<String, Object> seedAttributes,
-            Map<String, Object> defaultAttributes,
-            Optional<String> lang
+        Map<String, Object> seedAttributes,
+        Map<String, Object> defaultAttributes,
+        Optional<String> lang
     ) {
         Set<String> userDefinedAttrKeys = trimOverridableAttributeNotation(seedAttributes.keySet())
 
@@ -1054,9 +1075,9 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
 
             if (sourceRoot != baseRoot || outputRoot != baseRoot) {
                 throw new AsciidoctorExecutionException(
-                        "sourceDir, outputDir and baseDir needs to have the same root filesystem for ${engineName} " +
-                                'to function correctly. ' +
-                                'This is typically caused on Windows where everything is not on the same drive letter.'
+                    "sourceDir, outputDir and baseDir needs to have the same root filesystem for ${engineName} " +
+                        'to function correctly. ' +
+                        'This is typically caused on Windows where everything is not on the same drive letter.'
                 )
             }
         }
@@ -1067,30 +1088,30 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
             throw new AsciidoctorMultiLanguageException('Use prepareTempWorkspace(tmpDir,lang) instead')
         }
         prepareTempWorkspace(
-                tmpDir,
-                sourceFileTree,
-                secondarySourceFileTree,
-                getResourceCopySpec(Optional.empty()),
-                Optional.empty()
+            tmpDir,
+            sourceFileTree,
+            secondarySourceFileTree,
+            getResourceCopySpec(Optional.empty()),
+            Optional.empty()
         )
     }
 
     private void prepareTempWorkspace(final File tmpDir, final String lang) {
         prepareTempWorkspace(
-                tmpDir,
-                getLanguageSourceFileTree(lang),
-                getLanguageSecondarySourceFileTree(lang),
-                getResourceCopySpec(Optional.of(lang)),
-                Optional.ofNullable(this.languageResources[lang])
+            tmpDir,
+            getLanguageSourceFileTree(lang),
+            getLanguageSecondarySourceFileTree(lang),
+            getResourceCopySpec(Optional.of(lang)),
+            Optional.ofNullable(this.languageResources[lang])
         )
     }
 
     private void prepareTempWorkspace(
-            final File tmpDir,
-            final FileTree mainSourceTree,
-            final FileTree secondarySourceTree,
-            final CopySpec resourceTree,
-            final Optional<CopySpec> langResourcesTree
+        final File tmpDir,
+        final FileTree mainSourceTree,
+        final FileTree secondarySourceTree,
+        final CopySpec resourceTree,
+        final Optional<CopySpec> langResourcesTree
     ) {
         if (tmpDir.exists()) {
             tmpDir.deleteDir()
@@ -1115,5 +1136,80 @@ abstract class AbstractAsciidoctorBaseTask extends DefaultTask implements Asciid
         ps.include '**/*.ad'
         ps.include '**/*.asc'
         ps.include '**/*.asciidoc'
+    }
+
+    @SuppressWarnings('LineLength')
+    private void reportSourceAndResourcs() {
+        final id = ProblemReports.problemIdFromClass(this.class.canonicalName)
+        final details = 'sourceDir is now set on the model'
+        final solution = """
+        In the classic model, sourceDir, sources, resources and secondarySources could be set on the task.
+        This now needs to migrate to the model definition.
+        'sourceDir` and `sources` can be configured as below.
+        'resources` can also be configured as below, but only supports the PatternFilterable interface.
+        'secondarySoruces` are no logner supported as the task does a much better job in determining
+        up-to-date state.
+
+        asciidoc {
+            publications {
+                ${publicationName(name)} {
+                    sourceSet {
+                        // This has a default value, but can be set according to your requirements
+                        sourceDir = 'src/docs/asciidoc${name == 'asciidoctor' ? '' : publicationName(name).capitalize()}'
+
+                        sources {
+                            // Update according to your requirements
+                            include '**/*.adoc'
+                        }
+
+                        resources {
+                            // Adapt to your requirements
+                            include 'images/*.png'
+                        }
+                    }
+                }
+            }
+        }
+        """.stripIndent()
+
+        ProblemReports.report(problemReporter(), id, details, solution)
+    }
+
+    private void reportOutputDir() {
+        final id = ProblemReports.problemIdFromClass(this.class.canonicalName)
+        final details = 'outputDir cannot be directly configured'
+        final solution = """
+        In the classic model, outputDir could be set on the task.
+        In the new model, this is no longer a safe option as the the directory is calculated
+        from a combination of the toolchain, the output formatter, and the publication output.
+        If you need to obtain the output directory, the 'outputPath` method on the publication
+        can be queried.
+        """.stripIndent()
+
+        ProblemReports.report(problemReporter(), id, details, solution)
+    }
+
+    private void reportCopyResources() {
+        final id = ProblemReports.problemIdFromClass(this.class.canonicalName)
+        final details = 'copyResources is handled by the output formatter'
+        final solution = '''
+        In the classic model, copyAllResources(), copyNoResources() etc. could be set on the task.
+        In the new model, this is no longer possible. The decision is handled by the output
+        formatter and cannot be controlled by the build script author.
+        '''.stripIndent()
+
+        ProblemReports.report(problemReporter(), id, details, solution)
+    }
+
+    private void reportIntermediateWorkdir() {
+        final id = ProblemReports.problemIdFromClass(this.class.canonicalName)
+        final details = 'Intermediate workdir usage cannot be directly configured'
+        final solution = '''
+        In the classic model, useIntermediateWorkdir(),could be set on the task.
+        In the new model, this is no longer possible. The decision is handled by the task internally
+        as it can make a decision based upon its inputs.
+        '''.stripIndent()
+
+        ProblemReports.report(problemReporter(), id, details, solution)
     }
 }

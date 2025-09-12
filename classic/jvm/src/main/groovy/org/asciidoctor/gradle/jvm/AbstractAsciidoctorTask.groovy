@@ -22,6 +22,7 @@ import org.asciidoctor.gradle.base.AsciidoctorTaskFileOperations
 import org.asciidoctor.gradle.base.AsciidoctorTaskMethods
 import org.asciidoctor.gradle.base.AsciidoctorTaskOutputOptions
 import org.asciidoctor.gradle.base.AsciidoctorTaskWorkspacePreparation
+import org.asciidoctor.gradle.base.ProblemReports
 import org.asciidoctor.gradle.base.Transform
 import org.asciidoctor.gradle.base.internal.DefaultAsciidoctorBaseDirConfiguration
 import org.asciidoctor.gradle.base.internal.DefaultAsciidoctorFileOperations
@@ -37,7 +38,6 @@ import org.asciidoctor.gradle.internal.ExecutorConfiguration
 import org.asciidoctor.gradle.internal.ExecutorUtils
 import org.asciidoctor.gradle.internal.JavaExecUtils
 import org.asciidoctor.gradle.remote.AsciidoctorJavaExec
-import org.gradle.api.Action
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.ConfigurationContainer
 import org.gradle.api.artifacts.Dependency
@@ -50,12 +50,10 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.bundling.Jar
-import org.gradle.process.JavaForkOptions
 import org.gradle.workers.WorkerExecutor
 import org.ysb33r.grolifant5.api.core.LegacyLevel
 import org.ysb33r.grolifant5.api.core.ProjectOperations
 import org.ysb33r.grolifant5.api.core.jvm.ExecutionMode
-import org.ysb33r.grolifant5.api.core.jvm.JavaForkOptionsWithEnvProvider
 import org.ysb33r.grolifant5.api.core.jvm.worker.WorkerAppParameterFactory
 import org.ysb33r.grolifant5.api.core.runnable.AbstractJvmModelExecTask
 import org.ysb33r.grolifant5.api.remote.worker.WorkerAppExecutorFactory
@@ -63,6 +61,10 @@ import org.ysb33r.grolifant5.api.remote.worker.WorkerAppExecutorFactory
 import java.util.function.Function
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.getClassLocation
+import static org.asciidoctor.gradle.base.ProblemReports.ASCIIDOCTOR_J_PROBLEM_ID
+import static org.asciidoctor.gradle.base.ProblemReports.TOOLCHAIN_J
+import static org.asciidoctor.gradle.base.ProblemReports.TOOLCHAIN_J_CLASS
+import static org.asciidoctor.gradle.base.ProblemReports.publicationName
 import static org.asciidoctor.gradle.base.internal.AsciidoctorAttributes.evaluateProviders
 import static org.asciidoctor.gradle.base.internal.AsciidoctorAttributes.prepareAttributes
 import static org.asciidoctor.gradle.base.internal.AsciidoctorAttributes.resolveAsCacheable
@@ -127,20 +129,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
     void setInProcess(ProcessMode mode) {
         logger.warn "Use 'setExecutionMode' instead of 'setInProcess(ProcessMode)'"
         executionMode = mode.executionMode
-    }
-
-    /** Set how AsciidoctorJ should be run.
-     *
-     * @param mode Case-insensitive string from of {@link #IN_PROCESS}, {@link #OUT_OF_PROCESS} or {@link #JAVA_EXEC}.
-     *
-     * @since 3.0
-     *
-     * @deprecated Use {@link #setExecutionMode} instead.
-     */
-    @Deprecated
-    void setInProcess(String mode) {
-        logger.warn "Use 'setExecutionMode' instead of 'setInProcess(String)'"
-        executionMode = ProcessMode.valueOf(mode.toUpperCase(Locale.US)).executionMode
+        reportExecutionMode()
     }
 
     /** Set the minimum logging level that will fail the task.
@@ -190,33 +179,6 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
     @Internal
     boolean parallelMode = true
 
-    /**
-     * Set fork options for {@link #JAVA_EXEC} and {@link #OUT_OF_PROCESS} modes.
-     *
-     * These options are ignored if {@link #inProcess} {@code ==} {@link #IN_PROCESS}.
-     *
-     * @param configurator Closure that configures a {@link JavaForkOptions} instance.
-     *
-     * @deprecated Use {@link org.ysb33r.grolifant5.api.core.runnable.AbstractJvmModelExecTask#jvm} instead.
-     */
-    @Deprecated
-    void forkOptions(@DelegatesTo(JavaForkOptionsWithEnvProvider) Closure configurator) {
-        jvm(configurator)
-    }
-
-    /** Set fork options for {@link #JAVA_EXEC} and {@link #OUT_OF_PROCESS} modes.
-     *
-     * These options are ignored if {@link #inProcess} {@code ==} {@link #IN_PROCESS}.
-     *
-     * @param configurator Action that configures a {@link JavaForkOptions} instance.
-     *
-     * @deprecated Use {@link org.ysb33r.grolifant5.api.core.runnable.AbstractJvmModelExecTask#jvm} instead.
-     */
-    @Deprecated
-    void forkOptions(Action<JavaForkOptionsWithEnvProvider> configurator) {
-        jvm(configurator)
-    }
-
     /** Returns all of the Asciidoctor options.
      *
      * This is equivalent of using {@code asciidoctorj.getOptions}
@@ -237,6 +199,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
      */
     void setOptions(Map m) {
         asciidoctorj.options = m
+        reportOptions()
     }
 
     /** Add additional asciidoctor options
@@ -249,6 +212,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
      */
     void options(Map m) {
         asciidoctorj.options(m)
+        reportOptions()
     }
 
     /** Returns all of the Asciidoctor options.
@@ -271,6 +235,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
      */
     void setAttributes(Map m) {
         asciidoctorj.attributes = m
+        reportAttributes()
     }
 
     /** Add additional asciidoctor options
@@ -283,6 +248,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
      */
     void attributes(Map m) {
         asciidoctorj.attributes(m)
+        reportAttributes()
     }
 
     /** Additional providers of attributes.
@@ -323,6 +289,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
     void setConfigurations(Iterable<Object> configs) {
         this.asciidocConfigurations.clear()
         configurations(configs)
+        reportConfigurations()
     }
 
     /** Add additional configurations.
@@ -332,6 +299,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
      */
     void configurations(Iterable<Object> configs) {
         this.asciidocConfigurations.addAll(configs)
+        reportConfigurations()
     }
 
     /** Add additional configurations.
@@ -341,6 +309,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
      */
     void configurations(Object... configs) {
         this.asciidocConfigurations.addAll(configs)
+        reportConfigurations()
     }
 
     /** Configurations for which dependencies should be reported.
@@ -365,6 +334,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
     void withGemJar(TaskProvider<Jar> gemJar) {
         dependsOn(gemJar)
         this.gemJarProviders.add(gemJar.map { it.archiveFile.get().asFile })
+        reportConfigurations()
     }
 
     /**
@@ -378,6 +348,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
         dependsOn(taskName)
         final gemJar = project.tasks.named(taskName, Jar)
         this.gemJarProviders.add(gemJar.map { it.archiveFile.get().asFile })
+        reportConfigurations()
     }
 
     /**
@@ -392,6 +363,7 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
     void withGemPath(Provider<File> gemPath, String builtBy) {
         dependsOn(builtBy)
         this.gemJarProviders.add(gemPath)
+        reportConfigurations()
     }
 
     /**
@@ -416,10 +388,12 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
                 setArgs([getExecConfigurationDataFile(this).absolutePath])
             }
         }
+        reportExecutionMode()
     }
 
     void setExecutionMode(String s) {
         executionMode = ExecutionMode.valueOf(s.toUpperCase(Locale.US))
+        reportExecutionMode()
     }
 
     @Override
@@ -783,17 +757,87 @@ class AbstractAsciidoctorTask extends AbstractJvmModelExecTask<AsciidoctorJvmExe
         } as List<Closure>
     }
 
-//    @SuppressWarnings('AbstractClassWithoutAbstractMethod')
-//    abstract static class AsciidoctorJExecuterWorker implements WorkAction<Params> {
-//        static interface Params extends WorkParameters {
-//            ExecutorConfigurationContainer getExtensionConfigurationContainer()
-//
-//            void setExtensionConfigurationContainer(ExecutorConfigurationContainer container)
-//        }
-//
-//        @Override
-//        void execute() {
-//            new AsciidoctorJExecuter(parameters.extensionConfigurationContainer).run()
-//        }
-//    }
+    private void reportExecutionMode() {
+        final details = 'executionMode is no longer set on the task'
+        final solution = """
+        In the classic model, the execution mode was set on the task.
+        In the new model5 this is hadnled by each output formatter.
+        By default output formatters will run with classpath isolation, but it is possible to configure
+        a task to run with process isolation.
+
+        asciidoc {
+            ${TOOLCHAIN_J}(${TOOLCHAIN_J_CLASS}) {
+                registeredOutputFormatters {
+                    // This show the example for 'html'
+                    html {
+                        useProcessIsolation()
+                    }
+                }
+            }
+        }
+        """.stripIndent()
+        ProblemReports.report(problemReporter(), ASCIIDOCTOR_J_PROBLEM_ID, details, solution)
+    }
+
+    private void reportOptions() {
+        final details = 'Options are no longer set on the task'
+        final solution = """
+        In the classic model, the options could be set on the task.
+        In the new model5 this is hadnled by the toolchain as it is toolchain-related, not content-related.
+
+        asciidoc {
+            ${TOOLCHAIN_J}(${TOOLCHAIN_J_CLASS}) {
+                engineOptions {
+                    // COnfigure the options here
+                }
+            }
+        }
+        """.stripIndent()
+        ProblemReports.report(problemReporter(), ASCIIDOCTOR_J_PROBLEM_ID, details, solution)
+    }
+
+    private void reportAttributes() {
+        final details = 'Attributes need to migrate to the new model5 attributes block'
+        final solution = """
+        In the classic model, attributes could be set on the task.
+        This now needs to migrate to the model definition.
+
+        asciidoc {
+            publications {
+                ${publicationName(name)} {
+                    sourceSet {
+                        attributes {
+                            // Add one attribute
+                            add ('single', 'attribute)
+
+                            // Add multiple attributes
+                            addAll( single: 'attribute', seocnd: 'attribute2' )
+
+                            // Replace all attributes
+                            replaceAll( single: 'attribute', seocnd: 'attribute2' )
+                        }
+                    }
+                }
+            }
+        }
+        """.stripIndent()
+        ProblemReports.report(problemReporter(), ASCIIDOCTOR_J_PROBLEM_ID, details, solution)
+    }
+
+    private void reportConfigurations() {
+        final details = 'Configuration and GEM JARs cannot be set on the task'
+        final solution = '''
+        In the classic model, configurations could be set on the task.
+        In the new model5 definition configurations are automatically created by output formatters and extensions.
+        If you need to customise the classpath for any specific one, you need to access the specific configuration
+        directly in the usual Gradle way. Please note that most output formatters and extensions have a 'useVersion'
+        method to set a version other than the default.
+        There is also an AsciidoctorjGenericOutputFormatter and AsciidoctorjGenericExtension if you need to create
+        an output formatter or extension out of external JARs and GEMs.
+
+        GEM JARs are automatically handled and placed on the classpath of the toolchains.
+        This is activated when the 'org.asciidoctor.jvm.gems' plugin is applied.
+        '''.stripIndent()
+        ProblemReports.report(problemReporter(), ASCIIDOCTOR_J_PROBLEM_ID, details, solution)
+    }
 }

@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle.jvm.gems
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.base.ProblemReports
 import org.asciidoctor.gradle.jvm.AsciidoctorJExtension
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.workers.WorkerExecutor
@@ -23,6 +24,9 @@ import org.ysb33r.gradle.jruby.api.tasks.AbstractGemPrepareTask
 
 import javax.inject.Inject
 import java.util.concurrent.Callable
+
+import static org.asciidoctor.gradle.base.ProblemReports.ASCIIDOCTOR_J_PROBLEM_ID
+import static org.asciidoctor.gradle.base.ProblemReports.TOOLCHAIN_J
 
 /**
  * Prepare additional GEMs for AsciidoctorJ.
@@ -44,5 +48,17 @@ class AsciidoctorGemPrepare extends AbstractGemPrepareTask {
         setJrubyJarProvider(project.provider({ AsciidoctorJExtension jruby ->
             jruby.configuration.files.find { it.name.startsWith(JRUBY_COMPLETE_NAME) }
         }.curry(jruby) as Callable<File>))
+
+        ProblemReports.report(
+            problemReporter(),
+            ASCIIDOCTOR_J_PROBLEM_ID,
+            ProblemReports.taskProblemDetail(name, 'asciidoctorj'),
+            ProblemReports.replacePlugin(
+                project, name,
+                'jvm.gems.classic',
+                'jvm.gems',
+                TOOLCHAIN_J
+            )
+        )
     }
 }

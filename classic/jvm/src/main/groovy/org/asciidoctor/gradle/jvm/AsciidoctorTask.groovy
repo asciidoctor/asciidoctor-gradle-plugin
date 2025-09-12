@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.jvm
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.base.OutputOptions
+import org.asciidoctor.gradle.base.ProblemReports
 import org.gradle.api.Action
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.util.PatternSet
@@ -26,6 +27,9 @@ import org.ysb33r.grolifant5.api.core.ClosureUtils
 import javax.inject.Inject
 
 import static org.asciidoctor.gradle.base.AsciidoctorUtils.setConvention
+import static org.asciidoctor.gradle.base.ProblemReports.ASCIIDOCTOR_J_PROBLEM_ID
+import static org.asciidoctor.gradle.base.ProblemReports.TOOLCHAIN_J
+import static org.asciidoctor.gradle.base.ProblemReports.publicationName
 
 /** Standard generic task for converting Asciidoctor documents.
  *
@@ -33,7 +37,7 @@ import static org.asciidoctor.gradle.base.AsciidoctorUtils.setConvention
  * is {@code "src/docs/asciidoc"} if the task is named {@code aciidoctor}. For all other instances
  * of this task type the default source directory is {@code "src/docs/${task.name.capitalize()}"}.
  *
- * In a similar fasion the default output directory is either {@code "${buildDir}/asciidoc"} or
+ * In a similar fashion the default output directory is either {@code "${buildDir}/asciidoc"} or
  * {@code "${buildDir}/asciidoc${task.name.capitalize()}"}.
  *
  * @author Noam Tenne
@@ -63,6 +67,7 @@ class AsciidoctorTask extends AbstractAsciidoctorTask {
      */
     void outputOptions(@DelegatesTo(OutputOptions) Closure cfg) {
         ClosureUtils.configureItem(outputOptions, cfg)
+        reportOutputOptions()
     }
 
     /** Configures output options for this task.
@@ -72,6 +77,7 @@ class AsciidoctorTask extends AbstractAsciidoctorTask {
      */
     void outputOptions(Action<OutputOptions> cfg) {
         cfg.execute(outputOptions)
+        reportOutputOptions()
     }
 
     @Inject
@@ -88,6 +94,18 @@ class AsciidoctorTask extends AbstractAsciidoctorTask {
         final String safeFolderName = fsOperations().toSafeFileName(folderName)
         setConvention(project, sourceDirProperty, project.layout.projectDirectory.dir("src/docs/${folderName}"))
         setConvention(outputDirProperty, project.layout.buildDirectory.dir("docs/${safeFolderName}"))
+
+        ProblemReports.report(
+            problemReporter(),
+            ASCIIDOCTOR_J_PROBLEM_ID,
+            ProblemReports.taskProblemDetail(name, 'asciidoctorj'),
+            ProblemReports.replacePlugin(
+                project, name,
+                'jvm.convert.classic',
+                'jvm',
+                TOOLCHAIN_J
+            )
+        )
     }
 
     @Override
@@ -95,13 +113,13 @@ class AsciidoctorTask extends AbstractAsciidoctorTask {
         if (!baseDirConfigured) {
             if (attributes.keySet() in ['docinfo', 'docinfo1', 'docinfo2']) {
                 logger.warn('You are using docinfo attributes, but a base directory strategy has not been configured.' +
-                        'It is recommended that you set baseDirFollowsSourceDir() in your task.')
+                    'It is recommended that you set baseDirFollowsSourceDir() in your task.')
             }
         }
         super.exec()
     }
 
-    /** The default pattern set for secondary sources baced upon the configured backends.
+    /** The default pattern set for secondary sources based upon the configured backends.
      *
      * If the backends contain {@code docbook} then {@code *docbook*.xml} is added.
      * If the backend contain {@code html5} then {@code *docbook*.html} is added.
@@ -120,6 +138,36 @@ class AsciidoctorTask extends AbstractAsciidoctorTask {
         }
 
         ps
+    }
+
+    private void reportOutputOptions() {
+        final details = 'Output options need to be migrated to the new model5'
+        final solution = """
+        In the classic model, output options could be set on the task.
+        It now needs to migrate to the model definition.
+
+        'setSeparateOutputDirs' is no longer supported. The new model uses the concept of output formatters
+        and each of them outputs to a separate directory.
+
+        'backends' are now handled as an `output` definitions where the first parameter is the name of the
+        toolchain and the second is the name of the output formatter. In most cases the name of the backend
+        will match the name of the output formatter.
+
+        asciidoc {
+            publications {
+                ${publicationName(name)} {
+                    sourceSet {
+                        // Configure source details here
+                    }
+                    // The backend strings now become the 2nd parameter
+                    output( '${TOOLCHAIN_J}', 'html' )
+                    output( '${TOOLCHAIN_J}', 'docbook' )
+                }
+            }
+        }
+        """.stripIndent()
+
+        ProblemReports.report(problemReporter(), ASCIIDOCTOR_J_PROBLEM_ID, details, solution)
     }
 }
 
