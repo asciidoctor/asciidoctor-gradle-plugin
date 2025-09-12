@@ -17,6 +17,15 @@ package org.asciidoctor.gradle.model5.jvm.internal.extensions
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjExtension
+import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
+import org.gradle.api.Project
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.FileCollection
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.MapProperty
+import org.gradle.api.provider.Provider
+import org.gradle.api.provider.SetProperty
+import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 
 /**
  * Base class for implementing {@code asciidoctorj} extensions.
@@ -27,14 +36,52 @@ import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjExtension
  */
 @CompileStatic
 abstract class AbstractAsciidoctorjExtension implements AsciidoctorjExtension {
+
+    final String name
+    protected final ConfigCacheSafeOperations ccso
+    protected final ObjectFactory objectFactory
+    protected final AsciidoctorjToolchain toolchain
+    protected final SetProperty<String> packageRequires
+    protected final MapProperty<String, Object> attributes
+    protected final ConfigurableFileCollection extensionClasspath
+
+    @Override
+    Provider<Set<String>> getRequires() {
+        this.packageRequires
+    }
+
+    @Override
+    Provider<Map<String, Object>> getAttributeProvider() {
+        this.attributes
+    }
+
     /**
-     * A string representing the class name as it should be used in the DSL.
+     * Additional items to add to the classpath when a conversion involving the output formatter is executed.
      *
-     * @return Display type for report.
+     * <p>
+     *     The classpath is empty by default.
+     * </p>
+     *
+     * @return Classpath. Can be {@code null} to indicate that the formatter does not support additional classpath.
      */
+    @Override
+    FileCollection getClasspath() {
+        this.extensionClasspath
+    }
+
     @Override
     String getDisplayType() {
         dslType.canonicalName
+    }
+
+    protected AbstractAsciidoctorjExtension(String name, AsciidoctorjToolchain tc, Project project) {
+        this.name = name
+        this.toolchain = tc
+        this.objectFactory = project.objects
+        this.ccso = ConfigCacheSafeOperations.from(project)
+        this.packageRequires = project.objects.setProperty(String)
+        this.attributes = project.objects.mapProperty(String, Object)
+        this.extensionClasspath = ccso.fsOperations().emptyFileCollection()
     }
 
     /**

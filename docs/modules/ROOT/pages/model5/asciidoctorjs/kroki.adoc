@@ -1,0 +1,40 @@
+= The Kroki extension
+
+The Kroki extension is the default way to generate diagrams on {asciidoctorjs-name}.
+
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
+[subs=attributes+]
+.build.gradle
+----
+plugins {
+    id 'org.asciidoctor.js.kroki' version '{release-version}'
+}
+----
+--
+
+Kotlin::
++
+--
+[source,kotlin]
+[subs=attributes+]
+.build.gradle.kts
+----
+plugins {
+    id("org.asciidoctor.js.kroki") version "{release-version}"
+}
+----
+--
+====
+
+:partials-toolchain-name: asciidoctorjs
+:partials-toolchain-type: AsciidoctorjsToolchain
+:partials-toolchain-kroki-type: AsciidoctorjsKrokiExtension
+:partials-package-part: js
+include::partial$kroki-options.adoc[]
+
+

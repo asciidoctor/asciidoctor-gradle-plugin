@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.model5.jvm.internal.utils
 import groovy.transform.CompileStatic
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ConfigurationContainer
+import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.provider.Provider
@@ -71,6 +72,23 @@ class DependencyUpdater {
      */
     void add(String cfgName, String moduleName, Provider<String> version) {
         dependencies.addProvider(cfgName, version.map { "${moduleName}:${it}" })
+    }
+
+    /**
+     *  Adds a dependency to the given configuration.
+     *
+     * @param cfgName Name of configuration.
+     * @param moduleName Name of module in the format {@code "${groupName}:${artifactName}"}.
+     * @param version Provider to a version.
+     * @param cfg Perform addition configuration on the dependency.
+     */
+    void add(
+        String cfgName,
+        String moduleName,
+        Provider<String> version,
+        @DelegatesTo(ExternalModuleDependency) Closure<?> cfg
+    ) {
+        dependencies.addProvider(cfgName, version.map { "${moduleName}:${it}" }, cfg)
     }
 
     /**

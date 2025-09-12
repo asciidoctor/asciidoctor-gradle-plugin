@@ -1,0 +1,11 @@
+= Diagrams
+
+.Some mermaid
+[mermaid,abcd-flowchart,svg]
+....
+graph TD;
+    A-->B;
+    A-->C;
+    B-->D;
+    C-->D;
+....

@@ -7,25 +7,37 @@ agProject {
 // end::hacking-asciidoctorjs-output-formatter[]
     withIntegrationTests()
     configurePlugin(
-            'org.asciidoctor.js.base',
-            'Asciidoctor.js Base Plugin',
-            'Base plugin for all AsciidoctorJS tasks & extensions. Provides the asciidoctorjs toolchain',
-            'org.asciidoctor.gradle.model5.js.plugins.AsciidoctorJSBasePlugin',
-            ['asciidoctorjs']
+        'org.asciidoctor.js.base',
+        'Asciidoctor.js Base Plugin',
+        'Base plugin for all AsciidoctorJS tasks & extensions. Provides the asciidoctorjs toolchain',
+        'org.asciidoctor.gradle.model5.js.plugins.AsciidoctorJSBasePlugin',
+        ['asciidoctorjs']
     )
     configurePlugin(
-            'org.asciidoctor.js',
-            'Asciidoctor.js Plugin',
-            'Provides html formatter for all AsciidoctorJS toolchains',
-            'org.asciidoctor.gradle.model5.js.plugins.AsciidoctorjsPlugin',
-            ['asciidoctorjs']
+        'org.asciidoctor.js',
+        'Asciidoctor.js Plugin',
+        'Provides html formatter for all AsciidoctorJS toolchains',
+        'org.asciidoctor.gradle.model5.js.plugins.AsciidoctorjsPlugin',
+        ['asciidoctorjs']
     )
     configurePlugin(
-            'org.asciidoctor.js.docbook',
-            'Asciidoctor.js Docbook Plugin',
-            'Provides docbook formatter for all AsciidoctorJS toolchains',
-            'org.asciidoctor.gradle.model5.js.plugins.AsciidoctorjsDocbookPlugin',
-            ['asciidoctorjs', 'docbook']
+        'org.asciidoctor.js.docbook',
+        'Asciidoctor.js Docbook Plugin',
+        'Provides docbook formatter for all AsciidoctorJS toolchains',
+        'org.asciidoctor.gradle.model5.js.plugins.AsciidoctorjsDocbookPlugin',
+        ['asciidoctorjs', 'docbook']
+    )
+    configurePlugin(
+        'org.asciidoctor.js.kroki',
+        'Asciidoctor.js Kroki Plugin',
+        'Allows Kroki to be used with all AsciidoctorJS toolchains',
+        'org.asciidoctor.gradle.model5.js.plugins.AsciidoctorjsKrokiPlugin',
+        ['asciidoctorjs', 'kroki', 'actdiag', 'blockdiag', 'ditaa', 'plantuml',
+         'bpmn', 'bytefield', 'c4plantuml', 'd2', 'dbml', 'erd',
+         'excalidraw', 'graphviz', 'mermaid', 'nomnoml', 'nwdiag',
+         'packetdiag', 'pikchr', 'rackdiag', 'seqdiag', 'svgbob',
+         'symbolator', 'umlet', 'vega', 'vegalite', 'wavedrom', 'structurizr'
+        ]
     )
     // tag::hacking-asciidoctorjs-output-formatter[]
     configurePlugin(
@@ -41,19 +53,20 @@ agProject {
     // tag::hacking-asciidoctorjs-output-formatter[]
     withVersionSubstitution("${project.name}.properties", [
         // end::hacking-asciidoctorjs-output-formatter[]
-            VERSION  : versionOf('asciidoctorjs'),
-            CLI: versionOf('asciidoctorjsCli'),
-            DOCBOOK : versionOf('asciidoctorjsDocbook'),
-            EJS: versionOf('asciidoctorjsEjs'),
-            HANDLEBARS: versionOf('asciidoctorjsHandlebars'),
-            MANPAGE : versionOf('asciidoctorjsManpage'),
-            NODE: versionOf('nodejs'),
-            NUNJUCKS: versionOf('asciidoctorjsNunjucks'),
-            PUG: versionOf('asciidoctorjsPug'),
-            // tag::hacking-asciidoctorjs-output-formatter[]
-            REVEALJS: versionOf('asciidoctorjsRevealjs'), // <.>
-            // end::hacking-asciidoctorjs-output-formatter[]
-    // tag::hacking-asciidoctorjs-output-formatter[]
+        VERSION   : versionOf('asciidoctorjs'),
+        CLI       : versionOf('asciidoctorjsCli'),
+        DOCBOOK   : versionOf('asciidoctorjsDocbook'),
+        EJS       : versionOf('asciidoctorjsEjs'),
+        HANDLEBARS: versionOf('asciidoctorjsHandlebars'),
+        KROKI     : versionOf('asciidoctorjsKroki'),
+        MANPAGE   : versionOf('asciidoctorjsManpage'),
+        NODE      : versionOf('nodejs'),
+        NUNJUCKS  : versionOf('asciidoctorjsNunjucks'),
+        PUG       : versionOf('asciidoctorjsPug'),
+        // tag::hacking-asciidoctorjs-output-formatter[]
+        REVEALJS  : versionOf('asciidoctorjsRevealjs'), // <.>
+        // end::hacking-asciidoctorjs-output-formatter[]
+        // tag::hacking-asciidoctorjs-output-formatter[]
     ])
     // end::hacking-asciidoctorjs-output-formatter[]
 // tag::hacking-asciidoctorjs-output-formatter[]

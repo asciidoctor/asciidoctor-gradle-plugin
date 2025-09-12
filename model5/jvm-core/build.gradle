@@ -53,6 +53,17 @@ agProject {
         'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjDiagramPlugin',
         ['asciidoctorj', 'diagrams', 'ditaa', 'plantuml', 'batik', 'syntrax']
 
+    configurePlugin 'org.asciidoctor.jvm.kroki',
+        'Ability to use Kroki with AsciidoctorJ',
+        'Provides an extension for adding diagramming support',
+        'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjKrokiPlugin',
+        ['asciidoctorj', 'kroki', 'actdiag', 'blockdiag', 'ditaa', 'plantuml',
+         'bpmn', 'bytefield', 'c4plantuml', 'd2', 'dbml', 'erd',
+         'excalidraw', 'graphviz', 'mermaid', 'nomnoml', 'nwdiag',
+         'packetdiag', 'pikchr', 'rackdiag', 'seqdiag', 'svgbob',
+         'symbolator', 'umlet', 'vega', 'vegalite', 'wavedrom', 'structurizr'
+        ]
+
     // tag::hacking-asciidoctorj-output-formatter[]
     configurePlugin(
         'org.asciidoctor.jvm.epub', // <.>
@@ -76,6 +87,7 @@ agProject {
         HAML     : versionOf('gemHaml'),
         JRUBY    : versionOf('jruby'),
         JSYNTRAX : versionOf('asciidoctorjDiagramJSyntrax'),
+        KROKI    : versionOf('gemKroki'),
         PDF      : versionOf('asciidoctorjPdf'),
         PLANTUML : versionOf('asciidoctorjDiagramPlantUml'),
         REVEALJS : versionOf('asciidoctorjRevealjs'),

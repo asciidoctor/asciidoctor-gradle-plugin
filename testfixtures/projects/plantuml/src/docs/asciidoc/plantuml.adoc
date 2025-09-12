@@ -1,4 +1,8 @@
 = Diagrams
 
-.This is a folder
-plantuml::plantuml-example.txt[format="svg"]
+// .This is a folder
+// plantuml::plantuml-example.txt[format="svg"]
+[plantuml,format="svg"]
+----
+include::plantuml-example.txt[]
+----

@@ -58,6 +58,8 @@ class JvmModel {
     public static final String ASCIIDOCTORJ_DIAGRAM_JSYNTRAX_DEPENDENCY = "${ASCIIDOCTORJ_DIAGRAM_DEPENDENCY}-jsyntrax"
     public static final String ASCIIDOCTORJ_DIAGRAM_PLANTUML_DEPENDENCY = "${ASCIIDOCTORJ_DIAGRAM_DEPENDENCY}-plantuml"
 
+    public static final String ASCIIDOCTORJ_GEM_KROKI = 'asciidoctor-kroki'
+
     /**
      * Name of a declarable configuration for use with a specific AsciidoctorJ engine.
      *

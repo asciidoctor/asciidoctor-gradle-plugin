@@ -13,47 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.jvm.plugins
+package org.asciidoctor.gradle.model5.js.plugins
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
-import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjDiagram
-import org.asciidoctor.gradle.model5.jvm.internal.extensions.DefaultAsciidoctorjDiagram
+import org.asciidoctor.gradle.model5.js.extensions.AsciidoctorjsKrokiExtension
+import org.asciidoctor.gradle.model5.js.internal.extensions.DefaultAsciidoctorjsKrokiExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
-import static org.asciidoctor.gradle.model5.jvm.JvmModel.registerExtensionFactory
-import static org.asciidoctor.gradle.model5.jvm.JvmModel.registerExtensionOnAllToolchains
+import static org.asciidoctor.gradle.model5.js.JsModel.registerExtensionFactory
+import static org.asciidoctor.gradle.model5.js.JsModel.registerExtensionOnAllToolchains
 
 /**
- * Applies {@link AsciidoctorjBasePlugin} , then adds an extension for
- * {@code asciidoctorj-diagram}.
+ * Adds the {@code asciidoctor.js} {@code kroki} extension.
  *
  * @author Schalk W. Cronjé
  *
  * @since 5.0
  */
 @CompileStatic
-class AsciidoctorjDiagramPlugin implements Plugin<Project> {
+class AsciidoctorjsKrokiPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
         project.pluginManager.tap {
-            apply(AsciidoctorjBasePlugin)
+            apply(AsciidoctorjsPlugin)
         }
 
         final asciidoc = project.extensions.getByType(AsciidoctorModelExtension)
         final toolchains = asciidoc.toolchains
 
         registerExtensionFactory(
-            asciidoc.toolchains,
-            AsciidoctorjDiagram,
-            DefaultAsciidoctorjDiagram.Factory,
+            toolchains,
+            AsciidoctorjsKrokiExtension,
+            DefaultAsciidoctorjsKrokiExtension.Factory,
             project.objects
         )
 
-        project.pluginManager.withPlugin(AsciidoctorjPlugin.PLUGIN_ID) {
-            registerExtensionOnAllToolchains(toolchains, AsciidoctorjDiagram, DefaultAsciidoctorjDiagram.DEFAULT_NAME)
+        project.pluginManager.withPlugin(AsciidoctorjsPlugin.PLUGIN_ID) {
+            registerExtensionOnAllToolchains(
+                toolchains,
+                AsciidoctorjsKrokiExtension,
+                DefaultAsciidoctorjsKrokiExtension.DEFAULT_NAME
+            )
         }
     }
 }

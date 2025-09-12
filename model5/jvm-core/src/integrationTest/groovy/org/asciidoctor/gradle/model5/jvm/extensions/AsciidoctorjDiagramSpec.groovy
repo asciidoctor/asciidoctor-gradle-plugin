@@ -61,11 +61,11 @@ class AsciidoctorjDiagramSpec extends IntegrationSpecification {
 
     private void writeBuildFile() {
         writeBasicBuildFileGroovy(
-                ['org.asciidoctor.jvm.diagram'],
-                [
-                        'org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain',
-                        'org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjDiagram'
-                ]
+            ['org.asciidoctor.jvm.diagram'],
+            [
+                    'org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain',
+                    'org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjDiagram'
+            ]
         )
         addOutputToSourceSetGroovy(DEFAULT_TOOLCHAIN, DefaultAsciidoctorjHtml5.DEFAULT_NAME, DEFAULT_PUBLICATION)
     }

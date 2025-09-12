@@ -15,11 +15,13 @@
 * xref:model5/asciidoctorj/pdf.adoc[]
 * xref:model5/asciidoctorj/revealjs.adoc[]
 * xref:model5/asciidoctorj/diagram.adoc[]
+* xref:model5/asciidoctorj/kroki.adoc[]
 * xref:model5/asciidoctorj/adding-an-external-backend.adoc[]
 * xref:model5/asciidoctorj/adding-an-external-extension.adoc[]
 
 .Asciidoctor.js
 * xref:model5/asciidoctorjs/html.adoc[]
+* xref:model5/asciidoctorjs/kroki.adoc[]
 * xref:model5/asciidoctorjs/adding-an-external-backend.adoc[]
 * xref:model5/asciidoctorjs/adding-an-external-extension.adoc[]
 

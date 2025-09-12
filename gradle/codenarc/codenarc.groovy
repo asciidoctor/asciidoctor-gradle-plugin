@@ -132,8 +132,6 @@ ruleset {
     VectorIsObsolete
 
     // rulesets/design.xml
-    AbstractClassWithPublicConstructor
-    AbstractClassWithoutAbstractMethod
     AssignmentToStaticFieldFromInstanceMethod
     BooleanMethodReturnsNull
     CloneableWithoutClone

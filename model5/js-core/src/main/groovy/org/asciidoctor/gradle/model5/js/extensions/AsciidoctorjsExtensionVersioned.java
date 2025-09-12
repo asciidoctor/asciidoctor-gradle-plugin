@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.js.formatters;
+package org.asciidoctor.gradle.model5.js.extensions;
 
 /**
- * Defines an output formatter that works on an {@code asciidoctor.js} engine.
+ * Defines an output formatter that works on an {@code asciidoctor.js} engine and of which the version can be changed.
  *
  * @author Schalk W. Cronjé
  * @since 5.0
  */
-public interface AsciidoctorjsOutputFormatterVersioned extends AsciidoctorjsOutputFormatter {
+public interface AsciidoctorjsExtensionVersioned extends AsciidoctorjsExtension {
     /**
      * The component version.
      *

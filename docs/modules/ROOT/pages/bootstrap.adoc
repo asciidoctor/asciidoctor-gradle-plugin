@@ -12,10 +12,12 @@ plugins {
     id 'org.asciidoctor.jvm.diagram' version '{release-version}' // <.>
     id 'org.asciidoctor.jvm.epub' version '{release-version}' // <.>
     id 'org.asciidoctor.jvm.gems' version '{release-version}' // <.>
+    id 'org.asciidoctor.jvm.kroki' version '{release-version}' // <.>
     id 'org.asciidoctor.jvm.pdf' version '{release-version}' // <.>
     id 'org.asciidoctor.jvm.revealjs' version '{release-version}' // <.>
     id 'org.asciidoctor.js' version '{release-version}' // <.>
     id 'org.asciidoctor.js.docbook' version '{release-version}' // <.>
+    id 'org.asciidoctor.js.kroki' version '{release-version}' // <.>
     id 'org.asciidoctor.js.revealjs' version '{release-version}' // <.>
 }
 ----
@@ -24,11 +26,13 @@ plugins {
 <.> Registers an extension with support for `asciidoctorj-diagram`.
 <.> Registers the output formatter for creating EPUB files.
 <.> Adds support for adding additional GEMs to the execution classpath.
+<.> Adds the Kroki extension for use with `asciidoctorj` extensions.
 <.> Applies `org.asciidoctor.core.pdf-themes` and also registers the output formatter for creating PDF files.
 <.> Adds the ability to generate slides with {asciidoctorj-revealjs-name}.
 <.> The convention plugin for working with {asciidoctorjs-name}.
   Applies `org.asciidoctor.jvm.base` and also creates a default toolchain called `asciidoctorjs`.
 <.> Adds the ability to output to Docbook using {asciidoctorjs-name}.
+<.> Adds the Kroki extension for use with `asciidoctorjs` extensions.
 <.> Adds the ability to generate slides with {asciidoctorjs-revealjs-name}.
 
 There is also a set of less common plugins, which are applied via the plugins listed above.
@@ -66,10 +70,12 @@ asciidoctorj = { id ="org.asciidoctor.jvm", version.ref = "asciidoctorPlugin" }
 asciidoctorjDiagram = { id ="org.asciidoctor.jvm.diagram", version.ref = "asciidoctorPlugin" }
 asciidoctorjEpub = { id ="org.asciidoctor.jvm.epub", version.ref = "asciidoctorPlugin" }
 asciidoctorjGems = { id ="org.asciidoctor.jvm.gems", version.ref = "asciidoctorPlugin" }
+asciidoctorjKroki = { id ="org.asciidoctor.jvm.kroki", version.ref = "asciidoctorPlugin" }
 asciidoctorjPdf = { id ="org.asciidoctor.jvm.pdf", version.ref = "asciidoctorPlugin" }
 asciidoctorjRevealjs = { id ="org.asciidoctor.jvm.revealjs", version.ref = "asciidoctorPlugin" }
 asciidoctorjs = { id ="org.asciidoctor.js", version.ref = "asciidoctorPlugin" }
 asciidoctorjsDocbook = { id ="org.asciidoctor.js.docbook", version.ref = "asciidoctorPlugin" }
+asciidoctorjsKroki = { id ="org.asciidoctor.js.kroki", version.ref = "asciidoctorPlugin" }
 asciidoctorjsRevealjs = { id ="org.asciidoctor.js.reveraljs", version.ref = "asciidoctorPlugin" }
 asciidoctorEditorConfig = { id ="org.asciidoctor.editorconfig", version.ref = "asciidoctorPlugin" }
 ----

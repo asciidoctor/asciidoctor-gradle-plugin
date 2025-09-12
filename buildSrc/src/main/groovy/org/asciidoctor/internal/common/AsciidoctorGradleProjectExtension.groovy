@@ -135,6 +135,7 @@ class AsciidoctorGradleProjectExtension {
                     }
                 }
             }
+            t.inputs.property('versions',values).optional(true)
         }
     }
 

@@ -6,6 +6,7 @@ asciidoc:
   attributes:
     release-version: "5.0.0-alpha.1"
     project-full-path: "asciidoctor/asciidoctor-gradle-plugin"
+    project-issues-url: "https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues"
     project-name: "asciidoctor-gradle-plugin"
     project-repo-url: "https://github.com/asciidoctor/asciidoctor-gradle-plugin"
     plugin-name: "Asciidoctor Gradle plugin"

@@ -13,20 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.js.formatters;
+package org.asciidoctor.gradle.model5.jvm.extensions;
+
+import org.asciidoctor.gradle.model5.core.kroki.KrokiConfiguration;
 
 /**
- * Defines an output formatter that works on an {@code asciidoctor.js} engine.
+ * Kroki support on {@code asciidoctorj}.
  *
  * @author Schalk W. Cronjé
  * @since 5.0
  */
-public interface AsciidoctorjsOutputFormatterVersioned extends AsciidoctorjsOutputFormatter {
-    /**
-     * The component version.
-     *
-     * @param ver Anything convertible to a string with
-     *            {@link org.ysb33r.grolifant5.api.core.StringTools#stringize ( Object o )}.
-     */
-    void useVersion(Object ver);
+public interface AsciidoctorjKrokiExtension extends AsciidoctorjExtension, KrokiConfiguration {
 }

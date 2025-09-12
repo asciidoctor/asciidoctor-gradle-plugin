@@ -17,8 +17,8 @@ package org.asciidoctor.gradle.model5.jvm.plugins
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
-import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjDiagram
-import org.asciidoctor.gradle.model5.jvm.internal.extensions.DefaultAsciidoctorjDiagram
+import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjKrokiExtension
+import org.asciidoctor.gradle.model5.jvm.internal.extensions.DefaultAsciidoctorjKrokiExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -26,20 +26,21 @@ import static org.asciidoctor.gradle.model5.jvm.JvmModel.registerExtensionFactor
 import static org.asciidoctor.gradle.model5.jvm.JvmModel.registerExtensionOnAllToolchains
 
 /**
- * Applies {@link AsciidoctorjBasePlugin} , then adds an extension for
- * {@code asciidoctorj-diagram}.
+ * Applies {@link AsciidoctorjBasePlugin} and {@link AsciidoctorjGemsPlugin}, then adds an extension for
+ * {@code asciidoctorj-kroki}.
  *
  * @author Schalk W. Cronjé
  *
  * @since 5.0
  */
 @CompileStatic
-class AsciidoctorjDiagramPlugin implements Plugin<Project> {
+class AsciidoctorjKrokiPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
         project.pluginManager.tap {
             apply(AsciidoctorjBasePlugin)
+            apply(AsciidoctorjGemsPlugin)
         }
 
         final asciidoc = project.extensions.getByType(AsciidoctorModelExtension)
@@ -47,13 +48,17 @@ class AsciidoctorjDiagramPlugin implements Plugin<Project> {
 
         registerExtensionFactory(
             asciidoc.toolchains,
-            AsciidoctorjDiagram,
-            DefaultAsciidoctorjDiagram.Factory,
+            AsciidoctorjKrokiExtension,
+            DefaultAsciidoctorjKrokiExtension.Factory,
             project.objects
         )
 
         project.pluginManager.withPlugin(AsciidoctorjPlugin.PLUGIN_ID) {
-            registerExtensionOnAllToolchains(toolchains, AsciidoctorjDiagram, DefaultAsciidoctorjDiagram.DEFAULT_NAME)
+            registerExtensionOnAllToolchains(
+                toolchains,
+                AsciidoctorjKrokiExtension,
+                DefaultAsciidoctorjKrokiExtension.DEFAULT_NAME
+            )
         }
     }
 }

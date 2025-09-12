@@ -1,0 +1,41 @@
+= The Kroki extension
+
+The default diagram support on {asciidoctorj-name} has always been xref:model5/asciidoctorj/diagram.adoc[{asciidoctorj-name} Diagram], but it suffers from ensuring many other components needed to be managed locally.
+The Kroki extension is a great alternative and is recommended for most use cases.
+
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
+[subs=attributes+]
+.build.gradle
+----
+plugins {
+    id 'org.asciidoctor.jvm.kroki' version '{release-version}'
+}
+----
+--
+
+Kotlin::
++
+--
+[source,kotlin]
+[subs=attributes+]
+.build.gradle.kts
+----
+plugins {
+    id("org.asciidoctor.jvm.kroki") version "{release-version}"
+}
+----
+--
+====
+
+:partials-toolchain-name: asciidoctorj
+:partials-toolchain-type: AsciidoctorjToolchain
+:partials-toolchain-kroki-type: AsciidoctorjKrokiExtension
+:partials-package-part: jvm
+include::partial$kroki-options.adoc[]
+
+

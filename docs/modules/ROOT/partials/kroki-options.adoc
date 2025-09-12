@@ -1,0 +1,86 @@
+== Kroki options
+:partials-toolchain-name: asciidoctorjs
+:partials-toolchain-type: AsciidoctorjsToolchain
+:partials-toolchain-kroki-type: AsciidoctorjsKrokiExtension
+:partials-package-part: js
+
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy,subs=+attributes]
+----
+import org.asciidoctor.gradle.model5.{partials-package-part}.toolchains.{partials-toolchain-type}
+import org.asciidoctor.gradle.model5.{partials-package-part}.extensions.{partials-toolchain-kroki-type}
+
+asciidoc {
+  toolchains {
+    {partials-toolchain-name}({partials-toolchain-type}) {
+      asciidocExtensions {
+        kroki({partials-toolchain-kroki-type}) {
+            useVersion('1.2.3') // <.>
+            serverUri = 'https://server.example/kroki' // <.>
+            fetchDiagrams = true // <.>
+            krokiMethod = 'adaptive' // <.>
+            maxUriLength = 4000 // <.>
+            plantUmlSearchPaths  '/foo', '/bar' // <.>
+
+            plantUmlIncludePath { // <.>
+                uri = 'https://server.example/path/to/plantuml/file'
+                location = '/path/to/a/local/file'
+                relativePath = 'relative/to/source/dir'
+            }
+        }
+      }
+    }
+  }
+}
+----
+<.> Override the default version of Kroki.
+  Anything lazy-evaluated to a string will do.
+<.> Override the server location.
+  Anything lazy-evaluated to a URI will do.
+  If not set the default at `kroki.io` will be used.
+<.> Whether to fetch diagrams and use them locally.
+  When fetched, the diagrams will end up in the same folder as the converted document.
+<.> Set the Kroki fetch method.
+  One of `get`, `post` or `adaptive`.
+<.> When using `adaptive`, this is the threshold for switching from `get` to `post`.
+<.> Search path(s) that will be used to resolve `!include` file additionally to current diagram directory. It is similar to PlantUML property `plantuml.include.path`.
+  Items are lazy-evaluated to files, then their absolute paths are taken, before being joined by the path separator of the operating system. The combined string is the one that is sent to the Kroki extension.
+<.> A file that will be included at the top of all PlantUML diagrams as if `!include` file was used.
+  Can be configured as a URI, a file or a relative path.
+--
+====
+
+=== Handling missing Kroki options
+
+Most of the options above simply provide a user-friendly conversion to AsciiDoc attributes.
+As Kroki evolves, it is possible that one might want to set other Kroki options that are not yet supported by this plugin.
+The way to do it is to set the attribute on the source set
+
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
+----
+asciidoc {
+  publications {
+    main {
+      sourceSet {
+        attributes {
+          add('kroki-default-format', 'png')
+        }
+      }
+    }
+  }
+}
+----
+--
+====
+
+
+Then you can also, raise a link:{project-issues-url}[feature request] describing the Kroki options you would like to see added.
