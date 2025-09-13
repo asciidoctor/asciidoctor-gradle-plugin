@@ -125,3 +125,11 @@ dependencies {
     cachingOnly(libs.asciidoctorjEpub) // <.>
 }
 // end::hacking-asciidoctorj-output-formatter[]
+
+providers.gradleProperty('jrubyTestVersions').get().split(',').each {
+    configurations.create("jrubyTest${it}")
+    dependencies.add("jrubyTest${it}", "org.jruby:jruby:${it}")
+    dependencies.add("jrubyTest${it}", "org.jruby:jruby-complete:${it}") {
+        transitive = false
+    }
+}

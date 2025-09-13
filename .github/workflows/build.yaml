@@ -1,3 +1,4 @@
+
 name: Build
 on:
   push:
@@ -79,12 +80,12 @@ jobs:
     - name: Build offline repository
       run: ./gradlew --console=plain --no-build-cache syncRemoteRepositories
     - name: Build
-      run: ./gradlew  -i -S --console=plain --no-build-cache assemble
+      run: ./gradlew  -i -s --console=plain --no-build-cache assemble
     - name: Integration tests
-      run: ./gradlew  -i -s --console=plain --no-build-cache test integrationTest -x :asciidoctor-gradle-jvm-gems:intTest
+      run: ./gradlew  -i --console=plain --no-parallel --no-build-cache test integrationTest -x :asciidoctor-gradle-jvm-gems:intTest
     - name: Classic GEM plugin integration test
-      run: ./gradlew  -i -s --console=plain --no-build-cache :asciidoctor-gradle-jvm-gems:intTest
+      run: ./gradlew  -i --console=plain --no-build-cache :asciidoctor-gradle-jvm-gems:intTest
     - name: Remote tests for classic plugins
-      run: ./gradlew  -i -s --console=plain --no-build-cache remoteTest
+      run: ./gradlew  -i --console=plain --no-build-cache remoteTest
     - name: Gradle tests
-      run: ./gradlew -i -s --console=plain --no-build-cache gradleTest 
+      run: ./gradlew -i --console=plain --no-parallel --no-build-cache gradleTest

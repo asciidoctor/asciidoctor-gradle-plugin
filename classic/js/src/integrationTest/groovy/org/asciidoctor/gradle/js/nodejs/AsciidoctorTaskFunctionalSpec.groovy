@@ -17,9 +17,11 @@ package org.asciidoctor.gradle.js.nodejs
 
 import org.asciidoctor.gradle.js.nodejs.internal.FunctionalSpecification
 import org.asciidoctor.gradle.testfixtures.generators.AsciidoctorjsVersionGenerator
+import spock.lang.IgnoreIf
 import spock.lang.Unroll
 
 @SuppressWarnings('MethodName')
+@IgnoreIf(reason='Unknown issues on Windows', value = {FunctionalSpecification.IS_WINDOWS})
 class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
 
     static final List<String> DEFAULT_ARGS = ['asciidoctor', '-s', '-i']

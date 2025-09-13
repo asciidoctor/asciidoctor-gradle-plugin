@@ -78,7 +78,7 @@ class IntegrationSpecification extends Specification {
             .forwardOutput()
             .withDebug(groovyDsl)
             .withPluginClasspath()
-//            .withTestKitDir(testKitDir)
+            .withTestKitDir(testKitDir)
     }
 
     GradleRunner getGradleRunnerConfigCache(

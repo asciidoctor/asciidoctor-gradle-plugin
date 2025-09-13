@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.js.nodejs.internal
 import org.apache.commons.io.FileUtils
 import org.asciidoctor.gradle.testfixtures.DslType
 import org.asciidoctor.gradle.testfixtures.FunctionalTestFixture
+import org.ysb33r.grolifant5.api.core.OperatingSystem
 import spock.lang.Specification
 import spock.lang.TempDir
 
@@ -26,6 +27,7 @@ import static org.asciidoctor.gradle.testfixtures.DslType.KOTLIN_DSL
 
 class FunctionalSpecification extends Specification implements FunctionalTestFixture {
 
+    public static final Boolean IS_WINDOWS = OperatingSystem.current().windows
     public static final String TEST_PROJECTS_DIR = System.getProperty(
             'TEST_PROJECTS_DIR',
             './src/integrationTest/projects'

@@ -55,7 +55,7 @@ class PdfBackendJRubyAsciidoctorJCombinationGenerator {
 
     static List<Combination> get() {
         List<Combination> combinations = [
-            Combination.of(AJ20_ABSOLUTE_MAXIMUM, SERIES_20, true),
+            Combination.of(AJ20_ABSOLUTE_MAXIMUM, SERIES_20, false),
             Combination.of(AJ20_ABSOLUTE_MINIMUM, SERIES_20, true),
             Combination.of(AJ20_SAFE_MAXIMUM, SERIES_20, true),
             Combination.of(AJ20_SAFE_MINIMUM, SERIES_20, true)

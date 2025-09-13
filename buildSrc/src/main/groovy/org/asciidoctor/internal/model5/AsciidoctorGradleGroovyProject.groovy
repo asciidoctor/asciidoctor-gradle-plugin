@@ -25,7 +25,7 @@ class AsciidoctorGradleGroovyProject implements Plugin<Project> {
             apply(CommonBasePlugin)
         }
 
-        SourceSetContainer sourceSets = project.extensions.getByType(SourceSetContainer)
+//        SourceSetContainer sourceSets = project.extensions.getByType(SourceSetContainer)
 //        addDefaultVersions(project)
     }
 

@@ -115,18 +115,6 @@ class AsciidoctorTaskSpec extends Specification {
         task.baseDir == task.sourceDir
     }
 
-    @PendingFeature
-    void 'Base directory can be source directory within a temporary working directory'() {
-        when:
-        final task = createTask {
-            baseDirFollowsSourceDir()
-            useIntermediateWorkDir()
-        }
-
-        then:
-        task.baseDir == project.file("${project.buildDir}/tmp/${task.name}.intermediate")
-    }
-
     void 'Base directory can be null to follow source file'() {
         when:
         final task = createTask {

@@ -32,9 +32,9 @@ class JRubyTestVersions {
     // SAFE_MINIMUM The lowest known compatible version of JRuby
     // SAFE_MAXIMUM The highest known compatible version of JRuby
     // ----------------------------------------------------------
-    public final static String AJ20_ABSOLUTE_MINIMUM = '9.2.5.0'
-    public final static String AJ20_SAFE_MINIMUM = '9.2.5.0'
-    public final static String AJ20_SAFE_MAXIMUM = '9.3.8.0'
-    public final static String AJ20_ABSOLUTE_MAXIMUM = '9.4.0.0'
+    public final static String AJ20_ABSOLUTE_MINIMUM = '9.4.0.0'
+    public final static String AJ20_SAFE_MINIMUM = '9.4.1.0'
+    public final static String AJ20_SAFE_MAXIMUM = '9.4.14.0'
+    public final static String AJ20_ABSOLUTE_MAXIMUM = '10.0.2.0'
     // ----------------------------------------------------------
 }

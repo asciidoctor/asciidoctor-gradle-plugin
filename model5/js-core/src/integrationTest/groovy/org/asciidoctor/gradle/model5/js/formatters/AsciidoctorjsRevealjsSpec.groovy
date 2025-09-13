@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.model5.js.formatters
 
 import org.asciidoctor.gradle.model5.js.internal.formatters.DefaultAsciidoctorjsRevealjs
 import org.asciidoctor.gradle.testfixtures.model5.IntegrationSpecification
+import spock.lang.PendingFeatureIf
 
 import static org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils.DEFAULT_PUBLICATION
 import static org.asciidoctor.gradle.model5.js.plugins.AsciidoctorjsPlugin.DEFAULT_TOOLCHAIN
@@ -25,6 +26,7 @@ import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 
 class AsciidoctorjsRevealjsSpec extends IntegrationSpecification {
 
+    @PendingFeatureIf(reason = 'Not yet supported on Windows', value = { IS_WINDOWS })
     void 'Reveal.js formatter will convert files and copy resources'() {
         setup:
         final taskName = 'asciidoctorRevealjs' // <.>
@@ -52,7 +54,8 @@ class AsciidoctorjsRevealjsSpec extends IntegrationSpecification {
 
     void writeBuildFile() {
         writeBasicBuildFileGroovy(['org.asciidoctor.js.revealjs']) // <.>
-        addOutputToSourceSetGroovy(DEFAULT_TOOLCHAIN, DefaultAsciidoctorjsRevealjs.DEFAULT_NAME, DEFAULT_PUBLICATION) // <.>
+        addOutputToSourceSetGroovy(DEFAULT_TOOLCHAIN, DefaultAsciidoctorjsRevealjs.DEFAULT_NAME, DEFAULT_PUBLICATION)
+        // <.>
     }
 }
 // end::hacking-asciidoctorjs-output-formatter[]

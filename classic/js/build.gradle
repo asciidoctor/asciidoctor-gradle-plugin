@@ -73,7 +73,7 @@ tasks.named('test', Test) {
 }
 
 tasks.withType(Test).configureEach {
-    systemProperties 'org.ysb33r.gradle.nodejs.uri': "file://${rootDir}/.offline-repo/binaries/nodejs"
+    systemProperties 'org.ysb33r.gradle.nodejs.uri': project.uri(new File(rootDir,'.offline-repo/binaries/nodejs'))
 }
 
 

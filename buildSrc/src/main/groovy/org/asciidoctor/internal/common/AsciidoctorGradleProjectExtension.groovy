@@ -73,6 +73,13 @@ class AsciidoctorGradleProjectExtension {
         project.tasks.named('integrationTest', Test) { t ->
             t.systemProperty('TEST_PROJECTS_DIR', testProjects.absolutePath)
             t.inputs.dir(testProjects)
+
+            t.minHeapSize = "1g"
+            t.maxHeapSize = "3g"
+            t.jvmArgs = [
+                '-XX:+HeapDumpOnOutOfMemoryError'
+            ]
+
         }
 
         project.pluginManager.withPlugin('java-gradle-plugin') {

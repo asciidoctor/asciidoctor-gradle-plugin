@@ -31,6 +31,7 @@ import static org.asciidoctor.gradle.testfixtures.DslType.GROOVY_DSL
 
 @Slf4j
 class IntegrationSpecification extends Specification {
+    public static final boolean IS_WINDOWS = OperatingSystem.current().windows
     public static final boolean IS_KOTLIN_DSL = false
     public static final boolean IS_GROOVY_DSL = true
     public static final OperatingSystem OS = OperatingSystem.current()
@@ -109,7 +110,7 @@ class IntegrationSpecification extends Specification {
             .forwardOutput()
             .withDebug(groovyDsl)
             .withPluginClasspath()
-//            .withTestKitDir(testKitDir)
+            .withTestKitDir(testKitDir)
     }
 
     /**
@@ -217,7 +218,10 @@ class IntegrationSpecification extends Specification {
         ${offlineRepositoriesGroovyDsl}
         """.stripIndent()
 
-        new File(projectDir, 'gradle.properties').text = 'version=0.0.1'
+        new File(projectDir, 'gradle.properties').text = '''
+        version=0.0.1
+        org.gradle.daemon=false
+        '''.stripIndent()
     }
 
     /**

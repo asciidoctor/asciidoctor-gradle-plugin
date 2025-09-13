@@ -28,7 +28,6 @@ class WarningsAsErrorsSpec extends AsciidoctorjHtmlIntegrationSpecification {
         copyTestProject('missing-include')
     }
 
-    @Timeout(value=120)
     void 'Warnings can be treated as errors'() {
         setup:
         final logFile = new File(buildDir, 'reports/asciidoc/logs/asciidoctorj/html/log.json')

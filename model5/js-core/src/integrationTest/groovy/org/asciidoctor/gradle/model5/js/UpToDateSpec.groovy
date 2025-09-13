@@ -17,7 +17,7 @@ package org.asciidoctor.gradle.model5.js
 
 import org.asciidoctor.gradle.model5.js.internal.formatters.DefaultAsciidoctorjsHtml5
 import org.asciidoctor.gradle.model5.js.testfixtures.AsciidoctorjsHtmlIntegrationSpecification
-import spock.lang.Issue
+import spock.lang.PendingFeatureIf
 
 import static org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils.DEFAULT_PUBLICATION
 import static org.asciidoctor.gradle.model5.js.plugins.AsciidoctorjsPlugin.DEFAULT_TOOLCHAIN
@@ -30,6 +30,7 @@ class UpToDateSpec extends AsciidoctorjsHtmlIntegrationSpecification {
 //        writeHtmlBasedBuildFile()
     }
 
+    @PendingFeatureIf(value = { IS_WINDOWS }, reason = 'Windows has a node exec issue')
     void 'Changes to NPM package list will cause rebuild'() {
         setup:
         writeHtmlBasedBuildFileWithImports([

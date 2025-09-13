@@ -2,8 +2,10 @@
 
 These are the main ones we know about:
 
-* EPUB3 + KF8 in one task. Both formats in one task is currently failing. The exact failure message depends on which order
-  (KF8+EPUB3 or EPUB3+KF8) the conversion takes place in.
-* KF8 conversions fails under Windows. (Related to {issues-asciidoctorj}659[{asciidoctorj-name} #659] & {issues-jruby}4943[{jruby-name} #4943].
-* Does not work with JDK9 (but does with JDK10).
-* DeckTape export to JPG/PNG does not work on Windows (issues-asciidoctorj}[{asciidoctorj-name} #381] & https://github.com/astefanutti/decktape/issues[Decktape #181]).
+* Full compatibility on Windows has not been established.
+  This is especially relevant to the `asciidoctor.js` toolchain on the new model and also on the class plugins.
+  Please raise any Windows issues that you might encounter, but PRs would be even better.
+* JRuby 10 compatibility has not been tested.
+  It is possible that it might work when runnign JDK21, but see https://github.com/asciidoctor/asciidoctorj/issues/1299[asciidoctorj#1299].
+* Multi-languages are not (yet) supported on the new model.
+* Groovy DSL is not (yet) supported on the new model.
