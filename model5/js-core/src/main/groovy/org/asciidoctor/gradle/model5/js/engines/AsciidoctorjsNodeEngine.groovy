@@ -82,7 +82,7 @@ class AsciidoctorjsNodeEngine implements AsciidoctorEngine, CoreVersions {
             .convention(props['asciidoctorjs'].toString())
         this.asciidoctorjsCliVersion = tempProjectReference.objects.property(String)
             .convention(props['asciidoctorjs.cli'].toString())
-
+        this.nodejs.executableByVersion(props['node'])
         usePackage(ASCIIDOCTOR_SCOPE, 'core', this.asciidoctorjsVersion)
         usePackage(ASCIIDOCTOR_SCOPE, 'cli', this.asciidoctorjsCliVersion)
 
