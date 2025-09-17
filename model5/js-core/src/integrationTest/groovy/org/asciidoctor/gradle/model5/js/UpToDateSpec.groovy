@@ -26,11 +26,6 @@ import static org.gradle.testkit.runner.TaskOutcome.UP_TO_DATE
 
 class UpToDateSpec extends AsciidoctorjsHtmlIntegrationSpecification {
 
-    void setup() {
-//        writeHtmlBasedBuildFile()
-    }
-
-    @PendingFeatureIf(value = { IS_WINDOWS }, reason = 'Windows has a node exec issue')
     void 'Changes to NPM package list will cause rebuild'() {
         setup:
         writeHtmlBasedBuildFileWithImports([

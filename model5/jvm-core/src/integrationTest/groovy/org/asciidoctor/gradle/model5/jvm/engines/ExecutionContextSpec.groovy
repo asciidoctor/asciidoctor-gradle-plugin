@@ -57,11 +57,8 @@ class ExecutionContextSpec extends AsciidoctorjHtmlIntegrationSpecification {
         """
 
         when:
-//        final result = ( ccMode ? getGradleRunnerConfigCache(IS_GROOVY_DSL, tasks) : getGradleRunner(IS_GROOVY_DSL,tasks)).build()
-        final runner = ( ccMode ? getGradleRunnerConfigCache(IS_GROOVY_DSL, tasks) : getGradleRunner(IS_GROOVY_DSL,tasks))
+        final runner = ( ccMode ? getGradleRunnerConfigCache(IS_GROOVY_DSL, tasks) : getGradleRunner(IS_GROOVY_DSL,tasks).withDebug(!IS_WINDOWS))
         final result = runner.build()
-
-
 
         then:
         result.task(":${taskName}").outcome == TaskOutcome.SUCCESS

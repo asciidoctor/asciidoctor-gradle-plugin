@@ -5,6 +5,8 @@ plugins {
     id 'org.ysb33r.ivypot'
 }
 
+apply from: "${rootDir}/gradle/cache-node.gradle"
+
 agProject {
     withClassicOfflineTestConfigurations()
     withIntegrationTests()
@@ -31,26 +33,6 @@ agProject {
     ])
 }
 
-ext {
-    if (OS.windows) {
-        nodejsExt = 'zip'
-        if (System.getProperty('os.arch').contains('64')) {
-            nodejsArch = 'win-x64'
-        } else {
-            nodejsArch = 'win-x86'
-        }
-    } else if (OS.linux) {
-        nodejsExt = 'tar.xz'
-        if (System.getProperty('os.arch').contains('64')) {
-            nodejsArch = 'linux-x64'
-        } else {
-            nodejsArch = 'linux-x86'
-        }
-    } else if (OS.macOsX) {
-        nodejsExt = 'tar.gz'
-        nodejsArch = 'darwin-x64'
-    }
-}
 
 dependencies {
     api(project(':asciidoctor-gradle-base'))
@@ -59,9 +41,6 @@ dependencies {
     runtimeOnly(libs.grolifantRuntime)
 }
 
-ivypot {
-    cacheBinaries.add "nodejs:node:${agProject.versionOf('nodejs')}:${nodejsArch}@${nodejsExt}"
-}
 
 generateModuleVersions {
     basename = 'asciidoctorjs-extension'

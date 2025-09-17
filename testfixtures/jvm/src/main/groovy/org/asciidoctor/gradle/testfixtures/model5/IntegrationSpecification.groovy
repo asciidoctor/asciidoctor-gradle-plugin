@@ -43,6 +43,7 @@ class IntegrationSpecification extends Specification {
 
     String configCacheGradleVersion = '8.9'
     File projectDir
+    File gradlePropertiesFile
     File buildDir
     File buildCacheDir
     File projectCacheDir
@@ -61,6 +62,7 @@ class IntegrationSpecification extends Specification {
         projectCacheDir = new File(projectDir, '.gradle')
         buildFile = new File(projectDir, 'build.gradle')
         buildFileKts = new File(projectDir, 'build.gradle.kts')
+        gradlePropertiesFile = new File(projectDir, 'gradle.properties')
         settingsFile = new File(projectDir, 'settings.gradle')
         settingsFile.text = "rootProject.name = 'test-project'"
 
@@ -235,7 +237,7 @@ class IntegrationSpecification extends Specification {
         settingsFile << """
         buildCache {
             local {
-                directory = '${getEscapedPathString(buildCacheDir.absolutePath)}'
+                directory = '${getEscapedAbsolutePathString(buildCacheDir)}'
             }
         }
         """
@@ -358,9 +360,22 @@ class IntegrationSpecification extends Specification {
      */
     String getEscapedPathString(String path) {
         if (OS.windows) {
-            path.replace('/', BACKSLASH)
+            path.replace('/', DOUBLE_BACKSLASH)
         } else {
             path
+        }
+    }
+
+    /**
+     * Escapes a file path.
+     * @param path Path
+     * @return Escaped path.
+     */
+    String getEscapedAbsolutePathString(File path) {
+        if (OS.windows) {
+            path.absolutePath.replace(BACKSLASH, DOUBLE_BACKSLASH)
+        } else {
+            path.absolutePath
         }
     }
 
@@ -389,4 +404,5 @@ class IntegrationSpecification extends Specification {
 
     public static final String BACKSLASH = '\\'
     public static final String DOUBLE_BACKSLASH = BACKSLASH * 2
+    public static final String BACKSLASH_IN_BUILD_GRADLE = BACKSLASH * 4
 }

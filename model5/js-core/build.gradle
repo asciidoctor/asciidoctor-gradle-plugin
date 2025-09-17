@@ -2,6 +2,8 @@ plugins {
     id 'org.asciidoctor.internal.model5.gradle.project'
 }
 
+apply from: "${rootDir}/gradle/cache-node.gradle"
+
 // tag::hacking-asciidoctorjs-output-formatter[]
 agProject {
 // end::hacking-asciidoctorjs-output-formatter[]
@@ -53,18 +55,19 @@ agProject {
     // tag::hacking-asciidoctorjs-output-formatter[]
     withVersionSubstitution("${project.name}.properties", [
         // end::hacking-asciidoctorjs-output-formatter[]
-        VERSION   : versionOf('asciidoctorjs'),
-        CLI       : versionOf('asciidoctorjsCli'),
-        DOCBOOK   : versionOf('asciidoctorjsDocbook'),
-        EJS       : versionOf('asciidoctorjsEjs'),
-        HANDLEBARS: versionOf('asciidoctorjsHandlebars'),
-        KROKI     : versionOf('asciidoctorjsKroki'),
-        MANPAGE   : versionOf('asciidoctorjsManpage'),
-        NODE      : versionOf('nodejs'),
-        NUNJUCKS  : versionOf('asciidoctorjsNunjucks'),
-        PUG       : versionOf('asciidoctorjsPug'),
+        VERSION     : versionOf('asciidoctorjs'),
+        CLI         : versionOf('asciidoctorjsCli'),
+        DOCBOOK     : versionOf('asciidoctorjsDocbook'),
+        EJS         : versionOf('asciidoctorjsEjs'),
+        HANDLEBARS  : versionOf('asciidoctorjsHandlebars'),
+        KROKI       : versionOf('asciidoctorjsKroki'),
+        MANPAGE     : versionOf('asciidoctorjsManpage'),
+        NODE        : versionOf('nodejs'),
+        NODE_WINDOWS: versionOf('nodejsWindows'),
+        NUNJUCKS    : versionOf('asciidoctorjsNunjucks'),
+        PUG         : versionOf('asciidoctorjsPug'),
         // tag::hacking-asciidoctorjs-output-formatter[]
-        REVEALJS  : versionOf('asciidoctorjsRevealjs'), // <.>
+        REVEALJS    : versionOf('asciidoctorjsRevealjs'), // <.>
         // end::hacking-asciidoctorjs-output-formatter[]
         // tag::hacking-asciidoctorjs-output-formatter[]
     ])

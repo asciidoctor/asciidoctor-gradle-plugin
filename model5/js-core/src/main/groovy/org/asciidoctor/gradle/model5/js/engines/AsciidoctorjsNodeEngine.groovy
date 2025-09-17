@@ -35,6 +35,7 @@ import org.ysb33r.gradle.nodejs.NpmPackageDescriptor
 import org.ysb33r.gradle.nodejs.tasks.NodeNpmPrepareTask
 import org.ysb33r.gradle.nodejs.utils.npm.NpmExecutor
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
+import org.ysb33r.grolifant5.api.core.OperatingSystem
 
 import javax.inject.Inject
 
@@ -82,7 +83,8 @@ class AsciidoctorjsNodeEngine implements AsciidoctorEngine, CoreVersions {
             .convention(props['asciidoctorjs'].toString())
         this.asciidoctorjsCliVersion = tempProjectReference.objects.property(String)
             .convention(props['asciidoctorjs.cli'].toString())
-        this.nodejs.executableByVersion(props['node'])
+        final isWindows = OperatingSystem.current().windows
+        this.nodejs.executableByVersion(props[isWindows ? 'node.windows' : 'node'])
         usePackage(ASCIIDOCTOR_SCOPE, 'core', this.asciidoctorjsVersion)
         usePackage(ASCIIDOCTOR_SCOPE, 'cli', this.asciidoctorjsCliVersion)
 

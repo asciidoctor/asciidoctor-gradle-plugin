@@ -1,0 +1,27 @@
+apply plugin: 'org.ysb33r.os'
+
+ext {
+    if (OS.windows) {
+        nodejsExt = 'zip'
+        if (System.getProperty('os.arch').contains('64')) {
+            nodejsArch = 'win-x64'
+        } else {
+            nodejsArch = 'win-x86'
+        }
+    } else if (OS.linux) {
+        nodejsExt = 'tar.xz'
+        if (System.getProperty('os.arch').contains('64')) {
+            nodejsArch = 'linux-x64'
+        } else {
+            nodejsArch = 'linux-x86'
+        }
+    } else if (OS.macOsX) {
+        nodejsExt = 'tar.gz'
+        nodejsArch = 'darwin-x64'
+    }
+}
+
+ivypot {
+    cacheBinaries.add "nodejs:node:${agProject.versionOf('nodejs')}:${nodejsArch}@${nodejsExt}"
+    cacheBinaries.add "nodejs:node:${agProject.versionOf('nodejsWindows')}:${nodejsArch}@${nodejsExt}"
+}

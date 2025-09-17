@@ -35,7 +35,7 @@ class ExternalSourcesSpec extends AsciidoctorjHtmlIntegrationSpecification {
         final subdir = 'someSubdir'
         configureSourceSetGroovy(DEFAULT_PUBLICATION, """
         externalSource {
-            sourceDir = '${getEscapedPathString(otherSourceDir.absolutePath)}'
+            sourceDir = '${getEscapedAbsolutePathString(otherSourceDir)}'
             sources {
                 include 'simple.adoc'
             }
