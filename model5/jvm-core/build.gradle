@@ -37,7 +37,7 @@ agProject {
         'org.asciidoctor.jvm.revealjs',
         'AsciidoctorJ Reveal.js Plugin',
         'Provides Reveal.js formatters for all AsciidoctorJ toolchains',
-        'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjRevealjsPlugin',
+        'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjRevealjPlugin',
         ['asciidoctorj', 'revealjs']
     )
 
