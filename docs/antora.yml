@@ -2,6 +2,7 @@
 name: "gradle-plugin"
 title: "Gradle Plugin Suite"
 version: "5.0"
+prerelease: true
 asciidoc:
   attributes:
     release-version: "5.0.0-alpha.1"
