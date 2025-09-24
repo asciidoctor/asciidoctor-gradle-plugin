@@ -124,7 +124,8 @@ class ProblemReports {
 
     static String getVersion(Project project) {
         ConfigCacheSafeOperations.from(project).fsOperations().loadPropertiesFromResource(
-            'META-INF/asciidoctor.gradle/asciidoctor-gradle-base.properties'
+            'META-INF/asciidoctor.gradle/asciidoctor-gradle-base.properties',
+            ProblemReports.classLoader
         )['version']
     }
 }
