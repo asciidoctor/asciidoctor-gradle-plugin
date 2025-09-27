@@ -13,7 +13,7 @@ Otherwise in 5.x, the correct way is to use the new model approach, where everyt
 * The base directory is the source directory by default, whereas in the classic plugins it is still the project directory.
 * The base directory is now set prior to conversion.
   The engine can still adjust the base directory per file, but there is a performance as less files can be converted at one time.
-* The `pdfTehemes` extension in now called `asciidocPdfThemes`.
+* The `pdfThemes` extension in now called `asciidocPdfThemes`.
 
 === Notes about the classic model in 5.x
 
