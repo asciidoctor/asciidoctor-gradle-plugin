@@ -75,7 +75,7 @@ class DefaultBaseDirConfiguration implements BaseDirConfiguration {
      * </p>
      */
     @Override
-    void baseDirFollowSourceFiles() {
+    void baseDirFollowsSourceFiles() {
         this.baseDirStrategy.set(objectFactory.newInstance(BaseDirFollowSourceFiles))
     }
 

@@ -53,7 +53,7 @@ public interface BaseDirConfiguration {
      *     Keep in mind that this will probably invoke a performance penalty.
      * </p>
      */
-    void baseDirFollowSourceFiles();
+    void baseDirFollowsSourceFiles();
 
     /**
      * Returns the current basedir strategy if it has been configured.

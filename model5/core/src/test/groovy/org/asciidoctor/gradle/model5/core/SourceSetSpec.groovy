@@ -104,7 +104,7 @@ class SourceSetSpec extends UnitTestSpecification {
         final srcDir = main.sourceDir
 
         when:
-        main.baseDir.baseDirFollowSourceFiles()
+        main.baseDir.baseDirFollowsSourceFiles()
         final bd = main.baseDir.baseDirStrategy.get()
 
         then:

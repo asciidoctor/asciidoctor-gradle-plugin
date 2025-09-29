@@ -1,0 +1,39 @@
+import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjGenericExtension
+
+plugins {
+    id 'org.asciidoctor.jvm'
+    id 'org.asciidoctor.jvm.gems'
+    id 'org.asciidoctor.jvm.epub'
+}
+
+apply from: System.getProperty('org.ysb33r.ivypot.repo.groovy.dsl.uri')
+
+repositories {
+    ruby.gems()
+}
+
+asciidoc {
+    toolchains {
+        asciidoctorj {
+            asciidocExtensions {
+                lists(AsciidoctorjGenericExtension) {
+                    requires 'asciidoctor-lists'
+                    useGem 'asciidoctor-lists', '1.1.2'
+                }
+                math(AsciidoctorjGenericExtension) {
+                    requires 'asciimath'
+                    useGem 'asciimath', '2.0.6'
+                }
+            }
+        }
+    }
+    publications {
+        main {
+            output 'asciidoctorj', 'epub'
+        }
+    }
+}
+
+tasks.register('runGradleTest') {
+    dependsOn('asciidoctorAll')
+}

@@ -45,6 +45,10 @@ asciidoc {
             output 'asciidoctorj', 'epub'
             output 'asciidoctorjs', 'html', 'html2'
             output 'asciidoctorjs', 'docbook', 'docbook2'
+
+            sourceSet {
+                baseDir.baseDirFollowsSourceFiles()
+            }
         }
         slides {
             output 'asciidoctorj', 'revealjs'

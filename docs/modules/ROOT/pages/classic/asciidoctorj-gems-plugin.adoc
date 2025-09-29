@@ -1,6 +1,6 @@
 = AsciidoctorJ GEMs plugin
 
-GEM support is simplified via the `org.asciidoctor.jvm.gems` plugin.
+GEM support is simplified via the `org.asciidoctor.jvm.gems.classic` plugin.
 
 [tabs]
 ====
@@ -12,7 +12,7 @@ Groovy::
 .build.gradle
 ----
 plugins {
-    id 'org.asciidoctor.jvm.gems' version '{release-version}'
+    id 'org.asciidoctor.jvm.gems.classic' version '{release-version}'
 }
 
 repositories {
@@ -43,7 +43,7 @@ Kotlin::
 .build.gradle.kts
 ----
 plugins {
-    id("org.asciidoctor.jvm.gems") version "{release-version}"
+    id("org.asciidoctor.jvm.gems.classic") version "{release-version}"
 }
 ----
 --
