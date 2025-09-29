@@ -52,6 +52,7 @@ import static org.ysb33r.grolifant5.api.core.StringTools.EMPTY
 @CompileStatic
 @Slf4j
 class DefaultLauncher implements AsciidoctorLauncher {
+    public final static String SCRIPTS_GROOVY = 'groovy'
     private final static String LOG_EVENTS_FILE_PREFIX = LogProcessor.LOG_EVENTS_FILE_PREFIX
     private final WorkerExecutor workerExecutor
     private final ConfigurableFileCollection classpath
@@ -103,6 +104,7 @@ class DefaultLauncher implements AsciidoctorLauncher {
     }
 
     @Override
+    @SuppressWarnings('NestedBlockDepth')
     void run(AsciidoctorExecutionSettings executionsSettings, AsciidoctorConversionSettings conversionSettings) {
         final warnings = conversionSettings.fatalWarnings.getOrElse(EMPTY_SET)
         final wq = createWorkQueue(executionsSettings)
@@ -140,6 +142,22 @@ class DefaultLauncher implements AsciidoctorLauncher {
                         final t = conversionSettings.templates.get()
                         templateEngine.set(t.templateEngines.first())
                         templateDirs.set(t.templateDirs)
+                    }
+
+                    if (conversionSettings.scriptCollections.present) {
+                        final sc = conversionSettings.scriptCollections.get()
+                        if (sc.containsKey(SCRIPTS_GROOVY)) {
+                            final scFiles = sc[SCRIPTS_GROOVY].scriptFiles.getOrNull()
+                            final scScripts = sc[SCRIPTS_GROOVY].scripts.getOrNull()
+
+                            if (scFiles) {
+                                groovyExtensionScriptFiles.set(scFiles)
+                            }
+
+                            if (scScripts) {
+                                groovyExtensionScripts.set(scScripts)
+                            }
+                        }
                     }
                 }
             }

@@ -30,13 +30,13 @@ import org.gradle.api.file.FileCollection;
  */
 public interface AsciidoctorExtension extends Named, AsciidoctorRequires, HasAttributeProvider, HasDisplayType {
     /**
-     * Additional items to add to the classpath when a conversion involving the output formatter is executed.
+     * Additional items to add to the classpath when a conversion involving the extension is executed.
      *
      * <p>
      *     The classpath is empty by default.
      * </p>
      *
-     * @return Classpath. Can be {@code null} to indicate that the formatter does not support additional classpath.
+     * @return Classpath. Can be {@code null} to indicate that the extension does not support additional classpath.
      */
     FileCollection getClasspath();
 }

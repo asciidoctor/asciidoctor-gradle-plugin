@@ -20,6 +20,7 @@ import org.asciidoctor.gradle.model5.core.AsciidoctorConversionSettings
 import org.asciidoctor.gradle.model5.core.AsciidoctorNamedBackend
 import org.asciidoctor.gradle.model5.core.ConversionTemplate
 import org.asciidoctor.gradle.model5.core.DocType
+import org.asciidoctor.gradle.model5.core.ScriptCollection
 import org.gradle.api.file.Directory
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.MapProperty
@@ -51,6 +52,7 @@ class DefaultAsciidoctorConversionSettings implements AsciidoctorConversionSetti
     final SetProperty<Pattern> fatalWarnings
     final Property<Boolean> embedded
     final Property<ConversionTemplate> templates
+    final MapProperty<String, ScriptCollection> scriptCollections
 
     @Inject
     DefaultAsciidoctorConversionSettings(ObjectFactory objectFactory) {
@@ -65,6 +67,7 @@ class DefaultAsciidoctorConversionSettings implements AsciidoctorConversionSetti
         this.fatalWarnings = objectFactory.setProperty(Pattern)
         this.embedded = objectFactory.property(Boolean).convention(false)
         this.templates = objectFactory.property(ConversionTemplate)
+        this.scriptCollections = objectFactory.mapProperty(String, ScriptCollection)
     }
 
     void updateFrom(DefaultAsciidoctorConversionSettings other) {
@@ -79,5 +82,6 @@ class DefaultAsciidoctorConversionSettings implements AsciidoctorConversionSetti
         fatalWarnings.set(other.fatalWarnings)
         embedded.set(other.embedded)
         templates.set(other.templates)
+        scriptCollections.set(other.scriptCollections)
     }
 }

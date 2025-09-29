@@ -103,27 +103,19 @@ public interface AsciidoctorTaskMethods {
      * @param externalSources Provider to external sources.
      */
     void setExternalSources(Provider<? extends ProvidedExternalSources> externalSources);
-//
-//    /**
-//     * Whether document names should be logged prior to processing.
-//     *
-//     * @param flag Provider of the setting.
-//     */
-//    void setLogDocuments(Provider<Boolean> flag);
-//
-//    /**
-//     * The top directory where sources for this task will be located.
-//     *
-//     * @param dir Provider to the source directory.
-//     */
-//    void setSourceDir(Provider<File> dir);
-//
 
-//
-//    /**
-//     * The secondary source patterns to look for in the source directory.
-//     *
-//     * @param patterns Provider of patterns
-//     */
-//     void setSecondarySourcePatterns(Provider<PatternFilterable> patterns);
+    /**
+     * A provider of script collections.
+     *
+     * <p>
+     *     The key is a language name, and the value is a collection of scripts and files.
+     * </p>
+     * <p>
+     *     The underlying launcher will look for supported languages and load them as extensions.
+     *     Bad extensions will cause the launcher to fail.
+     * </p>
+     *
+     * @param scripts A provider of script collections.
+     */
+    void setScriptExtensions(Provider<Map<String,? extends ScriptCollection>> scripts);
 }

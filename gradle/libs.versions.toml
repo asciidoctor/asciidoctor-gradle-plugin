@@ -11,7 +11,7 @@ asciidoctorjDiagramPlantUml = "1.2025.3"
 # tag::hacking-asciidoctorj-output-formatter[]
 asciidoctorjEpub = "2.2.0"
 # end::hacking-asciidoctorj-output-formatter[]
-asciidoctorjGroovyDsl = "2.0.2"
+asciidoctorjGroovyDsl = "3.0.0-beta.1"
 asciidoctorjPdf = "2.3.19"
 asciidoctorjRevealjs = "5.2.0"
 asciidoctorjs = "3.0.0"

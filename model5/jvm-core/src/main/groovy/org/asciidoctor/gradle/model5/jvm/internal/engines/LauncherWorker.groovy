@@ -21,10 +21,12 @@ import org.asciidoctor.Asciidoctor
 import org.asciidoctor.Attributes
 import org.asciidoctor.Options
 import org.asciidoctor.SafeMode
+import org.asciidoctor.groovydsl.AsciidoctorExtensions
 import org.asciidoctor.log.LogHandler
 import org.asciidoctor.log.LogRecord
 import org.gradle.workers.WorkAction
 
+import static java.util.Collections.EMPTY_LIST
 import static org.asciidoctor.log.Severity.ERROR
 import static org.asciidoctor.log.Severity.FATAL
 import static org.asciidoctor.log.Severity.WARN
@@ -52,6 +54,7 @@ abstract class LauncherWorker implements WorkAction<LauncherParameters> {
         }
 
         // TODO: Handle extensions
+        handleGroovyExtensions(asciidoctor)
 
         final destDir = parameters.destinationDir.get().asFile
         destDir.mkdirs()
@@ -115,6 +118,30 @@ abstract class LauncherWorker implements WorkAction<LauncherParameters> {
 
     private Map<File, List<File>> partitionSourceFiles() {
         parameters.sourceFiles.get().groupBy { it.parentFile }
+    }
+
+    private void handleGroovyExtensions(Asciidoctor asciidoctor) {
+        try {
+            this.class.classLoader.loadClass('org.asciidoctor.groovydsl.AsciidoctorExtensionHandler')
+        } catch (ClassNotFoundException e) {
+            return
+        }
+
+        if (!parameters.groovyExtensionScripts.present && !parameters.groovyExtensionScriptFiles.present) {
+            return
+        }
+
+        final ascExt = new AsciidoctorExtensions()
+
+        parameters.groovyExtensionScripts.getOrElse(EMPTY_LIST).each {
+            ascExt.addExtension(it)
+        }
+
+        parameters.groovyExtensionScriptFiles.getOrElse([]).each {
+            ascExt.addExtension(it)
+        }
+
+        ascExt.registerExtensionsWith(asciidoctor)
     }
 
     private static class WorkerLogHandler implements LogHandler, AutoCloseable {

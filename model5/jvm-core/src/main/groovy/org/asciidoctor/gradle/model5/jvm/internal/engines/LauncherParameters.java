@@ -125,4 +125,18 @@ public interface LauncherParameters extends WorkParameters {
      *   If not supported, then this will be empty.
      */
     Property<String> getTemplateEngine();
+
+    /**
+     * List of scripts that are Groovy extensions.
+     *
+     * @return List of scripts. Can be empt.
+     */
+    ListProperty<String> getGroovyExtensionScripts();
+
+    /**
+     * List of script files that are Groovy extensions.
+     *
+     * @return List of scripts. Can be empty.
+     */
+    ListProperty<File> getGroovyExtensionScriptFiles();
 }

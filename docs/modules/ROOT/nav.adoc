@@ -15,9 +15,11 @@
 * xref:model5/asciidoctorj/revealjs.adoc[]
 * xref:model5/asciidoctorj/diagram.adoc[]
 * xref:model5/asciidoctorj/kroki.adoc[]
+* xref:model5/asciidoctorj/groovydsl.adoc[]
+* xref:model5/asciidoctorj/engine-options.adoc[]
+* xref:model5/asciidoctorj/configurations.adoc[]
 * xref:model5/asciidoctorj/adding-an-external-backend.adoc[]
 * xref:model5/asciidoctorj/adding-an-external-extension.adoc[]
-* xref:model5/asciidoctorj/engine-options.adoc[]
 
 .Asciidoctor.js
 * xref:model5/asciidoctorjs/html.adoc[]

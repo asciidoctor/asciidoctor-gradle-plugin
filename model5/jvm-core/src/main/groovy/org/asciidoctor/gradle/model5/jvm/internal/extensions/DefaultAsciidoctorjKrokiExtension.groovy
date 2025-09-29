@@ -63,7 +63,7 @@ class DefaultAsciidoctorjKrokiExtension extends AbstractAsciidoctorjGemBasedExte
             ASCIIDOCTORJ_GEM_KROKI,
             PluginUtils.loadDefaultVersion('asciidoctorj.kroki', project, tc.class.classLoader),
             REQUIRES,
-            ['asdciidoctor'],
+            ['asciidoctor'],
             tc,
             project
         )
