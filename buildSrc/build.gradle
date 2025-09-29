@@ -82,6 +82,10 @@ gradlePlugin {
             id = 'org.asciidoctor.internal.model5.gradle.project.jvm'
             implementationClass = 'org.asciidoctor.internal.model5.AsciidoctorJGradlePluginProject'
         }
+        testAllPlugins5 {
+            id = 'org.asciidoctor.internal.model5.gradle.test-all'
+            implementationClass = 'org.asciidoctor.internal.model5.TestAllPlugins'
+        }
     }
 }
 

@@ -48,3 +48,15 @@ plugins {
 ----
 --
 ====
+
+== Changing the cache size
+
+By default, the GEM prepare task will only cache the GEM directory if the content is less than 3MB.
+If you need to use a larger size, then add the following to `gradle.properties`.
+
+.gradle.properties
+[source,properties]
+----
+org.ysb33r.gradle.jruby.api.tasks.gem.cache.limit.mb=15 # <.>
+----
+<.> Set the folder size limit in MB.

@@ -39,3 +39,16 @@ For cases where the functionality in the GEM needs to be passed as `requires`, t
 This means that for two different output formatters attached to the same toolchain, the same GEMs will be on the classpath for both the conversion tasks associated with these them, but the `requires` parameter passed to {asciidoctorj-name} will differ.
 
 Build script users can add GEMs directly to the GEM configuration.
+
+== Changing the cache size
+
+By default, the GEM prepare task will only cache the GEM directory if the content is less than 3MB.
+If you need to use a larger size, then add the following to `gradle.properties`.
+
+.gradle.properties
+[source,properties]
+----
+org.ysb33r.gradle.jruby.api.tasks.gem.cache.limit.mb=15 # <.>
+----
+<.> Set the folder size limit in MB.
+  You can also set this in the environment or as a system property.

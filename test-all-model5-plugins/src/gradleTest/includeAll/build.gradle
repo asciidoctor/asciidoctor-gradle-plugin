@@ -1,0 +1,62 @@
+import org.asciidoctor.gradle.model5.js.extensions.AsciidoctorjsKrokiExtension
+import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjKrokiExtension
+
+plugins {
+    id 'org.asciidoctor.jvm'
+    id 'org.asciidoctor.jvm.pdf'
+    id 'org.asciidoctor.jvm.revealjs'
+    id 'org.asciidoctor.jvm.gems'
+    id 'org.asciidoctor.jvm.kroki'
+    id 'org.asciidoctor.jvm.epub'
+    id 'org.asciidoctor.js'
+    id 'org.asciidoctor.js.docbook'
+    id 'org.asciidoctor.js.kroki'
+    id 'org.asciidoctor.js.revealjs'
+}
+
+apply from: System.getProperty('org.ysb33r.ivypot.repo.groovy.dsl.uri')
+
+repositories {
+    ruby.gems()
+}
+
+asciidoc {
+    toolchains {
+        asciidoctorj {
+            asciidocExtensions {
+                kroki(AsciidoctorjKrokiExtension) {
+                    fetchDiagrams = true
+                }
+            }
+        }
+        asciidoctorj {
+            asciidocExtensions {
+                kroki(AsciidoctorjsKrokiExtension) {
+                    fetchDiagrams = true
+                }
+            }
+        }
+    }
+    publications {
+        main {
+            output 'asciidoctorj', 'html'
+            output 'asciidoctorj', 'docbook'
+            output 'asciidoctorj', 'pdf'
+            output 'asciidoctorj', 'epub'
+            output 'asciidoctorjs', 'html', 'html2'
+            output 'asciidoctorjs', 'docbook', 'docbook2'
+        }
+        slides {
+            output 'asciidoctorj', 'revealjs'
+            output 'asciidoctorjs', 'revealjs', 'revealjs2'
+
+            sourceSet {
+                sourceDir = 'src/docs/slides'
+            }
+        }
+    }
+}
+
+tasks.register('runGradleTest') {
+    dependsOn('asciidoctorAll')
+}

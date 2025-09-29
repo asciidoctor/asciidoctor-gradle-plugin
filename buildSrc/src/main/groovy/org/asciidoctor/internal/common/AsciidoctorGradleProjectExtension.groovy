@@ -43,8 +43,8 @@ class AsciidoctorGradleProjectExtension {
         this.snapshot = projectOperations.projectTools.versionProvider.get().endsWith('-SNAPSHOT')
         this.pluginExtraTextProvider = projectOperations.versionProvider.map { version ->
             (version.contains('-alpha') || version.contains('-beta')) ?
-                    ". (If you need a production-ready version of the AsciidoctorJ plugin for Gradle use a 4.x release of this plugin instead)."
-                    : ''
+                ". (If you need a production-ready version of the AsciidoctorJ plugin for Gradle use a 4.x release of this plugin instead)."
+                : ''
         }
         withJdkVersionFromProperty('jdkVersion')
     }
@@ -108,9 +108,11 @@ class AsciidoctorGradleProjectExtension {
 
         main.versions(projectOperations.providerTools.gradleProperty('minGradle'))
         main.versions(
-                projectOperations.providerTools.gradleProperty('otherGradleTestVersions')
-                        .orElse('')
-                        .get().split(',')
+            projectOperations.providerTools.gradleProperty('otherGradleTestVersions')
+                .orElse('')
+                .map { vers ->
+                    vers.split(',').findAll { it.startsWith('8.') }
+                }
         )
         main.deprecationMessageChecksForVersion('8.11.1', [])
         main.deprecationMessageChecksForVersion('8.14.3', [])
@@ -135,23 +137,23 @@ class AsciidoctorGradleProjectExtension {
             t.tap {
                 t.filesMatching "**/${INTERMEDIATE_FOLDER_PATH}/${name}", { fcd ->
                     fcd.filter org.apache.tools.ant.filters.ReplaceTokens,
-                            beginToken: '@@', endToken: '@@',
-                            tokens: values
+                        beginToken: '@@', endToken: '@@',
+                        tokens: values
                     fcd.filter { String line ->
                         line.startsWith('#') ? null : line
                     }
                 }
             }
-            t.inputs.property('versions',values).optional(true)
+            t.inputs.property('versions', values).optional(true)
         }
     }
 
     String versionOf(String versionPropName) {
         try {
             extensions.getByType(VersionCatalogsExtension)
-                    .named('libs')
-                    .findVersion(versionPropName)
-                    .get().toString()
+                .named('libs')
+                .findVersion(versionPropName)
+                .get().toString()
         } catch (Exception e) {
             final fromProps = projectOperations.gradleProperty("${versionPropName}Version")
             if (fromProps.present) {
@@ -164,11 +166,11 @@ class AsciidoctorGradleProjectExtension {
     }
 
     void configurePlugin(
-            String pluginId,
-            String providedDisplayName,
-            String providedDescription,
-            String implClass,
-            List<String> providedTags
+        String pluginId,
+        String providedDisplayName,
+        String providedDescription,
+        String implClass,
+        List<String> providedTags
     ) {
         final gradlePlugin = extensions.getByType(GradlePluginDevelopmentExtension)
         final providedName = "${pluginId.replaceAll(~/\./, '')}Plugin".toString()

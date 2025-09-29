@@ -1,0 +1,34 @@
+plugins {
+    id 'org.asciidoctor.jvm'
+    id 'org.asciidoctor.jvm.pdf'
+    id 'org.asciidoctor.jvm.revealjs'
+    id 'org.asciidoctor.jvm.gems'
+    id 'org.asciidoctor.jvm.diagram'
+    id 'org.asciidoctor.jvm.epub'
+}
+
+apply from: System.getProperty('org.ysb33r.ivypot.repo.groovy.dsl.uri')
+
+repositories {
+    ruby.gems()
+}
+
+asciidoc {
+    publications {
+        main {
+            output 'asciidoctorj', 'html'
+            output 'asciidoctorj', 'docbook'
+            output 'asciidoctorj', 'pdf'
+        }
+        slides {
+            sourceSet {
+                sourceDir = 'src/docs/slides'
+            }
+            output 'asciidoctorj', 'revealjs'
+        }
+    }
+}
+
+tasks.register('runGradleTest') {
+    dependsOn('asciidoctorAll')
+}

@@ -12,3 +12,14 @@ With 4.x came Gradle 8.x compatibility, and there was an attempt to make it conf
 
 Now with 5.x comes a new model, which simplifies declaration and removes the need to configure tasks.
   Although it still has the classic usage available that was in 4.x, and which is not configuration-cache-compatible, the new model in 5.x offers both Gradle 9.x compatibility and configuration cache-compatibility.
+
+== Requirements
+
+|===
+|Engine |Minimum Gradle|Minimum JDK
+
+| `asciidoctorj` | 8.0.2 | 11
+| `asciidoctor.js` | 8.0.2 | 8
+
+|===
+

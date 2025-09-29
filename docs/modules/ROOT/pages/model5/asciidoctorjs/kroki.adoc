@@ -37,4 +37,80 @@ plugins {
 :partials-package-part: js
 include::partial$kroki-options.adoc[]
 
+== Using Kroki with EPUB and PDF
+
+In order to you use Kroki images with EPUB and PDF you have one of two options to have the options downloaded.
+
+* Have Kroki download the images.
+* Set the `allow-uri-read` attribute on the source set.
+
+Both of these options affect all the publications that use the specific toolchain.
+If this is not to your liking, you can create an additional `asciidoctorj` toolchain and set the Kroki setting only on that toolchain.
+
+.Using an additional toolchain
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
+[subs=attributes+]
+.build.gradle
+----
+import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
+import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjKrokiExtension
+
+asciidoc {
+    toolchains {
+        asciidoctorj2(AsciidoctorjToolchain) {
+            asciidocExtensions {
+                kroki(AsciidoctorjKrokiExtension) {
+                    fetchDiagrams = true
+                }
+            }
+        }
+    }
+
+    publications {
+        main {
+            output 'asciidoctorj', 'html' // <.>
+            output 'asciidoctorj2', 'epub' // <.>
+        }
+    }
+}
+----
+<.> The HTML backend will use the links to the Kroki server.
+<.> The EPUB backend will use the images downloaded by the second `asciidoctorj` toolchain.
+--
+====
+
+.Setting the `allow-uri-read` for the source set
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
+[subs=attributes+]
+.build.gradle
+----
+import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
+import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjKrokiExtension
+
+asciidoc {
+    publications {
+        main {
+            sourceSet {
+                attributes {
+                    add 'allow-uri-read', 1 // <.>
+                }
+            }
+        }
+    }
+}
+----
+<.> Sets the attribute.
+  You might consider https://docs.asciidoctor.org/asciidoc/latest/directives/include-uri/#caching-uri-content[caching the content], by adding a custom extension which uses the `open-uri-cached` GEM.
+--
+====
 
