@@ -1,6 +1,6 @@
 = AsciidoctorJ GEMs plugin
 
-GEM support is simplified via the `org.asciidoctor.jvm.gems` plugin.
+GEM support is simplified via the `org.asciidoctor.jvm.gems.classic` plugin.
 
 [tabs]
 ====
@@ -12,7 +12,7 @@ Groovy::
 .build.gradle
 ----
 plugins {
-    id 'org.asciidoctor.jvm.gems' version '{release-version}'
+    id 'org.asciidoctor.jvm.gems.classic' version '{release-version}'
 }
 
 repositories {
@@ -43,8 +43,20 @@ Kotlin::
 .build.gradle.kts
 ----
 plugins {
-    id("org.asciidoctor.jvm.gems") version "{release-version}"
+    id("org.asciidoctor.jvm.gems.classic") version "{release-version}"
 }
 ----
 --
 ====
+
+== Changing the cache size
+
+By default, the GEM prepare task will only cache the GEM directory if the content is less than 3MB.
+If you need to use a larger size, then add the following to `gradle.properties`.
+
+.gradle.properties
+[source,properties]
+----
+org.ysb33r.gradle.jruby.api.tasks.gem.cache.limit.mb=15 # <.>
+----
+<.> Set the folder size limit in MB.

@@ -9,6 +9,7 @@ Users do not usually need to create toolchains directly, but might need to confi
 (Output formatters are effectively what is also know as Asciidoctor backends).
 
 In some special cases a user might want to create another toolchain of the same type, but configure it differently.
+
 [source,groovy]
 ----
 import org.asciidoctor.gradle.model5.jvm.core.AsciidoctorJToolchain // <.>

@@ -15,13 +15,15 @@
  */
 package org.asciidoctor.gradle.model5.jvm.formatters;
 
+import org.asciidoctor.gradle.model5.core.formatters.HasAllowUriRead;
+
 /**
  * THe {@code asciidoctorj-pdf} output formatter.
  *
  * @author Schalk W. Cronjé
  * @since 5.0
  */
-public interface AsciidoctorjPdf extends AsciidoctorjOutputFormatterVersioned {
+public interface AsciidoctorjPdf extends AsciidoctorjOutputFormatterVersioned, HasAllowUriRead {
 
     /**
      * Use the named theme from {@code asciidocPdfThemes}.

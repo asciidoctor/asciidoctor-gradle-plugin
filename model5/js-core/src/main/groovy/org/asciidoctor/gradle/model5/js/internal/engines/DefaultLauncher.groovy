@@ -41,6 +41,7 @@ import javax.inject.Inject
 import java.util.regex.Pattern
 
 import static java.util.Collections.EMPTY_LIST
+import static java.util.Collections.EMPTY_SET
 import static org.asciidoctor.gradle.model5.core.internal.tasks.LogProcessor.LOG_EVENTS_FILE_PREFIX
 import static org.asciidoctor.gradle.model5.core.internal.tasks.LogProcessor.parseLogs
 import static org.ysb33r.grolifant5.api.core.ExecTools.OutputType.CAPTURE
@@ -100,6 +101,7 @@ class DefaultLauncher implements AsciidoctorLauncher {
 
     @Override
     void run(AsciidoctorExecutionSettings executionsSettings, AsciidoctorConversionSettings conversionSettings) {
+        final warnings = conversionSettings.fatalWarnings.getOrElse(EMPTY_SET)
         final groups = EngineUtils.groupByParent(conversionSettings.sourceFiles.get())
         final root = conversionSettings.sourceRootDir.get().asFile
         final destRoot = conversionSettings.destinationDir.get()
@@ -159,7 +161,7 @@ class DefaultLauncher implements AsciidoctorLauncher {
             }
         }
 
-        parseLogs(stringTools, jobLogDir.get(), conversionSettings.fatalWarnings.get(), index)
+        parseLogs(stringTools, jobLogDir.get(), warnings, index)
     }
 
     @SuppressWarnings('DuplicateNumberLiteral')

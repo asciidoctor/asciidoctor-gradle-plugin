@@ -42,7 +42,7 @@ class DefaultEngineOptions implements EngineOptions {
     @Inject
     DefaultEngineOptions(Project tempProjectReference) {
         this.catalogAssetsSetting = false
-        this.sourceMapSetting = false
+        this.sourceMapSetting = true
         this.erubySetting = ErbEngine.ERB
 
         engineOptionsProvider = tempProjectReference.provider {

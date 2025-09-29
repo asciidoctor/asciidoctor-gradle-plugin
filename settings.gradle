@@ -53,6 +53,8 @@ project(":asciidoctoreditorconfig").projectDir = file("model5/asciidoctoreditorc
 }
 include 'asciidoctoreditorconfig-classic'
 project(":asciidoctoreditorconfig-classic").projectDir = file("classic/asciidoctoreditorconfig")
+
+include 'test-all-model5-plugins'
 ////[  'slides-export' ].each {
 ////    include "classic/${it}"
 ////    project(":classic/${it}").name = "asciidoctor-gradle-${it}"

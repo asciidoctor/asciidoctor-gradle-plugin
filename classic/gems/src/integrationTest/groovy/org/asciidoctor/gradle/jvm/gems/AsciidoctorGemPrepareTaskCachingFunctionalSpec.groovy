@@ -155,6 +155,9 @@ class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecifica
             }
             '''.stripIndent()
         }
+        new File(projectDir,'gradle.properties').text = '''
+        org.ysb33r.gradle.jruby.api.tasks.gem.cache.limit.mb=15
+        '''.stripIndent()
         buildFile
     }
 

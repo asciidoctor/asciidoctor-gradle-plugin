@@ -5,7 +5,7 @@ version: "5.0"
 prerelease: true
 asciidoc:
   attributes:
-    release-version: "5.0.0-alpha.1"
+    release-version: "5.0.0-alpha.2"
     project-full-path: "asciidoctor/asciidoctor-gradle-plugin"
     project-issues-url: "https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues"
     project-name: "asciidoctor-gradle-plugin"
@@ -46,6 +46,7 @@ asciidoc:
     kotlindsl: "https://github.com/gradle/kotlin-dsl[Gradle Kotlin DSL]"
     lightguard: "https://github.com/LightGuard[Jason Porter]"
     lordofthejars: "https://github.com/lordofthejars[Alex Soto]"
+    minimum-gradle: "8.0.2"
 nav:
 - "modules/ROOT/nav.adoc"
 

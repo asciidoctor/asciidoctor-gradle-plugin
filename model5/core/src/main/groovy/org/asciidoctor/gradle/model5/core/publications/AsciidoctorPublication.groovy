@@ -32,6 +32,7 @@ import org.gradle.api.Named
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.util.PatternFilterable
 import org.ysb33r.grolifant5.api.core.ClosureUtils
@@ -158,7 +159,12 @@ class AsciidoctorPublication implements Named {
         final newOutput = this.outputs.create(finalName).tap { DefaultAsciidoctorOutputData it ->
             configureFrom(owner.name, toolchain, formatter, sourceSet)
         }
-        final task = registerConversionTask(toolchain, newOutput, formatter.copyResources)
+        final task = registerConversionTask(
+            toolchain,
+            newOutput,
+            formatter.attributeProvider,
+            formatter.copyResources
+        )
 
         task.configure { AsciidoctorTask t ->
             formatter.configureTaskInputs(t.inputs)
@@ -170,12 +176,13 @@ class AsciidoctorPublication implements Named {
     private TaskProvider<? extends AsciidoctorTask> registerConversionTask(
         AsciidoctorToolchain toolchain,
         AsciidoctorOutputData outputData,
+        Provider<Map<String,Object>> formatterAttrs,
         boolean copyResources
     ) {
         final taskFactory = objectFactory.newInstance(TaskFactory)
         final taskName = PublicationUtils.conversionTaskName(name, outputData.name)
         final extensionAttributes = objectFactory.mapProperty(String, Object)
-
+        extensionAttributes.putAll(formatterAttrs)
         toolchain.asciidocExtensions.all {
             AsciidoctorExtension it -> extensionAttributes.putAll(it.attributeProvider)
         }
@@ -190,7 +197,6 @@ class AsciidoctorPublication implements Named {
             atm.baseDir = sources.baseDir.baseDirStrategy.flatMap { it.getBaseDir(sources.sourceDir) }
             atm.adjustBaseDirPerFile = sources.baseDir.baseDirStrategy.flatMap { it.adjustBaseDirPerFile }
             atm.fatalWarnings = sources.fatalWarnings
-
             atm.externalSources = copyResources ? sources.externalSources : sources.externalSources.map {
                 new DefaultProvidedExternalSources(
                     it.externalSources.map { list ->

@@ -246,10 +246,8 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
      * {@link org.ysb33r.grolifant5.api.core.StringTools#patternize}
      */
     void fatalWarnings(Object... patterns) {
-        this.fatalWarningPatterns.addAll {
-            ccso.providerTools().provider { ->
-                ccso.stringTools().patternize(patterns.toList())
-            }
+        patterns.each {
+            this.fatalWarningPatterns.add(ccso.stringTools().providePattern(it))
         }
     }
 
@@ -259,11 +257,9 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
      * @param patterns Anything convertible to a pattern using
      * {@link org.ysb33r.grolifant5.api.core.StringTools#patternize}
      */
-    void fatalWarnings(Iterable<?> patterns) {
-        this.fatalWarningPatterns.addAll {
-            ccso.providerTools().provider { ->
-                ccso.stringTools().patternize(patterns.toList())
-            }
+    void fatalWarnings(Collection<?> patterns) {
+        patterns.each {
+            this.fatalWarningPatterns.add(ccso.stringTools().providePattern(it))
         }
     }
 

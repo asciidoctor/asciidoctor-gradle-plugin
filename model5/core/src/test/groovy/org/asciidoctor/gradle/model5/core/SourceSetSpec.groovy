@@ -16,8 +16,8 @@
 package org.asciidoctor.gradle.model5.core
 
 
-import org.asciidoctor.gradle.model5.core.internal.basedir.BaseDirFollowSourceDir
-import org.asciidoctor.gradle.model5.core.internal.basedir.BaseDirFollowSourceFiles
+import org.asciidoctor.gradle.model5.core.internal.basedir.BaseDirFollowsSourceDir
+import org.asciidoctor.gradle.model5.core.internal.basedir.BaseDirFollowsSourceFiles
 import org.asciidoctor.gradle.model5.core.internal.basedir.BaseDirFollowsProject
 import org.asciidoctor.gradle.model5.core.internal.basedir.BaseDirFollowsRootProject
 import org.asciidoctor.gradle.model5.core.internal.basedir.BaseDirIsFixedPath
@@ -51,7 +51,7 @@ class SourceSetSpec extends UnitTestSpecification {
         final srcDir = main.sourceDir
 
         expect:
-        bd instanceof BaseDirFollowSourceDir
+        bd instanceof BaseDirFollowsSourceDir
         bd.getBaseDir(srcDir).get() == srcDir.get()
         !bd.adjustBaseDirPerFile.get()
     }
@@ -104,11 +104,11 @@ class SourceSetSpec extends UnitTestSpecification {
         final srcDir = main.sourceDir
 
         when:
-        main.baseDir.baseDirFollowSourceFiles()
+        main.baseDir.baseDirFollowsSourceFiles()
         final bd = main.baseDir.baseDirStrategy.get()
 
         then:
-        bd instanceof BaseDirFollowSourceFiles
+        bd instanceof BaseDirFollowsSourceFiles
         bd.getBaseDir(srcDir).get().asFile == srcDir.get().asFile
         bd.adjustBaseDirPerFile.get()
     }

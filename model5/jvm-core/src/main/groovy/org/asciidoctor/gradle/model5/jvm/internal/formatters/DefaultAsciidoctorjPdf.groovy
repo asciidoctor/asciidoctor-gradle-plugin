@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.model5.jvm.internal.formatters
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.extensions.AsciidoctorThemeExtension
+import org.asciidoctor.gradle.model5.core.internal.formatters.DefaultAllowUriRead
 import org.asciidoctor.gradle.model5.core.pdfthemes.BuiltInThemes
 import org.asciidoctor.gradle.model5.core.pdfthemes.PdfTheme
 import org.asciidoctor.gradle.model5.jvm.JvmModel
@@ -55,6 +56,9 @@ class DefaultAsciidoctorjPdf extends AbstractAsciidoctorjFormatterVersioned impl
     private final Property<PdfTheme> theme
     private final Property<File> fontsDir
 
+    @Delegate(includes = ['setAllowUriRead'])
+    private final DefaultAllowUriRead allowUriRead
+
     @Inject
     DefaultAsciidoctorjPdf(String name, AsciidoctorjToolchain tc, Project project) {
         super(
@@ -68,6 +72,9 @@ class DefaultAsciidoctorjPdf extends AbstractAsciidoctorjFormatterVersioned impl
 
         this.fsOperations = ConfigCacheSafeOperations.from(project).fsOperations()
         this.theme = project.objects.property(PdfTheme)
+        this.allowUriRead = project.objects.newInstance(DefaultAllowUriRead)
+        this.fontsDir = project.objects.property(File)
+
         availableThemes = project.extensions.getByType(AsciidoctorThemeExtension).pdfThemes
         useTheme(BuiltInThemes.DEFAULT.themeName)
 
@@ -86,6 +93,7 @@ class DefaultAsciidoctorjPdf extends AbstractAsciidoctorjFormatterVersioned impl
                 attrs + [(ATTR_FONT_DIR): dir.absolutePath]
             }.orElse(themeAttrs)
         )
+        attributes.putAll(allowUriRead.attributeProvider)
     }
 
     /**

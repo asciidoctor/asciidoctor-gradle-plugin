@@ -39,6 +39,7 @@ import javax.inject.Inject
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
 
+import static java.util.Collections.EMPTY_SET
 import static org.ysb33r.grolifant5.api.core.StringTools.EMPTY
 
 /**
@@ -103,6 +104,7 @@ class DefaultLauncher implements AsciidoctorLauncher {
 
     @Override
     void run(AsciidoctorExecutionSettings executionsSettings, AsciidoctorConversionSettings conversionSettings) {
+        final warnings = conversionSettings.fatalWarnings.getOrElse(EMPTY_SET)
         final wq = createWorkQueue(executionsSettings)
         final groups = EngineUtils.groupByParent(conversionSettings.sourceFiles.get())
         final root = conversionSettings.sourceRootDir.get().asFile
@@ -145,7 +147,7 @@ class DefaultLauncher implements AsciidoctorLauncher {
         }
         wq.await()
 
-        LogProcessor.parseLogs(stringTools, jobLogDir.get(), conversionSettings.fatalWarnings.get(), index)
+        LogProcessor.parseLogs(stringTools, jobLogDir.get(), warnings, index)
     }
 
     private Optional<ExecutionContext> getExecutionContext(String toolchainName, String formatterName) {

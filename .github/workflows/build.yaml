@@ -88,4 +88,4 @@ jobs:
     - name: Remote tests for classic plugins
       run: ./gradlew  -i --console=plain --no-build-cache remoteTest
     - name: Gradle tests
-      run: ./gradlew -i --console=plain --no-parallel --no-build-cache gradleTest
+      run: ./gradlew -i --console=plain --no-parallel --no-build-cache gradleTest configCacheGradleTest jdk17GradleTest jdk21GradleTest

@@ -37,4 +37,3 @@ plugins {
 :partials-package-part: js
 include::partial$kroki-options.adoc[]
 
-
