@@ -17,6 +17,7 @@
 * xref:model5/asciidoctorj/kroki.adoc[]
 * xref:model5/asciidoctorj/adding-an-external-backend.adoc[]
 * xref:model5/asciidoctorj/adding-an-external-extension.adoc[]
+* xref:model5/asciidoctorj/engine-options.adoc[]
 
 .Asciidoctor.js
 * xref:model5/asciidoctorjs/html.adoc[]

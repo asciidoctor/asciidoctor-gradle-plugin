@@ -33,6 +33,7 @@ asciidoc {
         pdf(AsciidoctorjPdf) {
           useTheme('default-with-font-fallbacks') // <.>
           useTheme('myLocal') // <.>
+          allowUriRead = true // <.>
         }
       }
     }
@@ -46,6 +47,8 @@ asciidoc {
 ----
 <.> Use a built-in theme.
 <.> Use the `myLocal` theme from `asciidocPdfThemes`.
+<.> Turn this on if you need to read remote images via URI.
+ Please read https://docs.asciidoctor.org/asciidoc/latest/directives/include-uri/[Include Content by URI] to understand this setting.
 
 == Setting other parameters
 

@@ -13,29 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.asciidoctor.gradle.model5.jvm.formatters;
-
-import org.asciidoctor.gradle.model5.core.formatters.HasAllowUriRead;
+package org.asciidoctor.gradle.model5.core.formatters;
 
 /**
- * THe {@code asciidoctorj-pdf} output formatter.
+ * Formatter needs the option to read URIs.
  *
  * @author Schalk W. Cronjé
  * @since 5.0
  */
-public interface AsciidoctorjPdf extends AsciidoctorjOutputFormatterVersioned, HasAllowUriRead {
-
+public interface HasAllowUriRead {
     /**
-     * Use the named theme from {@code asciidocPdfThemes}.
+     * Sets whether content can be read from URIs.
      *
-     * @param name Name of theme
+     * @param flag {@code true} to allow URI reads.
      */
-    void useTheme(String name);
-
-    /**
-     * Supply an alternative location for fonts.
-     *
-     * @param dir Anything convertible to a file.
-     */
-    void setFontsDir(Object dir);
+    void setAllowUriRead(boolean flag);
 }

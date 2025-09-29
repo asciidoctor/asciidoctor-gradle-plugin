@@ -1,5 +1,7 @@
+import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.asciidoctor.gradle.model5.js.extensions.AsciidoctorjsKrokiExtension
 import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjKrokiExtension
+import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjPdf
 
 plugins {
     id 'org.asciidoctor.jvm'
@@ -24,15 +26,15 @@ asciidoc {
     toolchains {
         asciidoctorj {
             asciidocExtensions {
-                kroki(AsciidoctorjKrokiExtension) {
+                kroki(AsciidoctorjsKrokiExtension) {
                     fetchDiagrams = true
                 }
             }
         }
-        asciidoctorj {
-            asciidocExtensions {
-                kroki(AsciidoctorjsKrokiExtension) {
-                    fetchDiagrams = true
+        asciidoctorj2(AsciidoctorjToolchain) {
+            registeredOutputFormatters {
+                pdf(AsciidoctorjPdf) {
+                    allowUriRead = true
                 }
             }
         }
@@ -41,13 +43,14 @@ asciidoc {
         main {
             output 'asciidoctorj', 'html'
             output 'asciidoctorj', 'docbook'
-            output 'asciidoctorj', 'pdf'
             output 'asciidoctorj', 'epub'
+            output 'asciidoctorj2', 'pdf'
             output 'asciidoctorjs', 'html', 'html2'
             output 'asciidoctorjs', 'docbook', 'docbook2'
 
             sourceSet {
                 baseDir.baseDirFollowsSourceFiles()
+                fatalWarnings ~/image to embed not found or not readable/
             }
         }
         slides {

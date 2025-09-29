@@ -66,6 +66,7 @@ class TestAllPlugins implements Plugin<Project> {
         gradleTest.testSets.create('jdk17') { GradleTestSet ts ->
             ts.versions(gradle9OrLater)
             ts.gradleArguments('-s')
+            ts.debug = true
         }
 
         gradleTest.testSets.create('jdk21') { GradleTestSet ts ->

@@ -6,16 +6,12 @@ configurations {
     pluginProjects
     gradleTestImplementation.extendsFrom(pluginProjects)
 }
+
 dependencies {
     pluginProjects(project(':asciidoctor5-core-plugin'))
     pluginProjects(project(path: ':asciidoctor5-jvm-core-plugin', configuration: 'default'))
     pluginProjects(project(':asciidoctor5-js-core-plugin'))
 }
 
-tasks.register('foo') {
-    doLast {
-        println configurations.pluginProjects.files.join('\n')
-    }
-}
 
 
