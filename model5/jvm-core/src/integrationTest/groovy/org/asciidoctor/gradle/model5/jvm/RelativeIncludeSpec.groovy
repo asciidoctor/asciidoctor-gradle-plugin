@@ -36,7 +36,7 @@ class RelativeIncludeSpec extends AsciidoctorjHtmlIntegrationSpecification {
         setup:
         configureSourceSetGroovy(DEFAULT_PUBLICATION, """
         sources 'nested/sample.adoc'
-        baseDir.baseDirFollowSourceFiles()
+        baseDir.baseDirFollowsSourceFiles()
         """.stripIndent())
 
         when:

@@ -25,19 +25,19 @@ import org.gradle.api.provider.Provider
 import javax.inject.Inject
 
 /**
- * The base directory is the source directory. WHere an intermediate work directory is used, it will the work directory.
+ * The base directory is the source directory. Where an intermediate work directory is used, it will the work directory.
  *
  * @author Schalk W. Cronjé
  *
  * @since 5.0
  */
 @CompileStatic
-class BaseDirFollowSourceDir implements BaseDirStrategy {
+class BaseDirFollowsSourceDir implements BaseDirStrategy {
 
     protected final Property<Boolean> adjustBaseDir
 
     @Inject
-    BaseDirFollowSourceDir(ObjectFactory objectFactory) {
+    BaseDirFollowsSourceDir(ObjectFactory objectFactory) {
         adjustBaseDir = objectFactory.property(Boolean).convention(false)
     }
 

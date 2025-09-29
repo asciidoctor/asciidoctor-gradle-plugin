@@ -47,13 +47,13 @@ class DefaultBaseDirConfiguration implements BaseDirConfiguration {
         this.objectFactory = project.objects
         this.layout = project.layout
         this.baseDirStrategy = project.objects.property(BaseDirStrategy)
-        this.baseDirStrategy.set(project.objects.newInstance(BaseDirFollowSourceDir))
+        this.baseDirStrategy.set(project.objects.newInstance(BaseDirFollowsSourceDir))
         this.fsOperations = ConfigCacheSafeOperations.from(project).fsOperations()
     }
 
     @Override
     void baseDirFollowsSourceDir() {
-        this.baseDirStrategy.set(objectFactory.newInstance(BaseDirFollowSourceDir))
+        this.baseDirStrategy.set(objectFactory.newInstance(BaseDirFollowsSourceDir))
     }
 
     @Override
@@ -76,7 +76,7 @@ class DefaultBaseDirConfiguration implements BaseDirConfiguration {
      */
     @Override
     void baseDirFollowsSourceFiles() {
-        this.baseDirStrategy.set(objectFactory.newInstance(BaseDirFollowSourceFiles))
+        this.baseDirStrategy.set(objectFactory.newInstance(BaseDirFollowsSourceFiles))
     }
 
     @Override

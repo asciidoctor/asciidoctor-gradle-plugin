@@ -28,10 +28,10 @@ import javax.inject.Inject
  * @since 5.0
  */
 @CompileStatic
-class BaseDirFollowSourceFiles extends BaseDirFollowSourceDir {
+class BaseDirFollowsSourceFiles extends BaseDirFollowsSourceDir {
 
     @Inject
-    BaseDirFollowSourceFiles(ObjectFactory objectFactory) {
+    BaseDirFollowsSourceFiles(ObjectFactory objectFactory) {
         super(objectFactory)
         adjustBaseDir.set(true)
     }
