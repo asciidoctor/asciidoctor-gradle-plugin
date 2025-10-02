@@ -10,24 +10,26 @@ agProject {
     withIntegrationTests()
     withCompatibilityTests()
     configurePlugin(
-            'org.asciidoctor.js.base.classic',
-            'Asciidoctor.js Classic (Deprecated) Base Plugin',
-            'Deprecated base plugin for all Asciidoctor.js tasks & extensions. Provides the asciidoctorjs project extension',
-            'org.asciidoctor.gradle.js.nodejs.core.AsciidoctorNodeJSBasePlugin',
-            ['asciidoctor.js']
+        'org.asciidoctor.js.base.classic',
+        'Asciidoctor.js Classic (Deprecated) Base Plugin',
+        'Deprecated base plugin for all Asciidoctor.js tasks & extensions. Provides the asciidoctorjs project extension',
+        'org.asciidoctor.gradle.js.nodejs.core.AsciidoctorNodeJSBasePlugin',
+        ['asciidoctor.js'],
+        false
     )
 
     configurePlugin(
-            'org.asciidoctor.js.convert.classic',
-            'Asciidoctor.js Classic (Deprecated) General Purpose Document Conversion Plugin',
-            'Deprecated asciidoctor task and convention using the asciidoctor.js engine',
-            'org.asciidoctor.gradle.js.nodejs.AsciidoctorNodeJSPlugin',
-            ['asciidoctor.js', 'html5', 'docbook']
+        'org.asciidoctor.js.convert.classic',
+        'Asciidoctor.js Classic (Deprecated) General Purpose Document Conversion Plugin',
+        'Deprecated asciidoctor task and convention using the asciidoctor.js engine',
+        'org.asciidoctor.gradle.js.nodejs.AsciidoctorNodeJSPlugin',
+        ['asciidoctor.js', 'html5', 'docbook'],
+        false
     )
 
     withVersionSubstitution("${project.name}.properties", [
-            VERSION  : versionOf('asciidoctorjs'),
-            NODE: versionOf('nodejs')
+        VERSION: versionOf('asciidoctorjs3'),
+        NODE   : versionOf('nodejs')
     ])
 }
 
@@ -73,7 +75,7 @@ tasks.named('test', Test) {
 }
 
 tasks.withType(Test).configureEach {
-    systemProperties 'org.ysb33r.gradle.nodejs.uri': project.uri(new File(rootDir,'.offline-repo/binaries/nodejs'))
+    systemProperties 'org.ysb33r.gradle.nodejs.uri': project.uri(new File(rootDir, '.offline-repo/binaries/nodejs'))
 }
 
 

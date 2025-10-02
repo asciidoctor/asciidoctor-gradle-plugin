@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 - 2025 the original author or authors.
+ * Copyright 2013 - 2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,25 +20,21 @@ import org.asciidoctor.gradle.model5.core.AsciidoctorLauncher
 import org.asciidoctor.gradle.model5.core.engines.AsciidoctorEngine
 import org.asciidoctor.gradle.model5.js.JsModel
 import org.asciidoctor.gradle.model5.js.internal.engines.DefaultLauncher
-import org.asciidoctor.gradle.model5.js.internal.engines.NpmPackage
+import org.asciidoctor.gradle.model5.js.internal.toolchains.AbstractAsciidoctorjsToolchain
 import org.asciidoctor.gradle.model5.js.toolchains.CoreVersions
+import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
+import org.gradle.api.file.Directory
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.ysb33r.gradle.nodejs.NodeJSConfigCacheSafeOperations
-import org.ysb33r.gradle.nodejs.NodeJSExecSpec
-import org.ysb33r.gradle.nodejs.NodeJSExtension
-import org.ysb33r.gradle.nodejs.NpmConfigCacheSafeOperations
-import org.ysb33r.gradle.nodejs.NpmExtension
-import org.ysb33r.gradle.nodejs.NpmPackageDescriptor
-import org.ysb33r.gradle.nodejs.tasks.NodeNpmPrepareTask
-import org.ysb33r.gradle.nodejs.utils.npm.NpmExecutor
+import org.ysb33r.gradle.jse.pnpm.tasks.PnpmPrepareTask
+import org.ysb33r.gradle.jse.pnpm.toolchains.JsePnpmToolchain
+import org.ysb33r.gradle.jsecosystem.JsEcosystemExtension
+import org.ysb33r.gradle.jsecosystem.packages.PackageDescriptor
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 
 import javax.inject.Inject
-
-import static org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreBasePlugin.INTERMEDIATE_RESOURCE_PATH
 
 /**
  * The core engine for running {@code asciidoctor.js}.
@@ -50,43 +46,52 @@ import static org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreBasePlug
 @CompileStatic
 class AsciidoctorjsNodeEngine implements AsciidoctorEngine, CoreVersions {
 
-    private static final String ASCIIDOCTOR_SCOPE = 'asciidoctor'
+    public static final String ASCIIDOCTOR_SCOPE = 'asciidoctor'
+    private static final String ASCIIDOCTOR_SCRIPT = ASCIIDOCTOR_SCOPE
 
     final String name
-    final NodeJSExtension nodejs
-    final NpmExtension npm
+    private final Provider<Directory> workingDir
     private final ConfigCacheSafeOperations ccso
     private final Property<String> asciidoctorjsVersion
     private final Property<String> asciidoctorjsCliVersion
-    private final ListProperty<NpmPackageDescriptor> packages
+    private final ListProperty<PackageDescriptor> packages
+    private final NamedDomainObjectProvider<JsePnpmToolchain> pnpmToolchain
 
     private final Provider<DefaultLauncher> launcherProvider
 
     @Inject
-    AsciidoctorjsNodeEngine(String name, Project tempProjectReference) {
+    AsciidoctorjsNodeEngine(
+        String name,
+        String propAsciidoctorVer,
+        String propAsciidoctorCliVer,
+        Project tempProjectReference
+    ) {
         this.name = name
         this.ccso = ConfigCacheSafeOperations.from(tempProjectReference)
-        this.nodejs = new NodeJSExtension(tempProjectReference)
-        this.packages = tempProjectReference.objects.listProperty(NpmPackageDescriptor)
-        this.npm = new NpmExtension(tempProjectReference, this.nodejs).tap {
-            homeDirectory = ccso.fsOperations().buildDirDescendant(
-                "tmp/asciidoctorjs-engine/${ccso.fsOperations().toSafeFileName(name)}")
+        this.packages = tempProjectReference.objects.listProperty(PackageDescriptor)
+        this.pnpmToolchain = tempProjectReference.extensions.getByType(JsEcosystemExtension).toolchains.register(
+            "asciidoctorJs${name.capitalize()}",
+            JsePnpmToolchain
+        ) {
+            it.withPnpmNode()
         }
+        this.workingDir = ccso.fsOperations().buildDirDirectory(
+            "tmp/asciidoctorjs-engine/${ccso.fsOperations().toSafeFileName(name)}")
 
         final props = ccso.fsOperations().loadPropertiesFromResource(
-            "${INTERMEDIATE_RESOURCE_PATH}/asciidoctor5-js-core-plugin.properties",
+            AbstractAsciidoctorjsToolchain.PROPS_RESOURCE,
             this.class.classLoader
         )
-
         this.asciidoctorjsVersion = tempProjectReference.objects.property(String)
-            .convention(props['asciidoctorjs'].toString())
+            .convention(props[propAsciidoctorVer].toString())
         this.asciidoctorjsCliVersion = tempProjectReference.objects.property(String)
-            .convention(props['asciidoctorjs.cli'].toString())
-        this.nodejs.executableByVersion(props['node'])
+            .convention(props[propAsciidoctorCliVer].toString())
+
         usePackage(ASCIIDOCTOR_SCOPE, 'core', this.asciidoctorjsVersion)
         usePackage(ASCIIDOCTOR_SCOPE, 'cli', this.asciidoctorjsCliVersion)
 
         createToolchainPrepareTask(tempProjectReference)
+
         this.launcherProvider = createLauncher(tempProjectReference)
     }
 
@@ -121,12 +126,27 @@ class AsciidoctorjsNodeEngine implements AsciidoctorEngine, CoreVersions {
     }
 
     /**
-     * Change the version of Node to use.
+     * Change the version of {@code node} to use.
      *
-     * @param ver Node version
+     * @param ver {@code node} version
      */
+    @Override
     void useNode(Object ver) {
-        nodejs.executableByVersion(ver)
+        pnpmToolchain.configure {
+            it.withPnpmNode(ver)
+        }
+    }
+
+    /**
+     * Overrides the default version of {code pnpm}.
+     *
+     * @param ver {@code pnpm} version
+     */
+    @Override
+    void usePnpm(Object ver) {
+        pnpmToolchain.configure {
+            it.executableByVersion(ver)
+        }
     }
 
     /**
@@ -137,47 +157,37 @@ class AsciidoctorjsNodeEngine implements AsciidoctorEngine, CoreVersions {
      * @param ver Lazy-evaluated version
      */
     void usePackage(String scope, String pkgName, Object ver) {
-        this.packages.add(new NpmPackage(
-            scope,
-            pkgName,
-            ccso.stringTools().provideString(ver)
-        ))
-    }
-
-    private NodeJSExecSpec createExecSpec() {
-        final env = NpmExecutor.environmentFromExtensions(nodejs, npm)
-        nodejs.createExecSpec().tap { spec ->
-            entrypoint {
-                workingDir(this.npm.homeDirectoryProvider)
-                environment(env)
+        this.packages.add(
+            ccso.stringTools().provideString(ver).map {
+                PackageDescriptor.of(scope, pkgName, it)
             }
-            runnerSpec {
-                args('node_modules/@asciidoctor/cli/bin/asciidoctor')
-            }
-        }
+        )
     }
 
     private Provider<DefaultLauncher> createLauncher(Project tempProjectReference) {
-        final execSpec = createExecSpec()
+        final wd = this.workingDir
         final jsLauncher = tempProjectReference.objects.newInstance(
             DefaultLauncher,
-            execSpec,
-            NodeJSConfigCacheSafeOperations.from(nodejs),
-            NpmConfigCacheSafeOperations.from(npm)
+            pnpmToolchain.map { tc ->
+                tc.createExecSpec().tap {
+                    runnerSpec.args 'exec', ASCIIDOCTOR_SCRIPT
+                    entrypoint.workingDir(wd)
+                }
+            }
         )
         jsLauncher.packages = this.packages
         tempProjectReference.provider { -> jsLauncher }
     }
 
     private void createToolchainPrepareTask(Project project) {
-        final task = project.tasks.register(
+        project.tasks.register(
             JsModel.toolchainPrepareTaskName(name),
-            NodeNpmPrepareTask,
-            NodeJSConfigCacheSafeOperations.from(this.nodejs),
-            NpmConfigCacheSafeOperations.from(this.npm)
-        )
-        task.configure {
+            PnpmPrepareTask
+        ) {
             it.packages = packages
+            it.toolchain = pnpmToolchain
+            it.workdir = workingDir
         }
     }
+
 }

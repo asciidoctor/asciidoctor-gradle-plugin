@@ -1,4 +1,3 @@
-
 plugins {
     id 'org.asciidoctor.internal.classic.module.versions'
     id 'org.asciidoctor.internal.classic.gradle.project'
@@ -8,15 +7,16 @@ agProject {
     withIntegrationTests()
     withCompatibilityTests()
     configurePlugin(
-            'org.asciidoctor.base.classic',
-            'Asciidoctor Classic (Deprecated) Base Plugin',
-            'Classic, but deprecated, base plugin for all asciidoctor document conversion plugins (AsciidoctorJ & AsciidoctorJS)',
-            'org.asciidoctor.gradle.base.AsciidoctorBasePlugin',
-            []
+        'org.asciidoctor.base.classic',
+        'Asciidoctor Classic (Deprecated) Base Plugin',
+        'Classic, but deprecated, base plugin for all asciidoctor document conversion plugins (AsciidoctorJ & AsciidoctorJS)',
+        'org.asciidoctor.gradle.base.AsciidoctorBasePlugin',
+        [],
+        false
     )
 
     withVersionSubstitution("${project.name}.properties", [
-        VERSION  : grolifantOps.versionProvider
+        VERSION: grolifantOps.versionProvider
     ])
 }
 

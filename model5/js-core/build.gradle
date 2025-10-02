@@ -11,21 +11,24 @@ agProject {
         'Asciidoctor.js Base Plugin',
         'Base plugin for all AsciidoctorJS tasks & extensions. Provides the asciidoctorjs toolchain',
         'org.asciidoctor.gradle.model5.js.plugins.AsciidoctorjsBasePlugin',
-        ['asciidoctorjs']
+        ['asciidoctorjs'],
+        true
     )
     configurePlugin(
         'org.asciidoctor.js',
         'Asciidoctor.js Plugin',
         'Provides html formatter for all AsciidoctorJS toolchains',
         'org.asciidoctor.gradle.model5.js.plugins.AsciidoctorjsPlugin',
-        ['asciidoctorjs']
+        ['asciidoctorjs'],
+        true
     )
     configurePlugin(
         'org.asciidoctor.js.docbook',
         'Asciidoctor.js Docbook Plugin',
         'Provides docbook formatter for all AsciidoctorJS toolchains',
         'org.asciidoctor.gradle.model5.js.plugins.AsciidoctorjsDocbookPlugin',
-        ['asciidoctorjs', 'docbook']
+        ['asciidoctorjs', 'docbook'],
+        true
     )
     configurePlugin(
         'org.asciidoctor.js.kroki',
@@ -37,7 +40,8 @@ agProject {
          'excalidraw', 'graphviz', 'mermaid', 'nomnoml', 'nwdiag',
          'packetdiag', 'pikchr', 'rackdiag', 'seqdiag', 'svgbob',
          'symbolator', 'umlet', 'vega', 'vegalite', 'wavedrom', 'structurizr'
-        ]
+        ],
+        true
     )
     // tag::hacking-asciidoctorjs-output-formatter[]
     configurePlugin(
@@ -45,7 +49,8 @@ agProject {
         'Asciidoctor.js Reveal.js Plugin', // <.>
         'Provides Reveal.js formatter for all Asciidoctor.js toolchains', // <.>
         'org.asciidoctor.gradle.model5.js.plugins.AsciidoctorjsRevealjsPlugin', // <.>
-        ['asciidoctorjs', 'revealjs', 'slides'] // <.>
+        ['asciidoctorjs', 'revealjs', 'slides'], // <.>
+        true
     )
     // end::hacking-asciidoctorjs-output-formatter[]
 
@@ -53,8 +58,11 @@ agProject {
     // tag::hacking-asciidoctorjs-output-formatter[]
     withVersionSubstitution("${project.name}.properties", [
         // end::hacking-asciidoctorjs-output-formatter[]
-        VERSION   : versionOf('asciidoctorjs'),
-        CLI       : versionOf('asciidoctorjsCli'),
+        VERSION3   : versionOf('asciidoctorjs3'),
+        CLI3       : versionOf('asciidoctorjsCli3'),
+        OPAL3: versionOf('asciidoctorjsOpal3'),
+        VERSION   : versionOf('asciidoctorjs4'),
+        CLI       : versionOf('asciidoctorjsCli4'),
         DOCBOOK   : versionOf('asciidoctorjsDocbook'),
         EJS       : versionOf('asciidoctorjsEjs'),
         HANDLEBARS: versionOf('asciidoctorjsHandlebars'),
@@ -75,8 +83,11 @@ agProject {
 
 dependencies {
     api project(':asciidoctor5-core-plugin')
-    api(libs.pluginJavaScript)
+    api(libs.pluginPnpm)
+    implementation(libs.pluginJavaScriptEcosystem)
     implementation(libs.grolifantApi)
     runtimeOnly(libs.grolifantRuntime)
     testImplementation project(':testfixtures-jvm')
 }
+
+apply from: "${rootDir}/gradle/plugin-is-cc-compatible.gradle"

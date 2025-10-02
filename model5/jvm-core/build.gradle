@@ -14,7 +14,8 @@ agProject {
         'AsciidoctorJ Base Plugin',
         'Base plugin for all AsciidoctorJ tasks & extensions.',
         'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjBasePlugin',
-        ['asciidoctorj']
+        ['asciidoctorj'],
+        true
     )
 
     configurePlugin(
@@ -22,7 +23,8 @@ agProject {
         'AsciidoctorJ Plugin',
         'Provides html and docbook formatters for all AsciidoctorJ toolchains',
         'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjPlugin',
-        ['asciidoctorj']
+        ['asciidoctorj'],
+        true
     )
 
     configurePlugin(
@@ -30,7 +32,8 @@ agProject {
         'AsciidoctorJ Pdf Plugin',
         'Provides pdf formatters for all AsciidoctorJ toolchains',
         'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjPdfPlugin',
-        ['asciidoctorj', 'pdf']
+        ['asciidoctorj', 'pdf'],
+        true
     )
 
     configurePlugin(
@@ -38,20 +41,23 @@ agProject {
         'AsciidoctorJ Reveal.js Plugin',
         'Provides Reveal.js formatters for all AsciidoctorJ toolchains',
         'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjRevealjsPlugin',
-        ['asciidoctorj', 'revealjs']
+        ['asciidoctorj', 'revealjs'],
+        true
     )
 
     configurePlugin 'org.asciidoctor.jvm.gems',
         'Simplifies support for using external GEMs with AsciidoctorJ',
         'Provides appropriate tasks and configurations for adding GEMs to AsciidoctorJ conversions',
         'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjGemsPlugin',
-        ['asciidoctorj', 'gems', 'jruby']
+        ['asciidoctorj', 'gems', 'jruby'],
+        true
 
     configurePlugin 'org.asciidoctor.jvm.diagram',
         'Ability to use Asciidoctor Diagrams with AsciidoctorJ',
         'Provides an extension for adding diagramming support',
         'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjDiagramPlugin',
-        ['asciidoctorj', 'diagrams', 'ditaa', 'plantuml', 'batik', 'syntrax']
+        ['asciidoctorj', 'diagrams', 'ditaa', 'plantuml', 'batik', 'syntrax'],
+        true
 
     configurePlugin 'org.asciidoctor.jvm.kroki',
         'Ability to use Kroki with AsciidoctorJ',
@@ -62,7 +68,8 @@ agProject {
          'excalidraw', 'graphviz', 'mermaid', 'nomnoml', 'nwdiag',
          'packetdiag', 'pikchr', 'rackdiag', 'seqdiag', 'svgbob',
          'symbolator', 'umlet', 'vega', 'vegalite', 'wavedrom', 'structurizr'
-        ]
+        ],
+        true
 
     // tag::hacking-asciidoctorj-output-formatter[]
     configurePlugin(
@@ -70,7 +77,8 @@ agProject {
         'AsciidoctorJ EPUB Plugin', // <.>
         'Provides EPUB formatters for all AsciidoctorJ toolchains', // <.>
         'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjEpubPlugin', // <.>
-        ['asciidoctorj', 'epub', 'epub3'] // <.>
+        ['asciidoctorj', 'epub', 'epub3'], // <.>
+        true
     )
     // end::hacking-asciidoctorj-output-formatter[]
 
@@ -134,3 +142,5 @@ providers.gradleProperty('jrubyTestVersions').get().split(',').each {
         transitive = false
     }
 }
+
+apply from: "${rootDir}/gradle/plugin-is-cc-compatible.gradle"

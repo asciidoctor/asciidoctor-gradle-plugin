@@ -8,11 +8,12 @@ agProject {
     withCompatibilityTests()
 
     configurePlugin(
-            'org.asciidoctor.jvm.epub.classic',
-            'AsciidoctorJ (Deprecated) EPUB Plugin',
-            'Deprecated Asciidoctor task for creating EPUB3 documents',
-            'org.asciidoctor.gradle.jvm.epub.AsciidoctorJEpubPlugin',
-            ['asciidoctorj', 'epub', 'epub3']
+        'org.asciidoctor.jvm.epub.classic',
+        'AsciidoctorJ (Deprecated) EPUB Plugin',
+        'Deprecated Asciidoctor task for creating EPUB3 documents',
+        'org.asciidoctor.gradle.jvm.epub.AsciidoctorJEpubPlugin',
+        ['asciidoctorj', 'epub', 'epub3'],
+        false
     )
 }
 
@@ -31,7 +32,7 @@ dependencies {
     intTestOfflineRepo(libs.asciidoctorj)
     intTestOfflineRepo(libs.asciidoctorjEpub)
 
-    cachingOnly (libs.asciidoctorjEpub) { transitive = false }
+    cachingOnly(libs.asciidoctorjEpub) { transitive = false }
 }
 
 

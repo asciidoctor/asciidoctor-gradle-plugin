@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 - 2025 the original author or authors.
+ * Copyright 2013 - 2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle.model5.js.internal.toolchains
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsNativeToolchain
 import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
 import org.gradle.api.NamedDomainObjectFactory
 import org.gradle.api.Project
@@ -31,17 +32,17 @@ import javax.inject.Inject
  * @author Schalk W. Cronjé
  */
 @CompileStatic
-class AsciidoctorjsToolchainFactory implements NamedDomainObjectFactory<AsciidoctorjsToolchain> {
+class AsciidoctorjsNativeToolchainFactory implements NamedDomainObjectFactory<AsciidoctorjsNativeToolchain> {
 
     private final ObjectFactory objectFactory
 
     @Inject
-    AsciidoctorjsToolchainFactory(Project project) {
+    AsciidoctorjsNativeToolchainFactory(Project project) {
         this.objectFactory = project.objects
     }
 
     @Override
-    AsciidoctorjsToolchain create(String name) {
-        objectFactory.newInstance(DefaultAsciidoctorjsToolchain, name)
+    AsciidoctorjsNativeToolchain create(String name) {
+        objectFactory.newInstance(DefaultAsciidoctorjsNativeToolchain, name)
     }
 }

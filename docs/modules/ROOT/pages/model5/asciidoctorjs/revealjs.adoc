@@ -1,0 +1,48 @@
+= The Reveal.js output formatter
+
+{asciidoctorj-revealjs-name} is a popular wat of creating slides with {asciidoctorj-name} and is available via the  `org.asciidoctor.jvm.revealjs` plugin.
+
+There are many items that can be configured on the output formatter itself.
+
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
+----
+import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjRevealjs
+
+asciidoc {
+    toolchains {
+        aciidoctorj {
+            registeredOutputFormatters {
+                revealjs(AsciidoctorRevealjs) { // <.>
+                    templateDirs 'src/myAsciidocTemplate1', 'src/myAsciidocTemplate2' // <.>
+                    forceEngine =  'erb' // <.>
+                    useEngine 'slim' // <.>
+                    useEngine 'slim', '1.2.3' // <.>
+                    revealjsOptions { // <.>
+                    }
+                }
+            }
+        }
+    }
+}
+----
+<.> The `org.asciidoctor.jvm.revealjs` plugin adds an output formatter called `revealjs`.
+<.> Define one or more templates that can be used for conversion.
+<.> Force {asciidoctorj-name} to use the specific engine irrespective of the extensions detected in the
+  template directories.
+<.> Adds an engine to the GEM classpath.
+  Only `erb`, `slim` and `haml` is supported.
+<.> Adds any engine supported by https://github.com/jeremyevans/tilt[tilt] along with the version of the GEM.
+<.> Configures {asciidoctorj-revealjs-name} options.
+    See below.
+--
+====
+
+NOTE: `templateDirs` must be provided, otherwise template setting will be ignored.
+  If the engine is not provided, it will auto-detect engines from the file extensions found in the template directories.
+
+include::partial$revealjs-options.adoc[]

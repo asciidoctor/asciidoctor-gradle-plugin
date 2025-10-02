@@ -42,8 +42,6 @@ dependencies {
     runtimeOnly libs.pluginIvypot
     runtimeOnly libs.pluginJRuby
     runtimeOnly libs.pluginOS
-
-
 }
 
 gradlePlugin {

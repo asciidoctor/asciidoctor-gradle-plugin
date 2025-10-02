@@ -7,12 +7,8 @@ plugins {
 }
 
 apply(from = "${System.getProperty("OFFLINE_REPO")}/repository.gradle.kts")
-//repositories {
-//    mavenCentral()
-//}
 
 asciidoctorj {
-    modules.getDiagram().setVersion("3.0.1")
     logLevel = LogLevel.INFO
 }
 

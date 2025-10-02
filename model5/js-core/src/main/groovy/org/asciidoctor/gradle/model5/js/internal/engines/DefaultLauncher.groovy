@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 - 2025 the original author or authors.
+ * Copyright 2013 - 2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,8 @@ import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Provider
-import org.ysb33r.gradle.nodejs.NodeJSConfigCacheSafeOperations
-import org.ysb33r.gradle.nodejs.NodeJSExecSpec
-import org.ysb33r.gradle.nodejs.NpmConfigCacheSafeOperations
-import org.ysb33r.gradle.nodejs.NpmPackageDescriptor
+import org.ysb33r.gradle.jse.pnpm.toolchains.JsePnpmExecSpec
+import org.ysb33r.gradle.jsecosystem.packages.PackageDescriptor
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 import org.ysb33r.grolifant5.api.core.ExecTools
 import org.ysb33r.grolifant5.api.core.OperatingSystem
@@ -64,39 +62,33 @@ class DefaultLauncher implements AsciidoctorLauncher {
 
     private final ExecTools execTools
     private final StringTools stringTools
-    private final NodeJSExecSpec execSpec
+    private final Provider<JsePnpmExecSpec> execSpec
     private final ConfigCacheSafeOperations ccso
-    private final ListProperty<NpmPackageDescriptor> packages
-    private final NodeJSConfigCacheSafeOperations node
-    private final NpmConfigCacheSafeOperations npm
+    private final ListProperty<PackageDescriptor> packages
     private final DirectoryProperty logDir
 
     @Inject
     DefaultLauncher(
-        NodeJSExecSpec execSpec,
-        NodeJSConfigCacheSafeOperations node,
-        NpmConfigCacheSafeOperations npm,
+        Provider<JsePnpmExecSpec> execSpec,
         Project tempProjectReference
     ) {
         this.ccso = ConfigCacheSafeOperations.from(tempProjectReference)
         this.execTools = ccso.execTools()
         this.stringTools = ccso.stringTools()
         this.execSpec = execSpec
-        this.packages = tempProjectReference.objects.listProperty(NpmPackageDescriptor)
-        this.node = node
-        this.npm = npm
+        this.packages = tempProjectReference.objects.listProperty(PackageDescriptor)
         this.logDir = tempProjectReference.objects.directoryProperty().value(
             tempProjectReference.layout.buildDirectory.dir(LogProcessor.LOG_SUBPATH)
         )
     }
 
-    void setPackages(Provider<List<NpmPackageDescriptor>> pkgs) {
+    void setPackages(Provider<List<PackageDescriptor>> pkgs) {
         this.packages.set(pkgs)
     }
 
     @Override
     String getEcosystemSignature() {
-        packages.get()*.npmPackageCoordinates.join('\n')
+        packages.get()*.packageCoordinates.join('\n')
     }
 
     @Override
@@ -140,7 +132,7 @@ class DefaultLauncher implements AsciidoctorLauncher {
 
             sourcePaths.each { partition ->
                 final result = execTools.exec(CAPTURE, CAPTURE) { spec ->
-                    execSpec.copyTo(spec)
+                    execSpec.get().copyTo(spec)
                     spec.tap {
                         args(embedded)
                         args(fixedArgs)
@@ -191,7 +183,7 @@ class DefaultLauncher implements AsciidoctorLauncher {
         }
     }
 
-    private List<List<String>> partitionFiles(List<File> sourceFiles) {
+    private List<? extends List<String>> partitionFiles(List<File> sourceFiles) {
         final sources = sourceFiles*.absolutePath
         final allSum = (long) sources.sum { (long) it.size() }
         if (allSum <= CMD_LIMIT) {

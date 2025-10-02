@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 - 2025 the original author or authors.
+ * Copyright 2013 - 2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,9 @@
 package org.asciidoctor.gradle.model5.js.internal.toolchains
 
 import groovy.transform.CompileStatic
-import org.asciidoctor.gradle.model5.core.internal.toolchains.DefaultProcessingOptions
-import org.asciidoctor.gradle.model5.core.toolchains.AbstractAsciidoctorToolchain
 import org.asciidoctor.gradle.model5.core.toolchains.ProcessingOptions
-import org.asciidoctor.gradle.model5.js.JsModel
 import org.asciidoctor.gradle.model5.js.engines.AsciidoctorjsNodeEngine
+import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsNativeToolchain
 import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
 import org.gradle.api.Project
 
@@ -38,13 +36,10 @@ import javax.inject.Inject
  * @author Schalk W. Cronjé
  */
 @CompileStatic
-class DefaultAsciidoctorjsToolchain extends AbstractAsciidoctorToolchain implements AsciidoctorjsToolchain {
+class DefaultAsciidoctorjsNativeToolchain extends AbstractAsciidoctorjsToolchain
+    implements AsciidoctorjsNativeToolchain {
 
-    @Delegate
-    private final AsciidoctorjsNodeEngine engine
-
-    @Delegate
-    private final ProcessingOptions processingOptions
+    final boolean nativeImplementation = true
 
     /**
      * Creates a new toolchain instance.
@@ -53,31 +48,7 @@ class DefaultAsciidoctorjsToolchain extends AbstractAsciidoctorToolchain impleme
      * @param project The Gradle project this toolchain belongs to
      */
     @Inject
-    DefaultAsciidoctorjsToolchain(String name, Project project) {
-        super(name, project)
-        final objectFactory = project.objects
-
-        this.engine = objectFactory.newInstance(AsciidoctorjsNodeEngine, name)
-        this.processingOptions = objectFactory.newInstance(DefaultProcessingOptions)
-    }
-
-    /**
-     * A list of tasks that will perform toolchain-related preparation before conversion using the toolchain can start.
-     *
-     * @return List of task names. Can be empty, but never {@code null}
-     */
-    @Override
-    Iterable<String> getToolchainPreparationTaskNames() {
-        [JsModel.toolchainPrepareTaskName(name)]
-    }
-
-    /**
-     * A string representing the class name as it should be used in the DSL.
-     *
-     * @return Display type for report. Can be {code null}.
-     */
-    @Override
-    String getDisplayType() {
-        AsciidoctorjsToolchain.canonicalName
+    DefaultAsciidoctorjsNativeToolchain(String name, Project project) {
+        super(name, 'asciidoctorjs4', 'asciidoctorjs4.cli', project)
     }
 }
