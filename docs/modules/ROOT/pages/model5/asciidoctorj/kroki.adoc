@@ -134,7 +134,7 @@ asciidoc {
         asciidoctorj {
             registeredOutputFormatters {
                 pdf(AsciidoctorjPdf) {
-                    allowUriRead = true
+                    allowUriRead = true // <.>
                 }
             }
         }
@@ -145,5 +145,3 @@ asciidoc {
 You might consider https://docs.asciidoctor.org/asciidoc/latest/directives/include-uri/#caching-uri-content[caching the content], by adding a custom extension which uses the `open-uri-cached` GEM.
 --
 ====
-
-
