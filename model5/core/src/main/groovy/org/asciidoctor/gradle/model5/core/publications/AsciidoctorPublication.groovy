@@ -17,7 +17,10 @@ package org.asciidoctor.gradle.model5.core.publications
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
+import org.asciidoctor.gradle.model5.core.ScriptCollection
 import org.asciidoctor.gradle.model5.core.extensions.AsciidoctorExtension
+import org.asciidoctor.gradle.model5.core.extensions.ScriptedExtensions
+import org.asciidoctor.gradle.model5.core.internal.DefaultScriptCollection
 import org.asciidoctor.gradle.model5.core.internal.attributes.AttributeUtils
 import org.asciidoctor.gradle.model5.core.internal.publications.DefaultAsciidoctorOutputData
 import org.asciidoctor.gradle.model5.core.internal.publications.DefaultProvidedExternalSourceSet
@@ -176,15 +179,28 @@ class AsciidoctorPublication implements Named {
     private TaskProvider<? extends AsciidoctorTask> registerConversionTask(
         AsciidoctorToolchain toolchain,
         AsciidoctorOutputData outputData,
-        Provider<Map<String,Object>> formatterAttrs,
+        Provider<Map<String, Object>> formatterAttrs,
         boolean copyResources
     ) {
         final taskFactory = objectFactory.newInstance(TaskFactory)
         final taskName = PublicationUtils.conversionTaskName(name, outputData.name)
         final extensionAttributes = objectFactory.mapProperty(String, Object)
+        final Map<String, DefaultScriptCollection> combinedScriptExtensions = [:]
+        final csep = ccso.providerTools().provider { ->
+            combinedScriptExtensions as Map<String, ScriptCollection>
+        }
+
         extensionAttributes.putAll(formatterAttrs)
-        toolchain.asciidocExtensions.all {
-            AsciidoctorExtension it -> extensionAttributes.putAll(it.attributeProvider)
+        toolchain.asciidocExtensions.all { AsciidoctorExtension it ->
+            extensionAttributes.putAll(it.attributeProvider)
+            if (it instanceof ScriptedExtensions) {
+                final sc = ((ScriptedExtensions) it).scriptedExtensions
+                final se = combinedScriptExtensions.computeIfAbsent(sc.scriptType) { nm ->
+                    objectFactory.newInstance(DefaultScriptCollection, nm)
+                }
+                se.addScripts(sc.scripts)
+                se.addScriptFiles(sc.scriptFiles)
+            }
         }
 
         final resolvedExtensionAttributes = AttributeUtils.resolvingProvider(ccso.stringTools(), extensionAttributes)
@@ -203,7 +219,7 @@ class AsciidoctorPublication implements Named {
                         list.collect { item ->
                             new DefaultProvidedExternalSourceSet(
                                 item.sourcePatterns,
-                                ccso.providerTools().provider { -> (PatternFilterable)null },
+                                ccso.providerTools().provider { -> (PatternFilterable) null },
                                 item.into,
                                 item.sourcesAndResources
 
@@ -220,6 +236,7 @@ class AsciidoctorPublication implements Named {
                 map.putAll(pri)
                 map as Map<String, String>
             }
+            atm.scriptExtensions = csep as Provider<Map<String, ? extends ScriptCollection>>
         }
 
         taskFactory.addPrerequisiteTasks(taskName, toolchain.toolchainPreparationTaskNames)

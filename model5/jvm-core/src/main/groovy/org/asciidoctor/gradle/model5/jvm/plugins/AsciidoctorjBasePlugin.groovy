@@ -19,11 +19,13 @@ import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
 import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreBasePlugin
 import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjGenericExtension
+import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjGroovyDslExtension
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjDocbook
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjGenericOutputFormatter
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjHtml5
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjManpage
 import org.asciidoctor.gradle.model5.jvm.internal.extensions.DefaultAsciidoctorjGenericExtension
+import org.asciidoctor.gradle.model5.jvm.internal.extensions.DefaultAsciidoctorjGroovyDslExtension
 import org.asciidoctor.gradle.model5.jvm.internal.formatters.AsciidoctorjDocbookFactory
 import org.asciidoctor.gradle.model5.jvm.internal.formatters.AsciidoctorjGenericOutputFormatterFactory
 import org.asciidoctor.gradle.model5.jvm.internal.formatters.AsciidoctorjHtml5Factory
@@ -92,6 +94,13 @@ class AsciidoctorjBasePlugin implements Plugin<Project> {
             asciidoc.toolchains,
             AsciidoctorjGenericExtension,
             DefaultAsciidoctorjGenericExtension.Factory,
+            project.objects
+        )
+
+        registerExtensionFactory(
+            asciidoc.toolchains,
+            AsciidoctorjGroovyDslExtension,
+            DefaultAsciidoctorjGroovyDslExtension.Factory,
             project.objects
         )
     }

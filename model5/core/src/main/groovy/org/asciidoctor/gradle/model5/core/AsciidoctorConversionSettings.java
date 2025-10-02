@@ -119,4 +119,11 @@ public interface AsciidoctorConversionSettings {
      * @return Provider to templates.
      */
     Provider<ConversionTemplate> getTemplates();
+
+    /**
+     * A collection of scripts, grouped by implementation language.
+     *
+     * @return Provider to the collection. Can be empty.
+     */
+    Provider<Map<String,ScriptCollection>> getScriptCollections();
 }

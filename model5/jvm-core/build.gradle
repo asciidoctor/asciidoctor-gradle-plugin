@@ -106,6 +106,7 @@ agProject {
 dependencies {
     // end::hacking-asciidoctorj-output-formatter[]
     compileOnly(libs.asciidoctorjApi)
+    compileOnly(libs.asciidoctorjGroovyDsl)
     api project(':asciidoctor5-core-plugin')
     implementation(libs.grolifantApi)
     implementation(libs.pluginJRuby)

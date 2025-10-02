@@ -1,0 +1,48 @@
+= Adding extensions using Groovy
+
+It is possible to write extensions inline using a https://github.com/asciidoctor/asciidoctorj-groovy-dsl[Groovy DSL].
+Two approaches are supported: inline strings and files.
+
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
+----
+import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjGroovyDslExtension
+
+asciidoc {
+    toolchains {
+        aciidoctorj {
+            asciidocExtensions {
+                groovydsl(AsciidoctorjGroovyDslExtension) {
+                    fromString (''' // <.>
+                        block(name: "BIG", contexts: [":paragraph"]) {
+                            parent, reader, attributes ->
+                            def upperLines = reader.readLines()
+                                .collect {it.toUpperCase()}
+                                .inject("") {a, b -> a + '\n' + b}
+
+                            createBlock(parent, "paragraph", [upperLines], attributes, [:])
+                        }
+                    ''')
+
+                    fromFile('src/docs/asciidoc/myExtension.groovy') // <.>
+                }
+            }
+        }
+    }
+}
+----
+<.> Add an inline extension.
+  Anything that can be lazy-evaluated as a string can be passed.
+<.> An extension in a Groovy source file.
+  Anything that can be lazy-evaluated to a file can be passed.
+--
+====
+
+NOTE: In versions prior to 4.0, there was a way of using closures to define extensions.
+  With advancements in Gradle, it has actually become problematic to serialize those closures over classloader boundaries.
+  The second problem is that it unnecessarily drags in a number of dependencies onto the build plugin classpath.
+  These are the two reasons why we no longer support the closure approach for inline extensions.

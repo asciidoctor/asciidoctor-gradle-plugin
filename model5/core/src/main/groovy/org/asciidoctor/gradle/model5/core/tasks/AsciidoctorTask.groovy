@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.model5.core.tasks
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorLauncher
 import org.asciidoctor.gradle.model5.core.SafeMode
+import org.asciidoctor.gradle.model5.core.ScriptCollection
 import org.asciidoctor.gradle.model5.core.internal.DefaultAsciidoctorConversionSettings
 import org.asciidoctor.gradle.model5.core.internal.DefaultAsciidoctorExecutionSettings
 import org.asciidoctor.gradle.model5.core.publications.AsciidoctorOutputData
@@ -174,7 +175,6 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
      */
     @Override
     void setBaseDir(Provider<Directory> dir) {
-//        this.conversionSettings.baseDir.set(dir)
         this.originalBaseDir.set(dir)
     }
 
@@ -235,6 +235,11 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
     @Override
     void setExternalSources(Provider<? extends ProvidedExternalSources> externalSources) {
         this.externalSources.set(externalSources)
+    }
+
+    @Override
+    void setScriptExtensions(Provider<Map<String,? extends ScriptCollection>> scripts) {
+        this.conversionSettings.scriptCollections.set(scripts)
     }
 
     @TaskAction
