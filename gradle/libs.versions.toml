@@ -2,20 +2,23 @@
 [versions]
 # end::hacking-asciidoctorj-output-formatter[]
 # Keep in alphabetical order, please
-asciidoctorj = "3.0.0"
-asciidoctorjDiagram = "3.0.1"
-asciidoctorjDiagramBatik = "1.17"
+asciidoctorj = "3.0.1"
+asciidoctorjDiagram = "3.2.1"
+asciidoctorjDiagramBatik = "1.19"
 asciidoctorjDiagramDitaa = "1.0.3"
 asciidoctorjDiagramJSyntrax = "1.38.2"
-asciidoctorjDiagramPlantUml = "1.2025.3"
+asciidoctorjDiagramPlantUml = "1.2026.2"
 # tag::hacking-asciidoctorj-output-formatter[]
 asciidoctorjEpub = "2.2.0"
 # end::hacking-asciidoctorj-output-formatter[]
-asciidoctorjGroovyDsl = "3.0.0-beta.1"
-asciidoctorjPdf = "2.3.19"
+asciidoctorjGroovyDsl = "3.0.0-beta.2"
+asciidoctorjPdf = "2.3.23"
 asciidoctorjRevealjs = "5.2.0"
-asciidoctorjs = "3.0.0"
-asciidoctorjsCli = "4.0.0"
+asciidoctorjs3 = "3.0.1"
+asciidoctorjsCli3 = "4.0.0"
+asciidoctorjsOpal3 = "3.0.1"
+asciidoctorjs4 = "4.0.11"
+asciidoctorjsCli4 = "4.0.0"
 asciidoctorjsDocbook = "3.0.0"
 asciidoctorjsEjs = "3.1.10"
 asciidoctorjsHandlebars = "4.7.8"
@@ -28,25 +31,24 @@ asciidoctorjsRevealjs = "5.2.0"
 # end::hacking-asciidoctorjs-output-formatter[]
 cglib = "3.3.0"
 commonsIO = "2.15.1"
+downdoc = "1.0.2-stable"
 gemHaml = "6.3.0"
 gemKroki = "0.10.0"
 gemSlim = "5.2.1"
 gemTilt= "2.6.1"
-grolifant = "5.4.0"
+grolifant = "5.9.2"
 groovyForGradle9Testing = "4.0.4"
 jruby = "9.4.8.0"
 jsoup = "1.17.2"
 nodejs = "22.19.0"
-pluginGradleTest = "4.1.0"
-pluginJRubySimple = "2.0.0"
-pluginNodejs = "4.1.0"
-pluginPublishPlugin = "1.2.1"
-pluginIvypot = "2.0.3"
-pluginJavaScript = "4.2.0"
-pluginJRuby = "2.1.6"
+pluginGradleTest = "5.0.0"
+pluginPublishPlugin = "2.1.1"
+pluginIvypot = "2.1.1"
+pluginJavaScript = "5.1.0"
+pluginJRuby = "2.4.1"
 pluginLicense = "0.16.1"
-pluginOS = "2.0.0"
-spock = "2.3-groovy-3.0"
+pluginOS = "2.1.1"
+spock = "2.4-groovy-3.0"
 
 # tag::hacking-asciidoctorj-output-formatter[]
 [libraries]
@@ -75,11 +77,13 @@ jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 pluginGradleTest = { module = "org.ysb33r.gradletest:org.ysb33r.gradletest.gradle.plugin", version.ref = "pluginGradleTest" }
 pluginLicense = { module = "com.github.hierynomus.license:com.github.hierynomus.license.gradle.plugin", version.ref = "pluginLicense"}
 pluginPublishPlugin = { module = "com.gradle.publish:plugin-publish-plugin", version.ref = "pluginPublishPlugin" }
-pluginNodejs = { module = "org.ysb33r.gradle:nodejs-gradle-plugin", version.ref = "pluginNodejs" }
+pluginNodejs = { module = "org.ysb33r.gradle:nodejs-gradle-plugin", version.ref = "pluginJavaScript" }
 pluginIvypot = { module = "org.ysb33r.ivypot:ivypot-gradle-plugin", version.ref = "pluginIvypot" }
 pluginJavaScript = { module = "org.ysb33r.nodejs.dev.base:org.ysb33r.nodejs.dev.base.gradle.plugin", version.ref = "pluginJavaScript" }
+pluginJavaScriptEcosystem = { module = "org.ysb33r.gradle:js-ecosystem-core-plugin", version.ref = "pluginJavaScript" }
 pluginJRuby = { module = "org.ysb33r.jruby.resolver:org.ysb33r.jruby.resolver.gradle.plugin", version.ref = "pluginJRuby" }
 pluginOS = { module = "org.ysb33r.os:org.ysb33r.os.gradle.plugin", version.ref = "pluginOS" }
+pluginPnpm = { module = "org.ysb33r.jsecosystem.pnpm.base:org.ysb33r.jsecosystem.pnpm.base.gradle.plugin", version.ref = "pluginJavaScript" }
 spockCore = { module = "org.spockframework:spock-core", version.ref = "spock" }
 
 [plugins]

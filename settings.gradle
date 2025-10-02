@@ -2,7 +2,7 @@ pluginManagement {
     repositories {
         gradlePluginPortal()
         mavenCentral()
-        mavenLocal()
+//        mavenLocal()
     }
 }
 
@@ -27,7 +27,7 @@ rootProject.name = 'asciidoctor-gradle-plugin'
 include 'asciidoctoreditorconfig'
 project(":asciidoctoreditorconfig").projectDir = file("model5/asciidoctoreditorconfig")
 
-['core', 'js-core', 'jvm-core'].each {
+['core', 'js-core', 'jvm-core', 'downdoc'].each {
     include "model5/${it}"
     project(":model5/${it}").name = "asciidoctor5-${it}-plugin"
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 - 2025 the original author or authors.
+ * Copyright 2013 - 2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import org.asciidoctor.gradle.testfixtures.model5.IntegrationSpecification
 import spock.lang.PendingFeatureIf
 
 import static org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils.DEFAULT_PUBLICATION
-import static org.asciidoctor.gradle.model5.js.plugins.AsciidoctorjsPlugin.DEFAULT_TOOLCHAIN
+import static org.asciidoctor.gradle.model5.js.plugins.AsciidoctorjsPlugin.OPAL_TOOLCHAIN
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 
 class AsciidoctorjsRevealjsSpec extends IntegrationSpecification {
@@ -42,7 +42,7 @@ class AsciidoctorjsRevealjsSpec extends IntegrationSpecification {
         """.stripIndent())
 
         when:
-        final result = getGradleRunnerConfigCache(IS_GROOVY_DSL, [taskName, '-s']).build()
+        final result = getGradleRunnerConfigCache(IS_GROOVY_DSL, [taskName, '-s']).run()
 
         then: 'Task completed successfully'
         result.task(":${taskName}").outcome == SUCCESS
@@ -54,7 +54,7 @@ class AsciidoctorjsRevealjsSpec extends IntegrationSpecification {
 
     void writeBuildFile() {
         writeBasicBuildFileGroovy(['org.asciidoctor.js.revealjs']) // <.>
-        addOutputToSourceSetGroovy(DEFAULT_TOOLCHAIN, DefaultAsciidoctorjsRevealjs.DEFAULT_NAME, DEFAULT_PUBLICATION)
+        addOutputToSourceSetGroovy(OPAL_TOOLCHAIN, DefaultAsciidoctorjsRevealjs.DEFAULT_NAME, DEFAULT_PUBLICATION)
         // <.>
     }
 }

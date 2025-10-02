@@ -1,11 +1,13 @@
 package org.asciidoctor.internal.common
 
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ConfigurationContainer
 import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.plugins.ExtensionContainer
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.plugins.jvm.JvmTestSuite
@@ -14,6 +16,7 @@ import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.testing.Test
 import org.gradle.jvm.toolchain.JavaLanguageVersion
+import org.gradle.plugin.compatibility.CompatibilityExtension
 import org.gradle.plugin.devel.GradlePluginDevelopmentExtension
 import org.gradle.plugin.devel.PluginDeclaration
 import org.gradle.plugin.devel.tasks.PluginUnderTestMetadata
@@ -106,18 +109,24 @@ class AsciidoctorGradleProjectExtension {
 
         final main = project.extensions.getByType(GradleTestSetExtension).testSets.getByName('main')
 
-        main.versions(projectOperations.providerTools.gradleProperty('minGradle'))
-        main.versions(
-            projectOperations.providerTools.gradleProperty('otherGradleTestVersions')
+        final minGradle = projectOperations.providerTools.gradleProperty('minGradle')
+        final otherGradle =            projectOperations.providerTools.gradleProperty('otherGradleTestVersions')
                 .orElse('')
                 .map { vers ->
                     vers.split(',').findAll { it.startsWith('8.') }
                 }
-        )
-        main.deprecationMessageChecksForVersion('8.11.1', [])
-        main.deprecationMessageChecksForVersion('8.14.3', [])
+        final allGradle = minGradle.zip(otherGradle) { single,list ->
+            (list + [single]).toList()
+        }
 
+        main.versions(allGradle)
         main.copyNotSymlink(true)
+        main.forVersion('8.11.1') {
+            deprecationMessages.failIfFound = false
+        }
+        main.forVersion('8.14.3') {
+            deprecationMessages.failIfFound = false
+        }
     }
 
     void withAdditionalPluginClasspath() {
@@ -170,14 +179,15 @@ class AsciidoctorGradleProjectExtension {
         String providedDisplayName,
         String providedDescription,
         String implClass,
-        List<String> providedTags
+        List<String> providedTags,
+        boolean ccCompatible = true
     ) {
         final gradlePlugin = extensions.getByType(GradlePluginDevelopmentExtension)
         final providedName = "${pluginId.replaceAll(~/\./, '')}Plugin".toString()
         final extraText = pluginExtraTextProvider.get()
         gradlePlugin.website.set('https://docs.asciidoctor.org/gradle-plugin/latest/')
         gradlePlugin.vcsUrl.set('https://github.com/asciidoctor/asciidoctor-gradle-plugin.git')
-        gradlePlugin.plugins.create(providedName) { PluginDeclaration pd ->
+        final plugin = gradlePlugin.plugins.create(providedName) { PluginDeclaration pd ->
             pd.tap {
                 id = pluginId
                 displayName = providedDisplayName
@@ -186,5 +196,11 @@ class AsciidoctorGradleProjectExtension {
                 tags.set(['asciidoctor'] + providedTags)
             }
         }
+//        setCcFlag(plugin,ccCompatible)
+    }
+
+    @CompileDynamic
+    private void setCcFlag(PluginDeclaration pd,boolean ccCompatible) {
+        pd.compatibility(pd).features.configurationCache.set(ccCompatible)
     }
 }

@@ -1,0 +1,8 @@
+= Toolchain engines
+
+There are two engines available by default for {asciidoctorjs-name}.
+The first is an Opal-based engine and the second is the new pure JavaScript engine.
+If you apply the `{asciidoctorjs-conventions-plugin}` plugin you get a toolchain called `asciidoctorjs` which is the pure JavaScript engine and a toolchain called `asciidoctorjs3` which is the Opal engine.
+
+Note than not all formatters support all engines.
+It is therefore important that both engines exist in order to give authors of the various packages on NPM to port their backends and extensions to support the `4.0+` package of `@asciidoctorjs/core`.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 - 2025 the original author or authors.
+ * Copyright 2013 - 2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,20 +18,23 @@ package org.asciidoctor.gradle.model5.js.formatters
 
 import org.asciidoctor.gradle.model5.js.internal.formatters.DefaultAsciidoctorjsHtml5
 import org.asciidoctor.gradle.testfixtures.model5.IntegrationSpecification
+import spock.lang.Unroll
 
 import static org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils.DEFAULT_PUBLICATION
 import static org.asciidoctor.gradle.model5.js.plugins.AsciidoctorjsPlugin.DEFAULT_TOOLCHAIN
+import static org.asciidoctor.gradle.model5.js.plugins.AsciidoctorjsPlugin.OPAL_TOOLCHAIN
 import static org.asciidoctor.gradle.model5.js.plugins.AsciidoctorjsPlugin.PLUGIN_ID
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 
 class AsciidoctorjsHtml5Spec extends IntegrationSpecification {
 
-    void 'HTML formatter will convert files and copy resources'() {
+    @Unroll
+    void 'HTML formatter will convert files and copy resources (toolchain=#tcName)'() {
         setup:
         final taskName = 'asciidoctorHtml'
         final outputDir = new File(buildDir, 'docs/asciidoc/html')
 
-        writeBuildFile()
+        writeBuildFile(tcName)
         copyTestProject('resources')
 
         configureSourceSetGroovy(DEFAULT_PUBLICATION, """
@@ -53,6 +56,9 @@ class AsciidoctorjsHtml5Spec extends IntegrationSpecification {
 
         and: 'Resources in source dir that were not specified, were not copied'
         !fileExists(outputDir, 'images2/fake2.txt')
+
+        where:
+        tcName << [DEFAULT_TOOLCHAIN, OPAL_TOOLCHAIN]
     }
 
     void 'HTML formatter can produce document fragments'() {
@@ -76,8 +82,8 @@ class AsciidoctorjsHtml5Spec extends IntegrationSpecification {
         and: 'Content exists'
         fileExists(outputDir, 'simple.html')
     }
-    void writeBuildFile() {
+    void writeBuildFile(String tcName = DEFAULT_TOOLCHAIN) {
         writeBasicBuildFileGroovy([PLUGIN_ID])
-        addOutputToSourceSetGroovy(DEFAULT_TOOLCHAIN, DefaultAsciidoctorjsHtml5.DEFAULT_NAME, DEFAULT_PUBLICATION)
+        addOutputToSourceSetGroovy(tcName, DefaultAsciidoctorjsHtml5.DEFAULT_NAME, DEFAULT_PUBLICATION)
     }
 }

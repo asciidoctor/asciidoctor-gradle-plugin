@@ -2,16 +2,19 @@ agProject {
     withOfflineTestConfigurations()
 
     configurePlugin 'org.asciidoctor.jvm.leanpub',
-            'AsciidoctorJ Leanpub Plugin',
-            'Asciidoctor task for creating content suitable for Leanpub',
-            'org.asciidoctor.gradle.jvm.leanpub.AsciidoctorJLeanpubPlugin',
-            ['asciidoctorj', 'leanpub', 'markdown', 'markuva']
+        'AsciidoctorJ Leanpub Plugin',
+        'Asciidoctor task for creating content suitable for Leanpub',
+        'org.asciidoctor.gradle.jvm.leanpub.AsciidoctorJLeanpubPlugin',
+        ['asciidoctorj', 'leanpub', 'markdown', 'markuva'],
+        false
+
 
     configurePlugin 'org.asciidoctor.jvm.leanpub.dropbox-copy',
-            'Dropbox support for AsciidoctorJ Leanpub Plugin',
-            'Provides local Dropbox support for Asciidoctor Leanpub plugin',
-            'org.asciidoctor.gradle.jvm.leanpub.AsciidoctorJLeanpubDropboxCopyPlugin',
-            ['asciidoctorj', 'leanpub', 'markdown', 'markuva', 'dropbox']
+        'Dropbox support for AsciidoctorJ Leanpub Plugin',
+        'Provides local Dropbox support for Asciidoctor Leanpub plugin',
+        'org.asciidoctor.gradle.jvm.leanpub.AsciidoctorJLeanpubDropboxCopyPlugin',
+        ['asciidoctorj', 'leanpub', 'markdown', 'markuva', 'dropbox'],
+        false
 
 }
 

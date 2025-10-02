@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 - 2025 the original author or authors.
+ * Copyright 2013 - 2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,17 @@ package org.asciidoctor.gradle.model5.js.plugins
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
 import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreBasePlugin
+import org.asciidoctor.gradle.model5.js.JsEngineType
 import org.asciidoctor.gradle.model5.js.extensions.AsciidoctorjsGenericExtension
 import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsGenericOutputFormatter
 import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsHtml5
 import org.asciidoctor.gradle.model5.js.internal.extensions.DefaultAsciidoctorjsGenericExtension
 import org.asciidoctor.gradle.model5.js.internal.formatters.AsciidoctorjsGenericOutputFormatterFactory
 import org.asciidoctor.gradle.model5.js.internal.formatters.AsciidoctorjsHtml5Factory
-import org.asciidoctor.gradle.model5.js.internal.toolchains.AsciidoctorjsToolchainFactory
-import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
+import org.asciidoctor.gradle.model5.js.internal.toolchains.AsciidoctorjsNativeToolchainFactory
+import org.asciidoctor.gradle.model5.js.internal.toolchains.AsciidoctorjsOpalToolchainFactory
+import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsNativeToolchain
+import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsOpalToolchain
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -45,25 +48,32 @@ class AsciidoctorjsBasePlugin implements Plugin<Project> {
     void apply(Project project) {
         project.pluginManager.tap {
             apply(AsciidoctorCoreBasePlugin)
+            apply('org.ysb33r.jsecosystem.pnpm.base')
         }
 
         final asciidoc = project.extensions.getByType(AsciidoctorModelExtension)
 
         asciidoc.toolchains.registerFactory(
-                AsciidoctorjsToolchain,
-                project.objects.newInstance(AsciidoctorjsToolchainFactory)
+            AsciidoctorjsNativeToolchain,
+            project.objects.newInstance(AsciidoctorjsNativeToolchainFactory)
+        )
+        asciidoc.toolchains.registerFactory(
+            AsciidoctorjsOpalToolchain,
+            project.objects.newInstance(AsciidoctorjsOpalToolchainFactory)
         )
 
         registerOutputFormatterFactory(
-                asciidoc.toolchains,
-                AsciidoctorjsHtml5,
-                AsciidoctorjsHtml5Factory,
-                project.objects
+            asciidoc.toolchains,
+            AsciidoctorjsHtml5,
+            JsEngineType.values().toList(),
+            AsciidoctorjsHtml5Factory,
+            project.objects
         )
 
         registerOutputFormatterFactory(
             asciidoc.toolchains,
             AsciidoctorjsGenericOutputFormatter,
+            JsEngineType.values().toList(),
             AsciidoctorjsGenericOutputFormatterFactory,
             project.objects
         )

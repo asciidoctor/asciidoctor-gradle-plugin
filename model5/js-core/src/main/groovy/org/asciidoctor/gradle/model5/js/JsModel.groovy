@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 - 2025 the original author or authors.
+ * Copyright 2013 - 2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,16 +52,18 @@ class JsModel {
      *
      * @param toolchains Toolchain container
      * @param formatterClass The formatter class
+     * @param engineTypes The {@code asciidoctor.js} engine implementation types, the formatter can be registered on.
      * @param factoryClass The factory for the formatter.
      * @param objectFactory objectFactory
      */
     static <T extends AsciidoctorjsOutputFormatter> void registerOutputFormatterFactory(
         ExtensiblePolymorphicDomainObjectContainer<AsciidoctorToolchain> toolchains,
         Class<T> formatterClass,
+        List<JsEngineType> engineTypes,
         Class<? extends NamedDomainObjectFactory<T>> factoryClass,
         ObjectFactory objectFactory
     ) {
-        registerOutputFormatterFactory(toolchains, formatterClass) { AsciidoctorjsToolchain tc ->
+        registerOutputFormatterFactory(toolchains, formatterClass, engineTypes) { AsciidoctorjsToolchain tc ->
             objectFactory.newInstance(factoryClass, tc)
         }
     }
@@ -71,15 +73,21 @@ class JsModel {
      *
      * @param toolchains Toolchain container
      * @param formatterClass The formatter class
+     * @param engineTypes The {@code asciidoctor.js} engine implementation types, the formatter can be registered on.
      * @param factoryFunction A function that will create a factory given a specific toolchain instance.
      */
     static <T extends AsciidoctorjsOutputFormatter> void registerOutputFormatterFactory(
         ExtensiblePolymorphicDomainObjectContainer<AsciidoctorToolchain> toolchains,
         Class<T> formatterClass,
+        List<JsEngineType> engineTypes,
         Function<AsciidoctorjsToolchain, NamedDomainObjectFactory<T>> factoryFunction
     ) {
         toolchains.withType(AsciidoctorjsToolchain).configureEach { tc ->
-            tc.registeredOutputFormatters.registerFactory(formatterClass, factoryFunction.apply(tc))
+            if (tc.nativeImplementation && engineTypes.contains(JsEngineType.NATIVE) ||
+                !tc.nativeImplementation && engineTypes.contains(JsEngineType.OPAL)
+            ) {
+                tc.registeredOutputFormatters.registerFactory(formatterClass, factoryFunction.apply(tc))
+            }
         }
     }
 

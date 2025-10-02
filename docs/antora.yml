@@ -5,7 +5,7 @@ version: "5.0"
 prerelease: true
 asciidoc:
   attributes:
-    release-version: "5.0.0-alpha.2"
+    release-version: "5.0.0"
     project-full-path: "asciidoctor/asciidoctor-gradle-plugin"
     project-issues-url: "https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues"
     project-name: "asciidoctor-gradle-plugin"
@@ -31,7 +31,9 @@ asciidoc:
     asciidoctorjs-url: "https://github.com/asciidoctor/asciidoctor.js"
     asciidoctorjs-revealjs-name: "Reveal.js for Asciidoctor.js"
     asciidoctorjs-revealjs-url: "https://github.com/asciidoctor/asciidoctor-reveal.js"
-    development-branch: "development-4.x"
+    downdoc-name: "Downdoc"
+    downdoc-url: "https://github.com/opendevise/downdoc"
+    development-branch: "development-5.x"
     examples-model5-core-test: "model5/core/test"
     examples-model5-jvm-integration-test: "model5/jvm-core/integrationTest"
     examples-model5-jvm-main: "model5/jvm-core/main"
@@ -49,4 +51,3 @@ asciidoc:
     minimum-gradle: "8.0.2"
 nav:
 - "modules/ROOT/nav.adoc"
-

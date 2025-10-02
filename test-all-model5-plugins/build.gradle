@@ -4,7 +4,10 @@ plugins {
 
 configurations {
     pluginProjects
-    gradleTestImplementation.extendsFrom(pluginProjects)
+    gradleTestCustomManifest.extendsFrom(pluginProjects)
+    configCacheGradleTestCustomManifest.extendsFrom(pluginProjects)
+    jdk17GradleTestCustomManifest.extendsFrom(pluginProjects)
+    jdk21GradleTestCustomManifest.extendsFrom(pluginProjects)
 }
 
 dependencies {

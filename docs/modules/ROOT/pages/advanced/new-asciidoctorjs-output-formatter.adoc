@@ -114,6 +114,7 @@ By convention, this class is prefixed with `Asciidoctorjs` and postfixed with `P
 include::example${examples-model5-js-main}/AsciidoctorjsRevealjsPlugin.groovy[tags=hacking-asciidoctorjs-output-formatter]
 ----
 <.> Reference the interface of the output formatter
+<.> The kind of {asciidoctorjs-name} engine implementation type this can be registered for.
 <.> Reference the factory of the output formatter
 <.> Once again, reference the interface of the output formatter
 <.> Provide the name of the default output formatter that will be registered on the toolchains.

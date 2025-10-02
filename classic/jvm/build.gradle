@@ -9,19 +9,21 @@ agProject {
     withCompatibilityTests()
 
     configurePlugin(
-            'org.asciidoctor.jvm.base.classic',
-            'AsciidoctorJ Classic (Deprecated) Base Plugin',
-            'Classic, but deprecated, base plugin for all AsciidoctorJ tasks & extensions. Provides the asciidoctorj project extension',
-            'org.asciidoctor.gradle.jvm.AsciidoctorJBasePlugin',
-            ['asciidoctorj']
+        'org.asciidoctor.jvm.base.classic',
+        'AsciidoctorJ Classic (Deprecated) Base Plugin',
+        'Classic, but deprecated, base plugin for all AsciidoctorJ tasks & extensions. Provides the asciidoctorj project extension',
+        'org.asciidoctor.gradle.jvm.AsciidoctorJBasePlugin',
+        ['asciidoctorj'],
+        false
     )
 
     configurePlugin(
-            'org.asciidoctor.jvm.convert.classic',
-            'AsciidoctorJ Classic (Deprecated) General Purpose Document Conversion Plugin',
-            'Classic, but deprecated, asciidoctor task and conventions using the asciidoctorj engine',
-            'org.asciidoctor.gradle.jvm.AsciidoctorJPlugin',
-            ['asciidoctorj', 'html5', 'docbook']
+        'org.asciidoctor.jvm.convert.classic',
+        'AsciidoctorJ Classic (Deprecated) General Purpose Document Conversion Plugin',
+        'Classic, but deprecated, asciidoctor task and conventions using the asciidoctorj engine',
+        'org.asciidoctor.gradle.jvm.AsciidoctorJPlugin',
+        ['asciidoctorj', 'html5', 'docbook'],
+        false
     )
 }
 
@@ -93,7 +95,7 @@ tasks.named('test', Test) {
     systemProperties ROOT_PROJECT_DIR: rootDir.absolutePath
 }
 
-tasks.named('integrationTest',Test) {
+tasks.named('integrationTest', Test) {
     maxParallelForks = 4
     forkEvery = 2
 }
@@ -108,9 +110,9 @@ gradleTestSets {
     testSets {
         main {
             gradleArguments '-i', '-s'
-            gradleArguments "-DOFFLINE_REPO=${new File(rootDir,'.offline-repo').absolutePath}",
-                    "-DASCIIDOCTORJ_VERSION=${agProject.versionOf('asciidoctorj')}",
-                    "-DGROOVY_VERSION=${GroovySystem.version}"
+            gradleArguments "-DOFFLINE_REPO=${new File(rootDir, '.offline-repo').absolutePath}",
+                "-DASCIIDOCTORJ_VERSION=${agProject.versionOf('asciidoctorj')}",
+                "-DGROOVY_VERSION=${GroovySystem.version}"
             debug = true
         }
     }

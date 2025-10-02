@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 - 2025 the original author or authors.
+ * Copyright 2013 - 2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 package org.asciidoctor.gradle.model5.js.toolchains
 
 import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
-import org.asciidoctor.gradle.model5.js.internal.toolchains.DefaultAsciidoctorjsToolchain
+import org.asciidoctor.gradle.model5.js.internal.toolchains.AbstractAsciidoctorjsToolchain
 import org.asciidoctor.gradle.model5.js.plugins.AsciidoctorjsBasePlugin
 import org.asciidoctor.gradle.testfixtures.model5.UnitTestSpecification
 
@@ -34,9 +34,11 @@ class AsciidoctorjsToolchainSpec extends UnitTestSpecification {
 
     void 'When the base plugin is applied, an asciidoctorj toolchain can be registered'() {
         when:
-        final tc = asciidoc.toolchains.create('default', AsciidoctorjsToolchain)
+        final tc1 = asciidoc.toolchains.create('default1', AsciidoctorjsNativeToolchain)
+        final tc2 = asciidoc.toolchains.create('default2', AsciidoctorjsOpalToolchain)
 
         then:
-        tc instanceof DefaultAsciidoctorjsToolchain
+        tc1 instanceof AbstractAsciidoctorjsToolchain
+        tc2 instanceof AbstractAsciidoctorjsToolchain
     }
 }

@@ -12,7 +12,8 @@ agProject {
             'AsciidoctorJ (Deprecated) PDF Conversion Plugin',
             'Simplifies conversion of asciidoc documents to PDF (Deprecated)',
             'org.asciidoctor.gradle.jvm.pdf.AsciidoctorJPdfPlugin',
-            ['asciidoctorj', 'pdf']
+            ['asciidoctorj', 'pdf'],
+        false
     )
 }
 

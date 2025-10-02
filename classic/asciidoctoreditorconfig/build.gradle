@@ -10,7 +10,8 @@ agProject {
             'Asciidoctor Editor Config Plugin (Deprecated)',
             'Generate .asciidoctorconfig files for use by supported IDEs. (Deprecated)',
             'org.asciidoctor.gradle.editorconfig.AsciidoctorEditorConfigPlugin',
-            ['intellij', 'idea']
+            ['intellij', 'idea'],
+            false
     )
 }
 
