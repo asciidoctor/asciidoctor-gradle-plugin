@@ -55,7 +55,7 @@ asciidoc {
         }
         slides {
             output 'asciidoctorj', 'revealjs'
-            output 'asciidoctorjs', 'revealjs', 'revealjs2'
+            output 'asciidoctorjs3', 'revealjs', 'revealjs2'
 
             sourceSet {
                 sourceDir = 'src/docs/slides'

@@ -6,11 +6,11 @@ agProject {
     withIntegrationTests()
     withAdditionalPluginClasspath()
     configurePlugin(
-            'org.asciidoctor.editorconfig',
-            'Asciidoctor Editor Config Plugin',
-            'Generate .asciidoctorconfig files for use by supported IDEs',
-            'org.asciidoctor.gradle.model5.editorconfig.AsciidoctorEditorConfigPlugin',
-            ['intellij', 'idea']
+        'org.asciidoctor.editorconfig',
+        'Asciidoctor Editor Config Plugin',
+        'Generate .asciidoctorconfig files for use by supported IDEs',
+        'org.asciidoctor.gradle.model5.editorconfig.AsciidoctorEditorConfigPlugin',
+        ['intellij', 'idea']
     )
 }
 
@@ -18,5 +18,4 @@ dependencies {
     additionalPluginClasspath(project(':asciidoctor5-js-core-plugin'))
 }
 
-
-
+apply from: "${rootDir}/gradle/plugin-is-cc-compatible.gradle"

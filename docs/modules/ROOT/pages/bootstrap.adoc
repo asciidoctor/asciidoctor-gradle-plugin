@@ -19,6 +19,7 @@ plugins {
     id 'org.asciidoctor.js.docbook' version '{release-version}' // <.>
     id 'org.asciidoctor.js.kroki' version '{release-version}' // <.>
     id 'org.asciidoctor.js.revealjs' version '{release-version}' // <.>
+    id 'org.asciidoctor.downdoc' version '{release-version}' // <.>
 }
 ----
 <.> The convention plugin for working with {asciidoctorj-name}.
@@ -34,6 +35,7 @@ plugins {
 <.> Adds the ability to output to Docbook using {asciidoctorjs-name}.
 <.> Adds the Kroki extension for use with `asciidoctorjs` extensions.
 <.> Adds the ability to generate slides with {asciidoctorjs-revealjs-name}.
+<.> Adds the ability to convert documents to Markdown using {downdoc-name}.
 
 There is also a set of less common plugins, which are applied via the plugins listed above.
 They are listed here as they might prove useful in special cases
@@ -47,6 +49,7 @@ plugins {
     id 'org.asciidoctor.core.pdf-themes' version '{release-version}' // <.>
     id 'org.asciidoctor.jvm.base' version '{release-version}' // <.>
     id 'org.asciidoctor.js.base' version '{release-version}' // <.>
+    id 'org.asciidoctor.downdoc.base' version '{release-version}' // <.>
 }
 ----
 <.> Produces an `.asciidoctoreditorconfig` file for IDE purposes.
@@ -56,6 +59,7 @@ plugins {
 <.> Registers the ability to create {asciidoctorj-name} toolchains along with output formatters for HTML, DocBook and Manpages.
   Also registers the diagram {asciidoctorj-name} extension.
 <.> Registers the ability to create {asciidoctorjs-name} toolchains along with an HTML output formatter.
+<.> Registers the ability to create {downdoc} toolchains.
 
 == Using the version catalog
 

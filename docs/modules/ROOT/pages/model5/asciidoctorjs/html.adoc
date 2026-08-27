@@ -3,13 +3,13 @@
 HTML output is the most common usage of {asciidoctorjs-name} and is also bundled with `org.asciidoctor.js`.
 There are a number of items that can be configured on the output formatter itself.
 
-[source,groovy,roole="primary"]
+[source,groovy,role="primary"]
 ----
 import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsHtml
 
 asciidoc {
     toolchains {
-        aciidoctorj {
+        aciidoctorjs {
             registeredOutputFormatters {
                 html(AsciidoctorjsHtml) { // <.>
                     embedded = true // <.>
@@ -22,7 +22,7 @@ asciidoc {
     }
 }
 ----
-<.> The `org.asciidoctor.jvm` plugin adds an HTML output formatter called `html`.
+<.> The `org.asciidoctor.js` plugin adds an HTML output formatter called `html`.
 <.> Output an embeddable document, which excludes the header, the footer, and everything outside the body of the document. This option is useful for producing documents that can be inserted into an external template.
 <.> Define one or more templates that can be used for conversion.
 <.> Adds an engine from NPM using the default version.

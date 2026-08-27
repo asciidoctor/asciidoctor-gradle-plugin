@@ -134,3 +134,5 @@ providers.gradleProperty('jrubyTestVersions').get().split(',').each {
         transitive = false
     }
 }
+
+apply from: "${rootDir}/gradle/plugin-is-cc-compatible.gradle"

@@ -11,13 +11,13 @@ Groovy::
 --
 [source,groovy]
 ----
-import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjRevealjs
+import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsRevealjs
 
 asciidoc {
     toolchains {
-        aciidoctorj {
+        aciidoctorjs3 { // <.>
             registeredOutputFormatters {
-                revealjs(AsciidoctorRevealjs) { // <.>
+                revealjs(AsciidoctorjsRevealjs) { // <.>
                     templateDirs 'src/myAsciidocTemplate1', 'src/myAsciidocTemplate2' // <.>
                     forceEngine =  'erb' // <.>
                     useEngine 'slim' // <.>
@@ -30,9 +30,10 @@ asciidoc {
     }
 }
 ----
-<.> The `org.asciidoctor.jvm.revealjs` plugin adds an output formatter called `revealjs`.
+<.> Currently, this is only supported for the Opal engine.
+<.> The `org.asciidoctor.js.revealjs` plugin adds an output formatter called `revealjs`.
 <.> Define one or more templates that can be used for conversion.
-<.> Force {asciidoctorj-name} to use the specific engine irrespective of the extensions detected in the
+<.> Force {asciidoctorjs-name} to use the specific engine irrespective of the extensions detected in the
   template directories.
 <.> Adds an engine to the GEM classpath.
   Only `erb`, `slim` and `haml` is supported.

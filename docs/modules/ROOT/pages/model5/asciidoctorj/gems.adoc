@@ -13,6 +13,7 @@ plugins {
 
 repositories {
   ruby.gems() // <.>
+  ruby.coop() // <.>
 }
 
 dependencies {
@@ -21,6 +22,7 @@ dependencies {
 ----
 <.> Add a repository so that Gradle knows where to resolve GEMs from.
   See https://jruby-gradle.ysb33r.org[Simplified JRuby Gradle plugin] for more details.
+<.> If you prefer to use `gem.coop` over the original `rubygems.org`, then you can use this instead or `ruby.gems()`.
 <.> Add the specific GEM to the toolchain.
   The configuration name is of the format `asciidoctorGem<TOOLCHAIN_NAME>`.
 

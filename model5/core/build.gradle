@@ -29,3 +29,5 @@ agProject {
 dependencies {
     compileOnly(project(':asciidoctoreditorconfig'))
 }
+
+apply from: "${rootDir}/gradle/plugin-is-cc-compatible.gradle"

@@ -53,8 +53,11 @@ agProject {
     // tag::hacking-asciidoctorjs-output-formatter[]
     withVersionSubstitution("${project.name}.properties", [
         // end::hacking-asciidoctorjs-output-formatter[]
-        VERSION   : versionOf('asciidoctorjs'),
-        CLI       : versionOf('asciidoctorjsCli'),
+        VERSION3   : versionOf('asciidoctorjs3'),
+        CLI3       : versionOf('asciidoctorjsCli3'),
+        OPAL3: versionOf('asciidoctorjsOpal3'),
+        VERSION   : versionOf('asciidoctorjs4'),
+        CLI       : versionOf('asciidoctorjsCli4'),
         DOCBOOK   : versionOf('asciidoctorjsDocbook'),
         EJS       : versionOf('asciidoctorjsEjs'),
         HANDLEBARS: versionOf('asciidoctorjsHandlebars'),
@@ -75,8 +78,11 @@ agProject {
 
 dependencies {
     api project(':asciidoctor5-core-plugin')
-    api(libs.pluginJavaScript)
+    api(libs.pluginPnpm)
+    implementation(libs.pluginJavaScriptEcosystem)
     implementation(libs.grolifantApi)
     runtimeOnly(libs.grolifantRuntime)
     testImplementation project(':testfixtures-jvm')
 }
+
+apply from: "${rootDir}/gradle/plugin-is-cc-compatible.gradle"

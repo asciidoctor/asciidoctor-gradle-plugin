@@ -1,0 +1,37 @@
+plugins {
+    id 'org.asciidoctor.internal.model5.gradle.project'
+}
+
+agProject {
+    withIntegrationTests()
+    configurePlugin(
+            'org.asciidoctor.downdoc.base',
+            'Plugin to convert AsciiDoc to Markdown',
+            'Provides a Downdoc toolchain to convert AsciiDoc to Markdown',
+            'org.asciidoctor.gradle.model5.downdoc.plugins.DowndocBasePlugin',
+            ['asciidoctor', 'downdoc', 'markdown']
+    )
+    configurePlugin(
+        'org.asciidoctor.downdoc',
+        'Plugin to convert AsciiDoc to Markdown',
+        'Provides a Downdoc toolchain to convert AsciiDoc to Markdown',
+        'org.asciidoctor.gradle.model5.downdoc.plugins.DowndocPlugin',
+        ['asciidoctor', 'downdoc', 'markdown']
+    )
+
+
+    withVersionSubstitution("${project.name}.properties", [
+        VERSION   : versionOf('downdoc'),
+    ])
+}
+
+dependencies {
+    api project(':asciidoctor5-core-plugin')
+    implementation(libs.pluginJavaScriptEcosystem)
+    implementation(libs.pluginPnpm)
+    implementation(libs.grolifantApi)
+    runtimeOnly(libs.grolifantRuntime)
+    testImplementation project(':testfixtures-jvm')
+}
+
+apply from: "${rootDir}/gradle/plugin-is-cc-compatible.gradle"

@@ -8,16 +8,17 @@ agProject {
     withCompatibilityTests()
 
     configurePlugin 'org.asciidoctor.jvm.gems.classic',
-            'Simplifies support for using external GEMs with AsciidoctorJ (Deprecated)',
-            'Provides appropriate tasks and configurations for adding GEMs to AsciidoctorJ conversions (Deprecated)',
-            'org.asciidoctor.gradle.jvm.gems.AsciidoctorGemSupportPlugin',
-            ['asciidoctorj', 'gems', 'jruby']
+        'Simplifies support for using external GEMs with AsciidoctorJ (Deprecated)',
+        'Provides appropriate tasks and configurations for adding GEMs to AsciidoctorJ conversions (Deprecated)',
+        'org.asciidoctor.gradle.jvm.gems.AsciidoctorGemSupportPlugin',
+        ['asciidoctorj', 'gems', 'jruby'],
+        false
 }
 
 dependencies {
     implementation(libs.pluginJRuby)
     api project(':asciidoctor-gradle-jvm')
-    api (libs.grolifantApi)
+    api(libs.grolifantApi)
     implementation(libs.grolifantRemoteWorker)
 }
 
