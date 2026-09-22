@@ -2,15 +2,11 @@ plugins {
     id 'org.asciidoctor.internal.model5.gradle.test-all'
 }
 
-configurations {
-    pluginProjects
-    gradleTestImplementation.extendsFrom(pluginProjects)
-}
-
 dependencies {
-    pluginProjects(project(':asciidoctor5-core-plugin'))
-    pluginProjects(project(path: ':asciidoctor5-jvm-core-plugin', configuration: 'default'))
-    pluginProjects(project(':asciidoctor5-js-core-plugin'))
+    runtimeOnly(project(':asciidoctor5-core-plugin'))
+    runtimeOnly(project(path: ':asciidoctor5-jvm-core-plugin', configuration: 'default'))
+    runtimeOnly(project(':asciidoctor5-js-core-plugin'))
+    runtimeOnly(project(':asciidoctor5-downdoc-plugin'))
 }
 
 

@@ -18,6 +18,7 @@ ifdef::env-github[]
 :!toc-title:
 :note-caption: :paperclip:
 :important-caption: :exclamation:
+:warning-caption: :warning:
 endif::[]
 
 ifdef::status[]
@@ -29,13 +30,19 @@ endif::[]
 
 The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to convert all your {asciidoc-url}[AsciiDoc] documentation using {gradle-url}[Gradle].
 
+[WARNING]
+====
+With the release of 5.0.0 and after 12 years of involvement, Schalk Cronjé (https://github.com/ysb33r[@ysb33r]) has retired as the leading maintainer.
+Although he is still be around for the odd bugfix and to provide advice, *a new maintainer is urgently needed*.
+====
+
 Documentation:: We are migrating our documentation to the new Asciidoctor Antora-based site when it is ready.
 In the meantime you can read a snapshot of the current documentation at {asciidoctor-development-docs}{github-branch}
 
 ifdef::env-github[]
-Structure:: `master` now represents the code for the latest 4.x release of these plugins.
-Development for 4.x is against the link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/development-4.x[{github-branch}] branch.
+Structure:: `master` now represents the code for the latest 5.x release of these plugins.
+Development for 5.x is against the link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/development-5.x[{github-branch}] branch.
 PRs are preferably taking against this branch.
-The 3.x series of the plugin is now in maintenance only mode.
-PRs for that should be raised against the link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/maintenance-3.x[maintenance-3.x]branches.
+The 3.x & 4.x series of the plugin is now in maintenance only mode.
+PRs for that should be raised against the link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/maintenance-3.x[maintenance-3.x] anf link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/maintenance-4.x[maintenance-4.x] branches.
 endif::[]

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 - 2025 the original author or authors.
+ * Copyright 2013 - 2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -134,7 +134,7 @@ block('small') {
         resultFile.text.contains('and write this in lowercase')
 
         where:
-        gradle << ['8.9', '8.1.1', '7.6.1']
+        gradle << ['8.9', '8.1.1']
     }
 
     @Timeout(value = 90)

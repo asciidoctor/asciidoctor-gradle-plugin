@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 - 2025 the original author or authors.
+ * Copyright 2013 - 2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,59 +33,6 @@ class AsciidoctorTaskFunctionalSpec extends FunctionalSpecification {
     void setup() {
         createTestProject()
     }
-
-//    @Issue('https://github.com/gradle/gradle/issues/3698')
-//    @Unroll
-//    @Timeout(value = 90)
-//    @SuppressWarnings('LineLength')
-//    void 'Built-in backends (parallelMode=#parallelMode, asciidoctorj=#asciidoctorjVer, min jRuby=#jrubyVer, compatible=#compatible)'() {
-//        given:
-//        getBuildFile("""
-//            asciidoctor {
-//
-//                outputOptions {
-//                    backends 'html5', 'docbook'
-//                }
-//
-////                asciidoctorj {
-////                    version = '${asciidoctorjVer}'
-////                    jrubyVersion = '${jrubyVer}'
-////                }
-//                logDocuments = true
-//                sourceDir 'src/docs/asciidoc'
-//                parallelMode ${parallelMode}
-//
-//                doFirst {
-//                    logger.lifecycle 'Requested: asciidoctorj=${asciidoctorjVer}, ' +
-//                          'jrubyVer=${jrubyVer}. Got configuration: ' +
-//                          asciidoctorj.configuration.files*.name.join(' ')
-//                }
-//            }
-//        """)
-//
-//        GradleRunner runner = getGradleRunner(DEFAULT_ARGS)
-//
-//        when:
-//        compatible ? runner.build() : runner.buildAndFail()
-//
-//        then: 'u content is generated as HTML and XML'
-//        verifyAll {
-//            new File(buildDir, 'docs/asciidoc/html5/sample.html').exists() || !compatible
-//            new File(buildDir, 'docs/asciidoc/html5/subdir/sample2.html').exists() || !compatible
-//            new File(buildDir, 'docs/asciidoc/docbook/sample.xml').exists() || !compatible
-//            !new File(buildDir, 'docs/asciidoc/docinfo/docinfo.xml').exists() || !compatible
-//            !new File(buildDir, 'docs/asciidoc/docinfo/sample-docinfo.xml').exists() || !compatible
-//            !new File(buildDir, 'docs/asciidoc/html5/subdir/_include.html').exists() || !compatible
-//        }
-//
-////        where:
-////        parallelMode | jrubyVer              | asciidoctorjVer | compatible
-////        false        | AJ20_ABSOLUTE_MINIMUM | SERIES_20       | true
-////        false        | AJ20_SAFE_MINIMUM     | SERIES_20       | true
-////        false        | AJ20_SAFE_MAXIMUM     | SERIES_20       | true
-////        false        | AJ20_SAFE_MAXIMUM     | SERIES_20       | true
-////        false        | AJ20_ABSOLUTE_MAXIMUM | SERIES_20       | true
-//    }
 
     @Timeout(value = 90)
     void 'Support attributes in various formats'() {

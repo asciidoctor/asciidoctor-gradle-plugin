@@ -1,0 +1,8 @@
+// TODO: We use this approach until we can work out what to code in buildSrc
+gradlePlugin.plugins.all {
+    compatibility(it) { // Note: pass 'it' explicitly
+        features {
+            configurationCache = true
+        }
+    }
+}
