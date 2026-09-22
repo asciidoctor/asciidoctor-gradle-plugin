@@ -1,0 +1,1 @@
+This is from _nested-include.adoc file.

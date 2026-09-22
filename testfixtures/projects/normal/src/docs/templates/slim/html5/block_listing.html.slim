@@ -1,0 +1,23 @@
+= block_with_title 'listingblock'
+  .content
+    - highlighter = document.attr 'source-highlighter'
+    - if style == 'source' && highlighter == 'html-pipeline'
+      pre lang=source_lang
+        code =content
+    - elsif style == 'source'
+      - code_class = "language-#{source_lang}" if source_lang
+      - case highlighter
+      - when 'coderay'
+        - pre_class = 'CodeRay'
+        - code_class = nil
+      - when 'highlight.js'
+        - pre_class = 'highlightjs'
+      - when 'prettify'
+        - pre_class = 'prettyprint'
+      - when 'pygments'
+        - pre_class = 'pygments'
+        - code_class = nil
+      pre class=[pre_class, 'highlight', ('linenums' if attr? :linenums), nowrap?]
+        code class=code_class data-lang=source_lang =content
+    - else
+      pre class=nowrap? =content

@@ -19,7 +19,7 @@ ext {
 jrubyTestVersion.keySet().each {
     String config = "intTestOfflineJRuby_${it}"
     configurations.create(config)
-    dependencies.add(config, "org.jruby:jruby-complete:${jrubyTestVersion[it]}") {
+    dependencies.add(config, "org.jruby:jruby:${jrubyTestVersion[it]}") {
         transitive = false
     }
 }

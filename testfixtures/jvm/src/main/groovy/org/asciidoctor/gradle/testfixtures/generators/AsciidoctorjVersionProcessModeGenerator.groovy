@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2024 the original author or authors.
+ * Copyright 2013 - 2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,15 +50,15 @@ class AsciidoctorjVersionProcessModeGenerator {
     }
 
     static List<VersionProcess> get() {
-        if (System.getenv('APPVEYOR') || System.getenv('TRAVIS') || System.getenv('GITHUB_ACTIONS')) {
+        if (System.getenv('GITHUB_ACTIONS')) {
             [SERIES_20].collect {
-                VersionProcess.of(it, JAVA_EXEC)
+                VersionProcess.of(it, OUT_OF_PROCESS)
             }.toUnique()
         } else {
             [SERIES_20].collectMany { it ->
                 [
-                    VersionProcess.of(it, JAVA_EXEC),
-                    VersionProcess.of(it, IN_PROCESS),
+//                    VersionProcess.of(it, JAVA_EXEC),
+//                    VersionProcess.of(it, IN_PROCESS),
                     VersionProcess.of(it, OUT_OF_PROCESS)
                 ]
             }.toUnique() as List<VersionProcess>

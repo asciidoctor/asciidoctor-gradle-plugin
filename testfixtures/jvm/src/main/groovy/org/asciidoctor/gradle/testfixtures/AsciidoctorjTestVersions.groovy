@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2024 the original author or authors.
+ * Copyright 2013 - 2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,4 +31,5 @@ class AsciidoctorjTestVersions {
     public final static String SERIES_20 = VERSIONS['asciidoctorj']
     public final static String GROOVYDSL_SERIES_20 = VERSIONS['asciidoctorj.groovydsl']
     public final static String DIAGRAM_SERIES_20 = VERSIONS['asciidoctorj.diagram']
+    public final static String DIAGRAM_DITAA_SERIES_20 = '1.0.3'
 }

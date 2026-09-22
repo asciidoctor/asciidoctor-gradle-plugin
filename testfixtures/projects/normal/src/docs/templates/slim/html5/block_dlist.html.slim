@@ -1,0 +1,17 @@
+- case style
+- when 'qanda'
+  include _qanda.html
+- when 'horizontal'
+  include _hdlist.html
+- else
+  = block_with_title class: ['dlist', style]
+    dl
+      - items.each do |terms, dd|
+        - [*terms].each do |dt|
+          dt class=('hdlist1' unless style) =dt.text
+        - unless dd.nil?
+          dd
+            - if dd.text?
+              p =dd.text
+            - if dd.blocks?
+              =dd.content

@@ -1,0 +1,8 @@
+- open, close = Asciidoctor::BLOCK_MATH_DELIMITERS[@style.to_sym]
+- equation = content
+- unless (equation.start_with? open) && (equation.end_with? close)
+  - equation = %(#{open}#{equation}#{close})
+%div{:id=>@id, :class=>['stemblock', role]}
+  - if title?
+    .title=title
+  .content=equation

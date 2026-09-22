@@ -1,0 +1,16 @@
+- if @style == 'abstract'
+  - if @parent == @document && @document.doctype == 'book'
+    - puts 'asciidoctor: WARNING: abstract block cannot be used in a document without a title when doctype is book. Excluding block content.'
+  - else
+    %div{:id=>@id, :class=>['quoteblock', 'abstract', role]}
+      - if title?
+        .title=title
+      %blockquote=content
+- elsif @style == 'partintro' && (@document.doctype != 'book' || @parent.context != :section || @level != 0)
+  - puts 'asciidoctor: ERROR: partintro block can only be used when doctype is book and it\'s a child of a book part. Excluding block content.' 
+- else
+  %div{:id=>@id, :class=>['openblock', (@style != 'open' ? @style : nil), role]}
+    - if title?
+      .title=title
+    .content
+      =content

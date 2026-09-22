@@ -1,0 +1,4 @@
+= block_with_title({class: 'imageblock', style: (style_value text_align: (attr :align), float: (attr :float))}, :bottom)
+  .content
+    = html_tag_if (attr? :link), :a, {class: 'image', href: (attr :link)}
+      img src=image_uri(attr :target) alt=(attr :alt) width=(attr :width) height=(attr :height)

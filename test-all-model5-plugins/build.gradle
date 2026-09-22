@@ -1,0 +1,13 @@
+plugins {
+    id 'org.asciidoctor.internal.model5.gradle.test-all'
+}
+
+dependencies {
+    runtimeOnly(project(':asciidoctor5-core-plugin'))
+    runtimeOnly(project(path: ':asciidoctor5-jvm-core-plugin', configuration: 'default'))
+    runtimeOnly(project(':asciidoctor5-js-core-plugin'))
+    runtimeOnly(project(':asciidoctor5-downdoc-plugin'))
+}
+
+
+

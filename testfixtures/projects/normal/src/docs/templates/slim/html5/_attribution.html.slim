@@ -1,0 +1,10 @@
+- attribution = attr :attribution
+- citetitle = attr :citetitle
+- if attribution || citetitle
+  .attribution
+    - if attribution
+      |&#8212; #{attribution}
+    - if citetitle
+      - if attribution
+        br
+      cite =citetitle

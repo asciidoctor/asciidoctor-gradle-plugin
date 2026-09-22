@@ -1,0 +1,22 @@
+- slevel = @level == 0 && @special ? 1 : @level
+- anchor = nil
+- link = nil
+- if @id
+  - if @document.attr? :sectanchors
+    - anchor = %(<a class="anchor" href="##{@id}"></a>)
+    - link = nil
+  - elsif @document.attr? :sectlinks
+    - anchor = nil 
+    - link = %(<a class="link" href="##{@id}">)
+- if slevel == 0
+  %h1{:id=>@id, :class=>"sect0"}=%(#{anchor}#{link}#{title}#{link && '</a>'})
+  =content
+- else
+  %div{:class=>["sect#{slevel}", role]}
+    - snum = @numbered && @caption.nil? && slevel <= (@document.attr 'sectnumlevels', 3).to_i ? %(#{sectnum} ) : nil
+    - haml_tag "h#{slevel + 1}##{@id}", %(#{anchor}#{link}#{snum}#{captioned_title}#{link && '</a>'})
+    - if slevel == 1
+      .sectionbody
+        =content
+    - else
+      =content

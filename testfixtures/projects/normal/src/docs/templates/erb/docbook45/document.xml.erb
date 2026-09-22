@@ -1,0 +1,108 @@
+<%#encoding:UTF-8%><?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE <%= doctype %> PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"><%
+if attr? 'toc' %>
+<?asciidoc-toc?><%
+end
+if attr? 'sectnums' %>
+<?asciidoc-numbered?><%
+end
+documentinfo = ''
+if has_header? && !notitle
+  title_line = @header.title 
+  if title_line.include? ': '
+    title, _, subtitle = title_line.rpartition ': '
+    documentinfo = %(<title>#{title}</title>
+<subtitle>#{subtitle}</subtitle>\n)
+  else
+    documentinfo = %(<title>#{title_line}</title>\n)
+  end
+end
+documentinfo = %(#{documentinfo}<date>#{(attr? 'revdate') ? (attr 'revdate') : (attr 'docdate')}</date>\n)
+if has_header?
+  if attr? 'author'
+    if (authorcount = (attr 'authorcount').to_i) < 2
+      authorinfo = []
+      if attr? 'firstname'
+        authorinfo << %(<firstname>#{attr 'firstname'}</firstname>)
+      end
+      if attr? 'middlename'
+        authorinfo << %(<othername>#{attr 'middlename'}</othername>)
+      end
+      if attr? 'lastname'
+        authorinfo << %(<surname>#{attr 'lastname'}</surname>)
+      end
+      if attr? 'email'
+        authorinfo << %(<email>#{attr 'email'}</email>)
+      end
+      documentinfo = %(#{documentinfo}<author>
+#{authorinfo * "\n"}
+</author>
+<authorinitials>#{attr 'authorinitials'}</authorinitials>\n)
+    else
+      documentinfo = %(#{documentinfo}<authorgroup>\n)
+      (1..authorcount).each do |idx|
+        authorinfo = []
+        if attr? "firstname_#{idx}"
+          authorinfo << %(<firstname>#{attr "firstname_#{idx}"}</firstname>)
+        end
+        if attr? "middlename_#{idx}"
+          authorinfo << %(<othername>#{attr "middlename_#{idx}"}</othername>)
+        end
+        if attr? "lastname_#{idx}"
+          authorinfo << %(<surname>#{attr "lastname_#{idx}"}</surname>)
+        end
+        if attr? "email_#{idx}"
+          authorinfo << %(<email>#{attr "email_#{idx}"}</email>)
+        end
+        documentinfo = %(#{documentinfo}<author>
+#{authorinfo * "\n"}
+</author>\n)
+      end
+      documentinfo = %(#{documentinfo}</authorgroup>\n)
+    end
+  end
+  if (attr? 'revnumber') || (attr? 'revremark')
+    revinfo = []
+    if attr? 'revnumber'
+      revinfo << %(<revnumber>#{attr 'revnumber'}</revnumber>)
+    end
+    if attr? 'revdate'
+      revinfo << %(<date>#{attr 'revdate'}</date>)
+    end
+    if attr? 'authorinitials'
+      revinfo << %(<authorinitials>#{attr 'authorinitials'}</authorinitials>)
+    end
+    if attr? 'revremark'
+      revinfo << %(<revremark>#{attr 'revremark'}</revremark>)
+    end
+
+    documentinfo = %(#{documentinfo}
+<revhistory>
+<revision>
+#{revinfo * "\n"}
+</revision>
+</revhistory>\n)
+
+    documentinfo = %(#{documentinfo}
+#{docinfo})
+    if attr? 'orgname'
+      documentinfo = %(#{documentinfo}
+<orgname>#{attr 'orgname'}</orgname>\n)
+    end
+  end
+end
+if doctype == 'book' %>
+<book<%= !(attr? 'nolang') ? %( lang="#{attr 'lang', 'en'}") : nil %>>
+<bookinfo>
+<%= documentinfo %>
+</bookinfo>
+<%= content %>
+</book><%
+else %>
+<article<%= !(attr? 'nolang') ? %( lang="#{attr 'lang', 'en'}") : nil %>>
+<articleinfo>
+<%= documentinfo %>
+</articleinfo>
+<%= content %>
+</article><%
+end %>

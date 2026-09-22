@@ -1,0 +1,15 @@
+plugins {
+    id 'org.asciidoctor.jvm.convert.classic'
+}
+
+repositories {
+    mavenCentral()
+}
+
+asciidoctorj {
+    docExtensions project(':extension')
+}
+
+asciidoctor {
+    executionMode = 'OUT_OF_PROCESS'
+}

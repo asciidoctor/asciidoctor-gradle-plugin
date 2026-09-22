@@ -1,0 +1,16 @@
+= block_with_title class: ['colist', style]
+  - if icons?
+    table
+      - items.to_enum.with_index 1 do |item, num|
+        tr
+          td
+            - if font_icons?
+              i.conum data-value=num
+              b =num
+            - else
+              img src=(icon_uri "callouts/#{num}") alt=num
+          td =item.text
+  - else
+    ol
+      - items.each do |item|
+        li: p =item.text

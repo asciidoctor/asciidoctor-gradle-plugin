@@ -1,0 +1,6 @@
+#footnotes
+  hr
+  - footnotes.each do |fn|
+    .footnote id=(footnote_id fn.index)
+      a href="##{footnoteref_id fn.index}" =fn.index
+      |. #{fn.text}

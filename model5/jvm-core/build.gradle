@@ -1,0 +1,146 @@
+plugins {
+    id 'org.asciidoctor.internal.model5.gradle.project.jvm'
+}
+
+// tag::hacking-asciidoctorj-output-formatter[]
+agProject {
+    // end::hacking-asciidoctorj-output-formatter[]
+    withJdkVersionFromProperty('jdkVersionAsciidoctorj')
+    withIntegrationTests()
+    withOfflineCacheConfiguration()
+
+    configurePlugin(
+        'org.asciidoctor.jvm.base',
+        'AsciidoctorJ Base Plugin',
+        'Base plugin for all AsciidoctorJ tasks & extensions.',
+        'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjBasePlugin',
+        ['asciidoctorj'],
+        true
+    )
+
+    configurePlugin(
+        'org.asciidoctor.jvm',
+        'AsciidoctorJ Plugin',
+        'Provides html and docbook formatters for all AsciidoctorJ toolchains',
+        'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjPlugin',
+        ['asciidoctorj'],
+        true
+    )
+
+    configurePlugin(
+        'org.asciidoctor.jvm.pdf',
+        'AsciidoctorJ Pdf Plugin',
+        'Provides pdf formatters for all AsciidoctorJ toolchains',
+        'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjPdfPlugin',
+        ['asciidoctorj', 'pdf'],
+        true
+    )
+
+    configurePlugin(
+        'org.asciidoctor.jvm.revealjs',
+        'AsciidoctorJ Reveal.js Plugin',
+        'Provides Reveal.js formatters for all AsciidoctorJ toolchains',
+        'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjRevealjsPlugin',
+        ['asciidoctorj', 'revealjs'],
+        true
+    )
+
+    configurePlugin 'org.asciidoctor.jvm.gems',
+        'Simplifies support for using external GEMs with AsciidoctorJ',
+        'Provides appropriate tasks and configurations for adding GEMs to AsciidoctorJ conversions',
+        'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjGemsPlugin',
+        ['asciidoctorj', 'gems', 'jruby'],
+        true
+
+    configurePlugin 'org.asciidoctor.jvm.diagram',
+        'Ability to use Asciidoctor Diagrams with AsciidoctorJ',
+        'Provides an extension for adding diagramming support',
+        'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjDiagramPlugin',
+        ['asciidoctorj', 'diagrams', 'ditaa', 'plantuml', 'batik', 'syntrax'],
+        true
+
+    configurePlugin 'org.asciidoctor.jvm.kroki',
+        'Ability to use Kroki with AsciidoctorJ',
+        'Provides an extension for adding diagramming support',
+        'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjKrokiPlugin',
+        ['asciidoctorj', 'kroki', 'actdiag', 'blockdiag', 'ditaa', 'plantuml',
+         'bpmn', 'bytefield', 'c4plantuml', 'd2', 'dbml', 'erd',
+         'excalidraw', 'graphviz', 'mermaid', 'nomnoml', 'nwdiag',
+         'packetdiag', 'pikchr', 'rackdiag', 'seqdiag', 'svgbob',
+         'symbolator', 'umlet', 'vega', 'vegalite', 'wavedrom', 'structurizr'
+        ],
+        true
+
+    // tag::hacking-asciidoctorj-output-formatter[]
+    configurePlugin(
+        'org.asciidoctor.jvm.epub', // <.>
+        'AsciidoctorJ EPUB Plugin', // <.>
+        'Provides EPUB formatters for all AsciidoctorJ toolchains', // <.>
+        'org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjEpubPlugin', // <.>
+        ['asciidoctorj', 'epub', 'epub3'], // <.>
+        true
+    )
+    // end::hacking-asciidoctorj-output-formatter[]
+
+    // tag::hacking-asciidoctorj-output-formatter[]
+    withVersionSubstitution("${project.name}.properties", [
+        // end::hacking-asciidoctorj-output-formatter[]
+        BATIK    : versionOf('asciidoctorjDiagramBatik'),
+        DIAGRAM  : versionOf('asciidoctorjDiagram'),
+        DITAA    : versionOf('asciidoctorjDiagramDitaa'),
+        // tag::hacking-asciidoctorj-output-formatter[]
+        EPUB     : versionOf('asciidoctorjEpub'), // <.>
+        // end::hacking-asciidoctorj-output-formatter[]
+        GROOVYDSL: versionOf('asciidoctorjGroovyDsl'),
+        HAML     : versionOf('gemHaml'),
+        JRUBY    : versionOf('jruby'),
+        JSYNTRAX : versionOf('asciidoctorjDiagramJSyntrax'),
+        KROKI    : versionOf('gemKroki'),
+        PDF      : versionOf('asciidoctorjPdf'),
+        PLANTUML : versionOf('asciidoctorjDiagramPlantUml'),
+        REVEALJS : versionOf('asciidoctorjRevealjs'),
+        SLIM     : versionOf('gemSlim'),
+        TILT     : versionOf('gemTilt'),
+        VERSION  : versionOf('asciidoctorj'),
+        // tag::hacking-asciidoctorj-output-formatter[]
+    ])
+    // end::hacking-asciidoctorj-output-formatter[]
+
+// tag::hacking-asciidoctorj-output-formatter[]
+}
+// end::hacking-asciidoctorj-output-formatter[]
+
+// tag::hacking-asciidoctorj-output-formatter[]
+dependencies {
+    // end::hacking-asciidoctorj-output-formatter[]
+    compileOnly(libs.asciidoctorjApi)
+    compileOnly(libs.asciidoctorjGroovyDsl)
+    api project(':asciidoctor5-core-plugin')
+    implementation(libs.grolifantApi)
+    implementation(libs.pluginJRuby)
+    implementation(libs.grolifantRemoteWorker)
+    runtimeOnly(libs.grolifantRuntime)
+    testImplementation project(':testfixtures-jvm')
+
+    cachingOnly(libs.asciidoctorjPdf)
+    cachingOnly(libs.asciidoctorjDiagram)
+    cachingOnly(libs.asciidoctorjDiagramBatik)
+    cachingOnly(libs.asciidoctorjDiagramDitaa)
+    cachingOnly(libs.asciidoctorjDiagramJSyntrax)
+    cachingOnly(libs.asciidoctorjDiagramPlantUml)
+    cachingOnly(libs.asciidoctorjRevealjs)
+
+    // tag::hacking-asciidoctorj-output-formatter[]
+    cachingOnly(libs.asciidoctorjEpub) // <.>
+}
+// end::hacking-asciidoctorj-output-formatter[]
+
+providers.gradleProperty('jrubyTestVersions').get().split(',').each {
+    configurations.create("jrubyTest${it}")
+    dependencies.add("jrubyTest${it}", "org.jruby:jruby:${it}")
+    dependencies.add("jrubyTest${it}", "org.jruby:jruby-complete:${it}") {
+        transitive = false
+    }
+}
+
+apply from: "${rootDir}/gradle/plugin-is-cc-compatible.gradle"

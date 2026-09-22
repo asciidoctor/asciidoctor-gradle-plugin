@@ -1,0 +1,211 @@
+= Configuring a publication
+
+== Main configuration blocks
+
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
+----
+asciidoc {
+  publications {
+    main {
+        sourceSet {
+          sources { // <.>
+          }
+          resources { // <.>
+          }
+          attributes { // <.>
+          }
+          languages { // <.>
+          }
+        }
+        output 'asciidoctorj', 'html' // <.>
+        output 'asciidoctorj', 'pdf'
+    }
+
+  }
+}
+----
+<.> Customise asciidoc sources to be processed.
+<.> Additional resources, such as images.
+<.> Use `attributes` block to configure Asciidoc attributes.
+<.> Human-language additional configuration.
+<.> Configures the outputs for this publication.
+  The format is `toolchainName, outputFormat`.
+  See xref:model5/configure-toolchains.adoc[Configuring Toolchains] for more info.
+--
+====
+
+=== Sources and resources
+
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
+----
+asciidoc {
+  publications {
+    main {
+        sourceSet {
+            sources {
+              include 'foo.adoc', 'star*.adoc' // <.>
+            }
+            resources { // <.>
+              from 'images', {
+                include '*.png'
+              }
+            }
+            sourceDir = 'src/docs/asciidoc' // <.>
+        }
+    }
+  }
+}
+----
+<.> A list of file patterns for files to include.
+  If nothing is set, all asciidoc documents are included.
+  It uses an
+http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.html[Ant-style PatternSet].
+<.> Configures a copy specification for resources.
+  These are files, such as images, that are required as part of publication, but not processed by an Asciidoctor engine.
+<.> It is possible to override the source directory, although the convention of `src/docs/asciidoc<PUBLICATION>` should suffice for most cases.
+--
+====
+
+=== Asciidoc attributes
+
+[source,groovy,role="primary"]
+----
+asciidoc {
+  publications {
+    main {
+      sourceSet {
+          attributes {
+              replaceAll 'source-language': 'java' // <.>
+              add 'source-language': 'java', 'project-version' : '1.2.3' // <.>
+              add 'source-language', 'java' // <.>
+              add 'publish-time', asTime(LocalTime.now()) // <.>
+              add 'publish-date', asDate(LocalDate.now()) // <.>
+              addAttributeProvider { -> [ 'source-language': 'java']} // <.>
+          }
+      }
+    }
+  }
+}
+----
+<.> Replace all attributes, except those provided by providers with this new set.
+<.> Add more attributes as a map.
+<.> Add a single attribute.
+<.> Add an attribute and force it to be formatted as a time value.
+  Accepts any `java.time.*` values, or anything string that can be parsed.
+<.> Add an attribute and force it to be formatted as a date value.
+  Accepts any `java.time.*` values, or anything string that can be parsed.
+<.> Add a provider of attributes.
+
+=== Treating warnings as errors
+
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
+----
+asciidoc {
+  publications {
+    main {
+      sourceSet {
+        fatalWarnings ~/missing attribute/ // <.>
+        missingIncludesAreFatal() // <.>
+      }
+    }
+  }
+}
+----
+<.> Provide one or more patterns for scanning log messages.
+  These can be strings, regexes, or anything else can be lazy-evaluated to either.
+<.> Adds the correct pattern for detecting missing include files.
+--
+====
+
+=== Docinfo
+
+There is some DSL support for configuring docinfo.
+It is important to note that for any of `headIsPrivate`, `headerIsPrivate` and `footerIsPrivate`, it configures it for ALL the source AsciiDoc file within the source set.
+It is still possible to override a DSL setting within a single source file.
+
+For people that ustilise a common docinfo directory, setting it via the DSL has the benefit that Gradle's up-to-date checks can then be used to detect changes.
+
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
+----
+asciidoc {
+  publications {
+    main {
+      sourceSet {
+        docInfo {
+            headIsPrivate = false // <.>
+            headerIsPrivate = false // <.>
+            footerIsPrivate = false // <.>
+            docInfoDir = 'src/docs/docinfo' // <.>
+        }
+      }
+    }
+  }
+}
+----
+<.> Set whether `head` is private or not.
+<.> Set whether `header` is private or not.
+<.> Set whether `footer` is private or not.
+<.> Configures a common docinfo source directory.
+--
+====
+
+WARNING: Currently, setting `docInfoDir` affects all tasks associated with the specific publication where it was set, even those that are no docinfo-aware.
+For example, if your publication builds both PDF and HTML files, and you change `docbook-header.html`, then the PDF output will also be rebuilt.
+This might be rectified in a future release.
+
+// === Language customisation
+//
+// [tabs]
+// ====
+// Groovy::
+// +
+// --
+// [source,groovy]
+// ----
+// asciidoc {
+//   publications {
+//     main {
+//       languages {
+//         fr { // <.>
+//           attributes {  // <.>
+//               add 'publish-time', asTime(LocalTime.now())
+//           }
+//           resources { // <.>
+//             from 'images/fr', {
+//               include '*.png'
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
+// ----
+// <.> Add option for a language.
+//   The naming does not matter directly, but convention is to use letter codes that correspond to either chttps://en.wikipedia.org/wiki/ISO_639-1[ISO 639-1] or https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes[ISO 639-2].
+// <.> Attributes that will only be sent to the Asciidoctor processor when the specific language is processed.
+//   DSL is the same as for `attributes` described earlier.
+// <.> Resources to be processed for the specific language.
+//   This is a copy specification.
+// --
+// ====

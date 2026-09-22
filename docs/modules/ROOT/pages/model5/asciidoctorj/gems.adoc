@@ -1,0 +1,56 @@
+= The GEM plugin
+
+Adding the GEMs plugin brings additional functionality to the {asciidoctorj-name} set of plugins.
+It allows additional GEMs to be added to a toolchain-specific configuration.
+Each toolchain that is based on {asciidoctorj-name} will have a GEM specific configuration that is automatically created with the application of this plugin.
+
+[source,groovy,subs=+attributes]
+----
+plugins {
+    id 'org.asciidoctor.jvm'  version '{release-version}'
+    id 'org.asciidoctor.jvm.gems' version '{release-version}'
+}
+
+repositories {
+  ruby.gems() // <.>
+  ruby.coop() // <.>
+}
+
+dependencies {
+  asciidocGemAsciidoctorj 'rubygems:asciidoctor-bibtex:0.9.0' // <.>
+}
+----
+<.> Add a repository so that Gradle knows where to resolve GEMs from.
+  See https://jruby-gradle.ysb33r.org[Simplified JRuby Gradle plugin] for more details.
+<.> If you prefer to use `gem.coop` over the original `rubygems.org`, then you can use this instead or `ruby.gems()`.
+<.> Add the specific GEM to the toolchain.
+  The configuration name is of the format `asciidoctorGem<TOOLCHAIN_NAME>`.
+
+IMPORTANT: If you have problems configuring the GEM repositories themselves, please report those problems on the https://gitlab.com/ysb33rOrg/gradle/simplified-jruby-gradle-plugin/-/issues[Simplified JRuby Gradle plugin] issues page.
+
+// Requires?
+
+== How it works
+
+As mentioned previously, adding the plugin will add configurations and tasks on a per-toolchain basis.
+The toolchain is responsible for adding the appropriate classpath to the conversion task.
+It manages the GEM configuration and associated classpath separately and will combine it with the classpath that is used to run {asciidoctorj-name}.
+
+Output formatters and extensions that require GEMs will add to the GEM configuration and rely on the toolchain to prepare those GEMs.
+For cases where the functionality in the GEM needs to be passed as `requires`, the output formatters and extensions will add those automatically.
+This means that for two different output formatters attached to the same toolchain, the same GEMs will be on the classpath for both the conversion tasks associated with these them, but the `requires` parameter passed to {asciidoctorj-name} will differ.
+
+Build script users can add GEMs directly to the GEM configuration.
+
+== Changing the cache size
+
+By default, the GEM prepare task will only cache the GEM directory if the content is less than 3MB.
+If you need to use a larger size, then add the following to `gradle.properties`.
+
+.gradle.properties
+[source,properties]
+----
+org.ysb33r.gradle.jruby.api.tasks.gem.cache.limit.mb=15 # <.>
+----
+<.> Set the folder size limit in MB.
+  You can also set this in the environment or as a system property.

@@ -1,0 +1,88 @@
+/*
+ * Copyright 2013 - 2026 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.asciidoctor.gradle.model5.js.plugins
+
+import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
+import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreBasePlugin
+import org.asciidoctor.gradle.model5.js.JsEngineType
+import org.asciidoctor.gradle.model5.js.extensions.AsciidoctorjsGenericExtension
+import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsGenericOutputFormatter
+import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsHtml5
+import org.asciidoctor.gradle.model5.js.internal.extensions.DefaultAsciidoctorjsGenericExtension
+import org.asciidoctor.gradle.model5.js.internal.formatters.AsciidoctorjsGenericOutputFormatterFactory
+import org.asciidoctor.gradle.model5.js.internal.formatters.AsciidoctorjsHtml5Factory
+import org.asciidoctor.gradle.model5.js.internal.toolchains.AsciidoctorjsNativeToolchainFactory
+import org.asciidoctor.gradle.model5.js.internal.toolchains.AsciidoctorjsOpalToolchainFactory
+import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsNativeToolchain
+import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsOpalToolchain
+import org.gradle.api.Plugin
+import org.gradle.api.Project
+
+import static org.asciidoctor.gradle.model5.js.JsModel.registerExtensionFactory
+import static org.asciidoctor.gradle.model5.js.JsModel.registerOutputFormatterFactory
+
+/**
+ * {@code asciidoctor.js} base plugin.
+ *
+ * @author Schalk W. Cronjé
+ *
+ * @since 5.0
+ */
+@CompileStatic
+class AsciidoctorjsBasePlugin implements Plugin<Project> {
+    @Override
+    void apply(Project project) {
+        project.pluginManager.tap {
+            apply(AsciidoctorCoreBasePlugin)
+            apply('org.ysb33r.jsecosystem.pnpm.base')
+        }
+
+        final asciidoc = project.extensions.getByType(AsciidoctorModelExtension)
+
+        asciidoc.toolchains.registerFactory(
+            AsciidoctorjsNativeToolchain,
+            project.objects.newInstance(AsciidoctorjsNativeToolchainFactory)
+        )
+        asciidoc.toolchains.registerFactory(
+            AsciidoctorjsOpalToolchain,
+            project.objects.newInstance(AsciidoctorjsOpalToolchainFactory)
+        )
+
+        registerOutputFormatterFactory(
+            asciidoc.toolchains,
+            AsciidoctorjsHtml5,
+            JsEngineType.values().toList(),
+            AsciidoctorjsHtml5Factory,
+            project.objects
+        )
+
+        registerOutputFormatterFactory(
+            asciidoc.toolchains,
+            AsciidoctorjsGenericOutputFormatter,
+            JsEngineType.values().toList(),
+            AsciidoctorjsGenericOutputFormatterFactory,
+            project.objects
+        )
+
+        registerExtensionFactory(
+            asciidoc.toolchains,
+            AsciidoctorjsGenericExtension,
+            DefaultAsciidoctorjsGenericExtension.Factory,
+            project.objects
+        )
+    }
+}

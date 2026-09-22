@@ -1,0 +1,42 @@
+plugins {
+    id 'org.asciidoctor.internal.classic.gradle.project.jvm'
+}
+
+agProject {
+    withClassicOfflineTestConfigurations()
+    withIntegrationTests()
+    withCompatibilityTests()
+
+    configurePlugin(
+            'org.asciidoctor.jvm.pdf.classic',
+            'AsciidoctorJ (Deprecated) PDF Conversion Plugin',
+            'Simplifies conversion of asciidoc documents to PDF (Deprecated)',
+            'org.asciidoctor.gradle.jvm.pdf.AsciidoctorJPdfPlugin',
+            ['asciidoctorj', 'pdf'],
+        false
+    )
+}
+
+configurations {
+    cachingOnly
+}
+
+dependencies {
+    api project(':asciidoctor-gradle-jvm')
+    api(libs.grolifantRemoteWorker)
+    intTestOfflineRepo(libs.asciidoctorj)
+    intTestOfflineRepo(libs.asciidoctorjPdf)
+
+    cachingOnly(libs.asciidoctorjPdf) { transitive = false }
+}
+
+tasks.named('test', Test) {
+    systemProperties TEST_THEMES_DIR: file('src/test/resources/themes')
+}
+
+tasks.named('integrationTest', Test) {
+    maxParallelForks = 2
+    forkEvery = 1
+    maxHeapSize = '2048m'
+}
+

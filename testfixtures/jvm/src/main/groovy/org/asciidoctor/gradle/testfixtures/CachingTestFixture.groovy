@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2024 the original author or authors.
+ * Copyright 2013 - 2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,13 +115,13 @@ trait CachingTestFixture {
     abstract File getBuildFile(String extraContent)
 
     abstract File getOutputFile()
-
+//
     abstract File getSettingsFile()
-
+//
     abstract String getDefaultTask()
-
+//
     abstract File getProjectDir()
-
+//
     abstract File getAlternateProjectDir()
 
     abstract List<String> getBuildScanArguments()

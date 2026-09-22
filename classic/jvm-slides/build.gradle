@@ -1,0 +1,54 @@
+plugins {
+    id 'org.asciidoctor.internal.classic.gradle.project.jvm'
+}
+
+agProject {
+    withClassicOfflineTestConfigurations()
+    withIntegrationTests()
+    withCompatibilityTests()
+
+    configurePlugin(
+        'org.asciidoctor.jvm.revealjs.base.classic',
+        'AsciidoctorJ (Deprecated) Reveal.js Base Plugin',
+        'Deprecated Base plugin for all AsciidoctorJ Reveal.js tasks & extensions. Provides the revealjs and revealjsPlugins project extensions.',
+        'org.asciidoctor.gradle.jvm.slides.AsciidoctorRevealJSBasePlugin',
+        ['asciidoctorj', 'reveal.js', 'slides'],
+        false
+    )
+
+    configurePlugin(
+        'org.asciidoctor.jvm.revealjs.classic',
+        'AsciidoctorJ (Deprecated) Reveal.js Plugin',
+        'Deprecated plugin for generating Reveal.JS based slides from  Asciidoc source using AsciidoctorJ. Provides the asciidoctorRevealJs task.',
+        'org.asciidoctor.gradle.jvm.slides.AsciidoctorRevealJSPlugin',
+        ['asciidoctorj', 'reveal.js', 'slides'],
+        false
+    )
+}
+
+generateModuleVersions {
+    basename = 'revealjs-extension'
+    propertyNames ~/^revealjs\./
+}
+
+dependencies {
+    api project(':asciidoctor-gradle-jvm')
+    implementation project(':asciidoctor-gradle-base')
+    implementation project(':asciidoctor-gradle-jvm-gems')
+    implementation(libs.pluginJRuby)
+    implementation(libs.grolifantRemoteWorker)
+}
+
+tasks.named('integrationTest', Test) {
+    systemProperties TEST_PROJECTS_DIR: file('src/integrationTest/projects')
+    maxParallelForks = 4
+    forkEvery = 7
+}
+
+
+//tasks.named('gradleTest', GradleTest) {
+//    systemProperties ASCIIDOCTORJ_VERSION: compileOnlyAsciidoctorJVersion
+//    systemProperties GROOVY_VERSION: GroovySystem.version
+//
+//    gradleArguments '-i', '-s'
+//}

@@ -1,0 +1,38 @@
+plugins {
+    id 'org.asciidoctor.internal.classic.gradle.project.jvm'
+}
+
+agProject {
+    withClassicOfflineTestConfigurations()
+    withIntegrationTests()
+    withCompatibilityTests()
+
+    configurePlugin(
+        'org.asciidoctor.jvm.epub.classic',
+        'AsciidoctorJ (Deprecated) EPUB Plugin',
+        'Deprecated Asciidoctor task for creating EPUB3 documents',
+        'org.asciidoctor.gradle.jvm.epub.AsciidoctorJEpubPlugin',
+        ['asciidoctorj', 'epub', 'epub3'],
+        false
+    )
+}
+
+generateModuleVersions {
+    basename = 'asciidoctorj-epub'
+}
+
+configurations {
+    cachingOnly
+}
+
+dependencies {
+    api project(':asciidoctor-gradle-jvm')
+    api(libs.grolifantRemoteWorker)
+
+    intTestOfflineRepo(libs.asciidoctorj)
+    intTestOfflineRepo(libs.asciidoctorjEpub)
+
+    cachingOnly(libs.asciidoctorjEpub) { transitive = false }
+}
+
+

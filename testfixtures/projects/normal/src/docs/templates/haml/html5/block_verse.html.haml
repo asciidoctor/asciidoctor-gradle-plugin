@@ -1,0 +1,12 @@
+%div{:id=>@id, :class=>['verseblock', role]}
+  - if title?
+    .title=title
+  %pre.content=content
+  - if (attr? :attribution) or (attr? :citetitle)
+    .attribution
+      - if attr? :attribution
+        &#8212; #{attr :attribution}
+      - if attr? :citetitle
+        - if attr? :attribution
+          %br
+        %cite=attr :citetitle

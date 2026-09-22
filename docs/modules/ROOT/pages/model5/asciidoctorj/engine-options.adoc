@@ -1,0 +1,31 @@
+= Engine options
+
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
+----
+import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
+
+asciidoc {
+  toolchains {
+    asciidoctorj(AsciidoctorjToolchain) {
+        engineOptions {
+            eruby = 'erb' // <.>
+            catalogAssets = true // <.>
+            sourceMap = true // <.>
+        }
+    }
+  }
+}
+----
+<.> The template engine to use.
+  It is a case-insensitive string and has to be one of `erb`, `erubi`, or `erubis`.
+<.> Whether to capture images and links in the reference table.
+<.> Whether to track file and line numbers for parsed blocks.
+  The default is to track.
+  There is a slight performance improvement, by turning it off.
+--
+====

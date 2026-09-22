@@ -1,0 +1,27 @@
+= Dependency configurations
+
+Configurations play a major role in managing the classpath that is seen by {asciidoctorj-name} engines.
+Knowing what they are can help a build script author manage cases special to their environment.
+
+.Types
+* The toolchain itself has a configuration that manages the {asciidoctorj-name} and JRuby dependencies.
+* Most output formatters and extensions that are registered on a toolchain also have their own configurations.
+* GEMs are handled in their own configurations and are always directly associated with the toolchain, even if
+  the GEMs are from output formatters or extensions.
+  The reason is that GEMs are bundled into a GemJar and passed in that way on the classpath.
+
+All the above configurations combine to form the final classpath that the {asciidoctorj-name} engine sees when executing.
+
+The configuration for a toolchain is named `asciidoctorjEngine<TOOLCHAIN-NAME>`.
+For a toolchain named `asciidoctorj`, the associated configuration is called `asciidoctorjEngineAsciidoctorj`.
+
+The configuration for an output formatter associated with a toolchain is named `asciidoctorjOutputFormatter<TOOLCHAIN-NAME><FORMATTER-NAME>`.
+For instance, the PDF output formatter which might be called `pdf` and associated with a toolchain called `asciidoctorj`, will have a configuration `asciidoctorjOutputFormatterAsciidoctorjPdf`.
+
+The configuration for an extension associated with a toolchain is named `asciidoctorjExtension<TOOLCHAIN-NAME><EXTENSION-NAME>`.
+For instance, the Kroki extension which might be called `kroki` and associated with a toolchain called `asciidoctorj`, will have a configuration `asciidoctorjExtensionAsciidoctorjKroki`.
+
+The configurations for GEMs are named `asciidocGems<TOOLCHAIN-NAME>`.
+For instance the configuration for the toolchain named `asciidoctorj` will be `asciidocGemsAsciidoctorj`.
+
+

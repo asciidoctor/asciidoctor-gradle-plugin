@@ -1,0 +1,5 @@
+= Title
+
+include::{includedir}/subdir/include.adoc[]
+
+// Taken from https://github.com/marcphilipp/gradle-sandbox/tree/master/asciidoctor-secondary-sources

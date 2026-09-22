@@ -1,32 +1,53 @@
-name: gradle-plugin
-title: Gradle Plugin Suite
-version: '4.0'
+---
+name: "gradle-plugin"
+title: "Gradle Plugin Suite"
+version: "5.0"
+prerelease: true
 asciidoc:
   attributes:
-    release-version: 4.0.2
-    project-full-path: asciidoctor/asciidoctor-gradle-plugin
-    project-name: asciidoctor-gradle-plugin
-    project-repo-url: https://github.com/asciidoctor/asciidoctor-gradle-plugin
-    plugin-name: Asciidoctor Gradle plugin
-    asciidoc-url: https://asciidoc.org
-    asciidoctor-maven-plugin-name: Asciidoctor Maven Plugin
-    asciidoctor-maven-plugin-url: https://github.com/asciidoctor/asciidoctor-maven-plugin
-    asciidoctor-url: https://asciidoctor.org
-    asciidoctorj-epub-name: AsciidoctorJ EPUB3
-    asciidoctorj-epub-url: https://github.com/asciidoctor/asciidoctorj-epub3
-    asciidoctorj-name: AsciidoctorJ
-    asciidoctorj-pdf-name: AsciidoctorJ PDF
-    asciidoctorj-pdf-url: https://github.com/asciidoctor/asciidoctorj-pdf
-    asciidoctorj-url: https://github.com/asciidoctor/asciidoctorj
-    asciidoctorjs-name: Asciidoctor.js
-    asciidoctorjs-url: https://github.com/asciidoctor/asciidoctor.js
-    gradle-url: https://gradle.org/
-    issues-asciidoctorj: https://github.com/asciidoctor/asciidoctorj/issues/
-    issues-jruby: https://github.com/asciidoctor/asciidoctorj/issues/
-    jruby-name: JRuby
-    kotlindsl: https://github.com/gradle/kotlin-dsl[Gradle Kotlin DSL]
-    lightguard: https://github.com/LightGuard[Jason Porter]
-    lordofthejars: https://github.com/lordofthejars[Alex Soto]
+    release-version: "5.0.0"
+    project-full-path: "asciidoctor/asciidoctor-gradle-plugin"
+    project-issues-url: "https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues"
+    project-name: "asciidoctor-gradle-plugin"
+    project-repo-url: "https://github.com/asciidoctor/asciidoctor-gradle-plugin"
+    plugin-name: "Asciidoctor Gradle plugin"
+    asciidoc-url: "https://asciidoc.org"
+    asciidoctor-maven-plugin-name: "Asciidoctor Maven Plugin"
+    asciidoctor-maven-plugin-url: "https://github.com/asciidoctor/asciidoctor-maven-plugin"
+    asciidoctor-url: "https://asciidoctor.org"
+    asciidoctorj-conventions-plugin: "org.asciidoctor.jvm"
+    asciidoctorj-diagram-name: "AsciidoctorJ Diagram"
+    asciidoctorj-diagram-url: "https://github.com/asciidoctor/asciidoctorj-diagram"
+    asciidoctorj-epub-name: "AsciidoctorJ EPUB3"
+    asciidoctorj-epub-url: "https://github.com/asciidoctor/asciidoctorj-epub3"
+    asciidoctorj-name: "AsciidoctorJ"
+    asciidoctorj-pdf-name: "AsciidoctorJ PDF"
+    asciidoctorj-pdf-url: "https://github.com/asciidoctor/asciidoctorj-pdf"
+    asciidoctorj-revealjs-name: "AsciidoctorJ Reveal.js"
+    asciidoctorj-revealjs-url: "https://github.com/asciidoctor/asciidoctorj-reveal.js"
+    asciidoctorj-url: "https://github.com/asciidoctor/asciidoctorj"
+    asciidoctorjs-conventions-plugin: "org.asciidoctor.js"
+    asciidoctorjs-name: "Asciidoctor.js"
+    asciidoctorjs-url: "https://github.com/asciidoctor/asciidoctor.js"
+    asciidoctorjs-revealjs-name: "Reveal.js for Asciidoctor.js"
+    asciidoctorjs-revealjs-url: "https://github.com/asciidoctor/asciidoctor-reveal.js"
+    downdoc-name: "Downdoc"
+    downdoc-url: "https://github.com/opendevise/downdoc"
+    development-branch: "development-5.x"
+    examples-model5-core-test: "model5/core/test"
+    examples-model5-jvm-integration-test: "model5/jvm-core/integrationTest"
+    examples-model5-jvm-main: "model5/jvm-core/main"
+    examples-model5-jvm-main-resources: "model5/jvm-core/main/resources"
+    examples-model5-js-integration-test: "model5/js-core/integrationTest"
+    examples-model5-js-main: "model5/js-core/main"
+    examples-model5-js-main-resources: "model5/js-core/main/resources"
+    gradle-url: "https://gradle.org/"
+    issues-asciidoctorj: "https://github.com/asciidoctor/asciidoctorj/issues/"
+    issues-jruby: "https://github.com/asciidoctor/asciidoctorj/issues/"
+    jruby-name: "JRuby"
+    kotlindsl: "https://github.com/gradle/kotlin-dsl[Gradle Kotlin DSL]"
+    lightguard: "https://github.com/LightGuard[Jason Porter]"
+    lordofthejars: "https://github.com/lordofthejars[Alex Soto]"
+    minimum-gradle: "8.0.2"
 nav:
-  - modules/ROOT/nav.adoc
-  - modules/appendices/nav.adoc
+- "modules/ROOT/nav.adoc"

@@ -1,0 +1,7 @@
+= block_with_title class: ['olist', style]
+  ol class=style start=(attr :start) type=list_marker_keyword
+    - items.each do |item|
+      li
+        p =item.text
+        - if item.blocks?
+          =item.content

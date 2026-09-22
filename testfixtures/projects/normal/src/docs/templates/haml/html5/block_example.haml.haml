@@ -1,0 +1,5 @@
+%div{:id=>@id, :class=>['exampleblock', role]}
+  - if title?
+    .title=captioned_title
+  .content
+    =content

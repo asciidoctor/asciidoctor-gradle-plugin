@@ -1,0 +1,1 @@
+../../../../../../../model5/js-core/src/main/groovy/org/asciidoctor/gradle/model5/js/formatters/AsciidoctorjsRevealjs.java
