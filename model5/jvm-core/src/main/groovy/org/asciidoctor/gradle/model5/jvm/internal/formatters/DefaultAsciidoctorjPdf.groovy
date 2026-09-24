@@ -47,7 +47,7 @@ class DefaultAsciidoctorjPdf extends AbstractAsciidoctorjFormatterVersioned impl
     public static final String DEFAULT_NAME = 'pdf'
     public static final String BACKEND_NAME = DEFAULT_NAME
     private static final String ATTR_THEME = 'pdf-theme'
-    private static final String ATTR_THEME_DIR = 'pdf-themedir'
+    private static final String ATTR_THEME_DIR = 'pdf-themesdir'
     private static final String ATTR_FONT_DIR = 'pdf-fontsdir'
 
     final boolean copyResources = false
