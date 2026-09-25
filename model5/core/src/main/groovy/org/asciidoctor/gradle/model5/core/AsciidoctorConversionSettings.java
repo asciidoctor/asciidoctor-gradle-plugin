@@ -126,4 +126,13 @@ public interface AsciidoctorConversionSettings {
      * @return Provider to the collection. Can be empty.
      */
     Provider<Map<String,ScriptCollection>> getScriptCollections();
+
+    /**
+     * Custom properties primarily used by non-asciidoctor engines.
+     *
+     * @return Provider to the collection. Can be empty.
+     *
+     * @since 5.1
+     */
+    Provider<Map<String,String>> getCustomProperties();
 }

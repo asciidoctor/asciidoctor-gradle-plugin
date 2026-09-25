@@ -53,6 +53,7 @@ class DefaultAsciidoctorConversionSettings implements AsciidoctorConversionSetti
     final Property<Boolean> embedded
     final Property<ConversionTemplate> templates
     final MapProperty<String, ScriptCollection> scriptCollections
+    final MapProperty<String, String> customProperties
 
     @Inject
     DefaultAsciidoctorConversionSettings(ObjectFactory objectFactory) {
@@ -68,6 +69,7 @@ class DefaultAsciidoctorConversionSettings implements AsciidoctorConversionSetti
         this.embedded = objectFactory.property(Boolean).convention(false)
         this.templates = objectFactory.property(ConversionTemplate)
         this.scriptCollections = objectFactory.mapProperty(String, ScriptCollection)
+        this.customProperties = objectFactory.mapProperty(String, String)
     }
 
     void updateFrom(DefaultAsciidoctorConversionSettings other) {
@@ -83,5 +85,6 @@ class DefaultAsciidoctorConversionSettings implements AsciidoctorConversionSetti
         embedded.set(other.embedded)
         templates.set(other.templates)
         scriptCollections.set(other.scriptCollections)
+        customProperties.set(other.customProperties)
     }
 }

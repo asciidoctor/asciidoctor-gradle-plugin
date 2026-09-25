@@ -21,6 +21,7 @@ import org.asciidoctor.gradle.model5.core.ConversionTemplate
 import org.asciidoctor.gradle.model5.core.DocType
 import org.asciidoctor.gradle.model5.core.extensions.AsciidoctorExtension
 import org.asciidoctor.gradle.model5.core.formatters.AsciidoctorOutputFormatter
+import org.asciidoctor.gradle.model5.core.formatters.HasCustomProperties
 import org.asciidoctor.gradle.model5.core.formatters.HasEmbedded
 import org.asciidoctor.gradle.model5.core.formatters.HasTemplates
 import org.asciidoctor.gradle.model5.core.publications.AsciidoctorOutputData
@@ -31,6 +32,7 @@ import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.ProjectLayout
+import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
@@ -61,6 +63,8 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
     private final Property<String> toolchainName
     private final Property<Boolean> embedded
     private final Property<ConversionTemplate> templates
+    private final MapProperty<String, String> customProperties
+
     private FileCollection additionalClasspath
 
     @Inject
@@ -79,6 +83,7 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
         this.toolchainName = objectFactory.property(String)
         this.embedded = objectFactory.property(Boolean).convention(false)
         this.templates = objectFactory.property(ConversionTemplate)
+        this.customProperties = objectFactory.mapProperty(String, String).convention([:])
     }
 
     @Override
@@ -165,6 +170,12 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
         this.templates
     }
 
+    @Override
+    Provider<Map<String, String>> getCustomProperties() {
+        this.customProperties
+    }
+
+    @SuppressWarnings('CouldBeSwitchStatement')
     void configureFrom(
         String publicationName,
         AsciidoctorToolchain toolchain,
@@ -214,6 +225,11 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
         if (formatter instanceof HasTemplates) {
             final templateFormatter = (HasTemplates) formatter
             this.templates.set(templateFormatter.conversionTemplate)
+        }
+
+        if (formatter instanceof HasCustomProperties) {
+            final templateFormatter = (HasCustomProperties) formatter
+            this.customProperties.set(templateFormatter.customProperties)
         }
     }
 }

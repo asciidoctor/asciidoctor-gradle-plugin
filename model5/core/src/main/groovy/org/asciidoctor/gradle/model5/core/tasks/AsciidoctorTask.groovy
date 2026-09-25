@@ -107,7 +107,6 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
             .optional()
             .withPropertyName('scriptFiles')
             .withPathSensitivity(RELATIVE)
-        inputs.dir(this.sourceDir)
         inputs.files(determineAllInputSources())
             .skipWhenEmpty(true)
             .withPathSensitivity(RELATIVE)
@@ -150,6 +149,7 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
             backend.set(outputData.backend)
             destinationDir.set(outputData.outputDir)
             embedded.set(outputData.embedded)
+            customProperties.set(outputData.customProperties)
         }
         this.resourcesCopySpec.set(outputData.copyResources)
         this.conversionSettings.docType.set(outputData.docType)
@@ -244,7 +244,7 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
     }
 
     @Override
-    void setScriptExtensions(Provider<Map<String,? extends ScriptCollection>> scripts) {
+    void setScriptExtensions(Provider<Map<String, ? extends ScriptCollection>> scripts) {
         this.conversionSettings.scriptCollections.set(scripts)
     }
 
@@ -258,9 +258,13 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
     }
 
     private void execWithOneSourceDir() {
-        final pats = resolveSourceFilePatterns()
+        final includePats = resolveSourceFileIncludePatterns()
+        final excludePats = resolveSourceFileExcludePatterns()
         conversionSettings.sourceFiles.set(
-            fsOperations().fileTree(conversionSettings.sourceRootDir.get()).matching { include(pats) }.files
+            fsOperations().fileTree(conversionSettings.sourceRootDir.get()).matching {
+                exclude(excludePats)
+                include(includePats)
+            }.files
         )
         launcher.get().run(exeSettings, conversionSettings)
         if (resourcesCopySpec.present) {
@@ -359,7 +363,15 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
         }
     }
 
-    private Set<String> resolveSourceFilePatterns() {
+    private Set<String> resolveSourceFileExcludePatterns() {
+        if (needsIntermediateWorkdir.get()) {
+            [].toSet() as Set<String>
+        } else {
+            localSourcePatterns.get().excludes
+        }
+    }
+
+    private Set<String> resolveSourceFileIncludePatterns() {
         if (needsIntermediateWorkdir.get()) {
             final locals = determineSourceFilePatterns(sourceDir, localSourcePatterns).get()
             final externals = externalSources.get().externalSources.get().collectMany {
@@ -375,7 +387,7 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
         this.externalSources.flatMap { it.externalSources }
             .map { list ->
                 list.collect { it.sourcesAndResources.asFileTree }
-            }.orElse(Collections.<FileTree>emptyList())
+            }.orElse(Collections.<FileTree> emptyList())
     }
 
     private Provider<List<FileTree>> determineAllExternalSources() {
@@ -389,7 +401,7 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
                         .asFileTree
                         .matching(it.sourcePatterns.get())
                 }
-            }.orElse(Collections.<FileTree>emptyList())
+            }.orElse(Collections.<FileTree> emptyList())
     }
 
     private FileCollection determineAllInputSources() {
@@ -397,7 +409,11 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
         // patterns and the tree is walked when the task executes.
         final fsOps = fsOperations()
         final localSources = sourceDir.zip(localSourcePatterns) { dir, pats ->
-            fsOps.fileTree(dir).matching(pats)
+            if (dir.asFile.exists()) {
+                fsOps.fileTree(dir).matching(pats)
+            } else {
+                fsOps.emptyFileCollection()
+            }
         }
         final externalSources = determineAllExternalSources()
         fsOperations().emptyFileCollection().from(localSources).from(externalSources)

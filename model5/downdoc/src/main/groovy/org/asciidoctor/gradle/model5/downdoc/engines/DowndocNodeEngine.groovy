@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.model5.downdoc.engines
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorLauncher
 import org.asciidoctor.gradle.model5.core.engines.AsciidoctorEngine
+import org.asciidoctor.gradle.model5.core.internal.toolchains.ToolchainUtils
 import org.asciidoctor.gradle.model5.downdoc.DowndocModel
 import org.asciidoctor.gradle.model5.downdoc.internal.engines.DefaultLauncher
 import org.asciidoctor.gradle.model5.downdoc.internal.engines.PnpmToolchainLocater
@@ -137,6 +138,8 @@ class DowndocNodeEngine implements AsciidoctorEngine, CoreVersions {
         task.configure {
             it.packages = packages
             it.workdir = homeDir
+            it.group = ToolchainUtils.PREP_GROUP_NAME
+            it.description = "Bootstraps the '${name}' toolchain"
         }
     }
 }

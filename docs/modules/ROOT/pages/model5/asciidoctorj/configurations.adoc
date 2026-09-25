@@ -22,6 +22,6 @@ The configuration for an extension associated with a toolchain is named `asciido
 For instance, the Kroki extension which might be called `kroki` and associated with a toolchain called `asciidoctorj`, will have a configuration `asciidoctorjExtensionAsciidoctorjKroki`.
 
 The configurations for GEMs are named `asciidocGems<TOOLCHAIN-NAME>`.
-For instance the configuration for the toolchain named `asciidoctorj` will be `asciidocGemsAsciidoctorj`.
+For instance, the configuration for the toolchain named `asciidoctorj` will be `asciidocGemsAsciidoctorj`.
 
 

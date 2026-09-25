@@ -41,8 +41,6 @@ class AsciidoctorjGemPrepareTask extends AbstractGemPrepareTask {
     AsciidoctorjGemPrepareTask(String jRubyConfiguration, WorkerExecutor we) {
         super(we)
         this.jruby = project.configurations.getByName(jRubyConfiguration)
-        jrubyJarProvider = project.provider { ->
-            jruby.files.find { it.name.startsWith(JRUBY_COMPLETE_NAME) }
-        }
+        jrubyJarsProvider = project.provider { -> jruby.files }
     }
 }

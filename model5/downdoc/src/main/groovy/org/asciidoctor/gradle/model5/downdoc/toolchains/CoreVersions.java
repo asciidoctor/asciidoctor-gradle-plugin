@@ -30,13 +30,6 @@ public interface CoreVersions {
      */
     void useDowndoc(Object v);
 
-//    /**
-//     * Overrides the default version of Node.
-//     *
-//     * @param v Node version
-//     */
-//    void useNode(Object v);
-
     /**
      * Uses the PNPM toolchain to run {@code downdoc}
      *
