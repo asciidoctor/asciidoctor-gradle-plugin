@@ -24,8 +24,6 @@ import org.ysb33r.gradle.gradletest.GradleTestSetExtension
 import org.ysb33r.grolifant5.api.core.LegacyLevel
 import org.ysb33r.grolifant5.api.core.ProjectOperations
 
-import static org.asciidoctor.internal.classic.ModuleVersions.INTERMEDIATE_FOLDER_PATH
-
 @CompileStatic
 @Slf4j
 class AsciidoctorGradleProjectExtension {
@@ -144,7 +142,7 @@ class AsciidoctorGradleProjectExtension {
         project.tasks.named('processResources', Copy) { t ->
             final values = projectOperations.stringTools.stringizeValues(vers)
             t.tap {
-                t.filesMatching "**/${INTERMEDIATE_FOLDER_PATH}/${name}", { fcd ->
+                t.filesMatching "**/META-INF/asciidoctor.gradle/${name}", { fcd ->
                     fcd.filter org.apache.tools.ant.filters.ReplaceTokens,
                         beginToken: '@@', endToken: '@@',
                         tokens: values
