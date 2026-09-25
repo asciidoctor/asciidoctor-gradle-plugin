@@ -2,6 +2,34 @@
 
 Although this might be a rare case, it is documented here both to explain how the current toolchains are implemented and for the potential case where someone might want to implement a new toolchain.
 
+== Architecture
+
+A fully implemented toolchain consists of
+
+* Toolchain
+* Engine
+* Launcher
+* One of more formatters
+
+The toolchain is the interface that is associated with the `asciidoc.toolchains` DSL part.
+It is complemented by an implementation that is in an `internal.toolchains` package.
+A toolchain interface at minimum extends the `AsciidoctorToolchain` interface.
+
+An engine performs the actual work of running conversions from Asciidoc to other formats.
+For {asciidoctorj-name} it knows how to create the instance of `Asciidoctor`, load the GEM paths etc. and also groups files together in make useful batches for conversion.
+Engines are the abstraction layer between Gradle and the conversion technology.
+
+A launcher is what is used by an `AsciidoctorTask` to run an engine.
+The launcher will typically use a worker if there are classpaths involved.
+
+Formatters are the part that has the actual logic to perform a conversion from Asciidoc to another format.
+In normal Asciidoctor lingo this is just a wrapper around a backend.
+However, for some other toolchains the concept of a backend does not exist. {downdoc-name} is one just example.
+A toolchain needs at least one formatter.
+
+Toolchains may also have extensions with them.
+Extensions are not a requirement for building a toolchain.
+
 == Project setup
 
 .gradle/libs.versions.toml

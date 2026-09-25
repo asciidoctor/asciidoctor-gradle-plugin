@@ -76,6 +76,44 @@ http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.
 --
 ====
 
+=== External sources
+
+Outputs from other tasks can be used as inputs to publications
+
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
+----
+asciidoc {
+  publications {
+    main {
+        sourceSet {
+            externalSource {
+                builtBy 'anotherTask' // <.>
+                from tasks.named('anotherTask').map { outputs.files } // <.>
+                from project(path: ':another', configuration: 'adocGenerator') // <.>
+                fromPublication('anotherPublication', 'outputName') // <.>
+                into 'myExt' // <.>
+            }
+        }
+    }
+  }
+}
+----
+<.> One or more tasks are needed to produce the sources, then the link can be specified here.
+<.> Source files can be specified as a file collection.
+<.> If another project produces a configuraiton of source files, even that can be used here.
+<.> If another publication in the same project has an output formatter that produces content, then link directly to that without using `builtBy` and `from`.
+  The first parameter is the publication name.
+  The second parameter is the name of the output.
+  In cases where the out has an alias, that alias name must be provided here.
+<.> If the content from the producer needs to be placed into a subfolder relative to the document root of the source set, the it can be configured here.
+--
+====
+
 === Asciidoc attributes
 
 [source,groovy,role="primary"]

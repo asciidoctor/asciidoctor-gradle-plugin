@@ -77,7 +77,7 @@ public interface ProcessingOptions {
     void setLogDocuments(boolean logDocuments);
 
     /**
-     * Whether document should be logged
+     * Whether documents should be logged
      *
      * @return {@code true} when documents should be logged.
      */

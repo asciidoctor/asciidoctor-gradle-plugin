@@ -24,6 +24,7 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.util.PatternFilterable;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -101,4 +102,15 @@ public interface AsciidoctorOutputData extends Named {
      * @return Template information when available, mostly empty.
      */
     Provider<ConversionTemplate> getConversionTemplate();
+
+    /**
+     * Custom properties that can be passed to the engine.
+     *
+     * <p>This is rarely used and primarily aimed at engines which are not real Asciidoctor engines</p>
+     *
+     * @return Provider to a map of properties which could be interpreted by a specific engine.
+     *
+     * @since 5.1
+     */
+    Provider<Map<String,String>> getCustomProperties();
 }

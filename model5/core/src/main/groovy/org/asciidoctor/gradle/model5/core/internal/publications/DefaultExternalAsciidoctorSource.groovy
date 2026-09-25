@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle.model5.core.internal.publications
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.model5.core.internal.tasks.TaskFactory
 import org.asciidoctor.gradle.model5.core.publications.ExternalAsciidoctorSource
 import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileCollection
@@ -26,6 +27,8 @@ import org.gradle.api.provider.Provider
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 
 import javax.inject.Inject
+
+import static org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils.conversionTaskName
 
 /**
  * Implementation of {@link ExternalAsciidoctorSource}.
@@ -117,5 +120,13 @@ class DefaultExternalAsciidoctorSource implements ExternalAsciidoctorSource {
     @Override
     void into(Object path) {
         ccso.stringTools().updateStringProperty(this.into, path)
+    }
+
+    @Override
+    void fromPublication(String publicationName, String formatterOrAliasName) {
+        final sourceTask = ccso.providerTools().newInstance(TaskFactory)
+            .lookupTask(conversionTaskName(publicationName, formatterOrAliasName))
+        this.allExternalSources.from(sourceTask.map { it.outputs.files })
+        builtBy(sourceTask)
     }
 }

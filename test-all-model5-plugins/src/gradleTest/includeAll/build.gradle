@@ -1,9 +1,10 @@
+// tag::important-stuff[]
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.asciidoctor.gradle.model5.js.extensions.AsciidoctorjsKrokiExtension
 import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjKrokiExtension
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjPdf
 
-plugins {
+plugins { // <.>
     id 'org.asciidoctor.jvm'
     id 'org.asciidoctor.jvm.pdf'
     id 'org.asciidoctor.jvm.revealjs'
@@ -14,24 +15,28 @@ plugins {
     id 'org.asciidoctor.js.docbook'
     id 'org.asciidoctor.js.kroki'
     id 'org.asciidoctor.js.revealjs'
+    id 'org.asciidoctor.reducer'
+    id 'org.asciidoctor.downdoc'
 }
 
+// end::important-stuff[]
 apply from: System.getProperty('org.ysb33r.ivypot.repo.groovy.dsl.uri')
 
+// tag::important-stuff[]
 repositories {
     ruby.gems()
 }
 
 asciidoc {
     toolchains {
-        asciidoctorj {
+        asciidoctorj { // <.>
             asciidocExtensions {
                 kroki(AsciidoctorjsKrokiExtension) {
                     fetchDiagrams = true
                 }
             }
         }
-        asciidoctorj2(AsciidoctorjToolchain) {
+        asciidoctorj2(AsciidoctorjToolchain) { // <.>
             registeredOutputFormatters {
                 pdf(AsciidoctorjPdf) {
                     allowUriRead = true
@@ -45,15 +50,17 @@ asciidoc {
             output 'asciidoctorj', 'docbook'
             output 'asciidoctorj', 'epub'
             output 'asciidoctorj2', 'pdf'
-            output 'asciidoctorjs', 'html', 'html2'
+            output 'asciidoctorjs', 'html', 'html2' // <.>
             output 'asciidoctorjs', 'docbook', 'docbook2'
 
             sourceSet {
                 baseDir.baseDirFollowsSourceFiles()
+                // end::important-stuff[]
                 fatalWarnings ~/image to embed not found or not readable/
+                // tag::important-stuff[]
             }
         }
-        slides {
+        slides { // <.>
             output 'asciidoctorj', 'revealjs'
             output 'asciidoctorjs3', 'revealjs', 'revealjs2'
 
@@ -61,8 +68,24 @@ asciidoc {
                 sourceDir = 'src/docs/slides'
             }
         }
+        combined {
+            sourceSet {
+                sourceDir = 'src/docs/reducer'
+            }
+
+            output 'asciidoctorReducer', 'reducedAdoc', 'forDowndoc' // <.>
+        }
+        exportToMarkdown { // <.>
+            sourceSet {
+                externalSource {
+                    fromPublication 'combined', 'forDowndoc' // <.>
+                }
+            }
+            output 'downdoc', 'markdown' // <.>
+        }
     }
 }
+// end::important-stuff[]
 
 tasks.register('runGradleTest') {
     dependsOn('asciidoctorAll')

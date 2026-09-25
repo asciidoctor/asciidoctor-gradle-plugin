@@ -2,7 +2,7 @@
 
 == Toolchain basics
 Toolchains are added via additional plugins.
-For instance the `org.asciidoctor.jvm` plugin will add the toolchain for converting Asciidoc source using the AsciidoctorJ engine.
+For instance, the `org.asciidoctor.jvm` plugin will add the toolchain for converting Asciidoc source using the AsciidoctorJ engine.
 The same plugin will also add `html`, `docbook` and `manpage` output formats for that toolchain.
 
 Users do not usually need to create toolchains directly, but might need to configure specific toolchains or output formatters.

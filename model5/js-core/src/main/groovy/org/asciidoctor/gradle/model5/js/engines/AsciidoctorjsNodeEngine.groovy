@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.model5.js.engines
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorLauncher
 import org.asciidoctor.gradle.model5.core.engines.AsciidoctorEngine
+import org.asciidoctor.gradle.model5.core.internal.toolchains.ToolchainUtils
 import org.asciidoctor.gradle.model5.js.JsModel
 import org.asciidoctor.gradle.model5.js.internal.engines.DefaultLauncher
 import org.asciidoctor.gradle.model5.js.internal.toolchains.AbstractAsciidoctorjsToolchain
@@ -187,6 +188,8 @@ class AsciidoctorjsNodeEngine implements AsciidoctorEngine, CoreVersions {
             it.packages = packages
             it.toolchain = pnpmToolchain
             it.workdir = workingDir
+            it.group = ToolchainUtils.PREP_GROUP_NAME
+            it.description = "Bootstraps the '${name}' toolchain"
         }
     }
 
