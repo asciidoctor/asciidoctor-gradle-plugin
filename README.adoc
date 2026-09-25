@@ -5,7 +5,7 @@ Andres Almiray <https://github.com/aalmiray[@aalmiray]>
 :gradle-url: http://gradle.org/
 :asciidoctor-development-docs: https://asciidoctor.github.io/asciidoctor-gradle-plugin/
 :project-full-path: asciidoctor/asciidoctor-gradle-plugin
-:github-branch: master
+:github-branch: development-5.x
 :linkattrs:
 ifndef::env-github[:icons: font]
 ifdef::env-github,env-browser[]
@@ -40,9 +40,10 @@ Documentation:: We are migrating our documentation to the new Asciidoctor Antora
 In the meantime you can read a snapshot of the current documentation at {asciidoctor-development-docs}{github-branch}
 
 ifdef::env-github[]
-Structure:: `master` now represents the code for the latest 5.x release of these plugins.
-Development for 5.x is against the link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/development-5.x[{github-branch}] branch.
+Structure:: `master` represents the code for the latest 5.x release of these plugins.
+* Development for 5.x is against the link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/development-5.x[{github-branch}] branch.
 PRs are preferably taking against this branch.
-The 3.x & 4.x series of the plugin is now in maintenance only mode.
+* The link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/development-6.x[development-6.x] branch tracks the `development-5.x` branch is primarily used to track changes for a future release where all of the classic plugins are dropped and the build requires a minimum of JDK17 and Gradle 9.
+* The 3.x & 4.x series of the plugin is now in maintenance-only mode.
 PRs for that should be raised against the link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/maintenance-3.x[maintenance-3.x] anf link:https://github.com/asciidoctor/asciidoctor-gradle-plugin/tree/maintenance-4.x[maintenance-4.x] branches.
 endif::[]
