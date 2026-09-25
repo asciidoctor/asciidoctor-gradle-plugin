@@ -24,7 +24,7 @@ import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.tasks.bundling.Jar
-import org.ysb33r.grolifant5.api.core.ProjectOperations
+import org.ysb33r.grolifant5.api.core.ConfigurationPhaseOperations
 
 import javax.inject.Inject
 
@@ -123,7 +123,7 @@ class GemUtils {
      */
     @Synchronized
     static void registerToolchainSupport(AsciidoctorjToolchain tc, Project project) {
-        final cfgTools = ProjectOperations.find(project).configurations
+        final cfgTools = ConfigurationPhaseOperations.from(project).configurationTools()
         final cfgName = nameForToolchainConfiguration(tc.name)
 
         if (!project.configurations.findByName(cfgName)) {

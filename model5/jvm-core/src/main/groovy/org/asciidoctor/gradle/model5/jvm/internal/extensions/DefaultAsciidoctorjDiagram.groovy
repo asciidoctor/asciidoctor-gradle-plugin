@@ -26,7 +26,7 @@ import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.ysb33r.grolifant5.api.core.ProjectOperations
+import org.ysb33r.grolifant5.api.core.ConfigurationPhaseOperations
 
 import javax.inject.Inject
 import java.util.function.Function
@@ -224,7 +224,7 @@ class DefaultAsciidoctorjDiagram extends AbstractAsciidoctorjExtension implement
 
     private FileCollection registerConfiguration(AsciidoctorjToolchain tc, Project tempProjectReference) {
         final runtime = JvmModel.nameForExtensionConfigurationResolvable(tc.name, name)
-        final configTools = ProjectOperations.find(tempProjectReference).configurations
+        final configTools = ConfigurationPhaseOperations.from(tempProjectReference).configurationTools()
         configTools.createLocalRoleFocusedConfiguration(configurationName, runtime)
         tc.classpathExtendsFrom(configurationName)
         tempProjectReference.configurations.getByName(runtime)
