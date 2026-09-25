@@ -170,6 +170,8 @@ class AsciidoctorPublication implements Named {
         )
 
         task.configure { AsciidoctorTask t ->
+            t.group = PublicationUtils.GROUP_NAME
+            t.description = "Processes AsciiDoc content using formatter '${outputFormatterName}'"
             formatter.configureTaskInputs(t.inputs)
             sourceSet.docInfo.configureTaskInputs(t.inputs)
         }

@@ -43,5 +43,8 @@ class RelativeIncludeFunctionalSpec extends FunctionalSpecification {
         then:
         new File(buildDir, 'docs/asciidoc/nested/sample.html').text
                 .contains('This is from _nested-include.adoc file.')
+
+        and:
+        !new File(buildDir, 'docs/asciidoc/nested/_nested-include.html').exists()
     }
 }

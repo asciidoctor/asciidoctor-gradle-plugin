@@ -55,4 +55,14 @@ public interface ExternalAsciidoctorSource extends HasAsciidoctorSource, HasAsci
      * @param path sub path in intermediate workdir and destination dir.
      */
     void into(Object path);
+
+    /**
+     * Links the input of this source set to one of the outputs on another source set.
+     *
+     * @param publicationName Name of publication.
+     * @param formatterOrAliasName Name of the output or in cases where the output has an alias, the alias name.
+     *
+     * @since 5.1
+     */
+    void fromPublication(String publicationName, String formatterOrAliasName);
 }
