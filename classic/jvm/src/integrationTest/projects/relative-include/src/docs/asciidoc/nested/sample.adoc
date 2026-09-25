@@ -1,3 +1,0 @@
-= Relative include in a source sub directory
-
-include::_nested-include.adoc[]

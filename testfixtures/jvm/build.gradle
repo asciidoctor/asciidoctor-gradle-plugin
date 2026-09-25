@@ -1,12 +1,5 @@
 plugins {
-    id 'org.asciidoctor.internal.classic.groovy.project'
-}
-
-generateModuleVersions {
-    basename = 'testfixtures-core'
-    propertyNames ~/.+/
-
-    additionalProperties 'offline-repo-location' : new File(rootDir,'.offline-repo').absolutePath
+    id 'org.asciidoctor.internal.model5.groovy.project'
 }
 
 dependencies {

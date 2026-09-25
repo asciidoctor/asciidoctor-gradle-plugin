@@ -1,7 +1,0 @@
-plugins {
-    id 'org.asciidoctor.editorconfig/classic'
-}
-
-task runGradleTest {
-    dependsOn 'asciidoctorEditorConfig'
-}

@@ -1,3 +1,0 @@
-= Example bibtex
-
-Some citation: cite:[Bogus1a]

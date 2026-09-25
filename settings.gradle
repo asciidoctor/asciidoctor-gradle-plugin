@@ -2,7 +2,6 @@ pluginManagement {
     repositories {
         gradlePluginPortal()
         mavenCentral()
-        mavenLocal() /// ****** DELETE ME
     }
 }
 
@@ -21,9 +20,6 @@ develocity {
 
 rootProject.name = 'asciidoctor-gradle-plugin'
 
-
-// New model5 plugins
-
 include 'asciidoctoreditorconfig'
 project(":asciidoctoreditorconfig").projectDir = file("model5/asciidoctoreditorconfig")
 
@@ -38,26 +34,5 @@ project(":asciidoctoreditorconfig").projectDir = file("model5/asciidoctoreditorc
     project(":testfixtures/${it}").name = "testfixtures-${it}"
 }
 
-// Deprecated, classic plugins go here
-['base', 'jvm', 'js'].each {
-    include "classic/${it}"
-    project(":classic/${it}").name = "asciidoctor-gradle-${it}"
-}
-['pdf', 'epub', 'slides'].each {
-    include "classic/jvm-${it}"
-    project(":classic/jvm-${it}").name = "asciidoctor-gradle-jvm-${it}"
-}
-['gems'].each {
-    include "classic/${it}"
-    project(":classic/${it}").name = "asciidoctor-gradle-jvm-${it}"
-}
-include 'asciidoctoreditorconfig-classic'
-project(":asciidoctoreditorconfig-classic").projectDir = file("classic/asciidoctoreditorconfig")
-
 include 'test-all-model5-plugins'
-////[  'slides-export' ].each {
-////    include "classic/${it}"
-////    project(":classic/${it}").name = "asciidoctor-gradle-${it}"
-////}
-//
 
