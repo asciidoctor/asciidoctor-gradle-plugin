@@ -33,7 +33,7 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
-import org.ysb33r.grolifant5.api.core.ProjectOperations
+import org.ysb33r.grolifant5.api.core.ConfigurationPhaseOperations
 
 import javax.inject.Inject
 
@@ -78,11 +78,12 @@ class AsciidoctorjEngine implements AsciidoctorEngine, CoreVersions, ClasspathMa
 
         this.configurationName = JvmModel.nameForEngineConfiguration(name)
         final runtime = JvmModel.nameForEngineConfigurationResolvable(name)
-        ProjectOperations.find(tempProjectReference).configurations.createLocalRoleFocusedConfiguration(
-            configurationName,
-            runtime,
-            true
-        )
+        ConfigurationPhaseOperations.from(tempProjectReference).configurationTools()
+            .createLocalRoleFocusedConfiguration(
+                configurationName,
+                runtime,
+                true
+            )
 
         final runtimeClasspath = tempProjectReference.configurations.getByName(runtime)
         tempProjectReference.dependencies.addProvider(configurationName, this.asciidoctorjProvider)

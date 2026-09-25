@@ -24,7 +24,7 @@ import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.FileCollection
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.ysb33r.grolifant5.api.core.ProjectOperations
+import org.ysb33r.grolifant5.api.core.ConfigurationPhaseOperations
 
 /**
  * Base class for output formatters where the version can be configured.
@@ -75,7 +75,7 @@ abstract class AbstractAsciidoctorjFormatterVersioned extends AbstractAsciidocto
         final cfgName = JvmModel.nameForOutputFormatterConfiguration(tc.name, name)
         final runtime = JvmModel.nameForOutputFormatterConfigurationResolvable(tc.name, name)
 
-        ProjectOperations.find(tempProjectReference).configurations
+        ConfigurationPhaseOperations.from(tempProjectReference).configurationTools()
             .createLocalRoleFocusedConfiguration(cfgName, runtime, true)
         tempProjectReference.dependencies.addProvider(
             cfgName,

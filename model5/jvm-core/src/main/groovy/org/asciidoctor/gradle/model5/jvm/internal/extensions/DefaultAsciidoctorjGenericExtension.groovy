@@ -32,7 +32,7 @@ import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
-import org.ysb33r.grolifant5.api.core.ProjectOperations
+import org.ysb33r.grolifant5.api.core.ConfigurationPhaseOperations
 
 import javax.inject.Inject
 import java.util.concurrent.Callable
@@ -87,7 +87,7 @@ class DefaultAsciidoctorjGenericExtension implements AsciidoctorjGenericExtensio
         this.jarConfigurationName = JvmModel.nameForExtensionConfiguration(tc.name, name)
         final runtime = JvmModel.nameForExtensionConfigurationResolvable(tc.name, name)
 
-        ProjectOperations.find(project).configurations
+        ConfigurationPhaseOperations.from(project).configurationTools()
             .createLocalRoleFocusedConfiguration(jarConfigurationName, runtime, true)
         this.classpath.from(project.configurations.getByName(runtime))
     }
