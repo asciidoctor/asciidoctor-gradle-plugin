@@ -425,7 +425,7 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
         // patterns and the tree is walked when the task executes.
         final fsOps = fsOperations()
         final localSources = sourceDir.zip(localSourcePatterns) { dir, pats ->
-            if (dir.asFile.exists()) {
+            if(dir.asFile.exists()) {
                 fsOps.fileTree(dir).matching(pats)
             } else {
                 fsOps.emptyFileCollection()
