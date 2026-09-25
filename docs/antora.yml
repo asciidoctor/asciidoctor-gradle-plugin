@@ -30,7 +30,7 @@ asciidoc:
     asciidoctorjs-url: "https://github.com/asciidoctor/asciidoctor.js"
     asciidoctorjs-revealjs-name: "Reveal.js for Asciidoctor.js"
     asciidoctorjs-revealjs-url: "https://github.com/asciidoctor/asciidoctor-reveal.js"
-    downdoc-name: "Downdoc"
+    downdoc-name: "downdoc"
     downdoc-url: "https://github.com/opendevise/downdoc"
     development-branch: "development-5.x"
     examples-model5-core-test: "model5/core/test"

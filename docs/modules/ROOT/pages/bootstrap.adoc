@@ -59,7 +59,7 @@ plugins {
 <.> Registers the ability to create {asciidoctorj-name} toolchains along with output formatters for HTML, DocBook and Manpages.
   Also registers the diagram {asciidoctorj-name} extension.
 <.> Registers the ability to create {asciidoctorjs-name} toolchains along with an HTML output formatter.
-<.> Registers the ability to create {downdoc} toolchains.
+<.> Registers the ability to create {downdoc-name} toolchains.
 
 == Using the version catalog
 
