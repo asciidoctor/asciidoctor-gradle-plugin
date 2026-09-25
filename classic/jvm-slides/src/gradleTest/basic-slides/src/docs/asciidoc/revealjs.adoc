@@ -1,7 +1,0 @@
-= Title Slide
-
-== Slide One
-
-* Foo
-* Bar
-* World
