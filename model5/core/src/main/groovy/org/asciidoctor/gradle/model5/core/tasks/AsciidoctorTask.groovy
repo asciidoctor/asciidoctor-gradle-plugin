@@ -28,11 +28,11 @@ import org.gradle.api.file.CopySpec
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileCollection
+import org.gradle.api.file.FileTree
 import org.gradle.api.file.FileVisitDetails
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.util.PatternFilterable
@@ -47,6 +47,7 @@ import static org.gradle.api.tasks.PathSensitivity.RELATIVE
  * Base task for converting Asciidoc sources into content.
  *
  * @author Schalk W. Cronjé
+ * @author Laura Kassovic
  *
  * @since 5.0
  */
@@ -67,7 +68,6 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
     private final Provider<Boolean> needsIntermediateWorkdir
     private final Provider<Boolean> srcDirIsBaseDir
     private final Property<PatternFilterable> localSourcePatterns
-    private final SetProperty<String> resolvedSourcePatterns
     private final ObjectFactory objectFactory
 
     AsciidoctorTask() {
@@ -79,7 +79,6 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
         this.originalBaseDir = project.objects.directoryProperty()
         this.resourcesCopySpec = project.objects.property(PatternFilterable)
         this.localSourcePatterns = project.objects.property(PatternFilterable)
-        this.resolvedSourcePatterns = project.objects.setProperty(String)
         this.srcDirIsBaseDir = sourceDir.zip(this.originalBaseDir) { src, base -> src == base }
 
         // Work with external sources and determine whether there should be an intermediate workdir
@@ -90,15 +89,8 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
         this.useIntermediateWorkdir = project.objects.directoryProperty().value(determineIntermediateWorkdir())
 
         // Setup conversion settings
-        this.resolvedSourcePatterns.set(determineSourceFilePatterns())
         this.conversionSettings.sourceRootDir.set(determineSourceRootDir())
         this.conversionSettings.baseDir.set(determineBaseDir())
-        this.conversionSettings.sourceFiles.set(
-            this.conversionSettings.sourceRootDir.zip(this.resolvedSourcePatterns) { dir, pats ->
-                fsOperations().fileTree(dir).matching { include(pats) }.files
-            }
-        )
-
         inputs.property('doctype', conversionSettings.docType).optional(true)
         inputs.property('launcher', launcher.map { it.ecosystemSignature }).optional(true)
         inputs.dir(this.sourceDir)
@@ -252,6 +244,10 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
     }
 
     private void execWithOneSourceDir() {
+        final pats = resolveSourceFilePatterns()
+        conversionSettings.sourceFiles.set(
+            fsOperations().fileTree(conversionSettings.sourceRootDir.get()).matching { include(pats) }.files
+        )
         launcher.get().run(exeSettings, conversionSettings)
         if (resourcesCopySpec.present) {
             fsOperations().copy {
@@ -329,44 +325,43 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
         }
     }
 
-    private Provider<Set<String>> determineSourceFilePatterns() {
-        needsIntermediateWorkdir.map { flag ->
-            if (flag) {
-                final locals = determineSourceFilePatterns(sourceDir, localSourcePatterns).get()
-                final externals = externalSources.get().externalSources.get().collectMany {
-                    determineSourceFilePatterns(it)
-                }
-                (locals + externals).toSet()
-            } else {
-                localSourcePatterns.get().includes
+    private Set<String> resolveSourceFilePatterns() {
+        if (needsIntermediateWorkdir.get()) {
+            final locals = determineSourceFilePatterns(sourceDir, localSourcePatterns).get()
+            final externals = externalSources.get().externalSources.get().collectMany {
+                determineSourceFilePatterns(it)
             }
+            (locals + externals).toSet()
+        } else {
+            localSourcePatterns.get().includes
         }
     }
 
-    private Provider<Set<File>> determineAllOtherSources() {
+    private Provider<List<FileTree>> determineAllOtherSources() {
         this.externalSources.flatMap { it.externalSources }
             .map { list ->
-                list.collectMany { it.sourcesAndResources.asFileTree.files }.toSet()
-            }.orElse([].toSet() as Set<File>)
+                list.collect { it.sourcesAndResources.asFileTree }
+            }.orElse(Collections.<FileTree>emptyList())
     }
 
-    private Provider<Set<File>> determineAllExternalSources() {
+    private Provider<List<FileTree>> determineAllExternalSources() {
         this.externalSources.flatMap { it.externalSources }
             .map { list ->
-                list.collectMany {
+                list.collect {
                     fsOperations()
                         .emptyFileCollection()
                         .from(it.sourcesAndResources)
                         .asFileTree
                         .matching(it.sourcePatterns.get())
-                        .files
-                }.toSet()
-            }.orElse([].toSet() as Set<File>)
+                }
+            }.orElse(Collections.<FileTree>emptyList())
     }
 
     private FileCollection determineAllInputSources() {
+        // Keep this a FileTree rather than a Set<File>, so the configuration cache stores the directory and
+        // patterns and the tree is walked when the task executes.
         final localSources = sourceDir.zip(localSourcePatterns) { dir, pats ->
-            fsOperations().fileTree(dir).matching(pats).files
+            fsOperations().fileTree(dir).matching(pats)
         }
         final externalSources = determineAllExternalSources()
         fsOperations().emptyFileCollection().from(localSources).from(externalSources)
