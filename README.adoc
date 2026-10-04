@@ -33,7 +33,7 @@ The {doctitle} is the official means of using {asciidoctor-url}[Asciidoctor] to 
 [WARNING]
 ====
 With the release of 5.0.0 and after 12 years of involvement, Schalk Cronjé (https://github.com/ysb33r[@ysb33r]) has retired as the leading maintainer.
-Although he is still be around for the odd bugfix and to provide advice, *a new maintainer is urgently needed*.
+Although he is still around for the odd bugfix and to provide advice, *a new maintainer is urgently needed*.
 ====
 
 Documentation:: We are migrating our documentation to the new Asciidoctor Antora-based site when it is ready.
