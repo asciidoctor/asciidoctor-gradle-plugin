@@ -33,7 +33,6 @@ import org.ysb33r.gradle.jsecosystem.packages.PackageDescriptor
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 import org.ysb33r.grolifant5.api.core.ExecTools
 import org.ysb33r.grolifant5.api.core.OperatingSystem
-import org.ysb33r.grolifant5.api.core.StringTools
 
 import javax.inject.Inject
 import java.util.regex.Pattern
@@ -61,7 +60,6 @@ class DefaultLauncher implements AsciidoctorLauncher {
     private final static Pattern LOG_LINE_MATCHER = ~/^asciidoctor: (ERROR|INFO|WARN|FATAL): .+$/
 
     private final ExecTools execTools
-    private final StringTools stringTools
     private final Provider<JsePnpmExecSpec> execSpec
     private final ConfigCacheSafeOperations ccso
     private final ListProperty<PackageDescriptor> packages
@@ -74,7 +72,6 @@ class DefaultLauncher implements AsciidoctorLauncher {
     ) {
         this.ccso = ConfigCacheSafeOperations.from(tempProjectReference)
         this.execTools = ccso.execTools()
-        this.stringTools = ccso.stringTools()
         this.execSpec = execSpec
         this.packages = tempProjectReference.objects.listProperty(PackageDescriptor)
         this.logDir = tempProjectReference.objects.directoryProperty().value(
@@ -153,7 +150,7 @@ class DefaultLauncher implements AsciidoctorLauncher {
             }
         }
 
-        parseLogs(stringTools, jobLogDir.get(), warnings, index)
+        parseLogs(jobLogDir.get(), warnings, index)
     }
 
     @SuppressWarnings('DuplicateNumberLiteral')

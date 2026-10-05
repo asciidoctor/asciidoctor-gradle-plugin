@@ -20,18 +20,14 @@ import groovy.json.JsonSlurper
 import org.asciidoctor.gradle.model5.core.errors.ConversionWarningException
 import org.asciidoctor.gradle.testfixtures.model5.UnitTestSpecification
 import org.gradle.api.file.Directory
-import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
-import org.ysb33r.grolifant5.api.core.StringTools
 
 import static org.asciidoctor.gradle.model5.core.internal.tasks.LogProcessor.LOG_EVENTS_FILE_PREFIX
 
 class LogProcessorSpec extends UnitTestSpecification {
 
-    StringTools stringTools
     Directory logDir
 
     void setup() {
-        stringTools = ConfigCacheSafeOperations.from(project).stringTools()
         logDir = project.layout.projectDirectory.dir('logs')
         logDir.asFile.mkdirs()
 
@@ -46,7 +42,7 @@ class LogProcessorSpec extends UnitTestSpecification {
 
     void 'Records from all log event files are written to a single array'() {
         when:
-        LogProcessor.parseLogs(stringTools, logDir, [] as Set, 3)
+        LogProcessor.parseLogs(logDir, [] as Set, 3)
         final records = (List<Map>) new JsonSlurper().parse(logDir.file('log.json').asFile)
 
         then:
@@ -59,11 +55,11 @@ class LogProcessorSpec extends UnitTestSpecification {
 
     void 'Only matching records are written to errors.json'() {
         when:
-        LogProcessor.parseLogs(stringTools, logDir, [~/include file not found/] as Set, 3)
+        LogProcessor.parseLogs(logDir, [~/include file not found/] as Set, 3)
 
         then:
         final e = thrown(ConversionWarningException)
-        e.message.startsWith('1 fatal issues where discovered.')
+        e.message.startsWith('1 fatal issues were discovered.')
 
         when:
         final errors = (List<Map>) new JsonSlurper().parse(logDir.file('errors.json').asFile)
@@ -72,6 +68,17 @@ class LogProcessorSpec extends UnitTestSpecification {
         errors.size() == 1
         errors[0].message == 'include file not found: missing.adoc'
         errors[0].matches == ['include file not found']
+    }
+
+    void 'The fatal issues message links to errors.json'() {
+        when:
+        LogProcessor.parseLogs(logDir, [~/include file not found/] as Set, 3)
+
+        then:
+        final e = thrown(ConversionWarningException)
+        final url = e.message.readLines().last().replaceFirst(/^See (.+)\.$/, '$1')
+        url.startsWith('file:///')
+        new File(new URI(url)) == logDir.file('errors.json').asFile
     }
 
     private void writeEvents(int index, List<Map> records) {
