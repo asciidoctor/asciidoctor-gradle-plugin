@@ -27,6 +27,7 @@ import java.util.regex.Pattern
  * Post process logs from Asciidoctor engines.
  *
  * @author Schalk W. Cronjé
+ * @author Mattias Reichel
  *
  * @since 5.0
  */

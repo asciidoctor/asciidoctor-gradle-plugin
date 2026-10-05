@@ -36,6 +36,7 @@ import static org.ysb33r.grolifant5.api.core.StringTools.EMPTY
  * Running AsciidoctorJ in a worker.
  *
  * @author Schalk W. Cronjé
+ * @author Mattias Reichel
  *
  * @since 5.0
  */

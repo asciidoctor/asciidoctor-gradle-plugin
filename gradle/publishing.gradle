@@ -18,24 +18,24 @@ ext {
     pluginIdPrefix = 'org.asciidoctor'
 
     pluginExtraText = (version.contains('-alpha') || version.contains('-beta')) ?
-            ". (If you need a production-ready version of the AsciidoctorJ plugin for Gradle use a 3.x release of this plugin instead)."
-            : ''
+        ". (If you need a production-ready version of the AsciidoctorJ plugin for Gradle use a 3.x release of this plugin instead)."
+        : ''
 }
 
 tasks.named('jar', Jar) {
     manifest {
         attributes(
-                'Built-By': System.properties['user.name'],
-                'Created-By': buildCreatedBy,
+            'Built-By': System.properties['user.name'],
+            'Created-By': buildCreatedBy,
 //            'Build-Date': buildDate,
 //            'Build-Time': buildTime,
-                'Build-Revision': buildRevision,
-                'Specification-Title': project.name,
-                'Specification-Version': project.version,
-                'Specification-Vendor': project.name,
-                'Implementation-Title': project.name,
-                'Implementation-Version': project.version,
-                'Implementation-Vendor': project.name
+            'Build-Revision': buildRevision,
+            'Specification-Title': project.name,
+            'Specification-Version': project.version,
+            'Specification-Vendor': project.name,
+            'Implementation-Title': project.name,
+            'Implementation-Version': project.version,
+            'Implementation-Vendor': project.name
         )
     }
 
@@ -71,8 +71,8 @@ ext {
                 }
             }
             [
-                    aalmiray: 'Andres Almiray',
-                    ysb33r  : 'Schalk W. Cronjé'
+                aalmiray: 'Andres Almiray',
+                ysb33r  : 'Schalk W. Cronjé'
             ].each { devId, devName ->
                 developer {
                     id devId
@@ -85,23 +85,25 @@ ext {
         }
         contributors {
             [
-                    afolmert   : 'Adam Folmert',
-                    anschmi    : 'Andreas Schmidt',
-                    bmuschko   : 'Benjamin Muschko',
-                    bobbytank42: 'Robert Panzer',
-                    dvyazelenko: 'Dmitri Vyazelenko',
-                    jlupi      : 'Lukasz Pielak',
-                    lhotari    : 'Lari Hotari',
-                    McPringle  : 'Marcus Fihlon',
-                    Mogztter   : 'Guillaume Grossetie',
-                    mrhaki     : 'Hubert Klein Ikkink',
-                    msgilligan : 'Sean Gilligan',
-                    noamt      : 'Noam Tenne',
-                    oti        : 'Otmar Humbel',
-                    rwinch     : 'Rob Winch',
-                    sclassen   : 'Stephan Classen',
-                    Skyr       : 'Stefan Schlott',
-                    tombujok   : 'Tom Bujok'
+                afolmert   : 'Adam Folmert',
+                anschmi    : 'Andreas Schmidt',
+                bmuschko   : 'Benjamin Muschko',
+                bobbytank42: 'Robert Panzer',
+                dvyazelenko: 'Dmitri Vyazelenko',
+                jlupi      : 'Lukasz Pielak',
+                lhotari    : 'Lari Hotari',
+                lkasso     : 'Laura Kassovic',
+                matrei     : 'Mattias Reichel',
+                McPringle  : 'Marcus Fihlon',
+                Mogztter   : 'Guillaume Grossetie',
+                mrhaki     : 'Hubert Klein Ikkink',
+                msgilligan : 'Sean Gilligan',
+                noamt      : 'Noam Tenne',
+                oti        : 'Otmar Humbel',
+                rwinch     : 'Rob Winch',
+                sclassen   : 'Stephan Classen',
+                Skyr       : 'Stefan Schlott',
+                tombujok   : 'Tom Bujok'
             ].each { devId, devName ->
                 contributor {
                     name devName

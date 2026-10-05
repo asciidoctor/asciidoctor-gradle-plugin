@@ -47,6 +47,7 @@ import static org.ysb33r.grolifant5.api.core.ExecTools.OutputType.CAPTURE
  * Launcher for the {@code asciidoctor.js} engine.
  *
  * @author Schalk W. Cronjé
+ * @author Mattias Reichel
  *
  * @since 5.0
  */
