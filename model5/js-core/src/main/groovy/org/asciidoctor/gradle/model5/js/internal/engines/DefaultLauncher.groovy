@@ -43,8 +43,6 @@ import static java.util.Collections.EMPTY_SET
 import static org.asciidoctor.gradle.model5.core.internal.tasks.LogProcessor.LOG_EVENTS_FILE_PREFIX
 import static org.asciidoctor.gradle.model5.core.internal.tasks.LogProcessor.parseLogs
 import static org.ysb33r.grolifant5.api.core.ExecTools.OutputType.CAPTURE
-import static org.ysb33r.grolifant5.api.core.StringTools.COLON
-import static org.ysb33r.grolifant5.api.core.StringTools.EMPTY
 
 /**
  * Launcher for the {@code asciidoctor.js} engine.
@@ -58,7 +56,10 @@ import static org.ysb33r.grolifant5.api.core.StringTools.EMPTY
 class DefaultLauncher implements AsciidoctorLauncher {
 
     private final static long CMD_LIMIT = OperatingSystem.current().windows ? 7000L : ((1L << 21) - 1000L)
-    private final static Pattern LOG_LINE_MATCHER = ~/^asciidoctor: (ERROR|INFO|WARN|FATAL): .+$/
+    private final static Pattern LOG_LINE_MATCHER = ~(
+        /^asciidoctor: (?<severity>ERROR|INFO|WARN(?:ING)?|FATAL): / +
+            /(?:(?<path>.+?): line (?<line>\d+): )?(?<message>.+)$/
+    )
 
     private final ExecTools execTools
     private final StringTools stringTools
@@ -156,28 +157,32 @@ class DefaultLauncher implements AsciidoctorLauncher {
         parseLogs(stringTools, jobLogDir.get(), warnings, index)
     }
 
-    @SuppressWarnings('DuplicateNumberLiteral')
     private void processLogToJson(int index, Directory dir, String stderr) {
-        final logLines = stderr.readLines().findAll {
-            it.find(LOG_LINE_MATCHER)
-        }
+        final logLines = stderr.readLines().collect { LOG_LINE_MATCHER.matcher(it) }.findAll { it.matches() }
 
         final logFile = dir.file("${LOG_EVENTS_FILE_PREFIX}.${index}").asFile
         logFile.parentFile.mkdirs()
+        final records = logLines.collect { m ->
+            final data = [
+                severity: m.group('severity'),
+                message : m.group('message')
+            ]
+
+            final path = m.group('path')
+            if (path) {
+                data.putAll([
+                    path: path,
+                    line: m.group('line')
+                ])
+            }
+
+            JsonOutput.toJson(data)
+        }
+
         logFile.withWriter { w ->
             w.println(LogProcessor.OPEN_RECORDS)
-            logLines.each { line ->
-                final parts = line.split(COLON)
-                if (parts.size() >= 5) {
-                    final data = [
-                        severity: parts[1].trim(),
-                        message : parts[4].trim(),
-                        path    : parts[3].trim(),
-                        file    : parts.size() >= 6 ? parts[5].trim() : EMPTY,
-                        line    : parts[2].replaceFirst(~/\s?line\s/, EMPTY)
-                    ]
-                    w.println(JsonOutput.toJson(data))
-                }
+            if (records) {
+                w.println(records.join(',\n'))
             }
             w.println(LogProcessor.CLOSE_RECORDS)
         }

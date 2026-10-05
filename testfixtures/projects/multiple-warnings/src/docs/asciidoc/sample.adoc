@@ -1,0 +1,9 @@
+= Multiple warnings
+
+=== Section 1
+
+=== Section 2
+
+include::missing-include-1.adoc[]
+
+include::missing-include-2.adoc[]
