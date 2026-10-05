@@ -146,16 +146,17 @@ abstract class LauncherWorker implements WorkAction<LauncherParameters> {
     private static class WorkerLogHandler implements LogHandler, AutoCloseable {
 
         private final File logFile
+        private boolean firstRecord = true
 
         WorkerLogHandler(File logFile) {
             this.logFile = logFile
             logFile.parentFile.mkdirs()
-            this.logFile.text = '[\n'
+            this.logFile.text = '['
         }
 
         @Override
         void close() throws Exception {
-            logFile.withWriterAppend { it.println ']' }
+            logFile.withWriterAppend { it.println('\n]') }
         }
 
         @Override
@@ -179,7 +180,9 @@ abstract class LauncherWorker implements WorkAction<LauncherParameters> {
                     ])
                 }
 
-                logFile.withWriterAppend { it.println(JsonOutput.toJson(data)) }
+                final separator = firstRecord ? '\n' : ',\n'
+                firstRecord = false
+                logFile.withWriterAppend { it.print(separator + JsonOutput.toJson(data)) }
             }
         }
     }

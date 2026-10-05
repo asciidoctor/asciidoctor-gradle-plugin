@@ -164,20 +164,20 @@ class DefaultLauncher implements AsciidoctorLauncher {
 
         final logFile = dir.file("${LOG_EVENTS_FILE_PREFIX}.${index}").asFile
         logFile.parentFile.mkdirs()
+        final records = logLines*.split(COLON).findAll { it.size() >= 5 }.collect { parts ->
+            JsonOutput.toJson([
+                severity: parts[1].trim(),
+                message : parts[4].trim(),
+                path    : parts[3].trim(),
+                file    : parts.size() >= 6 ? parts[5].trim() : EMPTY,
+                line    : parts[2].replaceFirst(~/\s?line\s/, EMPTY)
+            ])
+        }
+
         logFile.withWriter { w ->
             w.println(LogProcessor.OPEN_RECORDS)
-            logLines.each { line ->
-                final parts = line.split(COLON)
-                if (parts.size() >= 5) {
-                    final data = [
-                        severity: parts[1].trim(),
-                        message : parts[4].trim(),
-                        path    : parts[3].trim(),
-                        file    : parts.size() >= 6 ? parts[5].trim() : EMPTY,
-                        line    : parts[2].replaceFirst(~/\s?line\s/, EMPTY)
-                    ]
-                    w.println(JsonOutput.toJson(data))
-                }
+            if (records) {
+                w.println(records.join(',\n'))
             }
             w.println(LogProcessor.CLOSE_RECORDS)
         }
