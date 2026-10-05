@@ -345,10 +345,11 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
     }
 
     private Provider<List<FileTree>> determineAllExternalSources() {
+        final fsOps = fsOperations()
         this.externalSources.flatMap { it.externalSources }
             .map { list ->
                 list.collect {
-                    fsOperations()
+                    fsOps
                         .emptyFileCollection()
                         .from(it.sourcesAndResources)
                         .asFileTree
@@ -360,8 +361,9 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
     private FileCollection determineAllInputSources() {
         // Keep this a FileTree rather than a Set<File>, so the configuration cache stores the directory and
         // patterns and the tree is walked when the task executes.
+        final fsOps = fsOperations()
         final localSources = sourceDir.zip(localSourcePatterns) { dir, pats ->
-            fsOperations().fileTree(dir).matching(pats)
+            fsOps.fileTree(dir).matching(pats)
         }
         final externalSources = determineAllExternalSources()
         fsOperations().emptyFileCollection().from(localSources).from(externalSources)
@@ -371,9 +373,10 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
         Provider<Directory> srcDir,
         Provider<PatternFilterable> srcPatterns
     ) {
+        final fsOps = fsOperations()
         srcPatterns.zip(srcDir) { pats, dir ->
-            fsOperations().fileTree(dir).matching(pats).files
-                .collect { fsOperations().relativize(dir.asFile, it) }
+            fsOps.fileTree(dir).matching(pats).files
+                .collect { fsOps.relativize(dir.asFile, it) }
         }
     }
 
