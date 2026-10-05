@@ -42,4 +42,19 @@ class MultipleWarningsSpec extends AsciidoctorjsHtmlIntegrationSpecification {
         then:
         records.size() == 4
     }
+
+    void 'Log records contain the source location and the full message'() {
+        setup:
+        final logFile = new File(buildDir, 'reports/asciidoc/logs/asciidoctorjs/html/log.json')
+        final missingInclude = new File(projectDir, 'src/docs/asciidoc/missing-include-1.adoc')
+
+        when:
+        getGradleRunner(IS_GROOVY_DSL, [taskName]).build()
+        final records = ((List<Map>) new JsonSlurper().parse(logFile)).flatten() as List<Map>
+
+        then:
+        records*.path == ['sample.adoc'] * 4
+        records*.line == ['3', '5', '7', '9']
+        records[2].message == "include file not found: ${missingInclude.absolutePath}".toString()
+    }
 }
