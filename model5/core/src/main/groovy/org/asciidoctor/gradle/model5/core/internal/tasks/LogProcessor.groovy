@@ -40,6 +40,8 @@ class LogProcessor {
     public final static String OPEN_RECORDS = '['
     public final static String CLOSE_RECORDS = ']'
 
+    private final static String MATCHES = 'matches'
+
     /**
      * Parses JSON logs from Asciidoctor executions.
      *
@@ -57,28 +59,19 @@ class LogProcessor {
         final slurper = new JsonSlurper()
         final logFile = dir.file('log.json')
         final errorFile = dir.file('errors.json')
-        int matched = 0
-        logFile.asFile.withWriter { log ->
-            errorFile.asFile.withWriter { errors ->
-                log.println(OPEN_RECORDS)
-                errors.println(OPEN_RECORDS)
-                (1..maxIndex).each {
-                    final eventFile = dir.file("${LOG_EVENTS_FILE_PREFIX}.${it}").asFile
-                    if (eventFile.exists()) {
-                        final json = slurper.parse(eventFile)
-                        log.println(JsonOutput.prettyPrint(JsonOutput.toJson(json)))
-                        final matches = findMatches(json, patterns)
-                        if (matches > 0) {
-                            errors.println(JsonOutput.prettyPrint(JsonOutput.toJson(json)))
-                            matched += matches
-                        }
-                        eventFile.delete()
-                    }
-                }
-                log.println(CLOSE_RECORDS)
-                errors.println(CLOSE_RECORDS)
+        final records = []
+        (1..maxIndex).each {
+            final eventFile = dir.file("${LOG_EVENTS_FILE_PREFIX}.${it}").asFile
+            if (eventFile.exists()) {
+                records.addAll((List) slurper.parse(eventFile))
+                eventFile.delete()
             }
         }
+
+        logFile.asFile.text = JsonOutput.prettyPrint(JsonOutput.toJson(records))
+        final matched = findMatches(records, patterns)
+        final errors = records.findAll { ((Map) it).containsKey(MATCHES) }
+        errorFile.asFile.text = JsonOutput.prettyPrint(JsonOutput.toJson(errors))
 
         if (matched) {
             final initMsg = stringTools.stringize(stringTools.urize(errorFile.asFile))
@@ -99,7 +92,7 @@ class LogProcessor {
                     msg.find(pat)
                 }*.toString()
                 if (!mapping.empty) {
-                    map['matches'] = mapping
+                    map[MATCHES] = mapping
                     matches += mapping.size()
                 }
             }
