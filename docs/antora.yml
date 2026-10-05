@@ -4,7 +4,7 @@ title: "Gradle Plugin Suite"
 version: "5.0"
 asciidoc:
   attributes:
-    release-version: "5.0.2"
+    release-version: "5.0.3"
     project-full-path: "asciidoctor/asciidoctor-gradle-plugin"
     project-issues-url: "https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues"
     project-name: "asciidoctor-gradle-plugin"
