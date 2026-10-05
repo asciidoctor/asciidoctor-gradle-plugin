@@ -40,7 +40,7 @@ class WarningsAsErrorsSpec extends AsciidoctorjHtmlIntegrationSpecification {
 
         then:
         result.task(":${taskName}").outcome == TaskOutcome.FAILED
-        result.output.contains('fatal issues where discovered')
+        result.output.contains('fatal issues were discovered')
         logFile.exists()
     }
 }

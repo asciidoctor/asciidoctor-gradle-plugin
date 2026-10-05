@@ -20,11 +20,8 @@ import groovy.json.JsonSlurper
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.errors.ConversionWarningException
 import org.gradle.api.file.Directory
-import org.ysb33r.grolifant5.api.core.StringTools
 
 import java.util.regex.Pattern
-
-import static org.ysb33r.grolifant5.api.core.StringTools.SLASH
 
 /**
  * Post process logs from Asciidoctor engines.
@@ -45,13 +42,11 @@ class LogProcessor {
     /**
      * Parses JSON logs from Asciidoctor executions.
      *
-     * @param stringTools StringTools to aid in some string processing.
      * @param dir Log directory
      * @param patterns Patterns to match against.
      * @param maxIndex Maximum number of JSON files.
      */
     static void parseLogs(
-        StringTools stringTools,
         Directory dir,
         Set<Pattern> patterns,
         int maxIndex
@@ -74,10 +69,8 @@ class LogProcessor {
         errorFile.asFile.text = JsonOutput.prettyPrint(JsonOutput.toJson(errors))
 
         if (matched) {
-            final initMsg = stringTools.stringize(stringTools.urize(errorFile.asFile))
-            final finalMsg = initMsg.startsWith('file://') ? initMsg : initMsg.replaceFirst(SLASH, SLASH * 2)
             throw new ConversionWarningException(
-                "${matched} fatal issues where discovered.\nSee ${finalMsg}."
+                "${matched} fatal issues were discovered.\nSee ${errorFile.asFile.toPath().toUri()}."
             )
         }
     }

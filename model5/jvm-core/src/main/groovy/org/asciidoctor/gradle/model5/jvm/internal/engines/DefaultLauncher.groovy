@@ -33,7 +33,6 @@ import org.gradle.workers.WorkQueue
 import org.gradle.workers.WorkerExecutor
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 import org.ysb33r.grolifant5.api.core.FileSystemOperations
-import org.ysb33r.grolifant5.api.core.StringTools
 
 import javax.inject.Inject
 import java.util.concurrent.ConcurrentHashMap
@@ -56,7 +55,6 @@ class DefaultLauncher implements AsciidoctorLauncher {
     private final static String LOG_EVENTS_FILE_PREFIX = LogProcessor.LOG_EVENTS_FILE_PREFIX
     private final WorkerExecutor workerExecutor
     private final ConfigurableFileCollection classpath
-    private final StringTools stringTools
     private final FileSystemOperations fsOperations
     private final Property<LauncherEngineOptions> launcherEngineOptions
     private final String projectPath
@@ -70,7 +68,6 @@ class DefaultLauncher implements AsciidoctorLauncher {
         final ccso = ConfigCacheSafeOperations.from(tempProjectRef)
         this.projectPath = ccso.projectTools().fullProjectPath
         this.fsOperations = ccso.fsOperations()
-        this.stringTools = ccso.stringTools()
         this.classpath = fsOperations.emptyFileCollection()
         this.launcherEngineOptions = tempProjectRef.objects.property(LauncherEngineOptions)
         this.executionsContexts = new ConcurrentHashMap<>()
@@ -165,7 +162,7 @@ class DefaultLauncher implements AsciidoctorLauncher {
         }
         wq.await()
 
-        LogProcessor.parseLogs(stringTools, jobLogDir.get(), warnings, index)
+        LogProcessor.parseLogs(jobLogDir.get(), warnings, index)
     }
 
     private Optional<ExecutionContext> getExecutionContext(String toolchainName, String formatterName) {
