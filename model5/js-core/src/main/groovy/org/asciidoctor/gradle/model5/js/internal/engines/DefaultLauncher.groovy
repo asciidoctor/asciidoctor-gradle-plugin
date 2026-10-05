@@ -58,7 +58,7 @@ import static org.ysb33r.grolifant5.api.core.StringTools.EMPTY
 class DefaultLauncher implements AsciidoctorLauncher {
 
     private final static long CMD_LIMIT = OperatingSystem.current().windows ? 7000L : ((1L << 21) - 1000L)
-    private final static Pattern LOG_LINE_MATCHER = ~/^asciidoctor: (ERROR|INFO|WARN|FATAL): .+$/
+    private final static Pattern LOG_LINE_MATCHER = ~/^asciidoctor: (ERROR|INFO|WARN(?:ING)?|FATAL): .+$/
 
     private final ExecTools execTools
     private final StringTools stringTools

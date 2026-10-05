@@ -40,6 +40,6 @@ class MultipleWarningsSpec extends AsciidoctorjsHtmlIntegrationSpecification {
         final records = ((List) new JsonSlurper().parse(logFile)).flatten()
 
         then:
-        records.size() == 2
+        records.size() == 4
     }
 }
