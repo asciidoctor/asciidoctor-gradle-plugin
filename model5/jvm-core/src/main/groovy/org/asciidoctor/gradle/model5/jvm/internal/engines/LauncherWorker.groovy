@@ -46,32 +46,36 @@ abstract class LauncherWorker implements WorkAction<LauncherParameters> {
     @Override
     void execute() {
         final asciidoctor = Asciidoctor.Factory.create()
-        final reqs = parameters.requires.get()
-        final logger = new WorkerLogHandler(parameters.logFile.get().asFile)
-        asciidoctor.registerLogHandler(logger)
-
-        if (!reqs.empty) {
-            asciidoctor.requireLibraries(reqs)
-        }
-
-        handleGroovyExtensions(asciidoctor)
-
-        final destDir = parameters.destinationDir.get().asFile
-        destDir.mkdirs()
-
         try {
-            if (parameters.adjustBaseDirPerFile.get()) {
-                partitionSourceFiles().each { bd, files ->
-                    asciidoctor.convertFiles(files, normalisedOptions(bd))
+            final reqs = parameters.requires.get()
+            final logger = new WorkerLogHandler(parameters.logFile.get().asFile)
+            asciidoctor.registerLogHandler(logger)
+
+            if (!reqs.empty) {
+                asciidoctor.requireLibraries(reqs)
+            }
+
+            handleGroovyExtensions(asciidoctor)
+
+            final destDir = parameters.destinationDir.get().asFile
+            destDir.mkdirs()
+
+            try {
+                if (parameters.adjustBaseDirPerFile.get()) {
+                    partitionSourceFiles().each { bd, files ->
+                        asciidoctor.convertFiles(files, normalisedOptions(bd))
+                    }
+                } else {
+                    asciidoctor.convertFiles(
+                        parameters.sourceFiles.get(),
+                        normalisedOptions(parameters.baseDir.get().asFile)
+                    )
                 }
-            } else {
-                asciidoctor.convertFiles(
-                    parameters.sourceFiles.get(),
-                    normalisedOptions(parameters.baseDir.get().asFile)
-                )
+            } finally {
+                logger?.close()
             }
         } finally {
-            logger?.close()
+            asciidoctor?.shutdown()
         }
     }
 
