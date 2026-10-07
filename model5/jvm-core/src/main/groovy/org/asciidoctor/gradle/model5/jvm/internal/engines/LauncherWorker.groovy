@@ -21,6 +21,7 @@ import org.asciidoctor.Asciidoctor
 import org.asciidoctor.Attributes
 import org.asciidoctor.Options
 import org.asciidoctor.SafeMode
+import org.asciidoctor.gradle.model5.core.internal.engines.EngineUtils
 import org.asciidoctor.groovydsl.AsciidoctorExtensions
 import org.asciidoctor.log.LogHandler
 import org.asciidoctor.log.LogRecord
@@ -37,6 +38,7 @@ import static org.ysb33r.grolifant5.api.core.StringTools.EMPTY
  *
  * @author Schalk W. Cronjé
  * @author Mattias Reichel
+ * @author Artemy Osipov
  *
  * @since 5.0
  */
@@ -45,37 +47,57 @@ import static org.ysb33r.grolifant5.api.core.StringTools.EMPTY
 abstract class LauncherWorker implements WorkAction<LauncherParameters> {
     @Override
     void execute() {
-        final asciidoctor = Asciidoctor.Factory.create()
-        final reqs = parameters.requires.get()
-        final logger = new WorkerLogHandler(parameters.logFile.get().asFile)
-        asciidoctor.registerLogHandler(logger)
+        try (
+            final asciidoctor = Asciidoctor.Factory.create()
+            final logger = new WorkerLogHandler(parameters.logFile.get().asFile)
+        ) {
+            final reqs = parameters.requires.get()
 
-        if (!reqs.empty) {
-            asciidoctor.requireLibraries(reqs)
-        }
+            asciidoctor.registerLogHandler(logger)
 
-        handleGroovyExtensions(asciidoctor)
-
-        final destDir = parameters.destinationDir.get().asFile
-        destDir.mkdirs()
-
-        try {
-            if (parameters.adjustBaseDirPerFile.get()) {
-                partitionSourceFiles().each { bd, files ->
-                    asciidoctor.convertFiles(files, normalisedOptions(bd))
-                }
-            } else {
-                asciidoctor.convertFiles(
-                    parameters.sourceFiles.get(),
-                    normalisedOptions(parameters.baseDir.get().asFile)
-                )
+            if (!reqs.empty) {
+                asciidoctor.requireLibraries(reqs)
             }
-        } finally {
-            logger?.close()
+
+            handleGroovyExtensions(asciidoctor)
+
+            final groups = EngineUtils.groupByParent(parameters.sourceFiles.get())
+            groups.each { parent, sourceFiles ->
+                final relPath = parameters.sourceRootDir.get().asFile.toPath()
+                    .relativize(parent.toPath())
+                    .toString()
+                final groupDestDir = parameters.destinationDir
+                    .map { relPath.empty ? it : it.dir(relPath) }
+                    .get().asFile
+                groupDestDir.mkdirs()
+                processBatch(asciidoctor, sourceFiles, groupDestDir)
+            }
         }
     }
 
-    private Options normalisedOptions(File withBaseDir) {
+    private void processBatch(
+        Asciidoctor asciidoctor,
+        Collection<File> sourceFiles,
+        File destinationDir
+    ) {
+        if (parameters.adjustBaseDirPerFile.get()) {
+            sourceFiles
+                .groupBy { it.parentFile }
+                .each { bd, files ->
+                    asciidoctor.convertFiles(
+                        files,
+                        normalisedOptions(bd, destinationDir)
+                    )
+                }
+        } else {
+            asciidoctor.convertFiles(
+                sourceFiles,
+                normalisedOptions(parameters.baseDir.get().asFile, destinationDir)
+            )
+        }
+    }
+
+    private Options normalisedOptions(File withBaseDir, File destinationDir) {
         final optionsBuilder = Options.builder()
         final attributesBuilder = Attributes.builder()
 
@@ -95,7 +117,7 @@ abstract class LauncherWorker implements WorkAction<LauncherParameters> {
             backend(parameters.backend.get())
             safe(SafeMode.valueOf(parameters.safeMode.get().toUpperCase(Locale.US)))
             baseDir(withBaseDir)
-            toDir(parameters.destinationDir.get().asFile)
+            toDir(destinationDir)
             attributes(attributesBuilder.build())
             eruby(eo.eruby)
             catalogAssets(eo.catalogAssets)
@@ -114,10 +136,6 @@ abstract class LauncherWorker implements WorkAction<LauncherParameters> {
         }
 
         optionsBuilder.build()
-    }
-
-    private Map<File, List<File>> partitionSourceFiles() {
-        parameters.sourceFiles.get().groupBy { it.parentFile }
     }
 
     private void handleGroovyExtensions(Asciidoctor asciidoctor) {
