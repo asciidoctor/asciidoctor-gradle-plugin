@@ -35,6 +35,7 @@ import javax.inject.Inject
  * Options for Reveal.js slides.
  *
  * @author Schalk W. Cronjé
+ * @author Mattias Reichel
  *
  * @since 5.0
  */
@@ -131,7 +132,7 @@ class RevealjsOptions implements HasAttributeProvider, CanConfigureTaskInputs {
                 case null:
                 case 'false':
                 case 'none': return NONE
-                default: return DEFAULT
+                default: return values().find { it.name().equalsIgnoreCase(value) } ?: DEFAULT
             }
         }
 
@@ -259,7 +260,8 @@ class RevealjsOptions implements HasAttributeProvider, CanConfigureTaskInputs {
 
     /**
      * Display the slider number of the current slide. <br/>
-     * The String "true" will display the slide number with default formatting. <br/>
+     * The String "true" will display the slide number with default formatting,
+     * and "false" or "none" will hide it. <br/>
      * Additional formatting is available:
      * <ul>
      *     <li>h.v: horizontal . vertical slide number (default)</li>
@@ -267,9 +269,10 @@ class RevealjsOptions implements HasAttributeProvider, CanConfigureTaskInputs {
      *     <li>c: flattened slide number</li>
      *     <li>c/t: flattened slide number / total slides</li>
      * </ul>
+     * The name of a {@link SlideNumber} constant is also accepted.
      */
     void setSlideNumber(String b) {
-        this.slideNumber.set(SlideNumber.valueOf(b).value)
+        this.slideNumber.set(SlideNumber.slideNumber(b).value)
     }
 
     /** Push each slide change to the browser history.
