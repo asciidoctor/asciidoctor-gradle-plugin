@@ -5,8 +5,8 @@
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjHtml5
 import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjDiagram
-import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsToolchain
-import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjPdf
+import org.asciidoctor.gradle.model5.js.toolchains.AsciidoctorjsNativeToolchain
+import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsDocbook
 
 asciidoc {
     toolchains { // <.>
@@ -22,9 +22,9 @@ asciidoc {
                 }
             }
         }
-        asciidoctorjs2(AsciidoctorjsToolchain) { // <.>
+        asciidoctorjs2(AsciidoctorjsNativeToolchain) { // <.>
             registeredOutputFormatters {
-                pdf(AsciidoctorjsPdf) { // <.>
+                docbook(AsciidoctorjsDocbook) { // <.>
 
                 }
             }
@@ -37,7 +37,7 @@ asciidoc {
             }
 
             output('asciidoctorj', 'html') // <.>
-            output('asciidoctorjs', 'pdf') // <.>
+            output('asciidoctorjs', 'docbook') // <.>
         }
     }
 }
@@ -51,14 +51,14 @@ asciidoc {
 
 <.> Registers a toolchain that will use `asciidoctor.js`.
 If `org.asciidoctor.js` is applied, there will be a default toolchain called `asciidoctorjs`.
-<.> Create a PDF output formatter for the `asciidoctorj` toolchains.
+<.> Create a DocBook output formatter for the `asciidoctorjs` toolchains.
 If `org.asciidoctor.js` is applied, there will be a `html` output formatter.
-The PDF formatter will be registered if `org.asciidoctor.js.pdf` is also applied.
+The DocBook formatter will be registered if `org.asciidoctor.js.docbook` is also applied.
 <.> Manages publications.
 <.> Defines the sources of a publication.
 <.> Defines an output.
   In this example it says HTML output should be produced using the `asciidoctorj` toolchain.
   An output refers to a valid toolchain and an output formatter on that toolchain.
 <.> Multiple outputs can be listed.
-  This second example says that PDF output should be produced using the `asciidoctorjs` toolchain.
+  This second example says that DocBook output should be produced using the `asciidoctorjs` toolchain.
 

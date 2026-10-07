@@ -10,13 +10,13 @@ Groovy::
 --
 [source,groovy]
 ----
-import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjHtml
+import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjHtml5
 
 asciidoc {
     toolchains {
-        aciidoctorj {
+        asciidoctorj {
             registeredOutputFormatters {
-                html(AsciidoctorjHtml) { // <.>
+                html(AsciidoctorjHtml5) { // <.>
                     embedded = true // <.>
                     templateDirs 'src/myAsciidocTemplate1', 'src/myAsciidocTemplate2' // <.>
                     forceEngine =  'erb' // <.>
@@ -41,5 +41,6 @@ asciidoc {
 
 NOTE: `templateDirs` must be provided, otherwise template setting will be ignored.
   If the engine is not provided, it will auto-detect engines from the file extensions found in the template directories.
+  The template engines are GEMs, so `templateDirs` also needs the `org.asciidoctor.jvm.gems` plugin to be applied.
 
 

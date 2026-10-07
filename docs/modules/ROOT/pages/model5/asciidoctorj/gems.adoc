@@ -17,14 +17,14 @@ repositories {
 }
 
 dependencies {
-  asciidocGemAsciidoctorj 'rubygems:asciidoctor-bibtex:0.9.0' // <.>
+  asciidocGemsAsciidoctorj 'rubygems:asciidoctor-bibtex:0.9.0' // <.>
 }
 ----
 <.> Add a repository so that Gradle knows where to resolve GEMs from.
   See https://jruby-gradle.ysb33r.org[Simplified JRuby Gradle plugin] for more details.
 <.> If you prefer to use `gem.coop` over the original `rubygems.org`, then you can use this instead or `ruby.gems()`.
 <.> Add the specific GEM to the toolchain.
-  The configuration name is of the format `asciidoctorGem<TOOLCHAIN_NAME>`.
+  The configuration name is of the format `asciidocGems<TOOLCHAIN-NAME>`.
 
 IMPORTANT: If you have problems configuring the GEM repositories themselves, please report those problems on the https://gitlab.com/ysb33rOrg/gradle/simplified-jruby-gradle-plugin/-/issues[Simplified JRuby Gradle plugin] issues page.
 

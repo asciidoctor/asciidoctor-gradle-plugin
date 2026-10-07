@@ -28,7 +28,7 @@ import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjPdf
 
 asciidoc {
   toolchains {
-    aciidoctorj {
+    asciidoctorj {
       registeredOutputFormatters {
         pdf(AsciidoctorjPdf) {
           useTheme('default-with-font-fallbacks') // <.>
@@ -46,7 +46,7 @@ asciidoc {
 }
 ----
 <.> Use a built-in theme.
-<.> Use the `myLocal` theme from `asciidocPdfThemes`.
+<.> Use the `myLocal` theme from the `pdfThemes` in the `asciidocThemes` extension.
 <.> Turn this on if you need to read remote images via URI.
  Please read https://docs.asciidoctor.org/asciidoc/latest/directives/include-uri/[Include Content by URI] to understand this setting.
 
@@ -58,7 +58,7 @@ import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjPdf
 
 asciidoc {
   toolchains {
-    aciidoctorj {
+    asciidoctorj {
       registeredOutputFormatters {
         pdf(AsciidoctorjPdf) {
           useVersion('1.2.3') // <.>

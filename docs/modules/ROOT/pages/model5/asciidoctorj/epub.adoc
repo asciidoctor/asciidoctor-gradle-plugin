@@ -20,11 +20,11 @@ asciidoc {
 
 [source,groovy]
 ----
-import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjPdf
+import org.asciidoctor.gradle.model5.jvm.formatters.AsciidoctorjEpub
 
 asciidoc {
   toolchains {
-    aciidoctorj {
+    asciidoctorj {
       registeredOutputFormatters {
         epub(AsciidoctorjEpub) {
           useVersion('1.2.3') // <.>

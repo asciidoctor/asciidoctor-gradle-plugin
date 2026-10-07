@@ -14,7 +14,7 @@ import org.asciidoctor.gradle.model5.jvm.extensions.AsciidoctorjGroovyDslExtensi
 
 asciidoc {
     toolchains {
-        aciidoctorj {
+        asciidoctorj {
             asciidocExtensions {
                 groovydsl(AsciidoctorjGroovyDslExtension) {
                     fromString (''' // <.>
