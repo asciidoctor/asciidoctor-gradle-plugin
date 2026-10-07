@@ -30,6 +30,7 @@ import java.io.File;
  * Parameters for running AsciidoctorJ in a worker.
  *
  * @author Schalk W. Cronjé
+ * @author Artemy Osipov
  * @since 5.0
  */
 public interface LauncherParameters extends WorkParameters {
@@ -47,6 +48,13 @@ public interface LauncherParameters extends WorkParameters {
      * @return List of required GEMs. Property is always defined, but the list could be empty.
      */
     ListProperty<String> getRequires();
+
+    /**
+     * The root directory where source files are located.
+     *
+     * @return Base directory for all source files. Always present.
+     */
+    DirectoryProperty getSourceRootDir();
 
     /**
      * Base directory.

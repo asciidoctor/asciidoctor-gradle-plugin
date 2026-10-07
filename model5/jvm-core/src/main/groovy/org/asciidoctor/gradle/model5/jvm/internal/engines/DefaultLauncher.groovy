@@ -20,7 +20,6 @@ import groovy.util.logging.Slf4j
 import org.asciidoctor.gradle.model5.core.AsciidoctorConversionSettings
 import org.asciidoctor.gradle.model5.core.AsciidoctorExecutionSettings
 import org.asciidoctor.gradle.model5.core.AsciidoctorLauncher
-import org.asciidoctor.gradle.model5.core.internal.engines.EngineUtils
 import org.asciidoctor.gradle.model5.core.internal.tasks.LogProcessor
 import org.asciidoctor.gradle.model5.jvm.engines.ExecutionContext
 import org.gradle.api.Project
@@ -45,6 +44,7 @@ import static org.ysb33r.grolifant5.api.core.StringTools.EMPTY
  * Launches conversion jobs on JVM workers.
  *
  * @author Schalk W. Cronjé
+ * @author Artemy Osipov
  *
  * @since 5.0
  */
@@ -105,8 +105,6 @@ class DefaultLauncher implements AsciidoctorLauncher {
     void run(AsciidoctorExecutionSettings executionsSettings, AsciidoctorConversionSettings conversionSettings) {
         final warnings = conversionSettings.fatalWarnings.getOrElse(EMPTY_SET)
         final wq = createWorkQueue(executionsSettings)
-        final groups = EngineUtils.groupByParent(conversionSettings.sourceFiles.get())
-        final root = conversionSettings.sourceRootDir.get().asFile
         final destDir = conversionSettings.destinationDir
         final aliasName = conversionSettings.backend.map { b -> b.name }
         final backendName = conversionSettings.backend.map { b -> b.backend }
@@ -118,51 +116,49 @@ class DefaultLauncher implements AsciidoctorLauncher {
 
         jobLogDir.get().asFile.deleteDir()
 
-        int index = 1
-        groups.each { parent, allFiles ->
-            final relPath = fsOperations.relativize(root, parent)
-            wq.submit(LauncherWorker) { lp ->
-                lp.tap {
-                    sourceFiles.set(allFiles)
-                    requires.set(executionsSettings.moduleRequires)
-                    baseDir.set(conversionSettings.baseDir)
-                    adjustBaseDirPerFile.set(conversionSettings.adjustBaseDirPerFile)
-                    destinationDir.set(relPath.empty ? destDir : destDir.map { it.dir(relPath) })
-                    backend.set(backendName)
-                    safeMode.set(executionsSettings.safeMode.map { it.name() })
-                    attributes.set(conversionSettings.attributes)
-                    engineOptions.set(launcherEngineOptions)
-                    logFile.set(jobLogDir.map { it.file("${LOG_EVENTS_FILE_PREFIX}.${index}") })
-                    embedded.set(conversionSettings.embedded.orElse(false))
+        int logFileIndex = 1
 
-                    if (conversionSettings.templates.present) {
-                        final t = conversionSettings.templates.get()
-                        templateEngine.set(t.templateEngines.first())
-                        templateDirs.set(t.templateDirs)
-                    }
+        wq.submit(LauncherWorker) { lp ->
+            lp.tap {
+                sourceRootDir.set(conversionSettings.sourceRootDir)
+                sourceFiles.set(conversionSettings.sourceFiles.get())
+                requires.set(executionsSettings.moduleRequires)
+                baseDir.set(conversionSettings.baseDir)
+                adjustBaseDirPerFile.set(conversionSettings.adjustBaseDirPerFile)
+                destinationDir.set(destDir)
+                backend.set(backendName)
+                safeMode.set(executionsSettings.safeMode.map { it.name() })
+                attributes.set(conversionSettings.attributes)
+                engineOptions.set(launcherEngineOptions)
+                logFile.set(jobLogDir.map { it.file("${LOG_EVENTS_FILE_PREFIX}.${logFileIndex}") })
+                embedded.set(conversionSettings.embedded.orElse(false))
 
-                    if (conversionSettings.scriptCollections.present) {
-                        final sc = conversionSettings.scriptCollections.get()
-                        if (sc.containsKey(SCRIPTS_GROOVY)) {
-                            final scFiles = sc[SCRIPTS_GROOVY].scriptFiles.getOrNull()
-                            final scScripts = sc[SCRIPTS_GROOVY].scripts.getOrNull()
+                if (conversionSettings.templates.present) {
+                    final t = conversionSettings.templates.get()
+                    templateEngine.set(t.templateEngines.first())
+                    templateDirs.set(t.templateDirs)
+                }
 
-                            if (scFiles) {
-                                groovyExtensionScriptFiles.set(scFiles)
-                            }
+                if (conversionSettings.scriptCollections.present) {
+                    final sc = conversionSettings.scriptCollections.get()
+                    if (sc.containsKey(SCRIPTS_GROOVY)) {
+                        final scFiles = sc[SCRIPTS_GROOVY].scriptFiles.getOrNull()
+                        final scScripts = sc[SCRIPTS_GROOVY].scripts.getOrNull()
 
-                            if (scScripts) {
-                                groovyExtensionScripts.set(scScripts)
-                            }
+                        if (scFiles) {
+                            groovyExtensionScriptFiles.set(scFiles)
+                        }
+
+                        if (scScripts) {
+                            groovyExtensionScripts.set(scScripts)
                         }
                     }
                 }
             }
-            ++index
         }
         wq.await()
 
-        LogProcessor.parseLogs(jobLogDir.get(), warnings, index)
+        LogProcessor.parseLogs(jobLogDir.get(), warnings, logFileIndex)
     }
 
     private Optional<ExecutionContext> getExecutionContext(String toolchainName, String formatterName) {
