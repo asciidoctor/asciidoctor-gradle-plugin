@@ -1,8 +1,4 @@
 == Kroki options
-:partials-toolchain-name: asciidoctorjs
-:partials-toolchain-type: AsciidoctorjsToolchain
-:partials-toolchain-kroki-type: AsciidoctorjsKrokiExtension
-:partials-package-part: js
 
 [tabs]
 ====

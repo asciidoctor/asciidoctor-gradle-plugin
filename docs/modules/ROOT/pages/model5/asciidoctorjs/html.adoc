@@ -5,13 +5,13 @@ There are a number of items that can be configured on the output formatter itsel
 
 [source,groovy,role="primary"]
 ----
-import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsHtml
+import org.asciidoctor.gradle.model5.js.formatters.AsciidoctorjsHtml5
 
 asciidoc {
     toolchains {
-        aciidoctorjs {
+        asciidoctorjs {
             registeredOutputFormatters {
-                html(AsciidoctorjsHtml) { // <.>
+                html(AsciidoctorjsHtml5) { // <.>
                     embedded = true // <.>
                     templateDirs 'src/myAsciidocTemplate1', 'src/myAsciidocTemplate2' // <.>
                     useEngine 'nunjucks' // <.>

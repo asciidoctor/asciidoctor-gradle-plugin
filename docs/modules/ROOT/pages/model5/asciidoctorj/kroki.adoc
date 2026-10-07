@@ -13,6 +13,7 @@ Groovy::
 .build.gradle
 ----
 plugins {
+    id 'org.asciidoctor.jvm' version '{release-version}'
     id 'org.asciidoctor.jvm.kroki' version '{release-version}'
 }
 ----
@@ -26,6 +27,7 @@ Kotlin::
 .build.gradle.kts
 ----
 plugins {
+    id("org.asciidoctor.jvm") version "{release-version}"
     id("org.asciidoctor.jvm.kroki") version "{release-version}"
 }
 ----
@@ -47,6 +49,7 @@ In order to you use Kroki images with EPUB and PDF you have one of two options t
 
 Both of these options affect all the publications that use the specific toolchain.
 If this is not to your liking, you can create an additional `asciidoctorj` toolchain and set the Kroki setting only on that toolchain.
+The EPUB output in this example needs the `org.asciidoctor.jvm.epub` plugin as well.
 
 .Using an additional toolchain
 [tabs]

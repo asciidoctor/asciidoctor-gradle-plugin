@@ -1,6 +1,6 @@
 = Asciidoctor Editor Config Plugin
 
-This plugin can be used on its own to generate an `.asciidoctoreditorconfig` file.
+This plugin can be used on its own to generate an `.asciidoctorconfig` file.
 It does not rely on any {asciidoctorj-name} or {asciidoctorjs-name} support.
 It will, however, perform additional configuration if it is applied alongside any of the AsciiDoc conversion plugins.
 

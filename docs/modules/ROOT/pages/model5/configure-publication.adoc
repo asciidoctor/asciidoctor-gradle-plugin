@@ -86,11 +86,11 @@ asciidoc {
       sourceSet {
           attributes {
               replaceAll 'source-language': 'java' // <.>
-              add 'source-language': 'java', 'project-version' : '1.2.3' // <.>
+              addAll 'source-language': 'java', 'project-version' : '1.2.3' // <.>
               add 'source-language', 'java' // <.>
               add 'publish-time', asTime(LocalTime.now()) // <.>
               add 'publish-date', asDate(LocalDate.now()) // <.>
-              addAttributeProvider { -> [ 'source-language': 'java']} // <.>
+              attributeProvider provider { -> [ 'source-language': 'java']} // <.>
           }
       }
     }
@@ -170,7 +170,7 @@ asciidoc {
 ====
 
 WARNING: Currently, setting `docInfoDir` affects all tasks associated with the specific publication where it was set, even those that are no docinfo-aware.
-For example, if your publication builds both PDF and HTML files, and you change `docbook-header.html`, then the PDF output will also be rebuilt.
+For example, if your publication builds both PDF and HTML files, and you change `docinfo-header.html`, then the PDF output will also be rebuilt.
 This might be rectified in a future release.
 
 // === Language customisation

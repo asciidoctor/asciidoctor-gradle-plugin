@@ -1,5 +1,7 @@
 == Reveal.js options
 
+The enumerations used below are part of `org.asciidoctor.gradle.model5.core.revealjs.RevealjsOptions`, which has to be imported in the build script to use them.
+
 [tabs]
 ====
 Groovy::
@@ -11,14 +13,14 @@ revealjsOptions{
     autoSlideInterval = 200 // <.>
     autoSlideStoppable = true // <.>
     backgroundTransition = 'none' // <.>
-    backgroundTransition =  ReveljsOptions.Transition.FADE // <.>
+    backgroundTransition =  RevealjsOptions.Transition.FADE // <.>
     builtinThemeName = 'black' // <.>
     builtinThemeName = RevealjsOptions.BuiltInThemes.BEIGE // <.>
     controls = true // <.>
     flagEmbedded = true // <.>
     fragments = true // <.>
     hideAddressBarOnMobile = true // <.>
-    keyboardShortcuts // <.>
+    keyboardShortcuts = true // <.>
     loop = true // <.>
     mouseWheel = true // <.>
     overviewMode = true // <.>
@@ -32,12 +34,12 @@ revealjsOptions{
     transition = 'slide' // <.>
     transition = RevealjsOptions.Transition.FADE // <.>
     transitionSpeed = 'fast' // <.>
-    transitionSpeed = RevealjsOptions.Transition.SLOW // <.>
+    transitionSpeed = RevealjsOptions.TransitionSpeed.SLOW // <.>
     verticalCenter = true // <.>
     viewDistance = 3 // <.>
 
     customTheme {  // <.>
-        uri = 'https:/somewhere.example/there/is/a/revealjs/theme' // <.>
+        uri = 'https://somewhere.example/there/is/a/revealjs/theme' // <.>
         location = '/path/to/dir' // <.>
         relativePath = 'my/theme' // <.>
     }
