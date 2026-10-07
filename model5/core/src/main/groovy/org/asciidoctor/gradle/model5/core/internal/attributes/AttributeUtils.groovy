@@ -39,6 +39,7 @@ import java.util.function.Function
  * @since 5.0
  *
  * @author Schalk W. Cronjé
+ * @author Mattias Reichel
  */
 @CompileStatic
 class AttributeUtils {
@@ -63,9 +64,11 @@ class AttributeUtils {
     private static final Function<Object, String> DATE_CONVERTER = (Object value) -> {
         switch (value) {
             case Date:
-                return formatDate(((Date) value).toLocalDateTime())
+                return formatDate(((Date) value).toLocalDate())
             case TemporalAccessor:
-                return formatDate(LocalDateTime.from((TemporalAccessor) value))
+                return formatDate(LocalDate.from((TemporalAccessor) value))
+            case CharSequence:
+                return formatDate(LocalDate.parse((CharSequence) value))
             default:
                 throw new UnsupportedAttributeType(
                     "The value '${value}' is not suitable for a date (and time) conversion"
@@ -89,13 +92,13 @@ class AttributeUtils {
             case LocalTime:
                 return formatTime((LocalTime) input)
             case LocalDate:
-                return formatDate(LocalDateTime.from((LocalDate) input))
+                return formatDate((LocalDate) input)
             case LocalDateTime:
                 return formatDateTime((LocalDateTime) input)
             case ZonedDateTime:
                 return formatDateTime(LocalDateTime.from((ZonedDateTime) input))
             case OffsetDateTime:
-                return formatDateTime(LocalDateTime.from((ZonedDateTime) input))
+                return formatDateTime(LocalDateTime.from((OffsetDateTime) input))
             case OffsetTime:
                 return formatTime(LocalTime.from((OffsetTime) input))
             case URI:
@@ -132,7 +135,7 @@ class AttributeUtils {
         dt.format(DATETIME_FORMAT)
     }
 
-    static String formatDate(LocalDateTime dt) {
+    static String formatDate(LocalDate dt) {
         dt.format(DATE_FORMAT)
     }
 
