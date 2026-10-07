@@ -48,6 +48,7 @@ import static org.gradle.api.tasks.PathSensitivity.RELATIVE
  *
  * @author Schalk W. Cronjé
  * @author Laura Kassovic
+ * @author Mattias Reichel
  *
  * @since 5.0
  */
@@ -93,6 +94,19 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
         this.conversionSettings.baseDir.set(determineBaseDir())
         inputs.property('doctype', conversionSettings.docType).optional(true)
         inputs.property('launcher', launcher.map { it.ecosystemSignature }).optional(true)
+        inputs.property('attributes', conversionSettings.attributes)
+        inputs.property('backend', conversionSettings.backend.map { it.backend }).optional(true)
+        inputs.property('embedded', conversionSettings.embedded)
+        inputs.property('safeMode', exeSettings.safeMode).optional(true)
+        inputs.property('moduleRequires', exeSettings.moduleRequires.map { it.sort(false) })
+        inputs.property('baseDir', originalBaseDir.map { it.asFile.absolutePath }).optional(true)
+        inputs.property('adjustBaseDirPerFile', conversionSettings.adjustBaseDirPerFile)
+        inputs.property('fatalWarnings', determineFatalWarningPatterns())
+        inputs.property('scripts', determineScripts())
+        inputs.files(determineScriptFiles())
+            .optional()
+            .withPropertyName('scriptFiles')
+            .withPathSensitivity(RELATIVE)
         inputs.dir(this.sourceDir)
         inputs.files(determineAllInputSources())
             .skipWhenEmpty(true)
@@ -322,6 +336,26 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
             } else {
                 base
             }
+        }
+    }
+
+    private Provider<List<String>> determineFatalWarningPatterns() {
+        conversionSettings.fatalWarnings.map { patterns ->
+            patterns.collect { "${it.flags()}:${it.pattern()}".toString() }.sort()
+        }
+    }
+
+    private Provider<Map<String, List<String>>> determineScripts() {
+        conversionSettings.scriptCollections.map { collections ->
+            collections.collectEntries { type, sc ->
+                [type, sc.scripts.get().sort(false)]
+            } as Map<String, List<String>>
+        }
+    }
+
+    private Provider<List<File>> determineScriptFiles() {
+        conversionSettings.scriptCollections.map { collections ->
+            collections.values().collectMany { it.scriptFiles.get() }
         }
     }
 
