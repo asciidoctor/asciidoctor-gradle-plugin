@@ -106,6 +106,20 @@ asciidoc {
   Accepts any `java.time.*` values, or anything string that can be parsed.
 <.> Add a provider of attributes.
 
+==== Default attributes
+
+These attributes are set for every publication:
+
+* `gradle-project-name`: the name of the project.
+* `gradle-project-group`: the group of the project, or an empty string if it has none.
+* `gradle-project-version` and `revnumber`: the version of the project, which is `unspecified` if it is not set.
+* `gradle-projectdir`: the project directory.
+* `gradle-rootdir`: the root project directory.
+* `includedir`: the directory the sources are converted from.
+  When the publication has external sources, this is the intermediate working directory the sources are copied to.
+
+An attribute with the same name in the `attributes` block overrides the default.
+
 === Treating warnings as errors
 
 [tabs]

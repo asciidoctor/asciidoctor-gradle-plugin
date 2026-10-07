@@ -144,12 +144,21 @@ class SourceSetSpec extends UnitTestSpecification {
         }
 
         final attrs = main.attributes.attributeResolver.get().findAll { k, v ->
-            !k.startsWith('gradle')
+            !k.startsWith('gradle') && k != 'revnumber'
         }
 
         then:
         attrs.keySet().size() == 7
         attrs.values().containsAll(['value3', 'true'])
+    }
+
+    void 'revnumber is the project version'() {
+        when:
+        project.version = '1.2.3'
+        project.evaluate()
+
+        then:
+        main.attributes.attributeResolver.get()['revnumber'] == '1.2.3'
     }
 
     void 'Output directory depends on publication name'() {
