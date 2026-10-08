@@ -24,24 +24,20 @@ class DefaultAttributesSpec extends AsciidoctorjHtmlIntegrationSpecification {
 
     void setup() {
         writeHtmlBasedBuildFile()
-        buildFile << "\nversion = '1.2.3'\n"
         writeSource('src/docs/asciidoc/index.adoc', '''
         = Document
-
-        The version is {revnumber}.
 
         include::{includedir}/_included.adoc[]
         '''.stripIndent())
         writeSource('src/docs/asciidoc/_included.adoc', 'This text is included.\n')
     }
 
-    void 'revnumber is the project version and includedir is the source directory'() {
+    void 'includedir is the source directory'() {
         when:
         final result = getGradleRunner(IS_GROOVY_DSL, [taskName]).build()
 
         then:
         result.task(":${taskName}").outcome == SUCCESS
-        fileContains(outputDir, 'index.html', 'The version is 1.2.3.')
         fileContains(outputDir, 'index.html', 'This text is included.')
     }
 
@@ -73,12 +69,11 @@ class DefaultAttributesSpec extends AsciidoctorjHtmlIntegrationSpecification {
         fileContains(outputDir, 'ext/ext.html', 'This text comes from the external source.')
     }
 
-    void 'Attributes set in the build script override the defaults'() {
+    void 'includedir set in the build script overrides the default'() {
         setup:
         writeSource('other/_included.adoc', 'This text is included from another directory.\n')
         configureSourceSetGroovy(DEFAULT_PUBLICATION, """
         attributes {
-            add('revnumber', '4.5.6')
             add('includedir', file('other').absolutePath)
         }
         """.stripIndent())
@@ -88,8 +83,25 @@ class DefaultAttributesSpec extends AsciidoctorjHtmlIntegrationSpecification {
 
         then:
         result.task(":${taskName}").outcome == SUCCESS
-        fileContains(outputDir, 'index.html', 'The version is 4.5.6.')
         fileContains(outputDir, 'index.html', 'This text is included from another directory.')
+    }
+
+    void 'includedir set in the document overrides the default'() {
+        setup:
+        writeSource('src/docs/asciidoc/index.adoc', '''
+        = Document
+        :includedir: other
+
+        include::{includedir}/_included.adoc[]
+        '''.stripIndent())
+        writeSource('src/docs/asciidoc/other/_included.adoc', 'The document sets its own includedir.\n')
+
+        when:
+        final result = getGradleRunner(IS_GROOVY_DSL, [taskName]).build()
+
+        then:
+        result.task(":${taskName}").outcome == SUCCESS
+        fileContains(outputDir, 'index.html', 'The document sets its own includedir.')
     }
 
     private void writeSource(String path, String content) {

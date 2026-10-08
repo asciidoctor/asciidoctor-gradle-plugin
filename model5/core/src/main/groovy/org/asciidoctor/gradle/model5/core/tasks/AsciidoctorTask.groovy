@@ -56,6 +56,7 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
 
     private static final String EVERYTHING = '**'
     private static final String INCLUDEDIR = 'includedir'
+    private static final String INCLUDEDIR_SOFT = 'includedir@'
 
     private final Property<AsciidoctorLauncher> launcher
     private final DefaultAsciidoctorExecutionSettings exeSettings
@@ -201,6 +202,7 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
      * <p>
      *     Unless the attributes already contain it, {@code includedir} is set to the directory the sources are
      *     converted from. That is the intermediate working directory when there are external sources.
+     *     It is set as {@code includedir@}, so that a document can still set its own {@code includedir}.
      * </p>
      *
      * @param attrs Provider of attributes.
@@ -208,7 +210,11 @@ class AsciidoctorTask extends GrolifantDefaultTask implements AsciidoctorTaskMet
     @Override
     void setAttributes(Provider<Map<String, String>> attrs) {
         conversionSettings.attributes.set(attrs.zip(conversionSettings.sourceRootDir) { attributes, dir ->
-            final Map<String, String> withDefaults = [(INCLUDEDIR): dir.asFile.absolutePath]
+            if (attributes.containsKey(INCLUDEDIR) || attributes.containsKey(INCLUDEDIR_SOFT)) {
+                return attributes
+            }
+
+            final Map<String, String> withDefaults = [(INCLUDEDIR_SOFT): dir.asFile.absolutePath]
             withDefaults.putAll(attributes)
             withDefaults
         })
