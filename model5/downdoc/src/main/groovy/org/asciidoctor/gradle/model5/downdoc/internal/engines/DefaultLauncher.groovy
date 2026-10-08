@@ -42,6 +42,7 @@ import static org.ysb33r.grolifant5.api.core.ExecTools.OutputType.CAPTURE
  * Launcher for the {@code asciidoctor.js} engine.
  *
  * @author Schalk W. Cronjé
+ * @author Mattias Reichel
  *
  * @since 5.0
  */
@@ -105,13 +106,14 @@ class DefaultLauncher implements AsciidoctorLauncher {
             ldir.dir(alias)
         }
 
-        final attrs = conversionSettings.attributes.get().collectMany { k, v ->
-            ['-a', v ? "${k}=${v}".toString() : k]
-        }
+        final attributes = conversionSettings.attributes.get()
 
         int index = 1
         groups.each { parent, files ->
             final relPath = ccso.fsOperations().relativize(root, parent)
+            final attrs = EngineUtils.withRelativeSrcDir(attributes, relPath).collectMany { k, v ->
+                ['-a', v ? "${k}=${v}".toString() : k]
+            }
             final destPath = relPath.empty ? destRoot.asFile : destRoot.dir(relPath).asFile
             destPath.mkdirs()
 
