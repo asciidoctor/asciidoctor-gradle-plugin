@@ -14,6 +14,8 @@ Otherwise in 5.x, the correct way is to use the new model approach, where everyt
 * The base directory is now set prior to conversion.
   The engine can still adjust the base directory per file, but there is a performance as less files can be converted at one time.
 * The `pdfThemes` extension in now called `asciidocPdfThemes`.
+* `gradle-relative-srcdir` is the path from the directory of a document back to the source directory, such as `..` for `subdir/sample.adoc`.
+  The classic plugins set it to the path of the document's directory instead, such as `subdir`.
 
 === Notes about the classic model in 5.x
 
