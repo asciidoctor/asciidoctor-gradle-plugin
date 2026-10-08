@@ -1,7 +1,8 @@
 = Converting to Markdown with {downdoc-name}
 
 With the 5.0 release, there is now the ability to convert Asciidoc to Markdown using the {downdoc-url}[{downdoc-name}] tool.
-This toolchains does not use any of the Asciidoctor engines underneath, but it provides its own `pnpm`-based toolchain.
+This toolchain does not use any of the Asciidoctor engines underneath, but it provides its own `pnpm`-based toolchain.
+It is available via the `org.asciidoctor.downdoc` plugin.
 
 
 [tabs]
@@ -9,8 +10,12 @@ This toolchains does not use any of the Asciidoctor engines underneath, but it p
 Groovy::
 +
 --
-[source,groovy]
+[source,groovy,subs=+attributes]
 ----
+plugins {
+    id 'org.asciidoctor.downdoc' version '{release-version}'
+}
+
 asciidoc {
     toolchains {
         downdoc {
@@ -27,6 +32,6 @@ asciidoc {
   }
 }
 ----
-<.> THe default toolchain is called `downdoc` and the default formatter is `markdown`.
+<.> The default toolchain is called `downdoc` and the default formatter is `markdown`.
 --
 ====
