@@ -55,15 +55,19 @@ class GemUtils {
      * Registers a GEM prepare task.
      *
      * @param tcName Toolchain name.
+     * @param jrubyRuntimeName Name of the JRuby Runtime configuration
+     * @param gemsRuntimeName Name of the GEMs Runtime configuration
      * @param project Associated project.
      * @return Provider to the task.
      */
     static TaskProvider<AsciidoctorGemPrepareTask> registerGemPrepareTask(
         String tcName,
+        String jrubyRuntimeName,
+        String gemsRuntimeName,
         Project project
     ) {
-        final jrubyRuntimeName = ReducerModel.nameForEngineConfiguration(tcName)
-        final gemsRuntimeName = ReducerModel.nameForGemsConfiguration(tcName)
+//        final jrubyRuntimeName = ReducerModel.nameForEngineConfiguration(tcName)
+//        final gemsRuntimeName = ReducerModel.nameForGemsConfiguration(tcName)
         final gemPrepare = project.tasks.register(
             toolchainPrepareTaskName(tcName),
             AsciidoctorGemPrepareTask,

@@ -16,15 +16,13 @@
 package org.asciidoctor.gradle.model5.reducer.internal.engines
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.model5.jrubytools.internal.engines.DefaultJRubyEngineOptions
 import org.asciidoctor.gradle.model5.reducer.engines.EngineOptions
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.ysb33r.gradle.jruby.api.core.JRubyEnvironmentInheritance
 
 import javax.inject.Inject
-
-import static org.ysb33r.gradle.jruby.api.core.JRubyEnvironmentInheritance.ESSENTIAL_ONLY
 
 /**
  * Options for running the {@code asciidoctor-reducer} engine.
@@ -34,14 +32,12 @@ import static org.ysb33r.gradle.jruby.api.core.JRubyEnvironmentInheritance.ESSEN
  * @since 5.1
  */
 @CompileStatic
-class DefaultEngineOptions implements EngineOptions {
+class DefaultEngineOptions extends DefaultJRubyEngineOptions implements EngineOptions {
 
     @Inject
     DefaultEngineOptions(ObjectFactory objectFactory) {
+        super(objectFactory)
         this.traceFlag = objectFactory.property(Boolean).convention(false)
-        this.systemPath = objectFactory.property(Boolean).convention(false)
-        this.openModules = objectFactory.property(Boolean).convention(false)
-        this.inheritEnv = objectFactory.property(JRubyEnvironmentInheritance).convention(ESSENTIAL_ONLY)
     }
 
     @Override
@@ -53,40 +49,5 @@ class DefaultEngineOptions implements EngineOptions {
         this.traceFlag
     }
 
-    @Override
-    void setInheritRubyEnv(String mode) {
-        this.inheritEnv.set(JRubyEnvironmentInheritance.valueOf(mode.toUpperCase(Locale.US)))
-    }
-
-    @Override
-    void setInheritRubyEnv(JRubyEnvironmentInheritance mode) {
-        this.inheritEnv.set(mode)
-    }
-
-    Provider<JRubyEnvironmentInheritance> getInheritRubyEnv() {
-        this.inheritEnv
-    }
-
-    @Override
-    void withSystemPath() {
-        this.systemPath.set(true)
-    }
-
-    @Override
-    void withModuleOpens() {
-        this.openModules.set(true)
-    }
-
-    Provider<Boolean> getSystemPath() {
-        this.systemPath
-    }
-
-    Provider<Boolean> getOpenModules() {
-        this.openModules
-    }
-
     private final Property<Boolean> traceFlag
-    private final Property<Boolean> systemPath
-    private final Property<Boolean> openModules
-    private final Property<JRubyEnvironmentInheritance> inheritEnv
 }

@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.model5.reducer.plugins
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
 import org.asciidoctor.gradle.model5.core.plugins.AsciidoctorCoreBasePlugin
+import org.asciidoctor.gradle.model5.jrubytools.plugins.JRubyToolsBasePlugin
 import org.asciidoctor.gradle.model5.reducer.ReducerModel
 import org.asciidoctor.gradle.model5.reducer.formatters.AsciidoctorReducerOutputFormatter
 import org.asciidoctor.gradle.model5.reducer.internal.formatters.DefaultReducerAsciidocOutputFormatter
@@ -39,7 +40,7 @@ class ReducerBasePlugin implements Plugin<Project> {
     void apply(Project project) {
         project.pluginManager.tap {
             apply(AsciidoctorCoreBasePlugin)
-            apply('org.ysb33r.jruby.resolver')
+            apply(JRubyToolsBasePlugin)
         }
 
         final asciidoc = project.extensions.getByType(AsciidoctorModelExtension)

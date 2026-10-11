@@ -21,9 +21,13 @@ import org.asciidoctor.gradle.model5.core.SafeMode
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
 
 import javax.inject.Inject
+
+import static org.ysb33r.grolifant5.api.core.StringTools.COMMA
+import static org.ysb33r.grolifant5.api.core.StringTools.EMPTY
 
 /**
  * Implementation of {@link AsciidoctorExecutionSettings}.
@@ -40,13 +44,19 @@ class DefaultAsciidoctorExecutionSettings implements AsciidoctorExecutionSetting
     final Property<String> formatterName
     final Property<String> toolchainName
     final ConfigurableFileCollection additionalClasspath
+    final Provider<Map<String, String>> inputProperties
 
     @Inject
+    @SuppressWarnings('UnnecessaryCast')
     DefaultAsciidoctorExecutionSettings(ObjectFactory objectFactory) {
         safeMode = objectFactory.property(SafeMode)
         moduleRequires = objectFactory.setProperty(String)
         formatterName = objectFactory.property(String)
         toolchainName = objectFactory.property(String)
         additionalClasspath = objectFactory.fileCollection()
+
+        final smp = safeMode.map { it.name() }.orElse(EMPTY)
+        final mrp = moduleRequires.map { it.sort(false).join(COMMA) }.orElse(EMPTY)
+        this.inputProperties = smp.zip(mrp) { x, y -> [sm: x, mr: y] as Map<String, String> }
     }
 }

@@ -24,7 +24,6 @@ import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 
 class AsciidoctorReducerOutputFormatterSpec extends IntegrationSpecification {
 
-    // asciidoctorPrepareAsciidoctorReducerToolchain
     void 'Reducer formatter will convert files and copy resources'() {
         setup:
         final taskName = 'asciidoctorReducedAdoc'

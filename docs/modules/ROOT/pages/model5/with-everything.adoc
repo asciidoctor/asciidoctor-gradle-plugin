@@ -20,3 +20,5 @@ include::example$model5/include-all.build.gradle[tags=important-stuff]
 <.> An example of how AsciiDoc can be reduced to a single AsciiDoc document and then turned into Markdown.
 <.> Using the output of one output formatter to be the input of another AsciiDoc processor.
 <.> The `downdoc` toolchain and the `markdown` output formatter are added by the `org.asciidoctor.downdoc` conventions plugin.
+<.> Using the output from the `kramdocAsciidoc` task as inputs to this source set.
+  This is an example of how to use converted Markdown as part of AsciiDoc processing.

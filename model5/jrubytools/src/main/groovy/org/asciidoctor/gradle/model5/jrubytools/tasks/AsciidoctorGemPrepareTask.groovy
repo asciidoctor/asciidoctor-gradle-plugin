@@ -24,7 +24,7 @@ import org.ysb33r.gradle.jruby.api.tasks.AbstractGemPrepareTask
 import javax.inject.Inject
 
 /**
- * Prepare additional GEMs for AsciidoctorReducer.
+ * Prepare additional GEMs.
  *
  * @since 5.1
  *

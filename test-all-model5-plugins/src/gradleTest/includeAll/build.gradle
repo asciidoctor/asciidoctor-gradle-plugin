@@ -17,6 +17,7 @@ plugins { // <.>
     id 'org.asciidoctor.js.revealjs'
     id 'org.asciidoctor.reducer'
     id 'org.asciidoctor.downdoc'
+    id 'org.asciidoctor.kramdoc'
 }
 
 // end::important-stuff[]
@@ -25,6 +26,18 @@ apply from: System.getProperty('org.ysb33r.ivypot.repo.groovy.dsl.uri')
 // tag::important-stuff[]
 repositories {
     ruby.gems()
+}
+
+
+kramdownAsciidoc {
+    publications {
+        main {
+            sourceSet {
+                sourceDir = 'src/docs/kramdoc'
+            }
+            output 'kramdown', 'asciidoc'
+        }
+    }
 }
 
 asciidoc {
@@ -83,8 +96,18 @@ asciidoc {
             }
             output 'downdoc', 'markdown' // <.>
         }
+        fromMarkdown {
+            sourceSet {
+                externalSource { // <.>
+                    builtBy 'kramdocAsciidoc'
+                    from(tasks.named('kramdocAsciidoc') { outputs.files })
+                }
+            }
+            output 'asciidoctorj', 'html'
+        }
     }
 }
+
 // end::important-stuff[]
 
 tasks.register('runGradleTest') {

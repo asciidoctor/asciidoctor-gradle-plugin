@@ -19,9 +19,12 @@ import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.DocType
 import org.asciidoctor.gradle.model5.core.attributes.Attributes
 import org.asciidoctor.gradle.model5.core.attributes.HasAsciidoctorAttributes
+import org.asciidoctor.gradle.model5.core.attributes.HasIncludeDir
+import org.asciidoctor.gradle.model5.core.attributes.IncludeDir
 import org.asciidoctor.gradle.model5.core.basedir.BaseDirConfiguration
 import org.asciidoctor.gradle.model5.core.basedir.HasBaseDirStrategy
 import org.asciidoctor.gradle.model5.core.internal.attributes.DefaultAttributes
+import org.asciidoctor.gradle.model5.core.internal.attributes.DefaultIncludeDir
 import org.asciidoctor.gradle.model5.core.internal.basedir.DefaultBaseDirConfiguration
 import org.asciidoctor.gradle.model5.core.internal.publications.DefaultAsciidoctorSource
 import org.asciidoctor.gradle.model5.core.internal.publications.DefaultDocInfo
@@ -55,7 +58,7 @@ import static org.ysb33r.grolifant5.api.core.StringTools.EMPTY
  */
 @CompileStatic
 class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttributes, HasAsciidoctorSource,
-    HasAsciidoctorResources {
+    HasAsciidoctorResources, HasExternalSources, HasIncludeDir {
 
     private final BaseDirConfiguration baseDirConfiguration
     private final ConfigCacheSafeOperations ccso
@@ -69,6 +72,7 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
     private final Provider<List<Object>> externalBuiltBy
     private final Provider<? extends ProvidedExternalSources> externalSourcesTransformed
     private final DefaultDocInfo docInfoBlock
+    private final DefaultIncludeDir includeDirMgmt
 
     @Delegate
     private final DefaultAsciidoctorSource localSource
@@ -79,9 +83,10 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
         this.ccso = ConfigCacheSafeOperations.from(tempProjectReference)
         this.layout = tempProjectReference.layout
         this.objectFactory = tempProjectReference.objects
-        this.localSource = objectFactory.newInstance(DefaultAsciidoctorSource)
+        this.localSource = objectFactory.newInstance(DefaultAsciidoctorSource, false)
         this.externalSources = objectFactory.listProperty(DefaultExternalAsciidoctorSource)
         this.baseDirConfiguration = tempProjectReference.objects.newInstance(DefaultBaseDirConfiguration)
+        this.includeDirMgmt = objectFactory.newInstance(DefaultIncludeDir)
         this.attributes = tempProjectReference.objects.newInstance(DefaultAttributes)
         this.doctype = tempProjectReference.objects.property(DocType)
         this.fatalWarningPatterns = tempProjectReference.objects.setProperty(Pattern)
@@ -145,6 +150,11 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
         ClosureUtils.configureItem(this.baseDirConfiguration, configurator)
     }
 
+    @Override
+    IncludeDir getIncludeDir() {
+        this.includeDirMgmt
+    }
+
     /**
      * Adds an external source which is is a supplier of AsciiDoc source and
      * related resources
@@ -166,6 +176,7 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
      *
      * @param strategy Instance of {@link DuplicatesStrategy}.
      */
+    @Override
     void setDuplicatesStrategy(DuplicatesStrategy strategy) {
         this.duplicatesStrategy.set(strategy)
     }
@@ -175,6 +186,7 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
      *
      * @return Provider to list. Can be empty, but never {@code null}.
      */
+    @Override
     Provider<List<Object>> getExternalSourcesBuiltBy() {
         this.externalBuiltBy
     }
@@ -184,6 +196,7 @@ class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttribut
      *
      * @return Provider to all defined external sources.
      */
+    @Override
     Provider<ProvidedExternalSources> getExternalSources() {
         this.externalSourcesTransformed
     }

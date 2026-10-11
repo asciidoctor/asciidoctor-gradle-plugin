@@ -20,26 +20,16 @@ import groovy.util.logging.Slf4j
 import org.asciidoctor.gradle.model5.core.AsciidoctorConversionSettings
 import org.asciidoctor.gradle.model5.core.AsciidoctorExecutionSettings
 import org.asciidoctor.gradle.model5.core.AsciidoctorLauncher
-import org.asciidoctor.gradle.model5.core.internal.tasks.LogProcessor
+import org.asciidoctor.gradle.model5.jrubytools.internal.engines.BaseLauncher
+import org.asciidoctor.gradle.model5.jrubytools.internal.engines.DefaultJRubyEngineOptions
 import org.gradle.api.Project
-import org.gradle.api.file.ConfigurableFileCollection
-import org.gradle.api.file.Directory
-import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.file.FileCollection
-import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkerExecutor
-import org.ysb33r.gradle.jruby.api.core.JRubyEnvironmentInheritance
-import org.ysb33r.gradle.jruby.api.workers.MultiScriptWorkerInitiator
-import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
-import org.ysb33r.grolifant5.api.core.StringTools
 import org.ysb33r.grolifant5.api.core.jvm.GrolifantSimpleJavaForkOptions
 
 import javax.inject.Inject
 
 import static java.util.Collections.EMPTY_MAP
 import static org.asciidoctor.gradle.model5.reducer.internal.formatters.DefaultReducerAsciidocOutputFormatter.KEY_PRESERVE_CONDITIONALS
-import static org.ysb33r.gradle.jruby.api.core.JRubyEnvironmentInheritance.ESSENTIAL_ONLY
 
 /**
  * Launcher for the {@code asciidoctor-reducer} engine.
@@ -50,19 +40,9 @@ import static org.ysb33r.gradle.jruby.api.core.JRubyEnvironmentInheritance.ESSEN
  */
 @CompileStatic
 @Slf4j
-class DefaultLauncher implements AsciidoctorLauncher {
+class DefaultLauncher extends BaseLauncher implements AsciidoctorLauncher {
 
-    private final StringTools stringTools
-    private final ConfigCacheSafeOperations ccso
-    private final DirectoryProperty logDir
-    private final MultiScriptWorkerInitiator workerInitiator
-    private final Property<JRubyEnvironmentInheritance> inheritEnv
-    private final DirectoryProperty gemDir
-    private final GrolifantSimpleJavaForkOptions forkOptions
     private final DefaultEngineOptions engineOptions
-    private final ConfigurableFileCollection classpath
-    private final Property<Integer> forkEvery
-    private final WorkerExecutor worker
 
     @Inject
     DefaultLauncher(
@@ -71,56 +51,13 @@ class DefaultLauncher implements AsciidoctorLauncher {
         WorkerExecutor we,
         Project tempProjectReference
     ) {
-        this.ccso = ConfigCacheSafeOperations.from(tempProjectReference)
-        this.worker = we
-        this.forkOptions = forkOptions
+        super(forkOptions, we, tempProjectReference)
         this.engineOptions = engineOptions
-        this.classpath = ccso.fsOperations().emptyFileCollection()
-        this.stringTools = ccso.stringTools()
-        this.inheritEnv = tempProjectReference.objects.property(JRubyEnvironmentInheritance).convention(ESSENTIAL_ONLY)
-        this.gemDir = tempProjectReference.objects.directoryProperty()
-        this.forkEvery = tempProjectReference.objects.property(Integer).convention(0)
-        this.logDir = tempProjectReference.objects.directoryProperty().value(
-            tempProjectReference.layout.buildDirectory.dir(LogProcessor.LOG_SUBPATH)
-        )
-    }
-
-    void setForkEvery(Provider<Integer> value) {
-        this.forkEvery.set(value)
-    }
-
-    /**
-     * Add to the runtime classpath (Not the GEM classpath).
-     *
-     * @param files Collection of files to add.
-     */
-    void classpath(FileCollection files) {
-        this.classpath.from(files)
-    }
-
-    /**
-     * Sets the directory where the GEMs are located.
-     * @param dir Directory
-     */
-    void setGemDir(Provider<Directory> dir) {
-        this.gemDir.set(dir)
-    }
-
-    @Override
-    String getEcosystemSignature() {
-        classpath.files*.name.join('\n')
     }
 
     @Override
     void run(AsciidoctorExecutionSettings executionsSettings, AsciidoctorConversionSettings conversionSettings) {
         final baseOptions = allCmdLineOptions(executionsSettings, conversionSettings)
-        final errorsFile = ccso.providerTools().zip3(
-            logDir,
-            executionsSettings.toolchainName,
-            executionsSettings.formatterName
-        ) { dir, tcName, fmtName ->
-            dir.file("${tcName}/${fmtName}/reducer-errors.json")
-        }
 
         final outdir = conversionSettings.destinationDir.get()
         final root = conversionSettings.sourceRootDir.get().asFile
@@ -137,34 +74,27 @@ class DefaultLauncher implements AsciidoctorLauncher {
             opts.addAll(baseOptions)
             opts.addAll(['-o', v.absolutePath, k.absolutePath])
             opts
-        }
+        } as List<List<String>>
 
         files.collect { k, v -> v.parentFile }.toSet().each {
             it.mkdirs()
         }
 
-        final forkOnDocCount = forkEvery.get()
-        final workerInitiator = new MultiScriptWorkerInitiator(this.worker, this.ccso).tap {
-            resultsFile = errorsFile
-            failOnNonZeroExitCode = true
-            carryOnIfPossible = true
-            it.forkEvery = forkOnDocCount
-        }
-
-        allExecutions.each {
-            workerInitiator.scripts(it as Collection<Object>)
-        }
-
-        workerInitiator.resultsFile = errorsFile
-        final wq = workerInitiator.runOnWorker(
-            classpath,
-            gemDir,
-            forkOptions,
-            inheritEnv.get(),
-            engineOptions.openModules.get(),
-            engineOptions.systemPath.get()
+        runOnMultiScriptWorker(
+            executionsSettings.toolchainName,
+            executionsSettings.formatterName,
+            allExecutions
         )
-        wq.await()
+    }
+
+    @Override
+    protected DefaultJRubyEngineOptions getJrubyEngineOptions() {
+        this.engineOptions
+    }
+
+    @Override
+    protected String getErrorLogBaseName() {
+        'reducer-errors'
     }
 
     private List<String> allCmdLineOptions(

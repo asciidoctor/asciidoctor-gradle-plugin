@@ -30,11 +30,14 @@
 * xref:model5/asciidoctorjs/adding-an-external-backend.adoc[]
 * xref:model5/asciidoctorjs/adding-an-external-extension.adoc[]
 
-.Markdown
+.Create Markdown with Downdoc
 * xref:model5/downdoc/configuration.adoc[]
 
-.Reducer
+.Reduce nested Asciidoc with Reducer
 * xref:model5/reducer/configuration.adoc[]
+
+.Convert Markdown to AsciiDoc
+* xref:model5/kramdown/configuration.adoc[]
 
 .Classic (Deprecated) mode
 * xref:classic/quick-start.adoc[Quick start]

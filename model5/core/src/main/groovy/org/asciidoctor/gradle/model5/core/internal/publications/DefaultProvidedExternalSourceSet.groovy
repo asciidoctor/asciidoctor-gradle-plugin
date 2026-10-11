@@ -36,7 +36,7 @@ class DefaultProvidedExternalSourceSet implements ProvidedExternalSourceSet {
     final Provider<String> into
     final FileCollection sourcesAndResources
 
-    DefaultProvidedExternalSourceSet(DefaultExternalAsciidoctorSource ext) {
+    DefaultProvidedExternalSourceSet(DefaultExternalSource ext) {
         this.sourcePatterns = ext.sourcePatterns
         this.resourcesPatterns = ext.resourcesPatterns
         this.sourcesAndResources = ext.resolvedSources

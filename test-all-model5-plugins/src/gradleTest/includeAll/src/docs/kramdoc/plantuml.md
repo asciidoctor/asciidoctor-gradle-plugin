@@ -1,0 +1,6 @@
+# Diagrams
+
+
+```plantuml
+alice -> bob
+```

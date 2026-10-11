@@ -8,6 +8,7 @@ dependencies {
     runtimeOnly(project(':asciidoctor5-js-core-plugin'))
     runtimeOnly(project(':asciidoctor5-downdoc-plugin'))
     runtimeOnly(project(':asciidoctor5-jrubytools-plugin'))
+    runtimeOnly(project(':asciidoctor5-kramdown-plugin'))
 }
 
 gradleTestSets {
