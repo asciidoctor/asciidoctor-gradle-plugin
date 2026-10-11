@@ -28,10 +28,10 @@ plugins {
 <.> Registers the output formatter for creating EPUB files.
 <.> Adds support for adding additional GEMs to the execution classpath.
 <.> Adds the Kroki extension for use with `asciidoctorj` extensions.
-<.> Applies `org.asciidoctor.core.pdf-themes` and also registers the output formatter for creating PDF files.
+<.> Applies `org.asciidoctor.themes` and also registers the output formatter for creating PDF files.
 <.> Adds the ability to generate slides with {asciidoctorj-revealjs-name}.
 <.> The convention plugin for working with {asciidoctorjs-name}.
-  Applies `org.asciidoctor.jvm.base` and also creates a default toolchain called `asciidoctorjs`.
+  Applies `org.asciidoctor.js.base` and also creates a default toolchain called `asciidoctorjs`.
 <.> Adds the ability to output to Docbook using {asciidoctorjs-name}.
 <.> Adds the Kroki extension for use with `asciidoctorjs` extensions.
 <.> Adds the ability to generate slides with {asciidoctorjs-revealjs-name}.
@@ -46,16 +46,16 @@ plugins {
     id 'org.asciidoctor.editorconfig' version '{release-version}' // <.>
     id 'org.asciidoctor.core.base' version '{release-version}' // <.>
     id 'org.asciidoctor.core' version '{release-version}' // <.>
-    id 'org.asciidoctor.core.pdf-themes' version '{release-version}' // <.>
+    id 'org.asciidoctor.themes' version '{release-version}' // <.>
     id 'org.asciidoctor.jvm.base' version '{release-version}' // <.>
     id 'org.asciidoctor.js.base' version '{release-version}' // <.>
     id 'org.asciidoctor.downdoc.base' version '{release-version}' // <.>
 }
 ----
-<.> Produces an `.asciidoctoreditorconfig` file for IDE purposes.
+<.> Produces an `.asciidoctorconfig` file for IDE purposes.
 <.> The Asciidoctor base plugin, which is engine free. Only provides the `asciidoc` extension and the `showAsciidoctorToolchains` task.
 <.> The Asciidoctor core plugin, which is engine free. Adds a single publication called `main` and a task called `asciidoctorAll`.
-<.> Adds the `asciidocPdfThemes` extension.
+<.> Adds the `asciidocThemes` extension.
 <.> Registers the ability to create {asciidoctorj-name} toolchains along with output formatters for HTML, DocBook and Manpages.
   Also registers the diagram {asciidoctorj-name} extension.
 <.> Registers the ability to create {asciidoctorjs-name} toolchains along with an HTML output formatter.
@@ -80,7 +80,7 @@ asciidoctorjRevealjs = { id ="org.asciidoctor.jvm.revealjs", version.ref = "asci
 asciidoctorjs = { id ="org.asciidoctor.js", version.ref = "asciidoctorPlugin" }
 asciidoctorjsDocbook = { id ="org.asciidoctor.js.docbook", version.ref = "asciidoctorPlugin" }
 asciidoctorjsKroki = { id ="org.asciidoctor.js.kroki", version.ref = "asciidoctorPlugin" }
-asciidoctorjsRevealjs = { id ="org.asciidoctor.js.reveraljs", version.ref = "asciidoctorPlugin" }
+asciidoctorjsRevealjs = { id ="org.asciidoctor.js.revealjs", version.ref = "asciidoctorPlugin" }
 asciidoctorEditorConfig = { id ="org.asciidoctor.editorconfig", version.ref = "asciidoctorPlugin" }
 ----
 
@@ -88,15 +88,15 @@ asciidoctorEditorConfig = { id ="org.asciidoctor.editorconfig", version.ref = "a
 [source,groovy]
 ----
 plugins {
-    id alias(libs.plugins.asciidoctorj)
-    id alias(libs.plugins.asciidoctorjDiagram)
-    id alias(libs.plugins.asciidoctorjEpub)
-    id alias(libs.plugins.asciidoctorjGems)
-    id alias(libs.plugins.asciidoctorjPdf)
-    id alias(libs.plugins.asciidoctorjRevealjs)
-    id alias(libs.plugins.asciidoctorjs)
-    id alias(libs.plugins.asciidoctorjsDocbook)
-    id alias(libs.plugins.asciidoctorjsRevealjs)
-    id alias(libs.plugins.asciidoctorEditorConfig)
+    alias(libs.plugins.asciidoctorj)
+    alias(libs.plugins.asciidoctorjDiagram)
+    alias(libs.plugins.asciidoctorjEpub)
+    alias(libs.plugins.asciidoctorjGems)
+    alias(libs.plugins.asciidoctorjPdf)
+    alias(libs.plugins.asciidoctorjRevealjs)
+    alias(libs.plugins.asciidoctorjs)
+    alias(libs.plugins.asciidoctorjsDocbook)
+    alias(libs.plugins.asciidoctorjsRevealjs)
+    alias(libs.plugins.asciidoctorEditorConfig)
 }
 ----
