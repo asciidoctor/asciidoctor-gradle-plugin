@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-public interface AsciidoctorTaskMethods {
+public interface AsciidoctorTaskMethods extends ConversionTaskBaseMethods {
 
     /**
      * Sets the conversion launcher for this task.
@@ -68,41 +68,6 @@ public interface AsciidoctorTaskMethods {
      * @param flag Provider that will turn on adjustments if it contains Set {@code true}.
      */
     void setAdjustBaseDirPerFile(Provider<Boolean> flag);
-
-    /**
-     * Sets the source directory for actual sources.
-     *
-     * @param dir Provider to a directory.
-     */
-    void setSourceDir(Provider<Directory> dir);
-
-    /**
-     * The source patterns to look for in the source directory.
-     *
-     * @param patterns Provider of patterns
-     */
-    void setSourcePatterns(Provider<PatternFilterable> patterns);
-
-    /**
-     * The attributes the task will use.
-     *
-     * @param attrs Provider of attributes.
-     */
-    void setAttributes(Provider<Map<String,String>> attrs);
-
-    /**
-     * The set of patterns to check for fatal warnings.
-     *
-     * @param patterns Set of patterns
-     */
-    void setFatalWarnings(Provider<Set<Pattern>> patterns);
-
-    /**
-     * External sources.
-     *
-     * @param externalSources Provider to external sources.
-     */
-    void setExternalSources(Provider<? extends ProvidedExternalSources> externalSources);
 
     /**
      * A provider of script collections.

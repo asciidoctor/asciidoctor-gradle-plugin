@@ -21,7 +21,6 @@ import org.asciidoctor.gradle.model5.core.ScriptCollection
 import org.asciidoctor.gradle.model5.core.extensions.AsciidoctorExtension
 import org.asciidoctor.gradle.model5.core.extensions.ScriptedExtensions
 import org.asciidoctor.gradle.model5.core.internal.DefaultScriptCollection
-import org.asciidoctor.gradle.model5.core.internal.attributes.AttributeUtils
 import org.asciidoctor.gradle.model5.core.internal.publications.DefaultAsciidoctorOutputData
 import org.asciidoctor.gradle.model5.core.internal.publications.DefaultProvidedExternalSourceSet
 import org.asciidoctor.gradle.model5.core.internal.publications.DefaultProvidedExternalSources
@@ -159,13 +158,14 @@ class AsciidoctorPublication implements Named {
     private void registerOutput(String finalName, String toolchainName, String outputFormatterName) {
         final toolchain = parent.toolchains.getByName(toolchainName)
         final formatter = toolchain.registeredOutputFormatters.getByName(outputFormatterName)
+
         final newOutput = this.outputs.create(finalName).tap { DefaultAsciidoctorOutputData it ->
             configureFrom(owner.name, toolchain, formatter, sourceSet)
         }
+
         final task = registerConversionTask(
             toolchain,
             newOutput,
-            formatter.attributeProvider,
             formatter.copyResources
         )
 
@@ -181,20 +181,16 @@ class AsciidoctorPublication implements Named {
     private TaskProvider<? extends AsciidoctorTask> registerConversionTask(
         AsciidoctorToolchain toolchain,
         AsciidoctorOutputData outputData,
-        Provider<Map<String, Object>> formatterAttrs,
         boolean copyResources
     ) {
         final taskFactory = objectFactory.newInstance(TaskFactory)
         final taskName = PublicationUtils.conversionTaskName(name, outputData.name)
-        final extensionAttributes = objectFactory.mapProperty(String, Object)
         final Map<String, DefaultScriptCollection> combinedScriptExtensions = [:]
         final csep = ccso.providerTools().provider { ->
             combinedScriptExtensions as Map<String, ScriptCollection>
         }
 
-        extensionAttributes.putAll(formatterAttrs)
         toolchain.asciidocExtensions.all { AsciidoctorExtension it ->
-            extensionAttributes.putAll(it.attributeProvider)
             if (it instanceof ScriptedExtensions) {
                 final sc = ((ScriptedExtensions) it).scriptedExtensions
                 final se = combinedScriptExtensions.computeIfAbsent(sc.scriptType) { nm ->
@@ -205,7 +201,6 @@ class AsciidoctorPublication implements Named {
             }
         }
 
-        final resolvedExtensionAttributes = AttributeUtils.resolvingProvider(ccso.stringTools(), extensionAttributes)
         final task = taskFactory.registerConversionTask(taskName) { AsciidoctorTaskMethods atm ->
             atm.outputData = outputData
             atm.launcher = toolchain.launcher
@@ -232,12 +227,6 @@ class AsciidoctorPublication implements Named {
                 )
             }
 
-            atm.attributes = sources.attributes.attributeResolver.zip(resolvedExtensionAttributes) { pri, sec ->
-                final map = [:]
-                map.putAll(sec)
-                map.putAll(pri)
-                map as Map<String, String>
-            }
             atm.scriptExtensions = csep as Provider<Map<String, ? extends ScriptCollection>>
         }
 

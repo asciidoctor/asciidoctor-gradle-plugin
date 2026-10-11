@@ -22,7 +22,7 @@ package org.asciidoctor.gradle.model5.core;
  *
  * @since 5.0
  */
-public interface AsciidoctorLauncher {
+public interface AsciidoctorLauncher extends HasEcosystemSignature {
 
     /**
      * Executes an engine with a set of parameters.
@@ -34,17 +34,4 @@ public interface AsciidoctorLauncher {
             AsciidoctorExecutionSettings executionsSettings,
             AsciidoctorConversionSettings conversionSettings
     );
-
-    /**
-     * An arbitrary string that the launcher makes up from its runnable ecosystem.
-     * This included packages, classpaths etc.
-     *
-     * <p>
-     *     {@link org.asciidoctor.gradle.model5.core.tasks.AsciidoctorTask} instances may use this as part of
-     *     up-to-date checks.
-     * </p>
-     *
-     * @return Signature string
-     */
-    String getEcosystemSignature();
 }

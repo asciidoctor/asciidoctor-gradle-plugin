@@ -29,25 +29,5 @@ import org.gradle.api.tasks.util.PatternFilterable;
  *
  * @since 5.0
  */
-public interface HasAsciidoctorResources {
-    /**
-     * Adds these patterns that are relative to the source directory or the intermediate source directory.
-     *
-     * @param cfg {@link PatternFilterable} instance that can be configured.
-     */
-    void resources(Action<? super PatternFilterable> cfg);
-
-    /**
-     * Adds these patterns that are relative to the source directory or the intermediate source directory.
-     *
-     * @param cfg A closre that can configure a {@link PatternFilterable} instance.
-     */
-    void resources(@DelegatesTo(PatternFilterable.class) Closure<?> cfg);
-
-    /**
-     * Patterns that can be added to a copy spec for copying resources to a target directory.
-     *
-     * @return Provider to patterns for a copy specification
-     */
-    Provider<PatternFilterable> getResourcesPatterns();
+public interface HasAsciidoctorResources extends HasResources {
 }

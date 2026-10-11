@@ -15,6 +15,7 @@
  */
 package org.asciidoctor.gradle.model5.core;
 
+import org.asciidoctor.gradle.model5.core.attributes.IncludeDirOutputSettings;
 import org.gradle.api.file.Directory;
 import org.gradle.api.provider.Provider;
 
@@ -35,27 +36,13 @@ import java.util.regex.Pattern;
  * @author Schalk W. Cronjé
  * @since 5.0
  */
-public interface AsciidoctorConversionSettings {
-    /**
-     * Source files.
-     *
-     * @return Set of files. Must be present and contain at least one document.
-     */
-    Provider<Set<File>> getSourceFiles();
-
+public interface AsciidoctorConversionSettings extends BaseConversionWithAttributeSettings {
     /**
      * Backend to use.
      *
      * @return Backend. Must be present.
      */
     Provider<AsciidoctorNamedBackend> getBackend();
-
-    /**
-     * The root directory where source files are located.
-     *
-     * @return Base directory for all source files. Must be present.
-     */
-    Provider<Directory> getSourceRootDir();
 
     /**
      * Base directory.
@@ -66,25 +53,11 @@ public interface AsciidoctorConversionSettings {
 
     /**
      * Whether the engine should change the base directory prior to converting a file.
-     * There is performance penalty if this is set to {@code true}
+     * There is a performance penalty if this is set to {@code true}
      *
      * @return Provider to whether the base directory should be adjusted.
      */
     Provider<Boolean> getAdjustBaseDirPerFile();
-
-    /**
-     * Destination directory.
-     *
-     * @return Directory for output. Must be present.
-     */
-    Provider<Directory> getDestinationDir();
-
-    /**
-     * Document attributes.
-     *
-     * @return All attributes. Must be present, but can be an empty map.
-     */
-    Provider<Map<String, String>> getAttributes();
 
     /**
      * Document type.
@@ -92,13 +65,6 @@ public interface AsciidoctorConversionSettings {
      * @return Optional document type. Provider does not need to be present.
      */
     Provider<DocType> getDocType();
-
-    /**
-     * Patterns of warnings which must be treated as errors.
-     *
-     * @return List of patterns. Must be present, but list can be empty.
-     */
-    Provider<Set<Pattern>> getFatalWarnings();
 
     /**
      * Whether embedded processing should be performed.

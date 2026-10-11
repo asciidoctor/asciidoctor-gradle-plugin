@@ -1,0 +1,4 @@
+
+= Document
+
+include::{includedir}/_included.adoc[]

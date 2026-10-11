@@ -10,7 +10,7 @@ agProject {
         'Provides a Reducer toolchain for AsciiDoc',
         'org.asciidoctor.gradle.model5.reducer.plugins.ReducerBasePlugin',
         ['asciidoctor', 'reducer'],
-        false // TODO: Confirm CC & IP compatibility
+        false
     )
     configurePlugin(
         'org.asciidoctor.reducer',
@@ -18,7 +18,7 @@ agProject {
         'Provides a Reducer toolchain for AsciiDoc with some conventions',
         'org.asciidoctor.gradle.model5.reducer.plugins.ReducerPlugin',
         ['asciidoctor', 'reducer'],
-        false  // TODO: Confirm CC & IP compatibility
+        true
     )
 
     withVersionSubstitution("${project.name}.properties", [

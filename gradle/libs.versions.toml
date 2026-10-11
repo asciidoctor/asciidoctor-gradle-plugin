@@ -29,6 +29,7 @@ asciidoctorjsPug = "3.0.3"
 # tag::hacking-asciidoctorjs-output-formatter[]
 asciidoctorjsRevealjs = "5.2.0"
 # end::hacking-asciidoctorjs-output-formatter[]
+asciidoctorKramdown = "2.1.1"
 asciidoctorReducer = "1.1.2"
 cglib = "3.3.0"
 commonsIO = "2.15.1"

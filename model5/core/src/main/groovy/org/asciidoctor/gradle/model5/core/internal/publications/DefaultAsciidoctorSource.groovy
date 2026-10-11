@@ -18,15 +18,7 @@ package org.asciidoctor.gradle.model5.core.internal.publications
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.publications.HasAsciidoctorResources
 import org.asciidoctor.gradle.model5.core.publications.HasAsciidoctorSource
-import org.gradle.api.Action
 import org.gradle.api.Project
-import org.gradle.api.file.Directory
-import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.provider.Provider
-import org.gradle.api.tasks.util.PatternFilterable
-import org.gradle.api.tasks.util.PatternSet
-import org.ysb33r.grolifant5.api.core.ClosureUtils
-import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 
 import javax.inject.Inject
 
@@ -41,130 +33,9 @@ import static org.asciidoctor.gradle.model5.core.internal.publications.Publicati
  * @since 5.0
  */
 @CompileStatic
-class DefaultAsciidoctorSource implements HasAsciidoctorSource, HasAsciidoctorResources {
-    private final DirectoryProperty srcDir
-    private final ConfigCacheSafeOperations ccso
-    private final PatternSet sourceDocumentPattern
-    private final Provider<PatternFilterable> sourcePatternProvider
-    private final PatternSet resourcePatterns
-    private final Provider<PatternFilterable> resourcePatternProvider
-
+class DefaultAsciidoctorSource extends BaseSourceDefinition implements HasAsciidoctorSource, HasAsciidoctorResources {
     @Inject
-    DefaultAsciidoctorSource(Project project) {
-        this.ccso = ConfigCacheSafeOperations.from(project)
-        this.srcDir = project.objects.directoryProperty()
-
-        this.sourceDocumentPattern = new PatternSet().exclude(UNDERSCORE_LED_FILES)
-        this.resourcePatterns = new PatternSet()
-
-        this.sourcePatternProvider = ccso.providerTools().provider { ->
-            final ret = owner.sourceDocumentPattern.includes.empty ?
-                new PatternSet().copyFrom(owner.sourceDocumentPattern).include(ASCIIDOC_PATTERNS) :
-                owner.sourceDocumentPattern
-            (PatternFilterable) ret
-        }
-
-        this.resourcePatternProvider = ccso.providerTools().provider { ->
-            (PatternFilterable) (owner.resourcePatterns.includes.empty ? null : owner.resourcePatterns)
-        }
-    }
-    /**
-     * Adds these patterns that are relative to the source directory or the intermediate source directory.
-     *
-     * @param cfg {@link PatternFilterable} instance that can be configured.
-     */
-    @Override
-    void resources(Action<? super PatternFilterable> cfg) {
-        cfg.execute(this.resourcePatterns)
-    }
-
-    /**
-     * Adds these patterns that are relative to the source directory or the intermediate source directory.
-     *
-     * @param cfg A closre that can configure a {@link PatternFilterable} instance.
-     */
-    @Override
-    void resources(@DelegatesTo(PatternFilterable) Closure<?> cfg) {
-        ClosureUtils.configureItem(this.resourcePatterns, cfg)
-    }
-
-    /**
-     * Patterns that can be added to a copy spec for copying resources to a target directory.
-     *
-     * @return Copy specification
-     */
-    Provider<PatternFilterable> getResourcesPatterns() {
-        this.resourcePatternProvider
-    }
-
-    /**
-     * The top directory for asciidoc sources for this publication.
-     *
-     * @return Provider to location.
-     */
-    @Override
-    Provider<Directory> getSourceDir() {
-        this.srcDir
-    }
-
-    /**
-     * The directory where the root of the Asciidoc documents will be found.
-     *
-     * <p>
-     *   Usually this is {@code src/docs/asciidoc} or {@code src/docs/asciidoc<PUBLICATION>}.
-     * </p>
-     * @param srcDir New source directory
-     */
-    @Override
-    void setSourceDir(Object srcDir) {
-        ccso.fsOperations().updateDirectoryProperty(this.srcDir, srcDir)
-    }
-
-    /**
-     * Configures sources.
-     *
-     * @param cfg Configuration closure. Is passed a {@link org.gradle.api.tasks.util.PatternSet}.
-     */
-    @Override
-    void sources(@DelegatesTo(PatternSet) Closure<?> cfg) {
-        ClosureUtils.configureItem(this.sourceDocumentPattern, cfg)
-    }
-
-    /**
-     * Configures sources.
-     *
-     * @param cfg Configuration {@link org.gradle.api.Action}. Is passed a {@link PatternSet}.
-     */
-    @Override
-    void sources(Action<? super PatternSet> cfg) {
-        cfg.execute(this.sourceDocumentPattern)
-    }
-
-    /**
-     * Include source patterns.
-     *
-     * @param includePatterns ANT-style patterns for sources to include
-     */
-    @Override
-    void sources(String... includePatterns) {
-        this.sourceDocumentPattern.include(includePatterns)
-    }
-
-    /**
-     * Clears existing sources patterns.
-     */
-    @Override
-    void clearSources() {
-        sourceDocumentPattern.copyFrom(new PatternSet())
-    }
-
-    /**
-     * A provider of source patterns.
-     *
-     * @return Patterns of files to include for Asciidoc sources.
-     */
-    @Override
-    Provider<PatternFilterable> getSourcePatterns() {
-        this.sourcePatternProvider
+    DefaultAsciidoctorSource(Boolean externalSource, Project project) {
+        super(project, externalSource  ? [] : [UNDERSCORE_LED_FILES], ASCIIDOC_PATTERNS)
     }
 }

@@ -1,0 +1,36 @@
+plugins {
+    id 'org.asciidoctor.internal.model5.gradle.project'
+}
+
+agProject {
+    withIntegrationTests()
+    configurePlugin(
+        'org.asciidoctor.kramdown.base',
+        'Plugin to convert Markdown to AsciiDoc',
+        'Provides a Kramdown toolchain to convert Markdown to AsciiDoc',
+        'org.asciidoctor.gradle.model5.kramdown.plugins.KramdownBasePlugin',
+        ['asciidoctor', 'kramdown', 'markdown'],
+        true
+    )
+    configurePlugin(
+        'org.asciidoctor.kramdown',
+        'Plugin to convert Markdown to AsciiDoc',
+        'Provides a Downdoc toolchain to convert Markdown to AsciiDoc',
+        'org.asciidoctor.gradle.model5.kramdown.plugins.KramdownPlugin',
+        ['asciidoctor', 'kramdown', 'markdown'],
+        true
+    )
+
+    withVersionSubstitution("${project.name}.properties", [
+        VERSION: versionOf('asciidoctorKramdown'),
+    ])
+}
+
+dependencies {
+    api project(':asciidoctor5-jrubytools-plugin')
+    implementation(libs.grolifantApi)
+    runtimeOnly(libs.grolifantRuntime)
+    testImplementation project(':testfixtures-jvm')
+}
+
+apply from: "${rootDir}/gradle/plugin-is-cc-compatible.gradle"

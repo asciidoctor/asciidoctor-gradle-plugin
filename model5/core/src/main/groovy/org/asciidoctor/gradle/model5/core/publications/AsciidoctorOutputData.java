@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.model5.core.publications;
 import org.asciidoctor.gradle.model5.core.AsciidoctorNamedBackend;
 import org.asciidoctor.gradle.model5.core.ConversionTemplate;
 import org.asciidoctor.gradle.model5.core.DocType;
+import org.asciidoctor.gradle.model5.core.attributes.IncludeDirOutputSettings;
 import org.gradle.api.Named;
 import org.gradle.api.file.Directory;
 import org.gradle.api.file.FileCollection;
@@ -33,13 +34,7 @@ import java.util.Set;
  * @author Schalk W. Cronjé
  * @since 5.0
  */
-public interface AsciidoctorOutputData extends Named {
-    /**
-     * Directory where output will be written to.
-     *
-     * @return Provider to directory.
-     */
-    Provider<Directory> getOutputDir();
+public interface AsciidoctorOutputData extends BaseOutputData {
 
     /**
      * The named backend for this formatter.
@@ -47,13 +42,6 @@ public interface AsciidoctorOutputData extends Named {
      * @return Provider to the named backend.
      */
     Provider<AsciidoctorNamedBackend> getBackend();
-
-    /**
-     * Whether resources should be copied.
-     *
-     * @return A provider to a copy spec. Can be empty if resources should not be copied to the output directory.
-     */
-    Provider<PatternFilterable> getCopyResources();
 
     /**
      * Get the documentation type that needs to be based to the engine at run time.
@@ -68,19 +56,6 @@ public interface AsciidoctorOutputData extends Named {
      * @return Provider to a list. Can be empty, but never {@code null}.
      */
     Provider<Set<String>> getModuleRequires();
-
-    /**
-     * The actual name of the formatter, but not the alias name.
-     * @return Provider to the name.
-     */
-    Provider<String> getFormatterName();
-
-    /**
-     * The name of the toolchain.
-     *
-     * @return Provider to the name.
-     */
-    Provider<String> getToolchainName();
 
     /**
      * Additional classpath to add for execution.
@@ -104,13 +79,8 @@ public interface AsciidoctorOutputData extends Named {
     Provider<ConversionTemplate> getConversionTemplate();
 
     /**
-     * Custom properties that can be passed to the engine.
-     *
-     * <p>This is rarely used and primarily aimed at engines which are not real Asciidoctor engines</p>
-     *
-     * @return Provider to a map of properties which could be interpreted by a specific engine.
-     *
-     * @since 5.1
+     * WHether to add an attribute called {@code includedir}
+     * @return Settings for manipulating the {@code includedir} attribute.
      */
-    Provider<Map<String,String>> getCustomProperties();
+    Provider<IncludeDirOutputSettings> getIncludeDirOutputSettings();
 }
