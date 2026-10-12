@@ -132,6 +132,22 @@ asciidoc {
 --
 ====
 
+=== Linking back to the source directory
+
+Each document gets a `gradle-relative-srcdir` attribute with the path from its directory back to the source directory.
+It is `.` for a document in the source directory, `..` for a document in a subdirectory, `../..` for one two levels down, and so on, always with `/`.
+That makes it possible to refer to files in the root of the output from documents in any directory:
+
+[source,asciidoc]
+----
+:stylesdir: {gradle-relative-srcdir}/css
+:highlightjsdir: {gradle-relative-srcdir}/highlight
+----
+
+When the publication has external sources, the path leads back to the intermediate working directory that the sources are copied to.
+
+An attribute with the same name in the `attributes` block overrides it.
+
 === Docinfo
 
 There is some DSL support for configuring docinfo.

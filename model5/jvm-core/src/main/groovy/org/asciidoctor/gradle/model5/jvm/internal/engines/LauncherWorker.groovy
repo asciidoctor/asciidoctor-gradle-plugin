@@ -70,7 +70,7 @@ abstract class LauncherWorker implements WorkAction<LauncherParameters> {
                     .map { relPath.empty ? it : it.dir(relPath) }
                     .get().asFile
                 groupDestDir.mkdirs()
-                processBatch(asciidoctor, sourceFiles, groupDestDir)
+                processBatch(asciidoctor, sourceFiles, groupDestDir, relPath)
             }
         }
     }
@@ -78,30 +78,33 @@ abstract class LauncherWorker implements WorkAction<LauncherParameters> {
     private void processBatch(
         Asciidoctor asciidoctor,
         Collection<File> sourceFiles,
-        File destinationDir
+        File destinationDir,
+        String relPath
     ) {
+        final attributes = EngineUtils.withRelativeSrcDir(parameters.attributes.get(), relPath)
+
         if (parameters.adjustBaseDirPerFile.get()) {
             sourceFiles
                 .groupBy { it.parentFile }
                 .each { bd, files ->
                     asciidoctor.convertFiles(
                         files,
-                        normalisedOptions(bd, destinationDir)
+                        normalisedOptions(bd, destinationDir, attributes)
                     )
                 }
         } else {
             asciidoctor.convertFiles(
                 sourceFiles,
-                normalisedOptions(parameters.baseDir.get().asFile, destinationDir)
+                normalisedOptions(parameters.baseDir.get().asFile, destinationDir, attributes)
             )
         }
     }
 
-    private Options normalisedOptions(File withBaseDir, File destinationDir) {
+    private Options normalisedOptions(File withBaseDir, File destinationDir, Map<String, String> conversionAttributes) {
         final optionsBuilder = Options.builder()
         final attributesBuilder = Attributes.builder()
 
-        parameters.attributes.get().each { k, v ->
+        conversionAttributes.each { k, v ->
             if (v == null) {
                 attributesBuilder.attribute(k, null)
             } else {

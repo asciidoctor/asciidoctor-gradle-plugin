@@ -119,13 +119,17 @@ class DefaultLauncher implements AsciidoctorLauncher {
             it.templateDirs.collectMany { ['-T', it.asFile.absolutePath] }
         }.getOrElse(EMPTY_LIST)
 
-        final attrs = conversionSettings.attributes.get().collectMany { k, v ->
-            ['-a', v ? "${k}=${v}".toString() : k]
-        } + (conversionSettings.docType.present ? ['-d', conversionSettings.docType.get().lc()] : EMPTY_LIST)
+        final attributes = conversionSettings.attributes.get()
+        final docTypeArgs = conversionSettings.docType.present ?
+            ['-d', conversionSettings.docType.get().lc()] :
+            EMPTY_LIST
 
         int index = 1
         groups.each { parent, files ->
             final relPath = ccso.fsOperations().relativize(root, parent)
+            final attrs = EngineUtils.withRelativeSrcDir(attributes, relPath).collectMany { k, v ->
+                ['-a', v ? "${k}=${v}".toString() : k]
+            } + docTypeArgs
             final sourcePaths = partitionFiles(files)
             final destArgs = ['-D', relPath.empty ? destRoot.asFile : destRoot.dir(relPath).asFile]
 
