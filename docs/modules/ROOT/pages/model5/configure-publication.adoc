@@ -140,7 +140,7 @@ asciidoc {
 }
 ----
 
-A document that only shows the version of the project can use `{gradle-project-version}` instead.
+A document that only shows the version of the project can use `\{gradle-project-version}` instead.
 
 === Treating warnings as errors
 
