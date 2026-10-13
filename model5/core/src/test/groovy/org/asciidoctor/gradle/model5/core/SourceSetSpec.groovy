@@ -148,7 +148,7 @@ class SourceSetSpec extends UnitTestSpecification {
         }
 
         then:
-        attrs.keySet().size() == 7
+        attrs.keySet().size() == 8
         attrs.values().containsAll(['value3', 'true'])
     }
 
