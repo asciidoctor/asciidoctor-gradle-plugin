@@ -112,7 +112,6 @@ class UpToDateSpec extends AsciidoctorjHtmlIntegrationSpecification {
         result4.task(":${taskName}").outcome == UP_TO_DATE
     }
 
-    @PendingFeature
     @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/599')
     @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/818')
     void 'Changes to secondary sources will cause rebuild'() {
@@ -121,6 +120,9 @@ class UpToDateSpec extends AsciidoctorjHtmlIntegrationSpecification {
         configureSourceSetGroovy(DEFAULT_PUBLICATION, """
         sources {
             include '**/secondary.adoc'
+        }
+        secondarySources {
+            include '**/include.adoc'
         }
         baseDir {
             baseDirFollowsSourceDir()

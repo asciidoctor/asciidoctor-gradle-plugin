@@ -46,6 +46,13 @@ public interface ConversionTaskBaseMethods {
     void setSourcePatterns(Provider<PatternFilterable> patterns);
 
     /**
+     * The secondary source patterns to look for in the source directory.
+     *
+     * @param patterns Provider of patterns
+     */
+    void setSecondarySourcePatterns(Provider<PatternFilterable> patterns);
+
+    /**
      * The set of patterns to check for fatal warnings.
      *
      * @param patterns Set of patterns

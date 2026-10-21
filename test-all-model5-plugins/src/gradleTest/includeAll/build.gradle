@@ -48,11 +48,15 @@ asciidoc {
                     fetchDiagrams = true
                 }
             }
+
         }
         asciidoctorj2(AsciidoctorjToolchain) { // <.>
             registeredOutputFormatters {
                 pdf(AsciidoctorjPdf) {
                     allowUriRead = true
+                    // end::important-stuff[]
+                    useProcessIsolation()
+                    // tag::important-stuff[]
                 }
             }
         }

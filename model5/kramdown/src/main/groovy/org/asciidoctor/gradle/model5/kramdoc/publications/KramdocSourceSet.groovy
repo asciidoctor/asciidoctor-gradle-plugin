@@ -16,6 +16,7 @@
 package org.asciidoctor.gradle.model5.kramdoc.publications
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.model5.core.publications.HasSecondarySourceFiles
 import org.asciidoctor.gradle.model5.kramdoc.internal.publications.DefaultKramdocSource
 import org.asciidoctor.gradle.model5.core.attributes.Attributes
 import org.asciidoctor.gradle.model5.core.attributes.HasAsciidoctorAttributes
@@ -46,7 +47,9 @@ import javax.inject.Inject
  * @since 5.1
  */
 @CompileStatic
-class KramdocSourceSet implements HasSourceFiles, HasExternalSources, HasAsciidoctorAttributes {
+class KramdocSourceSet implements HasSourceFiles, HasExternalSources,
+    HasAsciidoctorAttributes, HasSecondarySourceFiles {
+
     public static final String ATTR_IMAGES_DIR = 'imagesdir'
     final String name
     private final ConfigCacheSafeOperations ccso

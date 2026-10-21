@@ -207,6 +207,7 @@ class AsciidoctorPublication implements Named {
             atm.safeMode = toolchain.safeMode
             atm.sourceDir = sources.sourceDir
             atm.sourcePatterns = sources.sourcePatterns
+            atm.secondarySourcePatterns = sources.secondarySourcePatterns
             atm.baseDir = sources.baseDir.baseDirStrategy.flatMap { it.getBaseDir(sources.sourceDir) }
             atm.adjustBaseDirPerFile = sources.baseDir.baseDirStrategy.flatMap { it.adjustBaseDirPerFile }
             atm.fatalWarnings = sources.fatalWarnings

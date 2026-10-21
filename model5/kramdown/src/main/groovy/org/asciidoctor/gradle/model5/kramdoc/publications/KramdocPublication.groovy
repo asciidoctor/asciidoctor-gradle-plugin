@@ -189,6 +189,7 @@ class KramdocPublication implements Named {
             atm.launcher = toolchain.launcher
             atm.sourceDir = sources.sourceDir
             atm.sourcePatterns = sources.sourcePatterns
+            atm.secondarySourcePatterns = sources.secondarySourcePatterns
             // TODO: Support fatal warnings in a future release
             atm.fatalWarnings = ccso.providerTools().provider { -> EMPTY_SET }
             atm.externalSources = copyResources ? sources.externalSources : sources.externalSources.map {

@@ -47,6 +47,7 @@ abstract class AbstractBaseConversionTask extends GrolifantDefaultTask implement
     private static final String EVERYTHING = '**'
     private final DirectoryProperty sourceDir
     private final Property<PatternFilterable> localSourcePatterns
+    private final Property<PatternFilterable> localSecondarySourcePatterns
     private final Property<ProvidedExternalSources> externalSources
     private final Provider<Boolean> hasExternalSources
     private final DirectoryProperty useIntermediateWorkdir
@@ -72,6 +73,11 @@ abstract class AbstractBaseConversionTask extends GrolifantDefaultTask implement
         localSourcePatterns.set(patterns)
     }
 
+    @Override
+    void setSecondarySourcePatterns(Provider<PatternFilterable> patterns) {
+        localSecondarySourcePatterns.set(patterns)
+    }
+
     /**
      * External sources.
      *
@@ -94,6 +100,7 @@ abstract class AbstractBaseConversionTask extends GrolifantDefaultTask implement
     protected AbstractBaseConversionTask() {
         this.sourceDir = project.objects.directoryProperty()
         this.localSourcePatterns = project.objects.property(PatternFilterable)
+        this.localSecondarySourcePatterns = project.objects.property(PatternFilterable)
         this.externalSources = project.objects.property(ProvidedExternalSources)
         this.hasExternalSources = determineHasExternalSources()
         this.useIntermediateWorkdir = project.objects.directoryProperty().value(determineIntermediateWorkdir())
@@ -202,7 +209,7 @@ abstract class AbstractBaseConversionTask extends GrolifantDefaultTask implement
      * @return Access to the attributes that are used within this task.
      */
     @Internal
-    protected Provider<Map<String,String>> getAttributes() {
+    protected Provider<Map<String, String>> getAttributes() {
         baseConversionSettings.attributes
     }
 
@@ -338,6 +345,13 @@ abstract class AbstractBaseConversionTask extends GrolifantDefaultTask implement
             fsOps.fileTree(dir).matching(pats)
         }
         final externalSources = determineAllExternalSources()
-        fsOperations().emptyFileCollection().from(localSources).from(externalSources)
+        final secondary = sourceDir.zip(localSecondarySourcePatterns) { dir, pats ->
+            if (pats.includes.empty && pats.excludes.empty) {
+                fsOperations().emptyFileCollection()
+            } else {
+                fsOps.fileTree(dir).matching(pats)
+            }
+        }
+        fsOperations().emptyFileCollection().from(localSources).from(externalSources).from(secondary)
     }
 }

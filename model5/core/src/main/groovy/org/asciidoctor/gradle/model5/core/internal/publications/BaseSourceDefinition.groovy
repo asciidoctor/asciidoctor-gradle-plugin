@@ -17,6 +17,7 @@ package org.asciidoctor.gradle.model5.core.internal.publications
 
 import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.publications.HasResources
+import org.asciidoctor.gradle.model5.core.publications.HasSecondarySourceFiles
 import org.asciidoctor.gradle.model5.core.publications.HasSourceFiles
 import org.gradle.api.Action
 import org.gradle.api.Project
@@ -35,14 +36,15 @@ import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
  * @since 5.1
  */
 @CompileStatic
-class BaseSourceDefinition implements HasSourceFiles, HasResources {
+class BaseSourceDefinition implements HasSourceFiles, HasResources, HasSecondarySourceFiles {
     protected final DirectoryProperty srcDir
     protected final ConfigCacheSafeOperations ccso
     protected final PatternSet sourceDocumentPattern
     protected final Provider<PatternFilterable> sourcePatternProvider
     protected final PatternSet resourcePatterns
     protected final Provider<PatternFilterable> resourcePatternProvider
-
+    protected final PatternSet secondarySourceDocumentPattern
+    protected final Provider<PatternFilterable> secondarySourcePatternProvider
     /**
      * Adds these patterns that are relative to the source directory or the intermediate source directory.
      *
@@ -143,6 +145,31 @@ class BaseSourceDefinition implements HasSourceFiles, HasResources {
         this.sourcePatternProvider
     }
 
+    @Override
+    void secondarySources(@DelegatesTo(PatternSet) Closure<?> cfg) {
+        ClosureUtils.configureItem(this.secondarySourceDocumentPattern, cfg)
+    }
+
+    @Override
+    void secondarySources(Action<? super PatternSet> cfg) {
+        cfg.execute(this.secondarySourceDocumentPattern)
+    }
+
+    @Override
+    void secondarySources(String... includePatterns) {
+        this.secondarySourceDocumentPattern.include(includePatterns)
+    }
+
+    @Override
+    void clearSecondarySources() {
+        secondarySourceDocumentPattern.copyFrom(new PatternSet())
+    }
+
+    @Override
+    Provider<PatternFilterable> getSecondarySourcePatterns() {
+       this.secondarySourcePatternProvider
+    }
+
     protected BaseSourceDefinition(
         Project tempProjectReference,
         List<String> defaultExcludePatterns,
@@ -152,12 +179,20 @@ class BaseSourceDefinition implements HasSourceFiles, HasResources {
         this.srcDir = tempProjectReference.objects.directoryProperty()
 
         this.sourceDocumentPattern = new PatternSet().exclude(defaultExcludePatterns)
+        this.secondarySourceDocumentPattern = new PatternSet().exclude(defaultExcludePatterns)
         this.resourcePatterns = new PatternSet()
 
         this.sourcePatternProvider = ccso.providerTools().provider { ->
             final ret = owner.sourceDocumentPattern.includes.empty ?
                 new PatternSet().copyFrom(owner.sourceDocumentPattern).include(defaultIncludePatterns) :
                 owner.sourceDocumentPattern
+            (PatternFilterable) ret
+        }
+
+        this.secondarySourcePatternProvider = ccso.providerTools().provider { ->
+            final ret = owner.secondarySourceDocumentPattern.includes.empty ?
+                new PatternSet().copyFrom(owner.secondarySourceDocumentPattern).include(defaultIncludePatterns) :
+                owner.secondarySourceDocumentPattern
             (PatternFilterable) ret
         }
 

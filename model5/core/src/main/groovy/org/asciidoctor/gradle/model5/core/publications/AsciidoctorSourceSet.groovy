@@ -58,7 +58,7 @@ import static org.ysb33r.grolifant5.api.core.StringTools.EMPTY
  */
 @CompileStatic
 class AsciidoctorSourceSet implements HasBaseDirStrategy, HasAsciidoctorAttributes, HasAsciidoctorSource,
-    HasAsciidoctorResources, HasExternalSources, HasIncludeDir {
+    HasAsciidoctorResources, HasExternalSources, HasIncludeDir, HasSecondarySourceFiles {
 
     private final BaseDirConfiguration baseDirConfiguration
     private final ConfigCacheSafeOperations ccso

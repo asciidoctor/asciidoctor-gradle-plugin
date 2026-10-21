@@ -15,6 +15,8 @@ asciidoc {
         sourceSet {
           sources { // <.>
           }
+          secondarySources { // <.>
+          }
           resources { // <.>
           }
           attributes { // <.>
@@ -30,6 +32,9 @@ asciidoc {
 }
 ----
 <.> Customise asciidoc sources to be processed.
+<.> Customise secondary sources.
+  These are any files that should affect the up to date status of a task, but which are not directly handled by `sources` or `resources`.
+  One such example could be the `yaml` configuration for producing PDFs.
 <.> Additional resources, such as images.
 <.> Use `attributes` block to configure Asciidoc attributes.
 <.> Human-language additional configuration.
