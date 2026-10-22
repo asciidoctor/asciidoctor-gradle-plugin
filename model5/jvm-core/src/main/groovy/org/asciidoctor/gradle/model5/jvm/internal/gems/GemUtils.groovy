@@ -23,6 +23,7 @@ import org.asciidoctor.gradle.model5.jvm.tasks.AsciidoctorjGemPrepareTask
 import org.asciidoctor.gradle.model5.jvm.toolchains.AsciidoctorjToolchain
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.bundling.Jar
 import org.ysb33r.grolifant5.api.core.ConfigurationPhaseOperations
 
@@ -73,7 +74,6 @@ class GemUtils {
      * @param tcName Name of toolchain.
      * @return Configuration name
      */
-
     static String nameForGemPrepareTask(String tcName) {
         "${JvmModel.TASK_PREFIX}Gems${tcName.capitalize()}Prepare"
     }
@@ -84,7 +84,6 @@ class GemUtils {
      * @param tcName Name of toolchain.
      * @return Configuration name
      */
-
     static String nameForJarPrepareTask(String tcName) {
         "${JvmModel.TASK_PREFIX}GemJar${tcName.capitalize()}Prepare"
     }
@@ -95,7 +94,6 @@ class GemUtils {
      * @param tcName Name of toolchain.
      * @return Configuration name
      */
-
     static String nameForToolchainConfiguration(String tcName) {
         "asciidocGems${tcName.capitalize()}"
     }
@@ -142,35 +140,72 @@ class GemUtils {
                 }
             )
 
-            final gemPrepare = project.tasks.register(
-                nameForGemPrepareTask(tc.name),
-                AsciidoctorjGemPrepareTask,
-                jrubyRuntimeName
-            )
-
-            gemPrepare.configure { t ->
-                t.group = TASK_GROUP
-                t.description = "Prepare GEMs for the ${tc.name} toolchain"
-                t.gemConfiguration = t.project.configurations.getByName(runtimeName)
-                t.outputDir = project.layout.buildDirectory.dir("asciidoc-gems/${tc.name}")
-            }
-
-            final gemDir = gemPrepare.flatMap { it.outputDir }
-            final jarTaskName = nameForJarPrepareTask(tc.name)
-            final jarTask = project.tasks.register(jarTaskName, Jar) { jar ->
-                jar.tap {
-                    group = TASK_GROUP
-                    description = "Bundles GEMs into a JAR suitable for the ${tc.name} toolchain"
-                    from(gemDir)
-                    include 'gems/**', 'specifications/**'
-                    archiveFileName.set("${tc.name}.jar".toString())
-                    destinationDirectory.set(project.layout.buildDirectory.dir('.asciidoctorGemJars'))
-                    dependsOn(gemPrepare)
-                }
-            }
-
+            final gemPrepare = registerGemPrepareTask(tc.name, project)
+            final jarTask = registerGemJarTask(tc.name, gemPrepare, project)
             tc.classpath(project.files(jarTask))
         }
+    }
+
+    /**
+     * Registers a GEM prepare task.
+     *
+     * @param tcName Toolchain name.
+     * @param project Associated project.
+     * @return Provider to the task.
+     *
+     * @since 5.1
+     */
+    static TaskProvider<AsciidoctorjGemPrepareTask> registerGemPrepareTask(
+        String tcName,
+        Project project
+    ) {
+        final jrubyRuntimeName = nameForJrubyConfigurationResolvable(tcName)
+        final runtimeName = nameForToolchainConfigurationResolvable(tcName)
+        final gemPrepare = project.tasks.register(
+            nameForGemPrepareTask(tcName),
+            AsciidoctorjGemPrepareTask,
+            jrubyRuntimeName
+        )
+
+        gemPrepare.configure { t ->
+            t.group = TASK_GROUP
+            t.description = "Prepare GEMs for the ${tcName} toolchain"
+            t.gemConfiguration = t.project.configurations.getByName(runtimeName)
+            t.outputDir = project.layout.buildDirectory.dir("asciidoc-gems/${tcName}")
+        }
+
+        gemPrepare
+    }
+
+    /**
+     * Registers a Gem Jar Task.
+     *
+     * @param tcName Toolchain name.
+     * @param gemPrepare Gem Prepare task.
+     * @param project Associated project.
+     * @return Provider to the task.
+     *
+     * @since 5.1
+     */
+    static TaskProvider<Jar> registerGemJarTask(
+        String tcName,
+        TaskProvider<AsciidoctorjGemPrepareTask> gemPrepare,
+        Project project
+    ) {
+        final gemDir = gemPrepare.flatMap { it.outputDir }
+        final jarTaskName = nameForJarPrepareTask(tcName)
+        final jarTask = project.tasks.register(jarTaskName, Jar) { jar ->
+            jar.tap {
+                group = TASK_GROUP
+                description = "Bundles GEMs into a JAR suitable for the ${tcName} toolchain"
+                from(gemDir)
+                include 'gems/**', 'specifications/**'
+                archiveFileName.set("${tcName}.jar".toString())
+                destinationDirectory.set(project.layout.buildDirectory.dir('.asciidoctorGemJars'))
+                dependsOn(gemPrepare)
+            }
+        }
+        jarTask
     }
 
     /**

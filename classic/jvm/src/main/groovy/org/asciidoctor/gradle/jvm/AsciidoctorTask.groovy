@@ -33,7 +33,7 @@ import static org.asciidoctor.gradle.base.ProblemReports.publicationName
 
 /** Standard generic task for converting Asciidoctor documents.
  *
- * For convention and cmopatibility with older releases of this pugin, the default source directory
+ * For convention and compatibility with older releases of this plugin, the default source directory
  * is {@code "src/docs/asciidoc"} if the task is named {@code aciidoctor}. For all other instances
  * of this task type the default source directory is {@code "src/docs/${task.name.capitalize()}"}.
  *

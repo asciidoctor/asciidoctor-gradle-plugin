@@ -1,0 +1,24 @@
+= Example of using everything from Model5
+
+This is an example where all the model5 plugins are used together.
+
+.build.gradle
+[source,groovy]
+----
+include::example$model5/include-all.build.gradle[tags=important-stuff]
+----
+<.> The plugins do not have versions here, purely because in our test example we already have all the plugins on the classpath.
+  You should add versions as appropriate or use aliases with a version catalog.
+<.> THe `asciidoctorj` toolchain is automatically added by the 'org.asciidoctor.jvm' conventions plugin.
+<.> `asciidoctorj2` is a second toolchain that is added manually in the build script.
+<.> Becasue there is already an outputon the publication called `html`, an alias is added here called `html2` and in this case it uses the `asciidoctorjs` toolchains that is added by the `org.asciidoctor.js` conventions plugin.
+<.> A second set of publications purely aimed at producing selides.
+  Because slides ten to be authored slightly differently, it is sometimes just easier to use a separate publication.
+<.> An example of reducing a nested set of AsciiDoc documents into a single AsciiDoc document.
+  The `asciidoctorReducer` toolchain and the `reducedAdoc` output formatter are added vb the `org.asciidoctor.reducer` conventions plugin.
+  In this case a semantic alias is purely added to be indicative of the target of the reduced document.
+<.> An example of how AsciiDoc can be reduced to a single AsciiDoc document and then turned into Markdown.
+<.> Using the output of one output formatter to be the input of another AsciiDoc processor.
+<.> The `downdoc` toolchain and the `markdown` output formatter are added by the `org.asciidoctor.downdoc` conventions plugin.
+<.> Using the output from the `kramdocAsciidoc` task as inputs to this source set.
+  This is an example of how to use converted Markdown as part of AsciiDoc processing.

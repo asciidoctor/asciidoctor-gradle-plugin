@@ -44,5 +44,8 @@ class RelativeIncludeSpec extends AsciidoctorjHtmlIntegrationSpecification {
 
         then:
         fileContains(outputDir, 'nested/sample.html', 'This is from _nested-include.adoc file.')
+
+        and:
+        !fileExists(buildDir, 'docs/asciidoc/nested/_nested-include.html')
     }
 }

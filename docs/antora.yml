@@ -1,10 +1,10 @@
 ---
 name: "gradle-plugin"
 title: "Gradle Plugin Suite"
-version: "5.0"
+version: "5.1"
 asciidoc:
   attributes:
-    release-version: "5.0.3"
+    release-version: "5.1.0"
     project-full-path: "asciidoctor/asciidoctor-gradle-plugin"
     project-issues-url: "https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues"
     project-name: "asciidoctor-gradle-plugin"
@@ -13,6 +13,7 @@ asciidoc:
     asciidoc-url: "https://asciidoc.org"
     asciidoctor-maven-plugin-name: "Asciidoctor Maven Plugin"
     asciidoctor-maven-plugin-url: "https://github.com/asciidoctor/asciidoctor-maven-plugin"
+    asciidoctor-reducer-name: "Asciidoctor Reducer"
     asciidoctor-url: "https://asciidoctor.org"
     asciidoctorj-conventions-plugin: "org.asciidoctor.jvm"
     asciidoctorj-diagram-name: "AsciidoctorJ Diagram"
@@ -30,7 +31,7 @@ asciidoc:
     asciidoctorjs-url: "https://github.com/asciidoctor/asciidoctor.js"
     asciidoctorjs-revealjs-name: "Reveal.js for Asciidoctor.js"
     asciidoctorjs-revealjs-url: "https://github.com/asciidoctor/asciidoctor-reveal.js"
-    downdoc-name: "downdoc"
+    downdoc-name: "Downdoc"
     downdoc-url: "https://github.com/opendevise/downdoc"
     development-branch: "development-5.x"
     examples-model5-core-test: "model5/core/test"
@@ -45,8 +46,11 @@ asciidoc:
     issues-jruby: "https://github.com/asciidoctor/asciidoctorj/issues/"
     jruby-name: "JRuby"
     kotlindsl: "https://github.com/gradle/kotlin-dsl[Gradle Kotlin DSL]"
+    kramdoc-name: "Kramdoc"
     lightguard: "https://github.com/LightGuard[Jason Porter]"
     lordofthejars: "https://github.com/lordofthejars[Alex Soto]"
     minimum-gradle: "8.0.2"
+    reducer-name: "Asciidoctor Reducer"
+    reducer-url: "https://github.com/asciidoctor/asciidoctor-reducer"
 nav:
 - "modules/ROOT/nav.adoc"

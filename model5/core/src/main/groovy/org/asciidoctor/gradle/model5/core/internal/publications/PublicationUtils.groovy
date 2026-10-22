@@ -69,13 +69,32 @@ class PublicationUtils {
      * @return Relative path below build directory.
      */
     static String outputPathFor(FileSystemOperations fsOperations, String publicationName, String outputName) {
-        if (publicationName == DEFAULT_PUBLICATION) {
-            "docs/asciidoc/${outputName}"
-        } else {
-            "docs/asciidoc${fsOperations.toSafeFileName(publicationName).capitalize()}/${outputName}"
-        }
+        outputPathFor(fsOperations, 'asciidoc', publicationName, outputName)
     }
 
+    /**
+     * A relative output path for a publication output.
+     *
+     * @param fsOperations An instance of {@link FileSystemOperations}.
+     * @param processType Actual process type if not default of {@code asciidoc}
+     * @param publicationName The name of the publication.
+     * @param outputName The name of the output.
+     * @return Relative path below build directory.
+     *
+     * @since 5.1
+     */
+    static String outputPathFor(
+        FileSystemOperations fsOperations,
+        String processType,
+        String publicationName,
+        String outputName
+    ) {
+        if (publicationName == DEFAULT_PUBLICATION) {
+            "docs/${processType}/${outputName}"
+        } else {
+            "docs/${processType}${fsOperations.toSafeFileName(publicationName).capitalize()}/${outputName}"
+        }
+    }
     /**
      * The name of the task for converting asciidoc to a specific output format.
      *
@@ -84,10 +103,25 @@ class PublicationUtils {
      * @return Task name.
      */
     static String conversionTaskName(String publicationName, String outputName) {
+        conversionTaskName(TASK_PREFIX, publicationName, outputName)
+    }
+
+    /**
+     * The name of the task for converting asciidoc to a specific output format.
+     *
+     * @param taskPrefix The task prefix to use other than the default prefix.
+     * @param publicationName Name of publication.
+     * @param outputName Name of output
+     *
+     * @return Task name.
+     *
+     * @since 5.1
+     */
+    static String conversionTaskName(String taskPrefix, String publicationName, String outputName) {
         if (publicationName == DEFAULT_PUBLICATION) {
-            "${TASK_PREFIX}${outputName.capitalize()}"
+            "${taskPrefix}${outputName.capitalize()}"
         } else {
-            "${TASK_PREFIX}${publicationName.capitalize()}${outputName.capitalize()}"
+            "${taskPrefix}${publicationName.capitalize()}${outputName.capitalize()}"
         }
     }
 }

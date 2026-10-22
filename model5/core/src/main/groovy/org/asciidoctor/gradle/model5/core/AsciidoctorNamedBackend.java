@@ -32,7 +32,7 @@ import org.gradle.api.Named;
 public interface AsciidoctorNamedBackend extends Named {
 
     /**
-     * Creates an instance of {@link AsciidoctorNamedBackend} where the alias and the abckend name is the same.
+     * Creates an instance of {@link AsciidoctorNamedBackend} where the alias and the backend name is the same.
      *
      * @param backend Actual name of the backend.
      * @return Something that implements link AsciidoctorNamedBackend}.
@@ -47,7 +47,7 @@ public interface AsciidoctorNamedBackend extends Named {
      * @param backend Actual name of the backend.
      * @return Something that implements link AsciidoctorNamedBackend}.
      */
-    static AsciidoctorNamedBackend of(String name,String backend) {
+    static AsciidoctorNamedBackend of(String name, String backend) {
         return new DefaultAsciidoctorNamedBackend(name, backend);
     }
 

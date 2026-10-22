@@ -7,7 +7,20 @@ dependencies {
     runtimeOnly(project(path: ':asciidoctor5-jvm-core-plugin', configuration: 'default'))
     runtimeOnly(project(':asciidoctor5-js-core-plugin'))
     runtimeOnly(project(':asciidoctor5-downdoc-plugin'))
+    runtimeOnly(project(':asciidoctor5-jrubytools-plugin'))
+    runtimeOnly(project(':asciidoctor5-kramdown-plugin'))
+}
+
+gradleTestSets {
+    testSets {
+        main {
+            gradleArguments '-s'
+        }
+    }
 }
 
 
-
+tasks.withType(Test).configureEach {
+    forkEvery = 2
+    maxHeapSize = '1g'
+}

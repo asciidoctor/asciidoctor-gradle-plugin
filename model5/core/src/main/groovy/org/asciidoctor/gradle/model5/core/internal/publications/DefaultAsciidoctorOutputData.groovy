@@ -19,10 +19,13 @@ import groovy.transform.CompileStatic
 import org.asciidoctor.gradle.model5.core.AsciidoctorNamedBackend
 import org.asciidoctor.gradle.model5.core.ConversionTemplate
 import org.asciidoctor.gradle.model5.core.DocType
+import org.asciidoctor.gradle.model5.core.attributes.IncludeDirOutputSettings
 import org.asciidoctor.gradle.model5.core.extensions.AsciidoctorExtension
 import org.asciidoctor.gradle.model5.core.formatters.AsciidoctorOutputFormatter
+import org.asciidoctor.gradle.model5.core.formatters.HasCustomProperties
 import org.asciidoctor.gradle.model5.core.formatters.HasEmbedded
 import org.asciidoctor.gradle.model5.core.formatters.HasTemplates
+import org.asciidoctor.gradle.model5.core.internal.attributes.AttributeUtils
 import org.asciidoctor.gradle.model5.core.publications.AsciidoctorOutputData
 import org.asciidoctor.gradle.model5.core.publications.AsciidoctorSourceSet
 import org.asciidoctor.gradle.model5.core.toolchains.AsciidoctorToolchain
@@ -31,6 +34,7 @@ import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.ProjectLayout
+import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
@@ -61,6 +65,10 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
     private final Property<String> toolchainName
     private final Property<Boolean> embedded
     private final Property<ConversionTemplate> templates
+    private final MapProperty<String, String> attributes
+    private final MapProperty<String, String> customProperties
+    private final Property<IncludeDirOutputSettings> includeDir
+
     private FileCollection additionalClasspath
 
     @Inject
@@ -79,6 +87,9 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
         this.toolchainName = objectFactory.property(String)
         this.embedded = objectFactory.property(Boolean).convention(false)
         this.templates = objectFactory.property(ConversionTemplate)
+        this.attributes = objectFactory.mapProperty(String, String).convention([:])
+        this.customProperties = objectFactory.mapProperty(String, String).convention([:])
+        this.includeDir = objectFactory.property(IncludeDirOutputSettings)
     }
 
     @Override
@@ -165,6 +176,22 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
         this.templates
     }
 
+    @Override
+    Provider<Map<String, String>> getCustomProperties() {
+        this.customProperties
+    }
+
+    @Override
+    Provider<IncludeDirOutputSettings> getIncludeDirOutputSettings() {
+        this.includeDir
+    }
+
+    @Override
+    Provider<Map<String, String>> getAttributes() {
+        this.attributes
+    }
+
+    @SuppressWarnings('CouldBeSwitchStatement')
     void configureFrom(
         String publicationName,
         AsciidoctorToolchain toolchain,
@@ -176,6 +203,16 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
         this.backend.set(formatter.backend.map { AsciidoctorNamedBackend.of(owner.name, it.backend) })
         this.formatterName.set(formatter.name)
         this.toolchainName.set(toolchain.name)
+        this.includeDir.set((IncludeDirOutputSettings) sourceSet.includeDir)
+
+        this.attributes.set(
+            loadAttributes(
+                toolchain,
+                formatter.attributeProvider,
+                sourceSet.attributes.attributeResolver
+            )
+        )
+
         final workingClasspath = ccso.fsOperations().emptyFileCollection()
 
         if (formatter.classpath) {
@@ -214,6 +251,33 @@ class DefaultAsciidoctorOutputData implements AsciidoctorOutputData {
         if (formatter instanceof HasTemplates) {
             final templateFormatter = (HasTemplates) formatter
             this.templates.set(templateFormatter.conversionTemplate)
+        }
+
+        if (formatter instanceof HasCustomProperties) {
+            final templateFormatter = (HasCustomProperties) formatter
+            this.customProperties.set(templateFormatter.customProperties)
+        }
+    }
+
+    private Provider<Map<String, String>> loadAttributes(
+        AsciidoctorToolchain toolchain,
+        Provider<Map<String, Object>> formatterAttrs,
+        Provider<Map<String, String>> sourceSetAttributeProvider
+    ) {
+        final extensionAttributes = ccso.providerTools().mapProperty(String, Object)
+        extensionAttributes.putAll(formatterAttrs)
+
+        toolchain.asciidocExtensions.all { AsciidoctorExtension it ->
+            extensionAttributes.putAll(it.attributeProvider)
+        }
+
+        final resolvedExtensionAttributes = AttributeUtils.resolvingProvider(ccso.stringTools(), extensionAttributes)
+
+        sourceSetAttributeProvider.zip(resolvedExtensionAttributes) { pri, sec ->
+            final map = [:]
+            map.putAll(sec)
+            map.putAll(pri)
+            map as Map<String, String>
         }
     }
 }

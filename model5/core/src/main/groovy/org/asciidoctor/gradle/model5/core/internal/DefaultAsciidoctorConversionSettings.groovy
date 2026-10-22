@@ -25,10 +25,14 @@ import org.gradle.api.file.Directory
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
 
 import javax.inject.Inject
 import java.util.regex.Pattern
+
+import static java.util.Collections.EMPTY_MAP
+import static org.ysb33r.grolifant5.api.core.StringTools.EMPTY
 
 /**
  * Default implementation of conversion settings used by a an
@@ -53,6 +57,8 @@ class DefaultAsciidoctorConversionSettings implements AsciidoctorConversionSetti
     final Property<Boolean> embedded
     final Property<ConversionTemplate> templates
     final MapProperty<String, ScriptCollection> scriptCollections
+    final MapProperty<String, String> customProperties
+    final Provider<Map<String, String>> inputProperties
 
     @Inject
     DefaultAsciidoctorConversionSettings(ObjectFactory objectFactory) {
@@ -68,6 +74,17 @@ class DefaultAsciidoctorConversionSettings implements AsciidoctorConversionSetti
         this.embedded = objectFactory.property(Boolean).convention(false)
         this.templates = objectFactory.property(ConversionTemplate)
         this.scriptCollections = objectFactory.mapProperty(String, ScriptCollection)
+        this.customProperties = objectFactory.mapProperty(String, String)
+
+        this.inputProperties = docType.map { it.name() }.orElse(EMPTY)
+            .zip(attributes.orElse(EMPTY_MAP)) { dc, a -> [dc: dc, attrs: a.toString()] }
+            .zip(backend.map { it.backend }.orElse(EMPTY)) { m, be -> [be: be] + m }
+            .zip(embedded.map { it.toString() }.orElse(EMPTY)) { m, em -> [em: em] + m }
+            .zip(adjustBaseDirPerFile.map { it.toString() }.orElse(EMPTY)) { m, bd -> [bdpf: bd] + m }
+            .zip(fatalWarnings.map { p -> p*.toString().sort().toString() }.orElse(EMPTY)) { m, fw -> [fw: fw] + m }
+            .zip(scriptCollections.map { m ->
+                m.collect { k, v -> k + ':' + v.scripts.get()*.sha256().sort().toString() }.toString()
+            }.orElse(EMPTY)) { m, scr -> [scripts: scr] + m }
     }
 
     void updateFrom(DefaultAsciidoctorConversionSettings other) {
@@ -83,5 +100,6 @@ class DefaultAsciidoctorConversionSettings implements AsciidoctorConversionSetti
         embedded.set(other.embedded)
         templates.set(other.templates)
         scriptCollections.set(other.scriptCollections)
+        customProperties.set(other.customProperties)
     }
 }

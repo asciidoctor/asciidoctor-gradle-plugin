@@ -26,33 +26,14 @@ import java.util.List;
  * @author Schalk W. Cronjé
  * @since 5.0
  */
-public interface ExternalAsciidoctorSource extends HasAsciidoctorSource, HasAsciidoctorResources {
+public interface ExternalAsciidoctorSource extends ExternalSource, HasAsciidoctorSource, HasAsciidoctorResources {
     /**
-     * Tasks that are responsible for building providing external sources and resources.
+     * Links the input of this source set to one of the outputs on another source set.
      *
-     * @param tasks Evaluated as per normal {@code dependsOn} rules.
-     */
-    void builtBy(Object... tasks);
-
-    /**
-     * Tasks that build this external source.
+     * @param publicationName Name of publication.
+     * @param formatterOrAliasName Name of the output or in cases where the output has an alias, the alias name.
      *
-     * @return Provider to the list of tasks. Can be empty, but not {@code null}.
+     * @since 5.1
      */
-    Provider<List<Object>> getBuiltBy();
-
-    /**
-     * Instead of a source directory, you can provide a file collection. This is useful when taking a configuration
-     * from another subproject.
-     *
-     * @param fc Collection of files.
-     */
-    void from(FileCollection fc);
-
-    /**
-     * If the eternal source needs to be placed in a subfolder, then specify that here.
-     *
-     * @param path sub path in intermediate workdir and destination dir.
-     */
-    void into(Object path);
+    void fromPublication(String publicationName, String formatterOrAliasName);
 }

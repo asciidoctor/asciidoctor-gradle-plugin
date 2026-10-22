@@ -15,6 +15,8 @@ asciidoc {
         sourceSet {
           sources { // <.>
           }
+          secondarySources { // <.>
+          }
           resources { // <.>
           }
           attributes { // <.>
@@ -30,6 +32,9 @@ asciidoc {
 }
 ----
 <.> Customise asciidoc sources to be processed.
+<.> Customise secondary sources.
+  These are any files that should affect the up to date status of a task, but which are not directly handled by `sources` or `resources`.
+  One such example could be the `yaml` configuration for producing PDFs.
 <.> Additional resources, such as images.
 <.> Use `attributes` block to configure Asciidoc attributes.
 <.> Human-language additional configuration.
@@ -73,6 +78,44 @@ http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/util/PatternSet.
 <.> Configures a copy specification for resources.
   These are files, such as images, that are required as part of publication, but not processed by an Asciidoctor engine.
 <.> It is possible to override the source directory, although the convention of `src/docs/asciidoc<PUBLICATION>` should suffice for most cases.
+--
+====
+
+=== External sources
+
+Outputs from other tasks can be used as inputs to publications
+
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
+----
+asciidoc {
+  publications {
+    main {
+        sourceSet {
+            externalSource {
+                builtBy 'anotherTask' // <.>
+                from tasks.named('anotherTask').map { outputs.files } // <.>
+                from project(path: ':another', configuration: 'adocGenerator') // <.>
+                fromPublication('anotherPublication', 'outputName') // <.>
+                into 'myExt' // <.>
+            }
+        }
+    }
+  }
+}
+----
+<.> One or more tasks are needed to produce the sources, then the link can be specified here.
+<.> Source files can be specified as a file collection.
+<.> If another project produces a configuraiton of source files, even that can be used here.
+<.> If another publication in the same project has an output formatter that produces content, then link directly to that without using `builtBy` and `from`.
+  The first parameter is the publication name.
+  The second parameter is the name of the output.
+  In cases where the out has an alias, that alias name must be provided here.
+<.> If the content from the producer needs to be placed into a subfolder relative to the document root of the source set, the it can be configured here.
 --
 ====
 
