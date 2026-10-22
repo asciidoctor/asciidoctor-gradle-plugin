@@ -60,7 +60,7 @@ public interface AsciidoctorjToolchain extends AsciidoctorToolchain, CoreVersion
      *
      * @param formatterName An active {@code asciidoctorj} formatter.
      * @param executionContext Valid execution context. The provider can be empty which will mean the same as no
-     *                         execution  context.
+     *                         execution context.
      */
     void registerExecutionContext(String formatterName, Provider<ExecutionContext> executionContext);
 

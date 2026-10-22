@@ -24,6 +24,7 @@ import org.gradle.testkit.runner.TaskOutcome
 import org.ysb33r.grolifant5.api.core.ConfigCacheSafeOperations
 import org.ysb33r.grolifant5.api.core.plugins.GrolifantServicePlugin
 import spock.lang.Issue
+import spock.lang.PendingFeature
 
 import static org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils.DEFAULT_PUBLICATION
 import static org.asciidoctor.gradle.model5.jvm.plugins.AsciidoctorjPlugin.DEFAULT_TOOLCHAIN
@@ -112,12 +113,16 @@ class UpToDateSpec extends AsciidoctorjHtmlIntegrationSpecification {
     }
 
     @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/599')
+    @Issue('https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/818')
     void 'Changes to secondary sources will cause rebuild'() {
         setup:
         copyTestProject('issue-599-secondary-sources')
         configureSourceSetGroovy(DEFAULT_PUBLICATION, """
         sources {
             include '**/secondary.adoc'
+        }
+        secondarySources {
+            include '**/include.adoc'
         }
         baseDir {
             baseDirFollowsSourceDir()

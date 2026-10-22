@@ -1,0 +1,97 @@
+= Convert Markdown to Asciidoc
+
+As part of migration you might need to convert Markdown to AsciiDoc OR maybe you have tools that only produce Markdown and you need to have the final result in AsciiDoc because your documentation system is built upon a standardised documentation markup language.
+
+Using https://github.com/asciidoctor/kramdown-asciidoc[`kramdown-asciidoc`] this is possible and that tool is offered as part of the larger Asciidoctor Gradle plugin suite.
+As this tool is not using AsciiDoc as its input sources it has a different DSL to the rest of the configuration model.
+
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy,subs=+attributes]
+----
+plugins {
+    id 'org.asciidoctor.kramdown' version '{release-version}'
+}
+
+kramdownAsciidoc {
+    toolchains {
+        kramdown { // <.>
+            format = 'kramdown' // <.>
+            useKramdownAsciidoc('2.1.1') // <.>
+            useJRuby('9.1.2.3') // <.>
+
+            registeredOutputFormatters {
+                asciidoc {  // <.>
+                    diagramLanguages = [ 'plantuml', 'mermaid'] // <.>
+                    diagramLanguages 'plantuml', 'mermaid' // <.>
+                    passthruHtml = true // <.>
+                    wrap = 'preserve` // <.>'
+                    headingOffset = 2 // <.>
+                    autoLinks = true // <.>
+
+                    autoIds {
+                      generate = true // <.>
+                      prefix = 'foo' // <.>
+                      separator = ',' // <.>
+                      dropLazyValues = true // <.>
+                    }
+
+                    attributes { // <.>
+                        add 'foo', 'bar'
+                    }
+
+                }
+            }
+        }
+    }
+
+  publications {
+    main {
+        sourceSet {
+            sourceDir = 'src/docs/markdown' // <.>
+            imagesDir = 'path/images' // <.>
+        }
+        output 'kramdown', 'asciidoc' // <.>
+        output 'kramdown', 'asciidoc', 'foo' // <.>
+    }
+
+  }
+}
+----
+<.> The default toolchain is called `kramdoc`.
+<.> Sets the format to parse.
+  One of `gfm`, `markdown` or `kramdoc`.
+  String is case-insensitive.
+  Default is `gfm`.
+<.> Override the default version of Kramdown.
+<.> Override the default version of JRuby.
+<.> Configure one or more output formatters.
+  The conventions plugin `org.asciidoctor.kramdown` will add an output formatter called `asciidoc`.
+<.> Set the source languages to interpret as diagrams.
+  If not set, the defaults are `plantuml` and `mermaid`.
+<.> Add more source language to treat as diagrams.
+<.> Whether to pass HTML through as-is or convert it to Asciidoc syntax where possible.
+  The default is to convert to HTML i.e. `true`.
+<.> Set how lines are wrapped in the AsciiDoc document.
+  One of `preserve`, `none` or `ventilate`.
+  The default is `preserve`.
+<.> Changes the heading offset.
+  The number can be negative or positive.
+<.> Whether to automatically convert bare URLs into links.
+  THe default is to convert.
+<.> The prefix to use for auto-generated section title IDs.
+  Anything convertible to a string can be supplied.
+<.> The separator char to use for auto-generated section title IDs.
+<.> Whether to drop IDs that match the values of auto-generated IDs.
+<.> Whether to auto-generate IDs for all section titles.
+  The default is not to generate IDs.
+<.> Add attributes to the AsciiDoc document header.
+<.> There is no default setting for the source directory and it needs to be set here.
+<.> Optionally, set the `imagesdir` attribute in the AsciiDoc document header and remove the value from the start of image paths.
+<.> Create an output by specifying the toolchain to use and the output formatter name.
+<.> You can also specify an alias for the output name
+--
+====

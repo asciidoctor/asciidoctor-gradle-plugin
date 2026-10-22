@@ -1,0 +1,65 @@
+= Reducing AsciiDoc includes to single files with {reducer-name}
+
+With the 5.0 release, there is now the ability to reduce AsciiDoc files which include other files into a single AsciiDoc files using link:{reducer-url}[{reducer-name}]
+This toolchain does not use any of the Asciidoctor engines underneath, but it provides its own `pnpm`-based toolchain.
+
+
+[tabs]
+====
+Groovy::
++
+--
+[source,groovy]
+----
+import org.asciidoctor.gradle.model5.reducer.toolchains.AsciidoctorReducerToolchain
+import org.asciidoctor.gradle.model5.reducer.formatters.AsciidoctorReducerOutputFormatter
+
+asciidoc {
+    toolchains {
+        asciidoctorReducer(AsciidoctorReducerToolchain) {
+
+            safeMode = 'unsafe' // <.>
+
+            useReducer( '1.2.3' ) // <.>
+            useJRuby( '9.1.2.3' ) // <.>
+
+            engineOptions {
+                trace = true // <.>
+            }
+
+            registeredOutputFormatters {
+                reducedAdoc(AsciidoctorReducerOutputFormatter) { // <.>
+                    preserveConditionals = true // <.>
+                }
+            }
+
+            forkOptions { // <.>
+            }
+
+            forkEvery = 10 // <.>
+        }
+    }
+
+  publications {
+    main {
+        output 'asciidoctorReducer', 'reducedAdoc' // <.>
+    }
+
+  }
+}
+----
+<.> The default toolchain is called `asciidoctorReducer`
+<.> Set the safe mode. Default is `unsafe`.
+<.> Override the default version of {asciidoctor-reducer-name}.
+<.> Whether to turn on tracing.
+<.> Override the default version of JRuby.
+<.> The default formatter is called `reducedAdoc`.
+<.> Whether conditional directives should be kept. Default is `false`.
+<.> All workers for this toolchain runs process-isolated.
+  Configure the fork options for these workers if the defaults do not work for you.
+<.> Set the ability to fork a new worker every X documents.
+  This might be useful in cases where many documents need to be processed.
+  Setting it to `0` (the default) means that all documents will be processed in the worker.
+<.> Create an output that will take Asciidoc as input as produce reduced Asciidoc documents.
+--
+====

@@ -16,23 +16,21 @@
 package org.asciidoctor.gradle.model5.js
 
 import org.asciidoctor.gradle.model5.js.testfixtures.AsciidoctorjsHtmlIntegrationSpecification
+import spock.lang.Unroll
 
+import static org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils.DEFAULT_PUBLICATION
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 
-class DefaultAttributesSpec extends AsciidoctorjsHtmlIntegrationSpecification {
+class IncludeDirSpec extends AsciidoctorjsHtmlIntegrationSpecification {
 
     void setup() {
         writeHtmlBasedBuildFile()
-        writeSource('src/docs/asciidoc/_included.adoc', 'This text is included.\n')
     }
 
     void 'includedir is the source directory'() {
         setup:
-        writeSource('src/docs/asciidoc/index.adoc', '''
-        = Document
-
-        include::{includedir}/_included.adoc[]
-        '''.stripIndent())
+        addIncludeDir(false)
+        copyTestProject('includedir-with-external-sources')
 
         when:
         final result = getGradleRunner(IS_GROOVY_DSL, [taskName]).build()
@@ -42,8 +40,25 @@ class DefaultAttributesSpec extends AsciidoctorjsHtmlIntegrationSpecification {
         fileContains(outputDir, 'index.html', 'This text is included.')
     }
 
-    void 'includedir set in the document overrides the default'() {
+    void 'includedir is the intermediate working directory when there are external sources'() {
         setup:
+        addIncludeDir(false)
+        addExternalSource()
+        copyTestProject('includedir-with-external-sources')
+
+        when:
+        final result = getGradleRunner(IS_GROOVY_DSL, [taskName, '-s']).build()
+
+        then:
+        result.task(":${taskName}").outcome == SUCCESS
+        fileContains(outputDir, 'index.html', 'This text is included.')
+        fileContains(outputDir, 'ext/ext.html', 'This text comes from the external source.')
+    }
+
+    @Unroll
+    void 'includedir set in the document overrides the default if set as soft=#soft'() {
+        setup:
+        addIncludeDir(soft)
         writeSource('src/docs/asciidoc/index.adoc', '''
         = Document
         :includedir: other
@@ -57,7 +72,36 @@ class DefaultAttributesSpec extends AsciidoctorjsHtmlIntegrationSpecification {
 
         then:
         result.task(":${taskName}").outcome == SUCCESS
-        fileContains(outputDir, 'index.html', 'The document sets its own includedir.')
+        fileContains(outputDir, 'index.html', 'The document sets its own includedir.') == documentWins
+
+        where:
+        soft  | documentWins
+        false | false
+        true  | true
+    }
+
+    private void addIncludeDir(boolean soft) {
+        configureSourceSetGroovy(DEFAULT_PUBLICATION,
+            """
+            includeDir {
+                soft = ${soft}
+                withSourceDir()
+            }
+            """.stripIndent()
+        )
+    }
+
+    private void addExternalSource() {
+        configureSourceSetGroovy(DEFAULT_PUBLICATION, """
+        externalSource {
+            sourceDir = 'external'
+            sources {
+                include 'ext.adoc'
+            }
+            into 'ext'
+        }
+        missingIncludesAreFatal()
+        """.stripIndent())
     }
 
     private void writeSource(String path, String content) {

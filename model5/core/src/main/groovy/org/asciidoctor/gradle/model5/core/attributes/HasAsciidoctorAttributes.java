@@ -18,6 +18,7 @@ package org.asciidoctor.gradle.model5.core.attributes;
 import groovy.lang.Closure;
 import groovy.lang.DelegatesTo;
 import org.gradle.api.Action;
+import org.ysb33r.grolifant5.api.core.ClosureUtils;
 
 /**
  * Indicates the DSL item has Asciidoctor attributes.
@@ -32,14 +33,18 @@ public interface HasAsciidoctorAttributes {
      *
      * @param configurator Configurator
      */
-    void attributes(Action<Attributes> configurator);
+    default void attributes(Action<Attributes> configurator) {
+        configurator.execute(getAttributes());
+    }
 
     /**
      * Configures the attributes for this publication
      *
      * @param configurator Configurator
      */
-    void attributes(@DelegatesTo(Attributes.class) Closure configurator);
+    default void attributes(@DelegatesTo(Attributes.class) Closure configurator) {
+        ClosureUtils.configureItem(getAttributes(), configurator);
+    }
 
     /**
      * Direct access to the attributes for this publication.

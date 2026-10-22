@@ -18,7 +18,7 @@ package org.asciidoctor.gradle.model5.jvm.engines;
 import org.ysb33r.grolifant5.api.core.jvm.GrolifantSimpleJavaForkOptions;
 
 /**
- * Engine execution context used by {@code easciidoctorj} output formatters.
+ * Engine execution context used by {@code asciidoctorj} output formatters.
  *
  * @author Schalk W. Cronjé
  * @since 5.0

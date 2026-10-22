@@ -50,6 +50,18 @@ class TaskFactory {
         }
     }
 
+    /**
+     * Looks up a task by name.
+     *
+     * @param taskName Name of task
+     * @return Provider to an instance of {@link AsciidoctorTask}
+     *
+     * @since 5.1
+     */
+    TaskProvider<? extends AsciidoctorTask> lookupTask(final String taskName) {
+        project.tasks.named(taskName, AsciidoctorTask)
+    }
+
     void addPrerequisiteTasks(final String taskName, Iterable<String> prepareTasks) {
         project.tasks.named(taskName).configure { it.dependsOn(prepareTasks) }
     }

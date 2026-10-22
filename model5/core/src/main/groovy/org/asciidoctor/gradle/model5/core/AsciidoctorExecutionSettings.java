@@ -27,7 +27,7 @@ import java.util.Set;
  *
  * @since 5.0
  */
-public interface AsciidoctorExecutionSettings {
+public interface AsciidoctorExecutionSettings extends BaseExecutionSettings {
     /**
      * Safe mode
      *
@@ -41,20 +41,6 @@ public interface AsciidoctorExecutionSettings {
      * @return Provider to a list. Can be empty, but not null.
      */
     Provider<Set<String>> getModuleRequires();
-
-    /**
-     * The name of the formatter.
-     *
-     * @return Provider to the name.
-     */
-    Provider<String> getFormatterName();
-
-    /**
-     * The name of the toolchain.
-     *
-     * @return Provider to the name.
-     */
-    Provider<String> getToolchainName();
 
     /**
      * Additional classpath to be added.

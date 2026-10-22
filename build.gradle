@@ -14,21 +14,12 @@
  * limitations under the License.
  */
 
-// Works around missing 4.0.1 of grgit-core.
-buildscript {
-    dependencies {
-        classpath 'org.ajoberstar.grgit:grgit-core:4.1.1'
-    }
-}
-
 plugins {
     id 'org.asciidoctor.internal.root'
-    id 'net.nemerosa.versioning' version '2.15.1' apply false
     id 'com.github.ben-manes.versions' version '0.50.0' apply false
     id 'com.github.kt3k.coveralls' version '2.12.2' apply false
     id 'net.ossindex.audit' version '0.4.11' apply false
     id 'org.kordamp.jdeps' version '0.2.0' apply false
-//    id 'fi.linuxbox.download.worker' version '0.4' apply false
     id 'org.ysb33r.cloudci' version '4.0.0' apply false
     id 'idea'
 
@@ -55,31 +46,5 @@ ivypot {
     }
 }
 
-apply plugin: 'net.nemerosa.versioning'
-
-ext {
-    buildTimeAndDate = new Date()
-    buildDate = new SimpleDateFormat('yyyy-MM-dd').format(buildTimeAndDate)
-    buildTime = new SimpleDateFormat('HH:mm:ss.SSSZ').format(buildTimeAndDate)
-    buildRevision = versioning.info.commit
-    buildCreatedBy = "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})".toString()
-}
-//
-//allprojects {
-//    ext {
-//        withoutIntegrationTests = [
-//            'kindlegen-gradle'
-//        ]
-//
-//        withoutCompatibilityTests = [
-//            'kindlegen-gradle'
-//        ]
-//
-//        withoutCodeCoverage = [
-//        ]
-//    }
-//}
-
-
 // ********* TEMPORARY FOR LOCAL DEV
-//tasks.named('syncRemoteRepositories') { enabled = false }
+tasks.named('syncRemoteRepositories') { enabled = false }

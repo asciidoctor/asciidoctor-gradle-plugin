@@ -36,8 +36,6 @@ import static org.asciidoctor.gradle.base.ProblemReports.TOOLCHAIN_J
 @CacheableTask
 @CompileStatic
 class AsciidoctorGemPrepare extends AbstractGemPrepareTask {
-
-//    private final Provider<File> jrubyJarLocationProvider
     private final AsciidoctorJExtension jruby
 
     @Inject
@@ -45,9 +43,9 @@ class AsciidoctorGemPrepare extends AbstractGemPrepareTask {
     AsciidoctorGemPrepare(WorkerExecutor we) {
         super(we)
         this.jruby = project.extensions.getByType(AsciidoctorJExtension)
-        setJrubyJarProvider(project.provider({ AsciidoctorJExtension jruby ->
-            jruby.configuration.files.find { it.name.startsWith(JRUBY_COMPLETE_NAME) }
-        }.curry(jruby) as Callable<File>))
+        setJrubyJarsProvider(project.provider({ AsciidoctorJExtension jruby ->
+            jruby.configuration.files
+        }.curry(jruby) as Callable<Set<File>>))
 
         ProblemReports.report(
             problemReporter(),

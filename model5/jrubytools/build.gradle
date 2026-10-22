@@ -1,0 +1,38 @@
+plugins {
+    id 'org.asciidoctor.internal.model5.gradle.project'
+}
+
+agProject {
+    withIntegrationTests()
+    configurePlugin(
+        'org.asciidoctor.reducer.base',
+        'Plugin to convert reduce an AsciiDoc with includes to a single AsciiDoc file',
+        'Provides a Reducer toolchain for AsciiDoc',
+        'org.asciidoctor.gradle.model5.reducer.plugins.ReducerBasePlugin',
+        ['asciidoctor', 'reducer'],
+        false
+    )
+    configurePlugin(
+        'org.asciidoctor.reducer',
+        'Plugin to convert reduce an AsciiDoc with includes to a single AsciiDoc file',
+        'Provides a Reducer toolchain for AsciiDoc with some conventions',
+        'org.asciidoctor.gradle.model5.reducer.plugins.ReducerPlugin',
+        ['asciidoctor', 'reducer'],
+        true
+    )
+
+    withVersionSubstitution("${project.name}.properties", [
+        VERSION: versionOf('asciidoctorReducer'),
+        JRUBY_VERSION: versionOf('jruby')
+    ])
+}
+
+dependencies {
+    api project(':asciidoctor5-core-plugin')
+    api(libs.pluginJRuby)
+    api(libs.grolifantApi)
+    runtimeOnly(libs.grolifantRuntime)
+    testImplementation project(':testfixtures-jvm')
+}
+
+apply from: "${rootDir}/gradle/plugin-is-cc-compatible.gradle"

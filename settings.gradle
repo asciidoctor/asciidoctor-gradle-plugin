@@ -21,22 +21,29 @@ develocity {
 
 rootProject.name = 'asciidoctor-gradle-plugin'
 
-
 // New model5 plugins
 
 include 'asciidoctoreditorconfig'
 project(":asciidoctoreditorconfig").projectDir = file("model5/asciidoctoreditorconfig")
 
-['core', 'js-core', 'jvm-core', 'downdoc'].each {
+[
+    'core',
+    'js-core',
+    'jvm-core',
+    'downdoc',
+    'jrubytools',
+    'kramdown'
+].each {
     include "model5/${it}"
     project(":model5/${it}").name = "asciidoctor5-${it}-plugin"
 }
-
 
 ['jvm'].each {
     include "testfixtures/${it}"
     project(":testfixtures/${it}").name = "testfixtures-${it}"
 }
+
+include 'test-all-model5-plugins'
 
 // Deprecated, classic plugins go here
 ['base', 'jvm', 'js'].each {
@@ -54,7 +61,6 @@ project(":asciidoctoreditorconfig").projectDir = file("model5/asciidoctoreditorc
 include 'asciidoctoreditorconfig-classic'
 project(":asciidoctoreditorconfig-classic").projectDir = file("classic/asciidoctoreditorconfig")
 
-include 'test-all-model5-plugins'
 ////[  'slides-export' ].each {
 ////    include "classic/${it}"
 ////    project(":classic/${it}").name = "asciidoctor-gradle-${it}"
