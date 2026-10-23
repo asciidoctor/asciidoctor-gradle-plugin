@@ -19,24 +19,24 @@ plugins {
 kramdownAsciidoc {
     toolchains {
         kramdown { // <.>
-            format = 'kramdown' // <.>
+            format = 'parse' // <.>
             useKramdownAsciidoc('2.1.1') // <.>
             useJRuby('9.1.2.3') // <.>
 
             registeredOutputFormatters {
-                asciidoc {  // <.>
-                    diagramLanguages = [ 'plantuml', 'mermaid'] // <.>
-                    diagramLanguages 'plantuml', 'mermaid' // <.>
+                asciidoc { // <.>
+                    diagramLanguages = ['plantuml'] // <.>
+                    diagramLanguages 'mermaid' // <.>
                     passthruHtml = true // <.>
-                    wrap = 'preserve` // <.>'
+                    wrap = 'preserve` // <.>
                     headingOffset = 2 // <.>
                     autoLinks = true // <.>
 
                     autoIds {
-                      generate = true // <.>
                       prefix = 'foo' // <.>
                       separator = ',' // <.>
                       dropLazyValues = true // <.>
+                      generate = true // <.>
                     }
 
                     attributes { // <.>
@@ -81,7 +81,7 @@ kramdownAsciidoc {
 <.> Changes the heading offset.
   The number can be negative or positive.
 <.> Whether to automatically convert bare URLs into links.
-  THe default is to convert.
+  The default is to convert.
 <.> The prefix to use for auto-generated section title IDs.
   Anything convertible to a string can be supplied.
 <.> The separator char to use for auto-generated section title IDs.
