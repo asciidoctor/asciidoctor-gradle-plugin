@@ -16,7 +16,7 @@ import org.asciidoctor.gradle.model5.reducer.formatters.AsciidoctorReducerOutput
 
 asciidoc {
     toolchains {
-        asciidoctorReducer(AsciidoctorReducerToolchain) {
+        asciidoctorReducer(AsciidoctorReducerToolchain) { // <.>
 
             safeMode = 'unsafe' // <.>
 
