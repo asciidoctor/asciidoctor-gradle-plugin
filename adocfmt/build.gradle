@@ -1,0 +1,35 @@
+plugins {
+    id 'org.asciidoctor.internal.model5.gradle.project'
+}
+
+agProject {
+    withIntegrationTests()
+    configurePlugin(
+        'org.asciidoctor.format.base',
+        'Plugin to format AsciiDoc',
+        'Utilises adocfmt under the hood to format AsciiDoc',
+        'org.asciidoctor.gradle.adocfmt.plugins.AdocFmtBasePlugin',
+        ['asciidoc', 'adocfmt'],
+        false // TODO: Confirm CC & IP compatibility
+    )
+    configurePlugin(
+        'org.asciidoctor.format',
+        'Conventions plugin to format AsciiDoc',
+        'Utilises adocfmt under the hood to format AsciiDoc',
+        'org.asciidoctor.gradle.adocfmt.plugins.AdocFmtPlugin',
+        ['asciidoctor', 'adocfmt'],
+        false  // TODO: Confirm CC & IP compatibility
+    )
+
+    withVersionSubstitution("asciidoctor5-adocfmt-plugin.properties", [
+        VERSION: versionOf('adocfmt'),
+    ])
+}
+
+dependencies {
+    implementation(libs.grolifantApi)
+    runtimeOnly(libs.grolifantRuntime)
+    testImplementation project(':testfixtures-jvm')
+}
+
+//apply from: "${rootDir}/gradle/plugin-is-cc-compatible.gradle"

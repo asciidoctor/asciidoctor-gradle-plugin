@@ -31,6 +31,7 @@ agProject {
 
 dependencies {
     compileOnly(project(':asciidoctoreditorconfig'))
+    compileOnly(project(':adocfmt'))
 }
 
 apply from: "${rootDir}/gradle/plugin-is-cc-compatible.gradle"

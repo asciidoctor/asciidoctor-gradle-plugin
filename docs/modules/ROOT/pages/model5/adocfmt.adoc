@@ -1,0 +1,59 @@
+= Formatting files
+
+It is possible to format AsciiDoc files and even run checks that files are correctly formatted.
+
+[tabs]
+====
+Groovy::
++
+--
+[source,groov,subs=+attributes]
+----
+plugins {
+  id 'org.asciidoctor.format' version '{release-version}'
+}
+adocfmt {
+    executableByVersion('0.6.0') // <.>
+}
+----
+<.> Override the default version
+--
+====
+
+`org.asciidoctor.format` adds a number of tasks:
+
+`asciidoctorFormatAll`:: Runs all tasks of type `AdocFmtTask`.
+    If one of the https://gradle-lifecycles.ysb33r.org/[Standardised Lifecycle plugins] such as `org.ysb33r.lifecycles.base` is added, it will react to that and execute this task as part of the `formatAll` lifecycle task.
+
+`asciidoctorFormatCheckAll`:: Runs all tasks of type `AdocFmtCheckTask`.
+    This task is also executed as part of the `check` lifecycle.
+
+If any of the Asciidoctor model5 convention plugins are applied, then a formatting and a format check task will be added for each publication.
+
+== Configuring for Antora
+
+There is currently some wiring for Antora, and you can configure as follows.
+
+[tabs]
+====
+Groovy::
++
+--
+[source,groov,subs=+attributes]
+----
+import org.asciidoctor.gradle.adocfmt.AdocFmtTask
+
+plugins {
+  id 'org.antora' version '1.0.0'
+  id 'org.asciidoctor.format' version '{release-version}'
+}
+
+tasks.register('antoraFmt', AdocFmtTask) {
+  sourceDir = 'docs/antora' // <.>
+  antoraMode = true // <.>
+}
+----
+<.> Set the location manually and this must be the parent directory of `antora.yml`.
+<.> Activate Antora layout and scan all AsciiDoc files int eh `pages` directories of all modules.
+--
+====

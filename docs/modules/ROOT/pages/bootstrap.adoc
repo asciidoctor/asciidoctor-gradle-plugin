@@ -8,6 +8,8 @@ For classic operation see xref:classic/quick-start.adoc[] instead.
 [source,groovy,subs=+attributes]
 ----
 plugins {
+    id 'org.asciidoctor.editorconfig' version '{release-version}' // <.>
+    id 'org.asciidoctor.format' version '{release-version}' // <.>
     id 'org.asciidoctor.jvm' version '{release-version}' // <.>
     id 'org.asciidoctor.jvm.diagram' version '{release-version}' // <.>
     id 'org.asciidoctor.jvm.epub' version '{release-version}' // <.>
@@ -24,6 +26,8 @@ plugins {
     id 'org.asciidoctor.reducer' version '{release-version}' // <.>
 }
 ----
+<.> Creates an `.asciidoctorconfig` file that can be used by IntelliJ for displaying attribute values.
+<.> Formats and checks AsciiDoc files.
 <.> The convention plugin for working with {asciidoctorj-name}.
   Applies `org.asciidoctor.jvm.base` and also creates a default toolchain called `asciidoctorj`.
 <.> Registers an extension with support for `asciidoctorj-diagram`.
@@ -47,9 +51,9 @@ They are listed here as they might prove useful in special cases
 [source,groovy,subs=+attributes]
 ----
 plugins {
-    id 'org.asciidoctor.editorconfig' version '{release-version}' // <.>
     id 'org.asciidoctor.core.base' version '{release-version}' // <.>
     id 'org.asciidoctor.core' version '{release-version}' // <.>
+    id 'org.asciidoctor.format.base' version '{release-version}' // <.>
     id 'org.asciidoctor.themes' version '{release-version}' // <.>
     id 'org.asciidoctor.jvm.base' version '{release-version}' // <.>
     id 'org.asciidoctor.js.base' version '{release-version}' // <.>
@@ -58,10 +62,10 @@ plugins {
     id 'org.asciidoctor.reducer.base' version '{release-version}' // <.>
 }
 ----
-<.> Produces an `.asciidoctorconfig` file for IDE purposes.
 <.> The Asciidoctor base plugin, which is engine free. Only provides the `asciidoc` extension and the `showAsciidoctorToolchains` task.
 <.> The Asciidoctor core plugin, which is engine free. Adds a single publication called `main` and a task called `asciidoctorAll`.
 <.> Adds the `asciidocThemes` extension.
+<.> Adds the `adocfmt` extension.
 <.> Registers the ability to create {asciidoctorj-name} toolchains along with output formatters for HTML, DocBook and Manpages.
   Also registers the diagram {asciidoctorj-name} extension.
 <.> Registers the ability to create {asciidoctorjs-name} toolchains along with an HTML output formatter.

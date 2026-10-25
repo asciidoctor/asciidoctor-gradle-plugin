@@ -18,6 +18,7 @@ plugins { // <.>
     id 'org.asciidoctor.reducer'
     id 'org.asciidoctor.downdoc'
     id 'org.asciidoctor.kramdoc'
+    id 'org.asciidoctor.format'
 }
 
 // end::important-stuff[]
@@ -115,5 +116,5 @@ asciidoc {
 // end::important-stuff[]
 
 tasks.register('runGradleTest') {
-    dependsOn('asciidoctorAll')
+    dependsOn('asciidoctorFormatAll', 'asciidoctorAll')
 }

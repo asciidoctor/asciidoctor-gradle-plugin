@@ -2,6 +2,7 @@
 [versions]
 # end::hacking-asciidoctorj-output-formatter[]
 # Keep in alphabetical order, please
+adocfmt = "0.6.0"
 asciidoctorj = "3.0.1"
 asciidoctorjDiagram = "3.2.1"
 asciidoctorjDiagramBatik = "1.19"
