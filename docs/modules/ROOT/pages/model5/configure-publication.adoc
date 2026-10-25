@@ -20,9 +20,7 @@ asciidoc {
           resources { // <.>
           }
           attributes { // <.>
-          }
-          languages { // <.>
-          }
+          }}
         }
         output 'asciidoctorj', 'html' // <.>
         output 'asciidoctorj', 'pdf'
@@ -37,7 +35,6 @@ asciidoc {
   One such example could be the `yaml` configuration for producing PDFs.
 <.> Additional resources, such as images.
 <.> Use `attributes` block to configure Asciidoc attributes.
-<.> Human-language additional configuration.
 <.> Configures the outputs for this publication.
   The format is `toolchainName, outputFormat`.
   See xref:model5/configure-toolchains.adoc[Configuring Toolchains] for more info.
