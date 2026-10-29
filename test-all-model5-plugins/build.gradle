@@ -9,6 +9,7 @@ dependencies {
     runtimeOnly(project(':asciidoctor5-downdoc-plugin'))
     runtimeOnly(project(':asciidoctor5-jrubytools-plugin'))
     runtimeOnly(project(':asciidoctor5-kramdown-plugin'))
+    runtimeOnly(project(':adocfmt'))
 }
 
 gradleTestSets {
@@ -18,7 +19,6 @@ gradleTestSets {
         }
     }
 }
-
 
 tasks.withType(Test).configureEach {
     forkEvery = 2

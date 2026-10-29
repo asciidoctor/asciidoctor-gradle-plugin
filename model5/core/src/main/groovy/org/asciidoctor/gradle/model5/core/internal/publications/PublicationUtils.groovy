@@ -124,4 +124,26 @@ class PublicationUtils {
             "${taskPrefix}${publicationName.capitalize()}${outputName.capitalize()}"
         }
     }
+
+    /**
+     * Name of the formatting task
+     * @param publicationName Name of publication
+     * @return Task name
+     *
+     * @since 5.2
+     */
+    static String formatTaskName(String publicationName) {
+        "asciidoctorFormat${publicationName.capitalize()}"
+    }
+
+    /**
+     * Name of the format check task
+     * @param publicationName Name of publication
+     * @return Task name
+     *
+     * @since 5.2
+     */
+    static String formatCheckTaskName(String publicationName) {
+        "asciidoctorFormatCheck${publicationName.capitalize()}"
+    }
 }

@@ -16,11 +16,14 @@
 package org.asciidoctor.gradle.model5.core.plugins
 
 import groovy.transform.CompileStatic
+import org.asciidoctor.gradle.adocfmt.tasks.AdocFmtCheckTask
+import org.asciidoctor.gradle.adocfmt.tasks.AdocFmtTask
 import org.asciidoctor.gradle.model5.core.AsciidoctorModelExtension
 import org.asciidoctor.gradle.model5.core.internal.publications.PublicationUtils
 import org.asciidoctor.gradle.model5.core.tasks.AsciidoctorTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 /**
  * Conventions plugin which adds a main publication and a task to run all {@link AsciidoctorTask} tasks.
@@ -48,6 +51,22 @@ class AsciidoctorCorePlugin implements Plugin<Project> {
             it.group = PublicationUtils.GROUP_NAME
             it.description = 'Runs all asciidoc conversions'
             it.dependsOn(allTasks)
+        }
+
+        project.pluginManager.withPlugin('org.asciidoctor.format') {
+            asciidoc.publications.configureEach { pub ->
+                project.tasks.register(PublicationUtils.formatCheckTaskName(pub.name), AdocFmtCheckTask) {
+                    it.group = LifecycleBasePlugin.VERIFICATION_GROUP
+                    it.description = "Checks that AsciiDoc for publication '${pub.name}' is correctly formatted"
+                    it.sourceDir = pub.sourceSet.sourceDir
+                }
+
+                project.tasks.register(PublicationUtils.formatTaskName(pub.name), AdocFmtTask) {
+                    it.group = 'Formatting'
+                    it.description = "Format AsciiDoc for publication '${pub.name}'"
+                    it.sourceDir = pub.sourceSet.sourceDir
+                }
+            }
         }
     }
 }
