@@ -27,6 +27,8 @@ import org.asciidoctor.log.LogHandler
 import org.asciidoctor.log.LogRecord
 import org.gradle.workers.WorkAction
 
+import java.beans.Introspector
+
 import static java.util.Collections.EMPTY_LIST
 import static org.asciidoctor.log.Severity.ERROR
 import static org.asciidoctor.log.Severity.FATAL
@@ -72,7 +74,20 @@ abstract class LauncherWorker implements WorkAction<LauncherParameters> {
                 groupDestDir.mkdirs()
                 processBatch(asciidoctor, sourceFiles, groupDestDir, relPath)
             }
+        } finally {
+            flushBeanInfo()
         }
+    }
+
+    /**
+     * Removes the classes of this worker from the {@link Introspector} caches.
+     *
+     * <p>Groovy introspects them when it creates their metaclasses.
+     * The caches only hold them softly, but that's enough to keep the class loader of each conversion,
+     * with {@code AsciidoctorJ} and {@code JRuby}, in the Gradle daemon until metaspace runs short.
+     */
+    private void flushBeanInfo() {
+        [this.class, LauncherWorker, WorkerLogHandler].each { Introspector.flushFromCaches(it) }
     }
 
     private void processBatch(
