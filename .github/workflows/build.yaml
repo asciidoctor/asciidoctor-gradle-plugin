@@ -17,11 +17,17 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with:
-          java-version: 21
+          java-version: |
+            8
+            21
           distribution: zulu
       - uses: gradle/gradle-build-action@v2
         with:
           gradle-home-cache-cleanup: true
+      - name: Use JDK 8 as the Java 8 toolchain
+        run: |
+          mkdir -p ~/.gradle
+          echo 'org.gradle.java.installations.fromEnv=JAVA_HOME_8_X64' >> ~/.gradle/gradle.properties
       - name: Licensing and other lightweight checks
         run: ./gradlew --console=plain license validateAntora validatePlugins
       - name: Coding style
@@ -66,11 +72,17 @@ jobs:
     - uses: actions/checkout@v4
     - uses: actions/setup-java@v4
       with:
-        java-version: ${{ matrix.java }}
+        java-version: |
+          8
+          ${{ matrix.java }}
         distribution: zulu
     - uses: gradle/gradle-build-action@v2
       with:
         gradle-home-cache-cleanup: true
+    - name: Use JDK 8 as the Java 8 toolchain
+      run: |
+        mkdir -p ~/.gradle
+        echo 'org.gradle.java.installations.fromEnv=JAVA_HOME_8_X64' >> ~/.gradle/gradle.properties
     - name: Cache offline repository
       uses: actions/cache@v3
       with:
