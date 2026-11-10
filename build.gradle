@@ -47,4 +47,4 @@ ivypot {
 }
 
 // ********* TEMPORARY FOR LOCAL DEV
-tasks.named('syncRemoteRepositories') { enabled = false }
+//tasks.named('syncRemoteRepositories') { enabled = false }
