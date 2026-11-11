@@ -19,6 +19,7 @@
 * xref:model5/asciidoctorj/groovydsl.adoc[]
 * xref:model5/asciidoctorj/engine-options.adoc[]
 * xref:model5/asciidoctorj/configurations.adoc[]
+* xref:model5/asciidoctorj/jruby-and-daemon-memory.adoc[]
 * xref:model5/asciidoctorj/adding-an-external-backend.adoc[]
 * xref:model5/asciidoctorj/adding-an-external-extension.adoc[]
 
@@ -62,6 +63,7 @@
 * xref:advanced/new-asciidoctorjs-output-formatter.adoc[]
 
 .Appendices
+* xref:appendices/known-limitations.adoc[]
 * xref:appendices/tips-and-tricks.adoc[]
 * xref:appendices/hacking.adoc[]
 

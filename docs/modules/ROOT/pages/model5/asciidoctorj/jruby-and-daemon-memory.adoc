@@ -1,0 +1,57 @@
+= JRuby version and daemon memory
+
+== JRuby version
+
+{asciidoctorj-name} depends on a version of JRuby, which is 9.4.14.0 for {asciidoctorj-name} 3.0.1.
+To use another version, set it on the toolchain.
+
+[source,groovy]
+----
+asciidoc {
+  toolchains {
+    asciidoctorj {
+      useJRuby('10.0.8.0') // <.>
+    }
+  }
+}
+----
+<.> JRuby 10 needs Java 21 or later, so Gradle has to run on Java 21 or later as well.
+
+[#daemon-memory]
+== Memory use in the Gradle daemon
+
+By default, the conversions run in the Gradle daemon, in a class loader of their own.
+Each build loads {asciidoctorj-name} and JRuby again, which takes around 30 MB of metaspace.
+Whether the daemon can free that again depends on the JRuby and Gradle versions:
+
+* With JRuby 10.0.8.0 and later 10.0 releases, or 10.1.3.0 and later, and Gradle 9.8.0 or later, the daemon frees it again without a metaspace limit.
+* With these JRuby versions and earlier Gradle versions, or with version 5.1.0 of this plugin, the JVM frees it when metaspace runs short, or Gradle replaces the daemon after the build.
+  Both only happen with a metaspace limit.
+  Without one, the daemon's metaspace keeps growing.
+* With earlier JRuby versions, including 9.4.14.0, it isn't freed.
+  Once metaspace reaches the limit, a build fails and Gradle replaces the daemon.
+
+Gradle sets `-XX:MaxMetaspaceSize=384m` on the daemon, but only when `org.gradle.jvmargs` isn't set.
+If you set `org.gradle.jvmargs` and the daemon needs a limit, include one.
+
+[source,properties]
+.gradle.properties
+----
+org.gradle.jvmargs=-Xmx2g -XX:MaxMetaspaceSize=512m
+----
+
+To keep the conversions out of the daemon instead, run them in worker processes, which Gradle stops at the end of each build.
+
+[source,groovy]
+----
+asciidoc {
+  toolchains {
+    asciidoctorj {
+      registeredOutputFormatters.named('html') {
+        useProcessIsolation() // <.>
+      }
+    }
+  }
+}
+----
+<.> Set it on each output formatter you use.
