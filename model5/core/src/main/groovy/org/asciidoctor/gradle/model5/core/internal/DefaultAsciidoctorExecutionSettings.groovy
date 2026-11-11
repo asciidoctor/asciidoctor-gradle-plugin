@@ -33,6 +33,7 @@ import static org.ysb33r.grolifant5.api.core.StringTools.EMPTY
  * Implementation of {@link AsciidoctorExecutionSettings}.
  *
  * @author Schalk W. Cronjé
+ * @author Mattias Reichel
  *
  * @since 5.0
  */
@@ -43,6 +44,7 @@ class DefaultAsciidoctorExecutionSettings implements AsciidoctorExecutionSetting
     final SetProperty<String> moduleRequires
     final Property<String> formatterName
     final Property<String> toolchainName
+    final Property<String> taskName
     final ConfigurableFileCollection additionalClasspath
     final Provider<Map<String, String>> inputProperties
 
@@ -53,6 +55,7 @@ class DefaultAsciidoctorExecutionSettings implements AsciidoctorExecutionSetting
         moduleRequires = objectFactory.setProperty(String)
         formatterName = objectFactory.property(String)
         toolchainName = objectFactory.property(String)
+        taskName = objectFactory.property(String)
         additionalClasspath = objectFactory.fileCollection()
 
         final smp = safeMode.map { it.name() }.orElse(EMPTY)

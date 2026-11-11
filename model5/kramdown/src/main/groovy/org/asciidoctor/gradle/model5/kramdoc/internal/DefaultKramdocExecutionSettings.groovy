@@ -29,6 +29,7 @@ import static java.util.Collections.EMPTY_MAP
  * Default mplementation of {@link KramdocExecutionSettings}.
  *
  * @author Schalk W. Cronjé
+ * @author Mattias Reichel
  *
  * @since 5.1
  */
@@ -37,12 +38,14 @@ class DefaultKramdocExecutionSettings implements KramdocExecutionSettings {
 
     final Property<String> formatterName
     final Property<String> toolchainName
+    final Property<String> taskName
     final Provider<Map<String, String>> inputProperties
 
     @Inject
     DefaultKramdocExecutionSettings(ObjectFactory objectFactory) {
         formatterName = objectFactory.property(String)
         toolchainName = objectFactory.property(String)
+        taskName = objectFactory.property(String)
         inputProperties = formatterName.map { EMPTY_MAP }
     }
 }

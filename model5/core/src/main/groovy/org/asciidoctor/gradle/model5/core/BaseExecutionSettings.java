@@ -25,6 +25,7 @@ import java.util.Set;
  * Describes basic execution options for running a launcher.
  *
  * @author Schalk W. Cronjé
+ * @author Mattias Reichel
  *
  * @since 5.1
  */
@@ -42,6 +43,17 @@ public interface BaseExecutionSettings {
      * @return Provider to the name.
      */
     Provider<String> getToolchainName();
+
+    /**
+     * The name of the task that runs the launcher.
+     * <p>
+     * Launchers use it to give the logs of each task a directory of their own.
+     *
+     * @return Provider to the name.
+     *
+     * @since 5.2
+     */
+    Provider<String> getTaskName();
 
     /**
      * Task input property.

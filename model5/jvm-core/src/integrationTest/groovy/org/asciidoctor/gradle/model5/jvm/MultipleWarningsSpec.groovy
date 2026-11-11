@@ -28,7 +28,7 @@ class MultipleWarningsSpec extends AsciidoctorjHtmlIntegrationSpecification {
 
     void 'Multiple warnings are written to a valid JSON log'() {
         setup:
-        final logFile = new File(buildDir, 'reports/asciidoc/logs/asciidoctorj/html/log.json')
+        final logFile = new File(buildDir, "reports/asciidoc/logs/${taskName}/log.json")
 
         when:
         final result = getGradleRunner(IS_GROOVY_DSL, [taskName]).build()
