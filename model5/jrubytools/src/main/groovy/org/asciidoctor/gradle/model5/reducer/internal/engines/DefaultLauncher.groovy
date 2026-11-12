@@ -35,6 +35,7 @@ import static org.asciidoctor.gradle.model5.reducer.internal.formatters.DefaultR
  * Launcher for the {@code asciidoctor-reducer} engine.
  *
  * @author Schalk W. Cronjé
+ * @author Mattias Reichel
  *
  * @since 5.1
  */
@@ -80,11 +81,7 @@ class DefaultLauncher extends BaseLauncher implements AsciidoctorLauncher {
             it.mkdirs()
         }
 
-        runOnMultiScriptWorker(
-            executionsSettings.toolchainName,
-            executionsSettings.formatterName,
-            allExecutions
-        )
+        runOnMultiScriptWorker(executionsSettings.taskName, allExecutions)
     }
 
     @Override

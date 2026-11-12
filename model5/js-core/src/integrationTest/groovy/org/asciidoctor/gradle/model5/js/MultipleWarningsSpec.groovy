@@ -28,7 +28,7 @@ class MultipleWarningsSpec extends AsciidoctorjsHtmlIntegrationSpecification {
 
     void 'Multiple warnings are written to a valid JSON log'() {
         setup:
-        final logFile = new File(buildDir, 'reports/asciidoc/logs/asciidoctorjs/html/log.json')
+        final logFile = new File(buildDir, "reports/asciidoc/logs/${taskName}/log.json")
 
         when:
         final result = getGradleRunner(IS_GROOVY_DSL, [taskName]).build()
@@ -45,7 +45,7 @@ class MultipleWarningsSpec extends AsciidoctorjsHtmlIntegrationSpecification {
 
     void 'Log records contain the source location and the full message'() {
         setup:
-        final logFile = new File(buildDir, 'reports/asciidoc/logs/asciidoctorjs/html/log.json')
+        final logFile = new File(buildDir, "reports/asciidoc/logs/${taskName}/log.json")
         final missingInclude = new File(projectDir, 'src/docs/asciidoc/missing-include-1.adoc')
 
         when:

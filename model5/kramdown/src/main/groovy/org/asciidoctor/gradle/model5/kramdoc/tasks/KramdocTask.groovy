@@ -32,6 +32,7 @@ import java.util.regex.Pattern
  * Base task for converting Asciidoc sources into content.
  *
  * @author Schalk W. Cronjé
+ * @author Mattias Reichel
  *
  * @since 5.1
  */
@@ -46,6 +47,7 @@ class KramdocTask extends AbstractBaseConversionTask implements KramdocTaskMetho
         super()
         this.launcher = providerTools().property(KramdocLauncher)
         this.exeSettings = project.objects.newInstance(DefaultKramdocExecutionSettings)
+        this.exeSettings.taskName.set(name)
         this.conversionSettings = project.objects.newInstance(DefaultKramdocConversionSettings)
 
         this.conversionSettings.sourceRootDir.set(determineSourceRootDir())

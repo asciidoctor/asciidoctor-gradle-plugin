@@ -42,6 +42,7 @@ import static org.asciidoctor.gradle.model5.kramdoc.internal.formatters.DefaultK
 /**
  * Default launcher for Kramdown
  * @author Schalk W. Cronjé
+ * @author Mattias Reichel
  *
  * @since 5.1
  */
@@ -86,11 +87,7 @@ class DefaultLauncher extends BaseLauncher implements KramdocLauncher {
             it.mkdirs()
         }
 
-        runOnMultiScriptWorker(
-            executionsSettings.toolchainName,
-            executionsSettings.formatterName,
-            (List<List<String>>)allExecutions
-        )
+        runOnMultiScriptWorker(executionsSettings.taskName, (List<List<String>>) allExecutions)
     }
 
     @Override

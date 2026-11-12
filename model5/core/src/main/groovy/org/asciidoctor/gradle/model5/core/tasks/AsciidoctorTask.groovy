@@ -56,6 +56,7 @@ class AsciidoctorTask extends AbstractBaseConversionTask implements AsciidoctorT
         super()
         this.launcher = providerTools().property(AsciidoctorLauncher)
         this.exeSettings = project.objects.newInstance(DefaultAsciidoctorExecutionSettings)
+        this.exeSettings.taskName.set(name)
         this.conversionSettings = project.objects.newInstance(DefaultAsciidoctorConversionSettings)
         this.originalBaseDir = project.objects.directoryProperty()
         this.srcDirIsBaseDir = sourceDir.zip(this.originalBaseDir) { src, base -> src == base }

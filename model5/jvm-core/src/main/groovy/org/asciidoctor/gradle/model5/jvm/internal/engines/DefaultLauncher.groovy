@@ -45,6 +45,7 @@ import static org.ysb33r.grolifant5.api.core.StringTools.EMPTY
  *
  * @author Schalk W. Cronjé
  * @author Artemy Osipov
+ * @author Mattias Reichel
  *
  * @since 5.0
  */
@@ -106,13 +107,8 @@ class DefaultLauncher implements AsciidoctorLauncher {
         final warnings = conversionSettings.fatalWarnings.getOrElse(EMPTY_SET)
         final wq = createWorkQueue(executionsSettings)
         final destDir = conversionSettings.destinationDir
-        final aliasName = conversionSettings.backend.map { b -> b.name }
         final backendName = conversionSettings.backend.map { b -> b.backend }
-        final jobLogDir = logDir.zip(executionsSettings.toolchainName) { ldir, tc ->
-            ldir.dir(tc)
-        }.zip(aliasName) { ldir, alias ->
-            ldir.dir(alias)
-        }
+        final jobLogDir = logDir.zip(executionsSettings.taskName) { ldir, task -> ldir.dir(task) }
 
         jobLogDir.get().asFile.deleteDir()
 

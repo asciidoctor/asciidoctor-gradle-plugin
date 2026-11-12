@@ -29,7 +29,7 @@ class WarningsAsErrorsSpec extends AsciidoctorjsHtmlIntegrationSpecification {
 
     void 'Warnings can be treated as errors'() {
         setup:
-        final logFile = new File(buildDir, 'reports/asciidoc/logs/asciidoctorjs/html/log.json')
+        final logFile = new File(buildDir, "reports/asciidoc/logs/${taskName}/log.json")
         configureSourceSetGroovy(DEFAULT_PUBLICATION, """
         missingIncludesAreFatal()
         """.stripIndent())

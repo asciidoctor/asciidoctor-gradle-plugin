@@ -98,13 +98,8 @@ class DefaultLauncher implements AsciidoctorLauncher {
         final groups = EngineUtils.groupByParent(conversionSettings.sourceFiles.get())
         final root = conversionSettings.sourceRootDir.get().asFile
         final destRoot = conversionSettings.destinationDir.get()
-        final aliasName = conversionSettings.backend.map { b -> b.name }
         final es = execSpec.get()
-        final jobLogDir = logDir.zip(executionsSettings.toolchainName) { ldir, tc ->
-            ldir.dir(tc)
-        }.zip(aliasName) { ldir, alias ->
-            ldir.dir(alias)
-        }
+        final jobLogDir = logDir.zip(executionsSettings.taskName) { ldir, task -> ldir.dir(task) }
 
         final attributes = conversionSettings.attributes.get()
 

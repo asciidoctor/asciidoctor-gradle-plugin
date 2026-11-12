@@ -38,6 +38,7 @@ import static org.ysb33r.gradle.jruby.api.core.JRubyEnvironmentInheritance.ESSEN
  * Base classes for building JRuby-tool-based launchers
  *
  * @author Schalk W. Cronjé
+ * @author Mattias Reichel
  *
  * @since 5.1
  */
@@ -102,16 +103,11 @@ abstract class BaseLauncher implements HasEcosystemSignature {
     abstract protected String getErrorLogBaseName()
 
     protected void runOnMultiScriptWorker(
-        Provider<String> toolchainName,
-        Provider<String> formatterName,
+        Provider<String> taskName,
         final List<List<String>> scriptCommandLines
     ) {
-        final errorsFile = ccso.providerTools().zip3(
-            logDir,
-            toolchainName,
-            formatterName
-        ) { dir, tcName, fmtName ->
-            dir.file("${tcName}/${fmtName}/${errorLogBaseName}.json")
+        final errorsFile = logDir.zip(taskName) { dir, task ->
+            dir.file("${task}/${errorLogBaseName}.json")
         }
 
         final forkOnDocCount = forkEvery.get()
