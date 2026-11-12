@@ -2,6 +2,7 @@
 [versions]
 # end::hacking-asciidoctorj-output-formatter[]
 # Keep in alphabetical order, please
+adocfmt = "0.6.0"
 asciidoctorj = "3.0.1"
 asciidoctorjDiagram = "3.2.1"
 asciidoctorjDiagramBatik = "1.19"
@@ -38,7 +39,7 @@ gemHaml = "6.3.0"
 gemKroki = "0.10.0"
 gemSlim = "5.2.1"
 gemTilt= "2.6.1"
-grolifant = "5.12.7"
+grolifant = "5.13.0"
 groovyForGradle9Testing = "4.0.4"
 jruby = "9.4.8.0"
 jrubyClassic = "9.3.8.0"

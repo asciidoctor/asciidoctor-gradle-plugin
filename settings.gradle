@@ -43,6 +43,7 @@ project(":asciidoctoreditorconfig").projectDir = file("model5/asciidoctoreditorc
     project(":testfixtures/${it}").name = "testfixtures-${it}"
 }
 
+include 'adocfmt'
 include 'test-all-model5-plugins'
 
 // Deprecated, classic plugins go here
