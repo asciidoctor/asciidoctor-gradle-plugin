@@ -21,11 +21,11 @@ project:
   description: Asciidoctor Gradle Plugin
   longDescription: Runs Asciidoctor on a Gradle project
   links:
-    homepage: https://github.com/kordamp/asciidoctor-gradle-plugin
+    homepage: https://github.com/asciidoctor/asciidoctor-gradle-plugin
   authors:
     - Andres Almiray
   license: Apache-2.0
-  inceptionYear: 2019
+  inceptionYear: 2013
 
 release:
   github:
