@@ -8,6 +8,7 @@ import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.tasks.javadoc.Groovydoc
 import org.gradle.api.tasks.javadoc.GroovydocAccess
 import org.gradle.api.tasks.testing.Test
+import org.gradle.plugins.signing.SigningExtension
 import org.ysb33r.grolifant5.api.core.plugins.GrolifantServicePlugin
 
 import java.time.LocalDate
@@ -16,6 +17,7 @@ import java.time.LocalDate
  * Common plugin stuff for both classic and model 5.
  *
  * @author Schalk W. Cronjé
+ * @author Mattias Reichel
  *
  * @since 5.0
  */
@@ -35,6 +37,38 @@ class CommonBasePlugin implements Plugin<Project> {
         configureLicense(project)
         configureTestCommons(project)
         configureGroovydocLinks(project)
+        configureSigning(project)
+    }
+
+    /**
+     * Signs the published plugins when a signing key is available.
+     * <p>
+     * The Plugin Publish plugin signs the plugin and plugin marker publications by itself
+     * once the Signing plugin is applied.
+     * The properties are the same as in AsciidoctorJ: {@code signingKey}, {@code signingPassword}
+     * and optionally {@code signingKeyId}, for instance from {@code ORG_GRADLE_PROJECT_signingKey},
+     * or {@code signing.keyId} for a key from a key ring as described for the Signing plugin.
+     */
+    private void configureSigning(Project project) {
+        final signingKey = project.providers.gradleProperty('signingKey')
+        final keyRingKeyId = project.providers.gradleProperty('signing.keyId')
+        if (!signingKey.present && !keyRingKeyId.present) {
+            return
+        }
+
+        project.pluginManager.withPlugin('com.gradle.plugin-publish') {
+            project.pluginManager.apply('signing')
+            if (signingKey.present) {
+                final signing = project.extensions.getByType(SigningExtension)
+                final signingKeyId = project.providers.gradleProperty('signingKeyId').orNull
+                final signingPassword = project.providers.gradleProperty('signingPassword').orNull
+                if (signingKeyId) {
+                    signing.useInMemoryPgpKeys(signingKeyId, signingKey.get(), signingPassword)
+                } else {
+                    signing.useInMemoryPgpKeys(signingKey.get(), signingPassword)
+                }
+            }
+        }
     }
 
     private void configureRepositories(Project project) {
