@@ -31,6 +31,9 @@ class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecifica
     private static final String BIBTEX_GEM_NAME = 'asciidoctor-bibtex'
     private static final String BIBTEX_GEM_VERSION = '0.8.0'
 
+    // latex-decode 0.5.0 and later require Ruby 3.3, and the JRuby 9.4 that the tests use implements Ruby 3.1
+    private static final String LATEX_DECODE_GEM_VERSION = '0.4.2'
+
     void setup() {
         setupCache()
     }
@@ -44,6 +47,13 @@ class AsciidoctorGemPrepareTaskCachingFunctionalSpec extends FunctionalSpecifica
                     exclude module: 'asciidoctor'
                 }
                 asciidoctorGems("rubygems:${BIBTEX_GEM_NAME}:${BIBTEX_GEM_VERSION}")
+                constraints {
+                    asciidoctorGems('rubygems:latex-decode') {
+                        version {
+                            strictly('${LATEX_DECODE_GEM_VERSION}')
+                        }
+                    }
+                }
             }
         """)
 

@@ -29,6 +29,17 @@ asciidoctor {
 }
 // end::use-gems[]
 
+dependencies {
+    constraints {
+        // latex-decode 0.5.0 and later require Ruby 3.3, and the JRuby 9.4 that the tests use implements Ruby 3.1
+        asciidoctorGems('rubygems:latex-decode') {
+            version {
+                strictly('0.4.2')
+            }
+        }
+    }
+}
+
 task runGradleTest {
     dependsOn 'asciidoctor'
 }
