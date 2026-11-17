@@ -28,7 +28,7 @@ kramdownAsciidoc {
                     diagramLanguages = [ 'plantuml', 'mermaid'] // <.>
                     diagramLanguages 'plantuml', 'mermaid' // <.>
                     passthruHtml = true // <.>
-                    wrap = 'preserve` // <.>'
+                    wrap = 'preserve' // <.>
                     headingOffset = 2 // <.>
                     autoLinks = true // <.>
 
@@ -89,7 +89,7 @@ kramdownAsciidoc {
 <.> Whether to auto-generate IDs for all section titles.
   The default is not to generate IDs.
 <.> Add attributes to the AsciiDoc document header.
-<.> There is no default setting for the source directory and it needs to be set here.
+<.> There is no default setting for the source directory, and it needs to be set here.
 <.> Optionally, set the `imagesdir` attribute in the AsciiDoc document header and remove the value from the start of image paths.
 <.> Create an output by specifying the toolchain to use and the output formatter name.
 <.> You can also specify an alias for the output name

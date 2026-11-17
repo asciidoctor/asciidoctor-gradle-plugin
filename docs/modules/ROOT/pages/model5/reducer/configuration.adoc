@@ -16,7 +16,7 @@ import org.asciidoctor.gradle.model5.reducer.formatters.AsciidoctorReducerOutput
 
 asciidoc {
     toolchains {
-        asciidoctorReducer(AsciidoctorReducerToolchain) {
+        asciidoctorReducer(AsciidoctorReducerToolchain) { // <.>
 
             safeMode = 'unsafe' // <.>
 
@@ -51,11 +51,11 @@ asciidoc {
 <.> The default toolchain is called `asciidoctorReducer`
 <.> Set the safe mode. Default is `unsafe`.
 <.> Override the default version of {asciidoctor-reducer-name}.
-<.> Whether to turn on tracing.
 <.> Override the default version of JRuby.
+<.> Whether to turn on tracing.
 <.> The default formatter is called `reducedAdoc`.
 <.> Whether conditional directives should be kept. Default is `false`.
-<.> All workers for this toolchain runs process-isolated.
+<.> All workers for this toolchain run process-isolated.
   Configure the fork options for these workers if the defaults do not work for you.
 <.> Set the ability to fork a new worker every X documents.
   This might be useful in cases where many documents need to be processed.
