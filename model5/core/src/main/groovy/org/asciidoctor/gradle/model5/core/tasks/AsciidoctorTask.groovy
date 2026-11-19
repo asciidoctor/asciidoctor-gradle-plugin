@@ -203,18 +203,18 @@ class AsciidoctorTask extends AbstractBaseConversionTask implements AsciidoctorT
         Provider<IncludeDirOutputSettings> includeDir,
         Provider<Map<String, String>> attrs
     ) {
-        providerTools().zip3(
-            includeDir,
-            attrs,
-            conversionSettings.sourceRootDir
-        ) { idos, a, dir ->
+        // Gradle's own zip, unlike a provider from a closure, lets Gradle find the tasks that produce attribute
+        // values without querying them while it resolves the task dependencies.
+        final includeDirAttribute = includeDir.zip(conversionSettings.sourceRootDir) { idos, dir ->
             if (idos.useSourceDirOverPath.getOrElse(false)) {
-                a + [(idos.attributeName.get()): dir.asFile.absolutePath]
+                [(idos.attributeName.get()): dir.asFile.absolutePath]
             } else if (idos.path.present) {
-                a + [(idos.attributeName.get()): idos.path.get()]
+                [(idos.attributeName.get()): idos.path.get()]
             } else {
-                a
+                [:]
             }
-        }.orElse(attrs)
+        }
+
+        attrs.zip(includeDirAttribute) { a, attribute -> a + attribute }.orElse(attrs)
     }
 }
