@@ -20,7 +20,7 @@ asciidoc {
           resources { // <.>
           }
           attributes { // <.>
-          }}
+          }
         }
         output 'asciidoctorj', 'html' // <.>
         output 'asciidoctorj', 'pdf'
